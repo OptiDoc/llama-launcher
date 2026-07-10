@@ -247,10 +247,76 @@ function MetricGauge({
   );
 }
 
+function LiveMetricsSkeleton() {
+  return (
+    <div className="space-y-4">
+      <Card className="border shadow-soft">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+          <div>
+            <CardTitle className="flex items-center gap-2 text-sm font-semibold">
+              <Radio className="size-4 text-primary" />
+              System Load
+            </CardTitle>
+            <p className="text-xs text-muted-foreground">Real-time telemetry</p>
+          </div>
+          <Badge variant="secondary" className="gap-1.5 bg-muted text-muted-foreground">
+            <span className="size-1.5 rounded-full bg-muted-foreground/50" />
+            Loading
+          </Badge>
+        </CardHeader>
+        <CardContent className="space-y-4 pt-0">
+          <div className="grid gap-3">
+            {["CPU", "Memory", "GPU VRAM", "GPU compute"].map((label) => (
+              <div key={label} className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-medium text-muted-foreground">{label}</span>
+                  <span className="font-mono text-xs text-muted-foreground">--</span>
+                </div>
+                <div className="h-2 rounded-full bg-muted" />
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+      <Card className="border shadow-soft">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm font-semibold">Utilisation</CardTitle>
+          <p className="text-xs text-muted-foreground">CPU · RAM · GPU last 60s</p>
+        </CardHeader>
+        <CardContent className="pt-2">
+          <div className="h-[140px] rounded-lg bg-muted/40" />
+        </CardContent>
+      </Card>
+      <Card className="border shadow-soft">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm font-semibold">Throughput</CardTitle>
+          <p className="text-xs text-muted-foreground">Tokens / sec</p>
+        </CardHeader>
+        <CardContent className="pt-2">
+          <div className="h-[100px] rounded-lg bg-muted/40" />
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
 function LiveMetricsColumn() {
   const metrics = useLlamaStore((s) => s.metrics);
   const instances = useLlamaStore((s) => s.instances);
   const appStatus = useLlamaStore((s) => s.appStatus);
+
+  // Gate live data rendering behind a mount check to avoid SSR/CSR
+  // hydration mismatch — the metrics store uses Date.now() and the
+  // ticker pushes new values continuously, both of which would produce
+  // different HTML on the server vs the client.
+  const [mounted, setMounted] = React.useState(false);
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return <LiveMetricsSkeleton />;
+  }
 
   const latest = metrics[metrics.length - 1];
   const running = instances.filter((i) => i.status === "running");

@@ -389,15 +389,16 @@ const initialSystemLogs: ConsoleLine[] = [
 
 export const SYSTEM_CONSOLE = SYSTEM_CONSOLE_ID;
 
-// Helper: generate initial metric history (last 60 samples, 1s apart)
+// Helper: generate initial metric history (deterministic zeros to avoid
+// SSR/CSR hydration mismatch — real values are streamed after mount)
 function seedMetrics(): MetricSample[] {
   const now = Date.now();
   const out: MetricSample[] = [];
   for (let i = 59; i >= 0; i--) {
     out.push({
       t: now - i * 1000,
-      cpu: 4 + Math.random() * 6,
-      ram: 30 + Math.random() * 8,
+      cpu: 0,
+      ram: 0,
       gpu: 0,
       gpuMem: 0,
       tps: 0,

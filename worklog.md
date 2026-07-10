@@ -166,3 +166,18 @@ All 9 user corrections implemented and verified:
 7. ✓ Profiles: global + model-bound (scope selector, model picker, share via shareId, auto-calibrate with score)
 8. ✓ HuggingFace download with quantization picker (Q4_0/Q4_K_M/Q5_K_M/Q6_K/Q8_0/F16) + progress
 9. ✓ Dashboard right column with real-time system load infographics (4 gauges + line chart + area chart + per-instance meters, updating every 1.5s)
+
+---
+Task ID: 11
+Agent: main
+Task: Fix hydration mismatch in LiveMetricsColumn
+
+Work Log:
+- Root cause: seedMetrics() used Math.random() for CPU/RAM values, producing different HTML on server vs client. The metrics ticker (started 500ms after store creation) also pushed new values before hydration could complete, widening the mismatch.
+- Fix 1 (src/lib/llama-store.ts): Made seedMetrics() deterministic — all initial metric values are now 0 instead of Math.random()-based. Timestamps still use Date.now() but are only rendered after mount (see fix 2).
+- Fix 2 (src/components/pages/dashboard.tsx): Added a `mounted` gate to LiveMetricsColumn with a LiveMetricsSkeleton fallback. During SSR and initial client render, the skeleton (deterministic, no live data) is shown. After mount (useEffect), the component swaps to live metrics. This is the standard Next.js pattern for time-based/random data and completely eliminates the hydration mismatch regardless of what the store contains.
+- Verified: no hydration errors in browser console or dev.log, dashboard renders correctly with skeleton → live data transition, live metrics show non-zero values after launching an instance (CPU 11%, Memory 42%, GPU VRAM 45%, GPU compute 40%).
+
+Stage Summary:
+- Hydration mismatch resolved. Two-pronged fix: deterministic seed + mounted gate.
+- Other components checked for hydration risk: uptimeString (only used when instances exist, which start empty), idleSecs (only shown when status !== active, initial is active), pickPort/uid (only in dialog/log content not rendered during SSR). All safe.
