@@ -258,19 +258,132 @@ export const HF_CATALOG: HFSearchResult[] = [
   { repo: "bartowski/Mixtral-8x22B-Instruct-v0.1-GGUF", builder: "bartowski", family: "mixtral", baseSizeGb: 280.0, parameterCount: "141B", description: "Mixtral 8x22B Instruct v0.1 (MoE)", architecture: "llama", contextLength: 65536, license: "Apache 2.0", downloads: 31200, uploadedAt: "2024-04-10", tags: ["instruct", "chat", "moe", "large"], isMoe: true, expertCount: 8 },
   { repo: "bartowski/Qwen2-57B-A14B-Instruct-GGUF", builder: "bartowski", family: "qwen2", baseSizeGb: 114.0, parameterCount: "57B", description: "Qwen 2 57B-A14B Instruct (MoE, 14 active experts)", architecture: "qwen2", contextLength: 32768, license: "Qwen License", downloads: 18900, uploadedAt: "2024-07-15", tags: ["instruct", "chat", "moe", "qwen"], isMoe: true, expertCount: 14 },
   { repo: "unsloth/DeepSeek-V2-Lite-Chat-GGUF", builder: "unsloth", family: "deepseek", baseSizeGb: 30.0, parameterCount: "15.7B", description: "DeepSeek V2 Lite Chat (MoE)", architecture: "deepseek2", contextLength: 32768, license: "DeepSeek License", downloads: 14200, uploadedAt: "2024-06-20", tags: ["instruct", "chat", "moe", "deepseek"], isMoe: true, expertCount: 6 },
+  // --- Codestral & code models ---
+  { repo: "bartowski/Codestral-22B-v0.1-GGUF", builder: "bartowski", family: "codestral", baseSizeGb: 44.0, parameterCount: "22B", description: "Mistral Codestral 22B v0.1 (code generation)", architecture: "llama", contextLength: 32768, license: "MNPL", downloads: 52800, uploadedAt: "2024-05-29", tags: ["code", "coder", "mistral", "codestral"], isMoe: false },
+  { repo: "bartowski/Codestral-22B-v0.1-GGUF", builder: "bartowski", family: "codestral", baseSizeGb: 44.0, parameterCount: "22B", description: "Codestral 22B (Mistral AI code model)", architecture: "llama", contextLength: 32768, license: "MNPL", downloads: 31200, uploadedAt: "2024-05-30", tags: ["codestral", "code", "coder"], isMoe: false },
+  { repo: "lmstudio-community/Codestral-22B-v0.1-GGUF", builder: "lmstudio-community", family: "codestral", baseSizeGb: 44.0, parameterCount: "22B", description: "Codestral 22B v0.1 (LM Studio)", architecture: "llama", contextLength: 32768, license: "MNPL", downloads: 18700, uploadedAt: "2024-05-29", tags: ["codestral", "code", "lmstudio"], isMoe: false },
+  { repo: "bartowski/CodeQwen1.5-7B-Chat-GGUF", builder: "bartowski", family: "qwen2", baseSizeGb: 14.5, parameterCount: "7B", description: "CodeQwen 1.5 7B Chat (Qwen code model)", architecture: "qwen2", contextLength: 65536, license: "Apache 2.0", downloads: 41600, uploadedAt: "2024-04-25", tags: ["code", "coder", "qwen", "codeqwen"], isMoe: false },
+  { repo: "bartowski/CodeLlama-7B-Instruct-GGUF", builder: "bartowski", family: "codellama", baseSizeGb: 13.0, parameterCount: "7B", description: "Code Llama 7B Instruct (Meta)", architecture: "llama", contextLength: 16384, license: "Llama 2 Community", downloads: 38900, uploadedAt: "2024-01-15", tags: ["code", "coder", "meta", "codellama"], isMoe: false },
+  { repo: "TheBloke/CodeLlama-7B-Instruct-GGUF", builder: "TheBloke", family: "codellama", baseSizeGb: 13.0, parameterCount: "7B", description: "Code Llama 7B Instruct (TheBloke)", architecture: "llama", contextLength: 16384, license: "Llama 2 Community", downloads: 245000, uploadedAt: "2023-08-25", tags: ["code", "coder", "codellama", "legacy"], isMoe: false },
+  { repo: "bartowski/CodeLlama-13B-Instruct-GGUF", builder: "bartowski", family: "codellama", baseSizeGb: 26.0, parameterCount: "13B", description: "Code Llama 13B Instruct (Meta)", architecture: "llama", contextLength: 16384, license: "Llama 2 Community", downloads: 21400, uploadedAt: "2024-01-15", tags: ["code", "coder", "meta", "codellama", "large"], isMoe: false },
+  { repo: "bartowski/DeepSeek-Coder-V2-Lite-Instruct-GGUF", builder: "bartowski", family: "deepseek", baseSizeGb: 30.0, parameterCount: "15.7B", description: "DeepSeek Coder V2 Lite Instruct (MoE, code)", architecture: "deepseek2", contextLength: 131072, license: "DeepSeek License", downloads: 35600, uploadedAt: "2024-06-21", tags: ["code", "coder", "moe", "deepseek", "deepseek-coder"], isMoe: true, expertCount: 6 },
+  { repo: "bartowski/DeepSeek-Coder-V2-Instruct-GGUF", builder: "bartowski", family: "deepseek", baseSizeGb: 449.0, parameterCount: "236B", description: "DeepSeek Coder V2 Instruct (MoE, full)", architecture: "deepseek2", contextLength: 131072, license: "DeepSeek License", downloads: 12700, uploadedAt: "2024-06-19", tags: ["code", "coder", "moe", "deepseek", "large"], isMoe: true, expertCount: 6 },
+  { repo: "bartowski/starcoder2-7b-GGUF", builder: "bartowski", family: "starcoder", baseSizeGb: 14.5, parameterCount: "7B", description: "StarCoder 2 7B (BigCode)", architecture: "starcoder2", contextLength: 16384, license: "BigCode OpenRAIL-M", downloads: 28900, uploadedAt: "2024-02-28", tags: ["code", "coder", "bigcode", "starcoder"], isMoe: false },
+  { repo: "bartowski/starcoder2-15b-GGUF", builder: "bartowski", family: "starcoder", baseSizeGb: 30.0, parameterCount: "15B", description: "StarCoder 2 15B (BigCode)", architecture: "starcoder2", contextLength: 16384, license: "BigCode OpenRAIL-M", downloads: 19400, uploadedAt: "2024-02-28", tags: ["code", "coder", "bigcode", "starcoder", "large"], isMoe: false },
+  // --- Command R / Aya ---
+  { repo: "bartowski/c4ai-command-r-v01-GGUF", builder: "bartowski", family: "command-r", baseSizeGb: 70.0, parameterCount: "35B", description: "Cohere Command R 35B v01", architecture: "command-r", contextLength: 131072, license: "CC-BY-NC-4.0", downloads: 22300, uploadedAt: "2024-03-12", tags: ["instruct", "chat", "cohere", "command-r"], isMoe: false },
+  { repo: "bartowski/c4ai-command-r-plus-GGUF", builder: "bartowski", family: "command-r", baseSizeGb: 195.0, parameterCount: "104B", description: "Cohere Command R+ 104B", architecture: "command-r", contextLength: 131072, license: "CC-BY-NC-4.0", downloads: 16700, uploadedAt: "2024-04-04", tags: ["instruct", "chat", "cohere", "command-r", "large"], isMoe: false },
+  { repo: "bartowski/aya-23-8B-GGUF", builder: "bartowski", family: "aya", baseSizeGb: 16.0, parameterCount: "8B", description: "Cohere Aya 23 8B (multilingual)", architecture: "command-r", contextLength: 8192, license: "CC-BY-NC-4.0", downloads: 12800, uploadedAt: "2024-05-08", tags: ["instruct", "chat", "cohere", "aya", "multilingual"], isMoe: false },
+  // --- Llama 3.x family ---
+  { repo: "bartowski/Llama-3.2-1B-Instruct-GGUF", builder: "bartowski", family: "llama3", baseSizeGb: 2.5, parameterCount: "1B", description: "Meta Llama 3.2 1B Instruct (small)", architecture: "llama", contextLength: 131072, license: "Llama 3.2 Community", downloads: 67200, uploadedAt: "2024-09-25", tags: ["instruct", "small", "meta"], isMoe: false },
+  { repo: "unsloth/Llama-3.2-1B-Instruct-GGUF", builder: "unsloth", family: "llama3", baseSizeGb: 2.5, parameterCount: "1B", description: "Meta Llama 3.2 1B Instruct (unsloth)", architecture: "llama", contextLength: 131072, license: "Llama 3.2 Community", downloads: 45300, uploadedAt: "2024-09-25", tags: ["instruct", "small", "meta", "unsloth"], isMoe: false },
+  { repo: "bartowski/Llama-3.2-3B-Instruct-GGUF", builder: "bartowski", family: "llama3", baseSizeGb: 6.5, parameterCount: "3B", description: "Meta Llama 3.2 3B Instruct", architecture: "llama", contextLength: 131072, license: "Llama 3.2 Community", downloads: 94100, uploadedAt: "2024-09-25", tags: ["instruct", "small", "meta"], isMoe: false },
+  { repo: "bartowski/Meta-Llama-3.1-70B-Instruct-GGUF", builder: "bartowski", family: "llama3", baseSizeGb: 140.0, parameterCount: "70B", description: "Meta Llama 3.1 70B Instruct", architecture: "llama", contextLength: 131072, license: "Llama 3.1 Community", downloads: 58300, uploadedAt: "2024-07-23", tags: ["instruct", "chat", "meta", "large"], isMoe: false },
+  { repo: "bartowski/Meta-Llama-3.1-405B-Instruct-GGUF", builder: "bartowski", family: "llama3", baseSizeGb: 820.0, parameterCount: "405B", description: "Meta Llama 3.1 405B Instruct (frontier)", architecture: "llama", contextLength: 131072, license: "Llama 3.1 Community", downloads: 21800, uploadedAt: "2024-07-23", tags: ["instruct", "chat", "meta", "large", "frontier"], isMoe: false },
+  // --- Qwen family ---
+  { repo: "bartowski/Qwen2.5-3B-Instruct-GGUF", builder: "bartowski", family: "qwen2", baseSizeGb: 6.0, parameterCount: "3B", description: "Qwen 2.5 3B Instruct", architecture: "qwen2", contextLength: 32768, license: "Apache 2.0", downloads: 57600, uploadedAt: "2024-09-19", tags: ["instruct", "chat", "qwen", "small"], isMoe: false },
+  { repo: "bartowski/Qwen2.5-14B-Instruct-GGUF", builder: "bartowski", family: "qwen2", baseSizeGb: 29.0, parameterCount: "14B", description: "Qwen 2.5 14B Instruct", architecture: "qwen2", contextLength: 32768, license: "Apache 2.0", downloads: 48200, uploadedAt: "2024-09-19", tags: ["instruct", "chat", "qwen"], isMoe: false },
+  { repo: "bartowski/Qwen2.5-72B-Instruct-GGUF", builder: "bartowski", family: "qwen2", baseSizeGb: 144.0, parameterCount: "72B", description: "Qwen 2.5 72B Instruct (large)", architecture: "qwen2", contextLength: 32768, license: "Qwen License", downloads: 31400, uploadedAt: "2024-09-25", tags: ["instruct", "chat", "qwen", "large"], isMoe: false },
+  { repo: "bartowski/Qwen2.5-Math-7B-Instruct-GGUF", builder: "bartowski", family: "qwen2", baseSizeGb: 14.5, parameterCount: "7B", description: "Qwen 2.5 Math 7B Instruct", architecture: "qwen2", contextLength: 32768, license: "Apache 2.0", downloads: 14300, uploadedAt: "2024-09-19", tags: ["instruct", "math", "qwen"], isMoe: false },
+  { repo: "bartowski/Qwen2.5-VL-7B-Instruct-GGUF", builder: "bartowski", family: "qwen2", baseSizeGb: 14.5, parameterCount: "7B", description: "Qwen 2.5 VL 7B Instruct (vision-language)", architecture: "qwen2", contextLength: 32768, license: "Apache 2.0", downloads: 18900, uploadedAt: "2025-01-26", tags: ["instruct", "vision", "vl", "qwen"], isMoe: false },
+  { repo: "bartowski/Qwen2-7B-Instruct-GGUF", builder: "bartowski", family: "qwen2", baseSizeGb: 14.5, parameterCount: "7B", description: "Qwen 2 7B Instruct (legacy)", architecture: "qwen2", contextLength: 32768, license: "Qwen License", downloads: 38700, uploadedAt: "2024-06-06", tags: ["instruct", "chat", "qwen", "legacy"], isMoe: false },
+  { repo: "bartowski/QwQ-32B-Preview-GGUF", builder: "bartowski", family: "qwen2", baseSizeGb: 64.0, parameterCount: "32B", description: "Qwen QwQ 32B Preview (reasoning)", architecture: "qwen2", contextLength: 32768, license: "Apache 2.0", downloads: 27600, uploadedAt: "2024-11-28", tags: ["reasoning", "qwq", "qwen", "large"], isMoe: false },
+  // --- Mistral / Mixtral family ---
+  { repo: "bartowski/Mixtral-8x7B-Instruct-v0.1-GGUF", builder: "bartowski", family: "mixtral", baseSizeGb: 93.0, parameterCount: "46.7B", description: "Mixtral 8x7B Instruct v0.1 (MoE)", architecture: "llama", contextLength: 32768, license: "Apache 2.0", downloads: 87400, uploadedAt: "2023-12-13", tags: ["instruct", "chat", "moe", "large"], isMoe: true, expertCount: 8 },
+  { repo: "TheBloke/Mixtral-8x7B-Instruct-v0.1-GGUF", builder: "TheBloke", family: "mixtral", baseSizeGb: 93.0, parameterCount: "46.7B", description: "Mixtral 8x7B Instruct v0.1 (TheBloke, MoE)", architecture: "llama", contextLength: 32768, license: "Apache 2.0", downloads: 412000, uploadedAt: "2023-12-12", tags: ["instruct", "chat", "moe", "large", "legacy"], isMoe: true, expertCount: 8 },
+  { repo: "bartowski/Mixtral-8x22B-Instruct-v0.1-GGUF", builder: "bartowski", family: "mixtral", baseSizeGb: 280.0, parameterCount: "141B", description: "Mixtral 8x22B Instruct v0.1 (MoE)", architecture: "llama", contextLength: 65536, license: "Apache 2.0", downloads: 31200, uploadedAt: "2024-04-10", tags: ["instruct", "chat", "moe", "large"], isMoe: true, expertCount: 8 },
+  { repo: "bartowski/Mistral-Large-Instruct-2407-GGUF", builder: "bartowski", family: "mistral", baseSizeGb: 250.0, parameterCount: "123B", description: "Mistral Large 123B Instruct 2407", architecture: "llama", contextLength: 131072, license: "Mistral Research", downloads: 16800, uploadedAt: "2024-07-24", tags: ["instruct", "chat", "mistral", "large"], isMoe: false },
+  { repo: "bartowski/Mistral-7B-Instruct-v0.1-GGUF", builder: "bartowski", family: "mistral", baseSizeGb: 14.5, parameterCount: "7B", description: "Mistral 7B Instruct v0.1 (legacy)", architecture: "llama", contextLength: 32768, license: "Apache 2.0", downloads: 89000, uploadedAt: "2023-09-27", tags: ["instruct", "chat", "mistral", "legacy"], isMoe: false },
+  { repo: "bartowski/Mistral-Small-Instruct-2409-GGUF", builder: "bartowski", family: "mistral", baseSizeGb: 48.0, parameterCount: "22B", description: "Mistral Small 22B Instruct 2409", architecture: "llama", contextLength: 32768, license: "Mistral Research", downloads: 24100, uploadedAt: "2024-09-17", tags: ["instruct", "chat", "mistral", "small"], isMoe: false },
+  // --- Gemma family ---
+  { repo: "bartowski/gemma-2-2b-it-GGUF", builder: "bartowski", family: "gemma2", baseSizeGb: 5.0, parameterCount: "2B", description: "Google Gemma 2 2B IT (small)", architecture: "gemma2", contextLength: 8192, license: "Gemma", downloads: 73400, uploadedAt: "2024-06-27", tags: ["instruct", "google", "gemma", "small"], isMoe: false },
+  { repo: "bartowski/gemma-2-9b-it-GGUF", builder: "bartowski", family: "gemma2", baseSizeGb: 18.0, parameterCount: "9B", description: "Google Gemma 2 9B IT", architecture: "gemma2", contextLength: 8192, license: "Gemma", downloads: 95400, uploadedAt: "2024-06-27", tags: ["instruct", "google", "gemma"], isMoe: false },
+  // --- Phi family ---
+  { repo: "bartowski/Phi-3-mini-4k-instruct-GGUF", builder: "bartowski", family: "phi3", baseSizeGb: 7.5, parameterCount: "3.8B", description: "Microsoft Phi 3 Mini 4k Instruct", architecture: "phi3", contextLength: 4096, license: "MIT", downloads: 62100, uploadedAt: "2024-04-22", tags: ["instruct", "microsoft"], isMoe: false },
+  { repo: "bartowski/Phi-3-small-8k-instruct-GGUF", builder: "bartowski", family: "phi3", baseSizeGb: 14.0, parameterCount: "7.4B", description: "Microsoft Phi 3 Small 8k Instruct", architecture: "phi3", contextLength: 8192, license: "MIT", downloads: 15600, uploadedAt: "2024-05-21", tags: ["instruct", "microsoft"], isMoe: false },
+  // --- DBRX / Falcon / Yi / SOLAR ---
+  { repo: "bartowski/dbrx-instruct-GGUF", builder: "bartowski", family: "dbrx", baseSizeGb: 264.0, parameterCount: "132B", description: "Databricks DBRX Instruct (MoE)", architecture: "dbrx", contextLength: 32768, license: "DBRX Open", downloads: 9800, uploadedAt: "2024-03-28", tags: ["instruct", "chat", "moe", "databricks", "large"], isMoe: true, expertCount: 16 },
+  { repo: "bartowski/Falcon3-7B-Instruct-GGUF", builder: "bartowski", family: "falcon", baseSizeGb: 14.5, parameterCount: "7B", description: "TII Falcon 3 7B Instruct", architecture: "falcon3", contextLength: 32768, license: "TII Falcon LLM License", downloads: 11400, uploadedAt: "2024-12-18", tags: ["instruct", "chat", "falcon"], isMoe: false },
+  { repo: "bartowski/Yi-1.5-9B-Chat-GGUF", builder: "bartowski", family: "yi", baseSizeGb: 18.0, parameterCount: "9B", description: "01.AI Yi 1.5 9B Chat", architecture: "llama", contextLength: 4096, license: "Apache 2.0", downloads: 13700, uploadedAt: "2024-05-14", tags: ["instruct", "chat", "yi"], isMoe: false },
+  { repo: "bartowski/Yi-1.5-34B-Chat-GGUF", builder: "bartowski", family: "yi", baseSizeGb: 68.0, parameterCount: "34B", description: "01.AI Yi 1.5 34B Chat (large)", architecture: "llama", contextLength: 4096, license: "Apache 2.0", downloads: 8900, uploadedAt: "2024-05-14", tags: ["instruct", "chat", "yi", "large"], isMoe: false },
+  { repo: "bartowski/solar-10.7b-instruct-v1.0-GGUF", builder: "bartowski", family: "solar", baseSizeGb: 20.0, parameterCount: "10.7B", description: "Upstage Solar 10.7B Instruct v1.0", architecture: "llama", contextLength: 4096, license: "MIT", downloads: 10200, uploadedAt: "2023-12-13", tags: ["instruct", "chat", "solar", "upstage"], isMoe: false },
+  // --- DeepSeek ---
+  { repo: "bartowski/DeepSeek-V2-Chat-GGUF", builder: "bartowski", family: "deepseek", baseSizeGb: 449.0, parameterCount: "236B", description: "DeepSeek V2 Chat (MoE, full)", architecture: "deepseek2", contextLength: 32768, license: "DeepSeek License", downloads: 8600, uploadedAt: "2024-06-20", tags: ["instruct", "chat", "moe", "deepseek", "large"], isMoe: true, expertCount: 6 },
+  { repo: "bartowski/DeepSeek-R1-GGUF", builder: "bartowski", family: "deepseek", baseSizeGb: 800.0, parameterCount: "671B", description: "DeepSeek R1 (MoE, reasoning, full)", architecture: "deepseek2", contextLength: 131072, license: "MIT", downloads: 42300, uploadedAt: "2025-01-20", tags: ["reasoning", "moe", "deepseek", "r1", "frontier"], isMoe: true, expertCount: 8 },
+  { repo: "unsloth/DeepSeek-R1-GGUF", builder: "unsloth", family: "deepseek", baseSizeGb: 800.0, parameterCount: "671B", description: "DeepSeek R1 (unsloth, MoE reasoning)", architecture: "deepseek2", contextLength: 131072, license: "MIT", downloads: 38700, uploadedAt: "2025-01-20", tags: ["reasoning", "moe", "deepseek", "r1", "unsloth"], isMoe: true, expertCount: 8 },
+  { repo: "bartowski/DeepSeek-R1-Distill-Qwen-1.5B-GGUF", builder: "bartowski", family: "deepseek", baseSizeGb: 3.0, parameterCount: "1.5B", description: "DeepSeek R1 Distill Qwen 1.5B (small, reasoning)", architecture: "qwen2", contextLength: 131072, license: "MIT", downloads: 31200, uploadedAt: "2025-01-21", tags: ["reasoning", "deepseek", "r1", "small"], isMoe: false },
+  { repo: "bartowski/DeepSeek-R1-Distill-Qwen-14B-GGUF", builder: "bartowski", family: "deepseek", baseSizeGb: 29.0, parameterCount: "14B", description: "DeepSeek R1 Distill Qwen 14B (reasoning)", architecture: "qwen2", contextLength: 131072, license: "MIT", downloads: 28400, uploadedAt: "2025-01-21", tags: ["reasoning", "deepseek", "r1"], isMoe: false },
+  { repo: "bartowski/DeepSeek-R1-Distill-Llama-70B-GGUF", builder: "bartowski", family: "deepseek", baseSizeGb: 140.0, parameterCount: "70B", description: "DeepSeek R1 Distill Llama 70B (reasoning, large)", architecture: "llama", contextLength: 131072, license: "MIT", downloads: 19700, uploadedAt: "2025-01-21", tags: ["reasoning", "deepseek", "r1", "large"], isMoe: false },
+  // --- Nous / Hermes / Zephyr / OpenChat ---
+  { repo: "bartowski/Hermes-3-Llama-3.1-70B-GGUF", builder: "bartowski", family: "llama3", baseSizeGb: 140.0, parameterCount: "70B", description: "Hermes 3 Llama 3.1 70B (Nous Research)", architecture: "llama", contextLength: 131072, license: "Llama 3.1 Community", downloads: 9400, uploadedAt: "2024-08-10", tags: ["hermes", "nous", "instruct", "large"], isMoe: false },
+  { repo: "bartowski/zephyr-7b-beta-GGUF", builder: "bartowski", family: "mistral", baseSizeGb: 14.5, parameterCount: "7B", description: "Zephyr 7B Beta (HuggingFace H4)", architecture: "llama", contextLength: 8192, license: "MIT", downloads: 21800, uploadedAt: "2023-10-25", tags: ["instruct", "chat", "zephyr", "h4"], isMoe: false },
+  { repo: "TheBloke/zephyr-7B-beta-GGUF", builder: "TheBloke", family: "mistral", baseSizeGb: 14.5, parameterCount: "7B", description: "Zephyr 7B Beta (TheBloke)", architecture: "llama", contextLength: 8192, license: "MIT", downloads: 134000, uploadedAt: "2023-10-25", tags: ["instruct", "chat", "zephyr", "h4", "legacy"], isMoe: false },
+  { repo: "bartowski/openchat-3.5-1210-GGUF", builder: "bartowski", family: "openchat", baseSizeGb: 14.5, parameterCount: "7B", description: "OpenChat 3.5 1210", architecture: "llama", contextLength: 8192, license: "Apache 2.0", downloads: 17600, uploadedAt: "2023-12-11", tags: ["instruct", "chat", "openchat"], isMoe: false },
+  // --- Llama 2 legacy ---
+  { repo: "TheBloke/Llama-2-13B-chat-GGUF", builder: "TheBloke", family: "llama2", baseSizeGb: 26.0, parameterCount: "13B", description: "Llama 2 13B Chat (TheBloke)", architecture: "llama", contextLength: 4096, license: "Llama 2 Community", downloads: 540000, uploadedAt: "2023-07-18", tags: ["chat", "legacy", "llama2", "large"], isMoe: false },
+  { repo: "TheBloke/Llama-2-70B-Chat-GGUF", builder: "TheBloke", family: "llama2", baseSizeGb: 140.0, parameterCount: "70B", description: "Llama 2 70B Chat (TheBloke)", architecture: "llama", contextLength: 4096, license: "Llama 2 Community", downloads: 310000, uploadedAt: "2023-07-18", tags: ["chat", "legacy", "llama2", "large"], isMoe: false },
 ];
 
 export function searchHFModels(query: string): HFSearchResult[] {
   const q = query.trim().toLowerCase();
   if (!q) return [];
-  return HF_CATALOG.filter(
-    (r) =>
-      r.repo.toLowerCase().includes(q) ||
-      r.description.toLowerCase().includes(q) ||
-      r.family.includes(q) ||
-      r.builder.toLowerCase().includes(q) ||
-      r.tags.some((t) => t.includes(q)),
-  ).sort((a, b) => b.downloads - a.downloads);
+
+  // Split into words; a model matches if ALL words appear somewhere in its
+  // searchable text. This makes multi-word queries like "llama 3.1 8b" or
+  // "deepseek reasoning" work, and also tolerates word reordering.
+  const words = q.split(/\s+/).filter(Boolean);
+
+  // Build a single searchable haystack string per result, including the
+  // repo path, model name/description, family, architecture, builder,
+  // parameter count and tags.
+  const haystack = (r: HFSearchResult) =>
+    [
+      r.repo,
+      r.description,
+      r.family,
+      r.architecture,
+      r.builder,
+      r.parameterCount,
+      r.license,
+      r.tags.join(" "),
+    ]
+      .join(" ")
+      .toLowerCase();
+
+  // Score: how well does this result match? Higher = better.
+  // - exact substring match of the full query on repo → big boost
+  // - all words present (required) → base score
+  // - consecutive-word match → bonus
+  // - downloads → tie-breaker (popularity)
+  function score(r: HFSearchResult): number {
+    const h = haystack(r);
+    let s = 0;
+    // All words must be present (AND logic)
+    if (!words.every((w) => h.includes(w))) return -1;
+
+    // Boost: full query substring on repo
+    if (r.repo.toLowerCase().includes(q)) s += 1000;
+    // Boost: full query substring on description
+    if (r.description.toLowerCase().includes(q)) s += 500;
+    // Boost: exact tag match
+    if (r.tags.some((t) => t.toLowerCase() === q)) s += 200;
+    // Per-word boost: word appears in repo (strong signal)
+    words.forEach((w) => {
+      if (r.repo.toLowerCase().includes(w)) s += 50;
+      if (r.family.includes(w)) s += 30;
+      if (r.builder.toLowerCase().includes(w)) s += 20;
+      if (r.parameterCount.toLowerCase().includes(w)) s += 15;
+    });
+    // Popularity tie-breaker (downloads, scaled)
+    s += Math.min(100, r.downloads / 1000);
+    return s;
+  }
+
+  return HF_CATALOG
+    .map((r) => ({ r, s: score(r) }))
+    .filter((x) => x.s >= 0)
+    .sort((a, b) => b.s - a.s)
+    .map((x) => x.r);
 }
 
 export const HF_QUANTS: { id: string; label: string; sizeFactor: number; note: string; bits: number }[] = [
@@ -662,8 +775,9 @@ const initialSystemLogs: ConsoleLine[] = [
   { id: uid("log"), instanceId: SYSTEM_CONSOLE_ID, ts: nowTs() - 5000, kind: "info", text: "[boot] LlamaLauncher v0.4.2 ready" },
   { id: uid("log"), instanceId: SYSTEM_CONSOLE_ID, ts: nowTs() - 4800, kind: "debug", text: "[boot] detected 1 CUDA device: NVIDIA RTX 4070 (12 GB)" },
   { id: uid("log"), instanceId: SYSTEM_CONSOLE_ID, ts: nowTs() - 4600, kind: "info", text: "[boot] llama.cpp build b4402 (8f1f7e1) installed at /opt/llama.cpp" },
-  { id: uid("log"), instanceId: SYSTEM_CONSOLE_ID, ts: nowTs() - 4400, kind: "success", text: "[boot] 6 models available, 6 profiles configured (4 global, 2 model-tuned)" },
-  { id: uid("log"), instanceId: SYSTEM_CONSOLE_ID, ts: nowTs() - 4200, kind: "info", text: "[hibernate] auto-hibernation enabled: idle 75s → hibernate (models unloaded)" },
+  { id: uid("log"), instanceId: SYSTEM_CONSOLE_ID, ts: nowTs() - 4400, kind: "success", text: "[boot] 7 models available, 6 profiles configured (4 global, 2 model-tuned)" },
+  { id: uid("log"), instanceId: SYSTEM_CONSOLE_ID, ts: nowTs() - 4200, kind: "info", text: "[github] fetching latest llama.cpp releases from github.com/ggerganov/llama.cpp …" },
+  { id: uid("log"), instanceId: SYSTEM_CONSOLE_ID, ts: nowTs() - 4000, kind: "info", text: "[hibernate] auto-hibernation enabled: idle 75s → hibernate (models unloaded)" },
   { id: uid("log"), instanceId: SYSTEM_CONSOLE_ID, ts: nowTs() - 200, kind: "info", text: "[ready] start an instance to launch a llama-server process" },
 ];
 
@@ -773,11 +887,74 @@ function startReleaseChecker() {
     s.addNotification({
       kind: "release",
       title: "New llama.cpp release available",
-      body: "b4403 (9a2c7f1) — Improved RPC server, fixed KV cache eviction bug. CUDA 12, CUDA 13, Vulkan builds available.",
+      body: "b9952 (7c3f8a2) — RPC over Unix sockets, llama-server /v1/rerank streaming. CUDA 12, CUDA 13, Vulkan builds available.",
       actionLabel: "Install",
     });
-    emitLog(SYSTEM_CONSOLE_ID, "info", `[${fmtTime(new Date())}] [github] new release detected: b4403`);
+    emitLog(SYSTEM_CONSOLE_ID, "info", `[${fmtTime(new Date())}] [github] new release detected: b9952`);
   }, 12000);
+}
+
+/**
+ * Simulate fetching the latest llama.cpp releases from GitHub on startup.
+ * Merges any tags not already in the catalog into the releases list (all
+ * variants) and logs the result. In a real app this would hit the GitHub
+ * Releases API; here we synthesise a couple of fresh builds dated "today".
+ */
+function refreshReleasesOnStartup() {
+  // Fresh builds discovered from GitHub (not in the seed catalog)
+  const freshFromGitHub: Array<{ tag: string; date: string; commit: string; notes: string }> = [
+    { tag: "b9952", date: new Date().toISOString().slice(0, 10), commit: "7c3f8a2", notes: "RPC over Unix sockets, llama-server /v1/rerank streaming, KV cache eviction fix" },
+    { tag: "b9951", date: new Date(Date.now() - 86400000).toISOString().slice(0, 10), commit: "f3a2c81", notes: "New Vulkan compute scheduler, KV cache eviction rewrite, llama-server multipart support, RPC over TLS" },
+  ];
+
+  const state = useLlamaStore.getState();
+  const existingTags = new Set(state.releases.map((r) => r.tag));
+  const newOnes = freshFromGitHub.filter((r) => !existingTags.has(r.tag));
+  const updatedTags = freshFromGitHub.filter((r) => existingTags.has(r.tag));
+
+  // For existing tags, refresh their publishedAt to the GitHub date (so they
+  // sort to the top) and update commit/notes.
+  if (updatedTags.length > 0 || newOnes.length > 0) {
+    const newReleaseEntries: LlamaRelease[] = [];
+    newOnes.forEach((r) => {
+      RELEASE_VARIANTS.forEach((v) => {
+        newReleaseEntries.push(
+          mkRelease(
+            `r_${r.tag}_${v.id}`,
+            r.tag,
+            r.date,
+            r.commit,
+            r.notes,
+            false,
+            v.id,
+            v.priority,
+            v.id === "cpu" ? 18 : v.id === "cuda12" || v.id === "cuda13" ? 42 : 28,
+          ),
+        );
+      });
+    });
+
+    useLlamaStore.setState((s) => {
+      let updated = s.releases;
+      updatedTags.forEach((u) => {
+        updated = updated.map((rel) =>
+          rel.tag === u.tag
+            ? { ...rel, publishedAt: u.date, commit: u.commit, notes: u.notes }
+            : rel,
+        );
+      });
+      return { releases: [...newReleaseEntries, ...updated] };
+    });
+
+    emitLog(
+      SYSTEM_CONSOLE_ID,
+      "info",
+      `[${fmtTime(new Date())}] [github] fetched latest llama.cpp releases — ${newOnes.length} new, ${updatedTags.length} updated`,
+    );
+    newOnes.forEach((r) => {
+      emitLog(SYSTEM_CONSOLE_ID, "debug", `[${fmtTime(new Date())}] [github] + ${r.tag} (${r.commit}) — ${r.notes}`);
+    });
+  }
 }
 
 export const useLlamaStore = create<LlamaStore>((set, get) => {
@@ -1148,6 +1325,8 @@ export const useLlamaStore = create<LlamaStore>((set, get) => {
 
   if (typeof window !== "undefined") {
     setTimeout(() => {
+      // Fetch latest llama.cpp releases from GitHub on startup
+      refreshReleasesOnStartup();
       startWatchdog();
       startMetricsTicker();
       startReleaseChecker();

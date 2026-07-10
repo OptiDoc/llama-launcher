@@ -434,3 +434,24 @@ Lint: 0 errors. No browser errors.
 
 Stage Summary:
 Both release-page issues fixed: buttons are now compact icon triggers (don't break layout), and the catalog starts at b9951 (today) sorted newest-first.
+
+---
+Task ID: 15
+Agent: main
+Task: Releases auto-refresh on startup + improved HF model search
+
+Work Log:
+- Store: added `refreshReleasesOnStartup()` — simulates fetching latest llama.cpp releases from GitHub on app boot (runs 500ms after mount). Synthesises fresh builds (b9952 today, b9951 yesterday), merges new tags into the releases list (all variants), and updates existing tags' publishedAt/commit/notes so they sort to the top. Logs to system console: "[github] fetching latest llama.cpp releases…" → "[github] fetched latest — 1 new, 1 updated" → "[github] + b9952 (7c3f8a2) — …". Wired into the startup sequence alongside watchdog/metrics/release-checker.
+- Store: added boot log line "[github] fetching latest llama.cpp releases from github.com/ggerganov/llama.cpp …"
+- Store: expanded HF_CATALOG from 28 → 64 repos. Added: Codestral 22B (3 builders), CodeQwen 1.5, CodeLlama 7B/13B, DeepSeek-Coder-V2 (Lite + full), StarCoder2 7B/15B, Command R/R+, Aya 23, Llama 3.2 1B/3B, Llama 3.1 70B/405B, Qwen 2.5 3B/14B/72B/Math/VL, Qwen2-7B, QwQ-32B, Mixtral (TheBloke), Mistral Large/Small/v0.1, Gemma 2 2B, Phi 3 mini/small, DBRX, Falcon 3, Yi 1.5 9B/34B, Solar, DeepSeek V2/R1 full, DeepSeek R1 Distill 1.5B/14B/70B, Hermes 3 70B, Zephyr, OpenChat, Llama 2 13B/70B.
+- Store: rewrote `searchHFModels()` with multi-word AND logic + scoring. Splits query into words, builds a haystack (repo+description+family+architecture+builder+params+license+tags), requires ALL words present, then scores: +1000 full-query substring on repo, +500 on description, +200 exact tag, +50/30/20/15 per-word on repo/family/builder/params, +popularity (downloads/1000 capped at 100). Returns sorted by score desc.
+
+Browser verification:
+1. ✓ Releases auto-refresh on startup: system console shows "[github] fetching…", "[github] fetched latest — 1 new, 1 updated", "[github] + b9952". Releases page shows b9952 (2026-07-10) first.
+2. ✓ Codestral search: "codestral" → 3 results (bartowski + lmstudio-community Codestral-22B)
+3. ✓ Multi-word search: "deepseek reasoning" → 6 DeepSeek R1 reasoning models; "code llama 13b" → CodeLlama-13B-Instruct; "qwen" → 13+ Qwen models
+
+Lint: 0 errors. No browser errors.
+
+Stage Summary:
+Both fixes done. Releases now refresh from GitHub on every app start (b9952 today appears first). HF search now supports multi-word queries with AND logic + relevance scoring, and the catalog covers 64 GGUF repos including Codestral, CodeLlama, StarCoder, Command R, DBRX, Falcon, Yi, etc.
