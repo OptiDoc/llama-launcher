@@ -108,3 +108,61 @@ Stage Summary:
   4. Console moved to bottom, fully collapsible (chevron + Show Console pill)
   5. Each llama server runs in its own console tab (System + one per instance, with close option on stopped)
 - Production-ready Next.js 16 port of llama-launcher
+
+---
+Task ID: 8
+Agent: subagent (models HF download)
+Task: Rewrite src/components/pages/models.tsx with HuggingFace download dialog + quantization picker
+
+Work Log:
+- Read worklog.md (prior Task 5 built original models.tsx; Task 7 wired + verified pages) and the current models.tsx to learn the existing card/colored-card conventions and FamilyBadge pattern.
+- Read llama-store.ts to confirm the store API: models/downloads state, startHFDownload({repo,quant,modelName}) action, downloadModel(id), and the HF_QUANTS + HF_POPULAR_REPOS exported constants (with baseSizeGb/sizeFactor math). Confirmed HFDownload.status flow and that completed downloads remain in the array.
+- Inspected shadcn primitives actually present (radio-group, select, progress, dialog, separator) and their prop signatures; confirmed Progress has no indicatorClassName and radio-group exports RadioGroup + RadioGroupItem only.
+- Rewrote src/components/pages/models.tsx ("use client") with: header (title + ready/total subtitle + "Download from HF" primary + "Add Local" secondary buttons), an ActiveDownloadsPanel card (renders only when non-completed downloads exist; per-row repo + quant badge + filename + spinner/percentage/failed icon + size + Progress bar), a ModelCard grid cycling card-green/orange/blue/pink/purple with name, family/quant/size badges, mono path with copy-to-clipboard button, Ready/Missing badge, and Load (visual) vs Download button that opens the HF dialog pre-filled from the model's hfRepo + name.
+- Implemented HFDownloadDialog: Select of HF_POPULAR_REPOS plus a "Custom repo…" option that switches to an editable Input; description hint shown below; RadioGroup of HF_QUANTS rendered as clickable cards each showing label, note, and per-option estimated size (baseSizeGb * sizeFactor); editable Model name field auto-derived via deriveModelName(repo) (strips -GGUF/-Instruct, title-cases); a summary box (estimated size + /models/<filename>.gguf destination); scrollable body (max-h-[80vh] overflow-y-auto); Cancel + "Start download" footer calling startHFDownload then closing. State resets whenever the dialog opens via useEffect, seeded from optional prefillRepo/prefillModelName props.
+- Added a minimal AddLocalDialog (name / path / family / quant fields, visual-only, closes on Register) and a dashed empty-state card with a "Download from HF" CTA when models is empty.
+- Compacted import blocks and a couple of verbose JSX spots; removed a stale eslint-disable directive. Final file: 552 lines.
+- Verification: `bun run lint` → 0 errors, 0 warnings in models.tsx (the only remaining warning is in profiles.tsx, owned by another agent). `bunx tsc --noEmit` → no errors mentioning models.tsx.
+
+Stage Summary:
+- Rewrote src/components/pages/models.tsx (only file changed) to add a full HuggingFace download experience.
+- Wired to store: useLlamaStore models, downloads, startHFDownload; imports HF_QUANTS + HF_POPULAR_REPOS.
+- Components: ModelsPage, ModelCard, ActiveDownloadsPanel, HFDownloadDialog (controlled, pre-fillable), AddLocalDialog, FamilyBadge.
+- Design matches strict palette: shadow-soft on cards, muted rose primary, light backgrounds, colored model cards, no green background, generous whitespace.
+- Lint clean and TypeScript clean for models.tsx. 552 lines (over the ~450 soft target but the feature set — header + 2 buttons, active downloads panel, full model cards with copy paths, full HF dialog with repo/quant/name/summary + scroll, AddLocal dialog, empty state — is substantial; kept readable rather than over-compressed).
+
+---
+Task ID: 10
+Agent: main
+Task: Verify all 9 corrections with agent browser
+
+Work Log:
+- Rewrote globals.css: white/light-gray bg (not green), muted desaturated colors, added shadow-soft/card/lifted/panel, 2px black window-frame border with rounded corners
+- Extended llama-store.ts: workspaces, appStatus (active/idle/hibernating/waking), idle watchdog (45s→idle, +30s→hibernate), wake hot-reload, metrics ticker (1.5s), HF download queue with quant picker, profile scope (global/model) + share/calibrate, hibernatedConfig snapshot
+- Built top-bar.tsx: dark title-bar drag region + chat.z.ai-style sidebar collapse toggle (PanelLeftClose/Open) + workspace dropdown + animated status panel (Active/Idle/Hibernating/Waking with eq-bars + breathing snowflake) + live instance count + Power menu (force wake/hibernate) + window controls (min/max/close)
+- Updated sidebar.tsx: removed collapse button (moved to top bar), added active-downloads badge
+- Updated app-shell.tsx: window-frame wrapper with black border + top bar + sidebar + main + bottom console, light-gray outer backdrop with padding so the frame shadow is visible
+- Rewrote profiles.tsx: Global/Model-bound/All tabs, scope selector (global vs model-bound with model picker), share button with shareId, auto-calibrate button with score progress bar, model-bound profiles grouped by model
+- (subagent) Rewrote models.tsx: HF download dialog with repo dropdown (popular repos + custom), quantization radio cards with size estimates, model name auto-derive, active-downloads panel with progress bars, new model card appears on completion
+- Rewrote dashboard.tsx: 2-column layout (main + 340px right sidebar), right column has live System Load card (4 animated gauges CPU/RAM/GPU-VRAM/GPU-compute), live Utilisation line chart (CPU/RAM/GPU 60s), live Throughput area chart (tok/s), per-instance mini meters — all updating every 1.5s from metrics store
+
+Browser verification (all passed):
+- Dashboard: white/light-gray bg (not green), 2px black window border, dark top bar with workspace dropdown + status panel + instance count, 4 muted stat cards, 3 charts, right column live metrics (CPU 20%, Mem 38%, GPU 45%, tok/s 29.0 updating)
+- Top bar: sidebar collapse toggle (PanelLeft icon, chat.z.ai style), workspace dropdown (Personal/Team Production/Research + New), status panel animates (Active eq-bars → Hibernating breathing snowflake → Waking up), instance count live
+- Power menu: "Force active" and "Hibernate now" both work — hibernate unloads models (instance count → 0, console logs "freeing KV cache"), wake hot-reloads (console logs startup sequence, status → Active)
+- Profiles: Global tab (4 profiles with Shared + calibration score badges), Model-bound tab (profiles grouped by model with model-name scope badge), All tab, auto-calibrate + share buttons functional
+- Models: HF download dialog (repo dropdown + quant radio cards with size estimates + model name), active-downloads panel with progress bar (24% → 100%), new 9.9 GB model card appears on completion
+- Mobile (390x844): black border, dark top bar, content readable
+- Lint: 0 errors, 0 warnings; no browser console errors
+
+Stage Summary:
+All 9 user corrections implemented and verified:
+1. ✓ Strict design: muted colors, shadow-soft on cards, desaturated palette
+2. ✓ White/light-gray background (not green)
+3. ✓ Window drag zone: top title-bar with -webkit-app-region: drag
+4. ✓ Workspace dropdown in top bar (Personal/Team Production/Research + create new)
+5. ✓ Black 2px border + dark top bar with animated status panel (Active/Idle/Hibernating/Waking) + instance count moved there
+6. ✓ Sidebar collapse button like chat.z.ai (PanelLeftClose/Open icon in top bar)
+7. ✓ Profiles: global + model-bound (scope selector, model picker, share via shareId, auto-calibrate with score)
+8. ✓ HuggingFace download with quantization picker (Q4_0/Q4_K_M/Q5_K_M/Q6_K/Q8_0/F16) + progress
+9. ✓ Dashboard right column with real-time system load infographics (4 gauges + line chart + area chart + per-instance meters, updating every 1.5s)
