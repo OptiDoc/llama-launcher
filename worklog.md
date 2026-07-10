@@ -368,3 +368,50 @@ Also verified: workspace isolation (new "Staging" workspace shows 0 models), ins
 
 Stage Summary:
 All 17 user corrections implemented and verified. Store extended with ~15 new types/actions, 4 pages rebuilt, 2 new UI components, dashboard updated. Lint 0 errors, no browser console errors, no hydration mismatches.
+
+---
+Task ID: 12
+Agent: subagent (models + instances fixes)
+Task: Fix model download layout, add MoE/architecture badges, block missing-model launch, capability warnings
+
+Work Log:
+- Read worklog + llama-store.ts to confirm the new `LlamaModel` fields (`isMoe`, `expertCount`, `downloading`, `downloadProgress`) and `systemCapabilities` shape (`{ gpuName, gpuVramGb: 12, ramGb: 64, cpuCores, hasCuda }`). Confirmed `startHFDownload` now appends an inline placeholder model with `downloading: true` and animates `downloadProgress` in place every 200ms.
+- models.tsx — Change A: deleted the `ActiveDownloadsPanel` component, removed the `<ActiveDownloadsPanel>` render, removed the `downloads` store selector, and pruned now-unused imports (`Database`, `type HFDownload`).
+- models.tsx — Change B: rewrote `ModelCard` and `ModelTable` rows so a `downloading` model renders in place with an amber "Downloading" badge, a smooth (200ms ease-linear) emerald fill bar, and percentage text. The card/row is non-interactive while downloading (no onClick, no Load/Download/Edit buttons) and uses the same `card-{color}` background as siblings, so there is no layout shift.
+- models.tsx — Change C: added `ArchBadge` (neutral monospace, e.g. `llama`/`qwen2`/`gemma2`/`phi3`/`deepseek2`) and `MoeBadge` (violet "MoE" badge with tooltip "Mixture of Experts — N active experts" when `isMoe`, otherwise a muted "Dense" badge). Wired both into every grid card and into two new table columns (`Arch`, `Type`).
+- models.tsx — Change D: added `VramWarningBadge` (amber "VRAM" badge w/ tooltip). On grid cards it appears next to the family/quant badges when `sizeGb > gpuVramGb`; in table rows an amber `AlertTriangle` icon is shown next to the quant cell with the same tooltip. `ModelsPage` now subscribes to `systemCapabilities` and passes `gpuVramGb` down to `ModelCard` / `ModelTable`.
+- models.tsx — also extended the table `StatusBadge` so a downloading row shows the live % rather than "Missing".
+- instances.tsx — Change E: the launch dialog now filters out models that are `missing` OR still `downloading` from the model dropdown (`m.downloaded && !m.missing && !m.downloading`). Added a defensive red alert box "⚠ The selected model file is missing on disk. Restore the file or select another model before launching." shown if a missing model is somehow selected, and a `launchBlocked` flag that disables the Launch button in that case.
+- instances.tsx — Change F: subscribed to `systemCapabilities`; computed `overVram` (`sizeGb > gpuVramGb`) and `overRam` (`sizeGb > ramGb`) for the selected model. Amber warning box for VRAM-only overflow ("⚠ … will offload some layers to CPU, which will be slower"); red error box for RAM overflow ("✗ … exceeds total system RAM … It cannot be loaded.") that also disables Launch. The `submit()` guard was hardened to refuse launch when `selectedModelMissing || overRam`.
+- Ran `bun run lint` → 0 errors. Ran `bunx tsc --noEmit` → 0 errors in the two modified files (the only remaining src/ error is the pre-existing `llama-store.ts:698` hibernation comparison, which is out of scope and explicitly off-limits).
+
+Stage Summary:
+- Files changed: `src/components/pages/models.tsx`, `src/components/pages/instances.tsx`.
+- models.tsx: removed `ActiveDownloadsPanel` (and its unused `Database`/`HFDownload` imports); added `ArchBadge`, `MoeBadge`, `VramWarningBadge` helpers; rewrote `ModelCard` to accept `gpuVramGb` and render a non-interactive emerald fill-bar card while downloading, plus architecture / MoE / VRAM badges; extended `ModelTable` with two new columns and an inline progress bar in the actions cell for downloading rows; `ModelsPage` now reads `systemCapabilities` and threads `gpuVramGb` through.
+- instances.tsx: imported `AlertTriangle`/`AlertCircle`; added `systemCapabilities` selector; filtered missing+downloading models from the dropdown; added three conditional inline alert boxes (red missing-model, red RAM-overflow, amber VRAM-overflow) and a `launchBlocked` flag wired to both the Launch button and `submit()`.
+- Verification: `bun run lint` clean; `tsc` clean for both files (only pre-existing out-of-scope `llama-store.ts:698` error remains). No store changes; no other pages touched; detail view, edit dialog, HF search dialog, view toggle and breadcrumbs all preserved.
+
+---
+Task ID: 13
+Agent: main
+Task: Fix 5 model/instance corrections
+
+Work Log:
+- Store: added `isMoe`, `expertCount`, `downloading`, `downloadProgress` to LlamaModel; added `isMoe`/`expertCount` to HFSearchResult + HF_CATALOG (4 new MoE repos: Mixtral 8x7B, Mixtral 8x22B, Qwen2-57B-A14B, DeepSeek-V2-Lite); added `SystemCapabilities` type + seed (RTX 4070, 12GB VRAM, 64GB RAM); added Mixtral 8x7B seed model (m7) to demonstrate MoE badge
+- Store: rewrote `startHFDownload` to create an INLINE placeholder model (downloading=true, downloadProgress=0) appended to the models array immediately, then update downloadProgress in place every 200ms — no separate panel, no layout shift
+- Store: rewrote `runStartupSequence` to emit a detailed parameter summary at the top of the console (model, profile, host:port, gpu, context, threads, gpu layers, flash-attn) + full llama-server command line
+- Store: fixed tsc comparison error in watchdog (removed redundant `appStatus !== "hibernating"` check)
+- models.tsx (subagent): removed ActiveDownloadsPanel entirely; downloading models render inline as cards/rows with amber "Downloading" badge + emerald fill bar (downloadProgress); added ArchBadge (llama/qwen2/gemma2/phi3/deepseek2) + MoeBadge (MoE violet / Dense muted) on ALL cards + 2 new table columns; added VRAM warning badge when sizeGb > gpuVramGb
+- instances.tsx (subagent): launch dialog filters out missing + downloading models from dropdown; red alert + Launch disabled if missing model somehow selected; amber VRAM warning when model size > GPU VRAM (informational); red error + Launch disabled when model size > system RAM (blocker)
+
+Browser verification (all 5 passed):
+1. ✓ No layout jump on download — inline card at end of grid with fill bar (32% visible), no separate panel
+2. ✓ Console shows detailed launch params: "Launching llama-server 'test-params'" + model/profile/host:port/gpu/context/threads/gpu layers/flash-attn + full command line
+3. ✓ Missing DeepSeek model filtered out of launch dialog dropdown (not listed)
+4. ✓ Mixtral 8x7B (26GB) shows amber VRAM warning: "larger than GPU VRAM (12GB), will offload to CPU" — Launch still enabled
+5. ✓ All model cards show architecture badge (llama3/qwen2/gemma2/phi3) + MoE/Dense badge; Mixtral shows MoE badge + VRAM warning
+
+Lint: 0 errors, 0 warnings. No browser errors.
+
+Stage Summary:
+All 5 corrections implemented and verified. The download experience is now smooth (inline card, no panel jump), console shows full launch parameters, missing models can't be launched, capability warnings appear for oversized models, and all models show architecture + MoE/Dense badges.

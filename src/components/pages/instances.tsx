@@ -66,6 +66,8 @@ import {
   Zap,
   TrendingUp,
   Hash,
+  AlertTriangle,
+  AlertCircle,
 } from "lucide-react";
 import {
   LineChart,
@@ -194,11 +196,17 @@ function LaunchDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (v:
   const models = useLlamaStore((s) => s.models);
   const profiles = useLlamaStore((s) => s.profiles);
   const activeWorkspaceId = useLlamaStore((s) => s.activeWorkspaceId);
+  const systemCapabilities = useLlamaStore((s) => s.systemCapabilities);
   const startInstance = useLlamaStore((s) => s.startInstance);
   const setActiveConsole = useLlamaStore((s) => s.setActiveConsole);
   const setConsoleOpen = useLlamaStore((s) => s.setConsoleOpen);
 
-  const downloaded = React.useMemo(() => models.filter((m) => m.downloaded), [models]);
+  // Only downloaded, non-missing, fully-present models are eligible for launch.
+  // Models still downloading or marked missing on disk are filtered out.
+  const downloaded = React.useMemo(
+    () => models.filter((m) => m.downloaded && !m.missing && !m.downloading),
+    [models],
+  );
   const [name, setName] = React.useState("");
   const [modelId, setModelId] = React.useState("");
   const [profileId, setProfileId] = React.useState("");
@@ -214,10 +222,20 @@ function LaunchDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (v:
     setPort(String(pickPort()));
     setHost("127.0.0.1");
     setGpu("NVIDIA RTX 4070");
-    const dl = useLlamaStore.getState().models.filter((m) => m.downloaded);
+    const dl = useLlamaStore.getState().models.filter((m) => m.downloaded && !m.missing && !m.downloading);
     setModelId(dl[0]?.id ?? "");
     setProfileId("");
   }, [open]);
+
+  // Selected model + capability warnings.
+  const selectedModel = models.find((m) => m.id === modelId);
+  const selectedModelMissing = selectedModel?.missing === true;
+  const overVram = selectedModel
+    ? selectedModel.sizeGb > systemCapabilities.gpuVramGb
+    : false;
+  const overRam = selectedModel
+    ? selectedModel.sizeGb > systemCapabilities.ramGb
+    : false;
 
   // Profiles available for the selected model + workspace.
   const profileOptions = React.useMemo(() => {
@@ -241,6 +259,7 @@ function LaunchDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (v:
 
   const submit = () => {
     if (downloaded.length === 0 || profileOptions.length === 0) return;
+    if (selectedModelMissing || overRam) return;
     const model = models.find((m) => m.id === modelId)?.name ?? downloaded[0].name;
     const safeName = name.trim() || `${model.split(" ")[0] || "llama"}-${port}`;
     const id = startInstance({
@@ -255,6 +274,9 @@ function LaunchDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (v:
     setConsoleOpen(true);
     onOpenChange(false);
   };
+
+  const launchBlocked =
+    downloaded.length === 0 || profileOptions.length === 0 || selectedModelMissing || overRam;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -285,7 +307,7 @@ function LaunchDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (v:
                 <SelectTrigger className="w-full"><SelectValue placeholder="Select model" /></SelectTrigger>
                 <SelectContent>
                   {downloaded.length === 0 ? (
-                    <SelectItem value="__none" disabled>No models downloaded</SelectItem>
+                    <SelectItem value="__none" disabled>No models available</SelectItem>
                   ) : (
                     downloaded.map((m) => (
                       <SelectItem key={m.id} value={m.id}>{m.name}</SelectItem>
@@ -310,6 +332,32 @@ function LaunchDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (v:
               </Select>
             </div>
           </div>
+
+          {/* Capability + missing-model warnings. */}
+          {selectedModelMissing && (
+            <div className="flex items-start gap-2 rounded-lg border border-red-300/60 bg-red-500/10 px-3 py-2 text-xs text-red-700 dark:text-red-300">
+              <AlertCircle className="mt-0.5 size-4 shrink-0" />
+              <span>
+                The selected model file is missing on disk. Restore the file or select another model before launching.
+              </span>
+            </div>
+          )}
+          {!selectedModelMissing && overRam && selectedModel && (
+            <div className="flex items-start gap-2 rounded-lg border border-red-300/60 bg-red-500/10 px-3 py-2 text-xs text-red-700 dark:text-red-300">
+              <AlertCircle className="mt-0.5 size-4 shrink-0" />
+              <span>
+                ✗ This model ({selectedModel.sizeGb} GB) exceeds total system RAM ({systemCapabilities.ramGb} GB). It cannot be loaded.
+              </span>
+            </div>
+          )}
+          {!selectedModelMissing && !overRam && overVram && selectedModel && (
+            <div className="flex items-start gap-2 rounded-lg border border-amber-300/60 bg-amber-500/10 px-3 py-2 text-xs text-amber-700 dark:text-amber-300">
+              <AlertTriangle className="mt-0.5 size-4 shrink-0" />
+              <span>
+                ⚠ This model ({selectedModel.sizeGb} GB) is larger than your GPU VRAM ({systemCapabilities.gpuVramGb} GB). llama-server will offload some layers to CPU, which will be slower.
+              </span>
+            </div>
+          )}
 
           <div className="grid grid-cols-2 gap-4">
             <div className="grid gap-2">
@@ -338,7 +386,7 @@ function LaunchDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (v:
 
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
-          <Button onClick={submit} disabled={downloaded.length === 0 || profileOptions.length === 0}>
+          <Button onClick={submit} disabled={launchBlocked}>
             <Play className="mr-1.5 size-3.5" />
             Launch
           </Button>

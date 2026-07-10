@@ -82,10 +82,18 @@ export interface LlamaModel {
   uploadedAt: string;
   hfDownloads: number;
   tags: string[];
+  /** Mixture-of-Experts architecture (Mixtral, DeepSeek MoE, Qwen MoE, …) */
+  isMoe: boolean;
+  /** active expert count, when isMoe (e.g. 8 for 8x7B) */
+  expertCount?: number;
   /** file is missing on disk (moved/deleted) — card shows greyed + "not found" */
   missing: boolean;
   workspaceId: string;
   addedAt: number;
+  /** actively downloading — card/row shows an inline fill bar instead of a separate panel */
+  downloading?: boolean;
+  /** 0..100, only when downloading === true */
+  downloadProgress?: number;
 }
 
 export type ProfileScope = "global" | "model";
@@ -183,6 +191,15 @@ export interface GlobalSettings {
   releaseChannel: "stable" | "pre-release";
 }
 
+/** Detected system capabilities — used to warn when a model is too large */
+export interface SystemCapabilities {
+  gpuName: string;
+  gpuVramGb: number; // total VRAM in GB
+  ramGb: number; // total system RAM in GB
+  cpuCores: number;
+  hasCuda: boolean;
+}
+
 export interface WorkspaceSettings {
   hibernateAfterSec: number; // idle seconds before hibernation
   defaultGpuLayers: number;
@@ -206,34 +223,41 @@ export interface HFSearchResult {
   downloads: number;
   uploadedAt: string;
   tags: string[];
+  isMoe: boolean;
+  expertCount?: number;
 }
 
 // Curated catalog of ~24 GGUF repos across multiple builders
 export const HF_CATALOG: HFSearchResult[] = [
-  { repo: "bartowski/Llama-3.1-8B-Instruct-GGUF", builder: "bartowski", family: "llama3", baseSizeGb: 16.0, parameterCount: "8B", description: "Meta Llama 3.1 8B Instruct", architecture: "llama", contextLength: 131072, license: "Llama 3.1 Community", downloads: 184200, uploadedAt: "2024-07-23", tags: ["instruct", "chat", "meta"] },
-  { repo: "unsloth/Llama-3.1-8B-Instruct-GGUF", builder: "unsloth", family: "llama3", baseSizeGb: 16.0, parameterCount: "8B", description: "Meta Llama 3.1 8B Instruct (unsloth)", architecture: "llama", contextLength: 131072, license: "Llama 3.1 Community", downloads: 98100, uploadedAt: "2024-07-24", tags: ["instruct", "chat", "meta", "unsloth"] },
-  { repo: "bartowski/Qwen2.5-7B-Instruct-GGUF", builder: "bartowski", family: "qwen2", baseSizeGb: 14.5, parameterCount: "7B", description: "Qwen 2.5 7B Instruct", architecture: "qwen2", contextLength: 32768, license: "Apache 2.0", downloads: 142800, uploadedAt: "2024-09-19", tags: ["instruct", "chat", "qwen"] },
-  { repo: "unsloth/Qwen2.5-7B-Instruct-GGUF", builder: "unsloth", family: "qwen2", baseSizeGb: 14.5, parameterCount: "7B", description: "Qwen 2.5 7B Instruct (unsloth)", architecture: "qwen2", contextLength: 32768, license: "Apache 2.0", downloads: 76400, uploadedAt: "2024-09-20", tags: ["instruct", "chat", "qwen", "unsloth"] },
-  { repo: "bartowski/mistral-7b-instruct-v0.3-GGUF", builder: "bartowski", family: "mistral", baseSizeGb: 14.5, parameterCount: "7B", description: "Mistral 7B Instruct v0.3", architecture: "llama", contextLength: 32768, license: "Apache 2.0", downloads: 121000, uploadedAt: "2024-05-22", tags: ["instruct", "chat", "mistral"] },
-  { repo: "TheBloke/Mistral-7B-Instruct-v0.2-GGUF", builder: "TheBloke", family: "mistral", baseSizeGb: 14.5, parameterCount: "7B", description: "Mistral 7B Instruct v0.2 (TheBloke)", architecture: "llama", contextLength: 32768, license: "Apache 2.0", downloads: 540000, uploadedAt: "2023-12-11", tags: ["instruct", "chat", "mistral", "legacy"] },
-  { repo: "bartowski/Phi-3.1-mini-128k_instruct-GGUF", builder: "bartowski", family: "phi3", baseSizeGb: 7.5, parameterCount: "3.8B", description: "Microsoft Phi 3.1 Mini 128k Instruct", architecture: "phi3", contextLength: 131072, license: "MIT", downloads: 88200, uploadedAt: "2024-07-01", tags: ["instruct", "microsoft", "long-context"] },
-  { repo: "bartowski/gemma-2-9b-it-GGUF", builder: "bartowski", family: "gemma2", baseSizeGb: 18.0, parameterCount: "9B", description: "Google Gemma 2 9B IT", architecture: "gemma2", contextLength: 8192, license: "Gemma", downloads: 95400, uploadedAt: "2024-06-27", tags: ["instruct", "google", "gemma"] },
-  { repo: "bartowski/DeepSeek-R1-Distill-Qwen-7B-GGUF", builder: "bartowski", family: "deepseek", baseSizeGb: 14.5, parameterCount: "7B", description: "DeepSeek R1 Distill Qwen 7B", architecture: "qwen2", contextLength: 131072, license: "MIT", downloads: 67800, uploadedAt: "2025-01-20", tags: ["reasoning", "deepseek", "r1"] },
-  { repo: "unsloth/DeepSeek-R1-Distill-Llama-8B-GGUF", builder: "unsloth", family: "deepseek", baseSizeGb: 16.0, parameterCount: "8B", description: "DeepSeek R1 Distill Llama 8B (unsloth)", architecture: "llama", contextLength: 131072, license: "MIT", downloads: 71200, uploadedAt: "2025-01-21", tags: ["reasoning", "deepseek", "r1", "unsloth"] },
-  { repo: "bartowski/Mistral-Nemo-Instruct-2407-GGUF", builder: "bartowski", family: "mistral", baseSizeGb: 24.0, parameterCount: "12B", description: "Mistral Nemo 12B Instruct", architecture: "llama", contextLength: 131072, license: "Apache 2.0", downloads: 54300, uploadedAt: "2024-07-18", tags: ["instruct", "mistral", "long-context"] },
-  { repo: "bartowski/Llama-3.3-70B-Instruct-GGUF", builder: "bartowski", family: "llama3", baseSizeGb: 140.0, parameterCount: "70B", description: "Meta Llama 3.3 70B Instruct", architecture: "llama", contextLength: 131072, license: "Llama 3.3 Community", downloads: 42100, uploadedAt: "2024-12-06", tags: ["instruct", "chat", "meta", "large"] },
-  { repo: "unsloth/Llama-3.2-3B-Instruct-GGUF", builder: "unsloth", family: "llama3", baseSizeGb: 6.5, parameterCount: "3B", description: "Meta Llama 3.2 3B Instruct (unsloth)", architecture: "llama", contextLength: 131072, license: "Llama 3.2 Community", downloads: 89300, uploadedAt: "2024-09-25", tags: ["instruct", "small", "unsloth"] },
-  { repo: "bartowski/Qwen2.5-Coder-14B-Instruct-GGUF", builder: "bartowski", family: "qwen2", baseSizeGb: 29.0, parameterCount: "14B", description: "Qwen 2.5 Coder 14B Instruct", architecture: "qwen2", contextLength: 32768, license: "Apache 2.0", downloads: 63900, uploadedAt: "2024-11-12", tags: ["coder", "code", "qwen"] },
-  { repo: "bartowski/Qwen2.5-32B-Instruct-GGUF", builder: "bartowski", family: "qwen2", baseSizeGb: 64.0, parameterCount: "32B", description: "Qwen 2.5 32B Instruct", architecture: "qwen2", contextLength: 32768, license: "Qwen License", downloads: 38800, uploadedAt: "2024-09-25", tags: ["instruct", "chat", "large"] },
-  { repo: "lmstudio-community/Meta-Llama-3.1-8B-Instruct-GGUF", builder: "lmstudio-community", family: "llama3", baseSizeGb: 16.0, parameterCount: "8B", description: "Meta Llama 3.1 8B Instruct (LM Studio)", architecture: "llama", contextLength: 131072, license: "Llama 3.1 Community", downloads: 67500, uploadedAt: "2024-07-23", tags: ["instruct", "chat", "lmstudio"] },
-  { repo: "bartowski/gemma-2-27b-it-GGUF", builder: "bartowski", family: "gemma2", baseSizeGb: 54.0, parameterCount: "27B", description: "Google Gemma 2 27B IT", architecture: "gemma2", contextLength: 8192, license: "Gemma", downloads: 47100, uploadedAt: "2024-06-27", tags: ["instruct", "google", "large"] },
-  { repo: "MaziyarPanahi/Llama-3.1-8B-Instruct-GGUF", builder: "MaziyarPanahi", family: "llama3", baseSizeGb: 16.0, parameterCount: "8B", description: "Meta Llama 3.1 8B Instruct (MaziyarPanahi)", architecture: "llama", contextLength: 131072, license: "Llama 3.1 Community", downloads: 32900, uploadedAt: "2024-07-23", tags: ["instruct", "chat"] },
-  { repo: "bartowski/Phi-3-medium-128k-instruct-GGUF", builder: "bartowski", family: "phi3", baseSizeGb: 28.0, parameterCount: "14B", description: "Microsoft Phi 3 Medium 128k Instruct", architecture: "phi3", contextLength: 131072, license: "MIT", downloads: 29400, uploadedAt: "2024-05-21", tags: ["instruct", "microsoft", "long-context"] },
-  { repo: "bartowski/Llama-3-8B-Instruct-GGUF", builder: "bartowski", family: "llama3", baseSizeGb: 16.0, parameterCount: "8B", description: "Meta Llama 3 8B Instruct (legacy)", architecture: "llama", contextLength: 8192, license: "Llama 3 Community", downloads: 156000, uploadedAt: "2024-04-09", tags: ["instruct", "chat", "legacy"] },
-  { repo: "TheBloke/Llama-2-7B-Chat-GGUF", builder: "TheBloke", family: "llama2", baseSizeGb: 13.0, parameterCount: "7B", description: "Llama 2 7B Chat (TheBloke)", architecture: "llama", contextLength: 4096, license: "Llama 2 Community", downloads: 980000, uploadedAt: "2023-07-18", tags: ["chat", "legacy", "llama2"] },
-  { repo: "bartowski/Mistral-Small-24B-Instruct-2501-GGUF", builder: "bartowski", family: "mistral", baseSizeGb: 48.0, parameterCount: "24B", description: "Mistral Small 24B Instruct 2501", architecture: "llama", contextLength: 32768, license: "Apache 2.0", downloads: 18600, uploadedAt: "2025-01-15", tags: ["instruct", "mistral", "small"] },
-  { repo: "unsloth/Mistral-Nemo-Instruct-2407-GGUF", builder: "unsloth", family: "mistral", baseSizeGb: 24.0, parameterCount: "12B", description: "Mistral Nemo 12B (unsloth)", architecture: "llama", contextLength: 131072, license: "Apache 2.0", downloads: 23100, uploadedAt: "2024-07-19", tags: ["instruct", "mistral", "unsloth"] },
-  { repo: "bartowski/Hermes-3-Llama-3.1-8B-GGUF", builder: "bartowski", family: "llama3", baseSizeGb: 16.0, parameterCount: "8B", description: "Hermes 3 Llama 3.1 8B (Nous Research)", architecture: "llama", contextLength: 131072, license: "Llama 3.1 Community", downloads: 15800, uploadedAt: "2024-08-10", tags: ["hermes", "nous", "instruct"] },
+  { repo: "bartowski/Llama-3.1-8B-Instruct-GGUF", builder: "bartowski", family: "llama3", baseSizeGb: 16.0, parameterCount: "8B", description: "Meta Llama 3.1 8B Instruct", architecture: "llama", contextLength: 131072, license: "Llama 3.1 Community", downloads: 184200, uploadedAt: "2024-07-23", tags: ["instruct", "chat", "meta"], isMoe: false },
+  { repo: "unsloth/Llama-3.1-8B-Instruct-GGUF", builder: "unsloth", family: "llama3", baseSizeGb: 16.0, parameterCount: "8B", description: "Meta Llama 3.1 8B Instruct (unsloth)", architecture: "llama", contextLength: 131072, license: "Llama 3.1 Community", downloads: 98100, uploadedAt: "2024-07-24", tags: ["instruct", "chat", "meta", "unsloth"], isMoe: false },
+  { repo: "bartowski/Qwen2.5-7B-Instruct-GGUF", builder: "bartowski", family: "qwen2", baseSizeGb: 14.5, parameterCount: "7B", description: "Qwen 2.5 7B Instruct", architecture: "qwen2", contextLength: 32768, license: "Apache 2.0", downloads: 142800, uploadedAt: "2024-09-19", tags: ["instruct", "chat", "qwen"], isMoe: false },
+  { repo: "unsloth/Qwen2.5-7B-Instruct-GGUF", builder: "unsloth", family: "qwen2", baseSizeGb: 14.5, parameterCount: "7B", description: "Qwen 2.5 7B Instruct (unsloth)", architecture: "qwen2", contextLength: 32768, license: "Apache 2.0", downloads: 76400, uploadedAt: "2024-09-20", tags: ["instruct", "chat", "qwen", "unsloth"], isMoe: false },
+  { repo: "bartowski/mistral-7b-instruct-v0.3-GGUF", builder: "bartowski", family: "mistral", baseSizeGb: 14.5, parameterCount: "7B", description: "Mistral 7B Instruct v0.3", architecture: "llama", contextLength: 32768, license: "Apache 2.0", downloads: 121000, uploadedAt: "2024-05-22", tags: ["instruct", "chat", "mistral"], isMoe: false },
+  { repo: "TheBloke/Mistral-7B-Instruct-v0.2-GGUF", builder: "TheBloke", family: "mistral", baseSizeGb: 14.5, parameterCount: "7B", description: "Mistral 7B Instruct v0.2 (TheBloke)", architecture: "llama", contextLength: 32768, license: "Apache 2.0", downloads: 540000, uploadedAt: "2023-12-11", tags: ["instruct", "chat", "mistral", "legacy"], isMoe: false },
+  { repo: "bartowski/Phi-3.1-mini-128k_instruct-GGUF", builder: "bartowski", family: "phi3", baseSizeGb: 7.5, parameterCount: "3.8B", description: "Microsoft Phi 3.1 Mini 128k Instruct", architecture: "phi3", contextLength: 131072, license: "MIT", downloads: 88200, uploadedAt: "2024-07-01", tags: ["instruct", "microsoft", "long-context"], isMoe: false },
+  { repo: "bartowski/gemma-2-9b-it-GGUF", builder: "bartowski", family: "gemma2", baseSizeGb: 18.0, parameterCount: "9B", description: "Google Gemma 2 9B IT", architecture: "gemma2", contextLength: 8192, license: "Gemma", downloads: 95400, uploadedAt: "2024-06-27", tags: ["instruct", "google", "gemma"], isMoe: false },
+  { repo: "bartowski/DeepSeek-R1-Distill-Qwen-7B-GGUF", builder: "bartowski", family: "deepseek", baseSizeGb: 14.5, parameterCount: "7B", description: "DeepSeek R1 Distill Qwen 7B", architecture: "qwen2", contextLength: 131072, license: "MIT", downloads: 67800, uploadedAt: "2025-01-20", tags: ["reasoning", "deepseek", "r1"], isMoe: false },
+  { repo: "unsloth/DeepSeek-R1-Distill-Llama-8B-GGUF", builder: "unsloth", family: "deepseek", baseSizeGb: 16.0, parameterCount: "8B", description: "DeepSeek R1 Distill Llama 8B (unsloth)", architecture: "llama", contextLength: 131072, license: "MIT", downloads: 71200, uploadedAt: "2025-01-21", tags: ["reasoning", "deepseek", "r1", "unsloth"], isMoe: false },
+  { repo: "bartowski/Mistral-Nemo-Instruct-2407-GGUF", builder: "bartowski", family: "mistral", baseSizeGb: 24.0, parameterCount: "12B", description: "Mistral Nemo 12B Instruct", architecture: "llama", contextLength: 131072, license: "Apache 2.0", downloads: 54300, uploadedAt: "2024-07-18", tags: ["instruct", "mistral", "long-context"], isMoe: false },
+  { repo: "bartowski/Llama-3.3-70B-Instruct-GGUF", builder: "bartowski", family: "llama3", baseSizeGb: 140.0, parameterCount: "70B", description: "Meta Llama 3.3 70B Instruct", architecture: "llama", contextLength: 131072, license: "Llama 3.3 Community", downloads: 42100, uploadedAt: "2024-12-06", tags: ["instruct", "chat", "meta", "large"], isMoe: false },
+  { repo: "unsloth/Llama-3.2-3B-Instruct-GGUF", builder: "unsloth", family: "llama3", baseSizeGb: 6.5, parameterCount: "3B", description: "Meta Llama 3.2 3B Instruct (unsloth)", architecture: "llama", contextLength: 131072, license: "Llama 3.2 Community", downloads: 89300, uploadedAt: "2024-09-25", tags: ["instruct", "small", "unsloth"], isMoe: false },
+  { repo: "bartowski/Qwen2.5-Coder-14B-Instruct-GGUF", builder: "bartowski", family: "qwen2", baseSizeGb: 29.0, parameterCount: "14B", description: "Qwen 2.5 Coder 14B Instruct", architecture: "qwen2", contextLength: 32768, license: "Apache 2.0", downloads: 63900, uploadedAt: "2024-11-12", tags: ["coder", "code", "qwen"], isMoe: false },
+  { repo: "bartowski/Qwen2.5-32B-Instruct-GGUF", builder: "bartowski", family: "qwen2", baseSizeGb: 64.0, parameterCount: "32B", description: "Qwen 2.5 32B Instruct", architecture: "qwen2", contextLength: 32768, license: "Qwen License", downloads: 38800, uploadedAt: "2024-09-25", tags: ["instruct", "chat", "large"], isMoe: false },
+  { repo: "lmstudio-community/Meta-Llama-3.1-8B-Instruct-GGUF", builder: "lmstudio-community", family: "llama3", baseSizeGb: 16.0, parameterCount: "8B", description: "Meta Llama 3.1 8B Instruct (LM Studio)", architecture: "llama", contextLength: 131072, license: "Llama 3.1 Community", downloads: 67500, uploadedAt: "2024-07-23", tags: ["instruct", "chat", "lmstudio"], isMoe: false },
+  { repo: "bartowski/gemma-2-27b-it-GGUF", builder: "bartowski", family: "gemma2", baseSizeGb: 54.0, parameterCount: "27B", description: "Google Gemma 2 27B IT", architecture: "gemma2", contextLength: 8192, license: "Gemma", downloads: 47100, uploadedAt: "2024-06-27", tags: ["instruct", "google", "large"], isMoe: false },
+  { repo: "MaziyarPanahi/Llama-3.1-8B-Instruct-GGUF", builder: "MaziyarPanahi", family: "llama3", baseSizeGb: 16.0, parameterCount: "8B", description: "Meta Llama 3.1 8B Instruct (MaziyarPanahi)", architecture: "llama", contextLength: 131072, license: "Llama 3.1 Community", downloads: 32900, uploadedAt: "2024-07-23", tags: ["instruct", "chat"], isMoe: false },
+  { repo: "bartowski/Phi-3-medium-128k-instruct-GGUF", builder: "bartowski", family: "phi3", baseSizeGb: 28.0, parameterCount: "14B", description: "Microsoft Phi 3 Medium 128k Instruct", architecture: "phi3", contextLength: 131072, license: "MIT", downloads: 29400, uploadedAt: "2024-05-21", tags: ["instruct", "microsoft", "long-context"], isMoe: false },
+  { repo: "bartowski/Llama-3-8B-Instruct-GGUF", builder: "bartowski", family: "llama3", baseSizeGb: 16.0, parameterCount: "8B", description: "Meta Llama 3 8B Instruct (legacy)", architecture: "llama", contextLength: 8192, license: "Llama 3 Community", downloads: 156000, uploadedAt: "2024-04-09", tags: ["instruct", "chat", "legacy"], isMoe: false },
+  { repo: "TheBloke/Llama-2-7B-Chat-GGUF", builder: "TheBloke", family: "llama2", baseSizeGb: 13.0, parameterCount: "7B", description: "Llama 2 7B Chat (TheBloke)", architecture: "llama", contextLength: 4096, license: "Llama 2 Community", downloads: 980000, uploadedAt: "2023-07-18", tags: ["chat", "legacy", "llama2"], isMoe: false },
+  { repo: "bartowski/Mistral-Small-24B-Instruct-2501-GGUF", builder: "bartowski", family: "mistral", baseSizeGb: 48.0, parameterCount: "24B", description: "Mistral Small 24B Instruct 2501", architecture: "llama", contextLength: 32768, license: "Apache 2.0", downloads: 18600, uploadedAt: "2025-01-15", tags: ["instruct", "mistral", "small"], isMoe: false },
+  { repo: "unsloth/Mistral-Nemo-Instruct-2407-GGUF", builder: "unsloth", family: "mistral", baseSizeGb: 24.0, parameterCount: "12B", description: "Mistral Nemo 12B (unsloth)", architecture: "llama", contextLength: 131072, license: "Apache 2.0", downloads: 23100, uploadedAt: "2024-07-19", tags: ["instruct", "mistral", "unsloth"], isMoe: false },
+  { repo: "bartowski/Hermes-3-Llama-3.1-8B-GGUF", builder: "bartowski", family: "llama3", baseSizeGb: 16.0, parameterCount: "8B", description: "Hermes 3 Llama 3.1 8B (Nous Research)", architecture: "llama", contextLength: 131072, license: "Llama 3.1 Community", downloads: 15800, uploadedAt: "2024-08-10", tags: ["hermes", "nous", "instruct"], isMoe: false },
+  // --- Mixture-of-Experts models ---
+  { repo: "bartowski/Mixtral-8x7B-Instruct-v0.1-GGUF", builder: "bartowski", family: "mixtral", baseSizeGb: 93.0, parameterCount: "46.7B", description: "Mixtral 8x7B Instruct v0.1 (MoE)", architecture: "llama", contextLength: 32768, license: "Apache 2.0", downloads: 87400, uploadedAt: "2023-12-13", tags: ["instruct", "chat", "moe", "large"], isMoe: true, expertCount: 8 },
+  { repo: "bartowski/Mixtral-8x22B-Instruct-v0.1-GGUF", builder: "bartowski", family: "mixtral", baseSizeGb: 280.0, parameterCount: "141B", description: "Mixtral 8x22B Instruct v0.1 (MoE)", architecture: "llama", contextLength: 65536, license: "Apache 2.0", downloads: 31200, uploadedAt: "2024-04-10", tags: ["instruct", "chat", "moe", "large"], isMoe: true, expertCount: 8 },
+  { repo: "bartowski/Qwen2-57B-A14B-Instruct-GGUF", builder: "bartowski", family: "qwen2", baseSizeGb: 114.0, parameterCount: "57B", description: "Qwen 2 57B-A14B Instruct (MoE, 14 active experts)", architecture: "qwen2", contextLength: 32768, license: "Qwen License", downloads: 18900, uploadedAt: "2024-07-15", tags: ["instruct", "chat", "moe", "qwen"], isMoe: true, expertCount: 14 },
+  { repo: "unsloth/DeepSeek-V2-Lite-Chat-GGUF", builder: "unsloth", family: "deepseek", baseSizeGb: 30.0, parameterCount: "15.7B", description: "DeepSeek V2 Lite Chat (MoE)", architecture: "deepseek2", contextLength: 32768, license: "DeepSeek License", downloads: 14200, uploadedAt: "2024-06-20", tags: ["instruct", "chat", "moe", "deepseek"], isMoe: true, expertCount: 6 },
 ];
 
 export function searchHFModels(query: string): HFSearchResult[] {
@@ -321,25 +345,37 @@ function runStartupSequence(instance: LlamaInstance, store: LlamaStore) {
   instanceSims.set(instance.id, sim);
 
   const steps: Array<[number, LogKind, string]> = [
-    [50, "info", `$ llama-server --model ${instance.model} --host ${instance.host} --port ${instance.port} -c ${instance.ctxSize} -t ${instance.threads} -ngl ${instance.gpu === "cpu" ? 0 : 99}`],
-    [120, "debug", "build: 4402 (8f1f7e1) with AVX2=1 AVX512=1 BMI2=1 CUDA=1"],
-    [180, "info", "system_info: n_threads = " + instance.threads + " n_gpu_layers = 99"],
-    [260, "info", "loading model from " + instance.model],
-    [380, "debug", "llama_model_loader: loaded meta data with 24 KV pairs"],
-    [440, "debug", "llama_model_loader: - kv[ 0]:                       general.name = " + instance.name],
-    [520, "debug", "llama_model_loader: - kv[ 1]:          general.architecture = llama"],
-    [600, "info", `llama_model_loader: - kv[12]:                      llama.context_length = ${instance.ctxSize}`],
-    [680, "debug", "llama_model_loader: - type  f16:  221 tensors"],
-    [760, "info", "llama_model_loader: loading model part 1/1 from '" + instance.model + "'"],
-    [900, "info", "llama_model_loader: model size = " + (instance.model.includes("7b") ? "13.9" : "4.1") + " GiB"],
-    [980, "success", "llama_model_loader: model loaded successfully"],
-    [1060, "info", "using CUDA for GPU acceleration"],
-    [1140, "debug", "llama_kv_cache:  CUDA0 KV buffer size = " + Math.round(instance.ctxSize * 0.5) + " MiB"],
-    [1220, "info", "llama_new_context_with_model: n_ctx = " + instance.ctxSize + ", batch = 512"],
-    [1320, "success", "llama_new_context_with_model: graph initialized"],
-    [1400, "info", `llama server: listening on ${instance.host}:${instance.port}`],
-    [1480, "info", "llama server: loading model took " + (1200 + Math.floor(Math.random() * 600)) + " ms"],
-    [1560, "success", `llama server: model loaded, ready for requests at http://${instance.host}:${instance.port}`],
+    [30, "info", `════════════════════════════════════════════════════════════════`],
+    [60, "info", `  Launching llama-server "${instance.name}"`],
+    [90, "info", `────────────────────────────────────────────────────────────────`],
+    [120, "debug", `  model       : ${instance.model}`],
+    [150, "debug", `  profile     : ${instance.profile}`],
+    [180, "debug", `  host:port   : ${instance.host}:${instance.port}`],
+    [210, "debug", `  gpu         : ${instance.gpu}`],
+    [240, "debug", `  context     : ${instance.ctxSize} tokens`],
+    [270, "debug", `  threads     : ${instance.threads}`],
+    [300, "debug", `  gpu layers  : ${instance.gpu === "cpu" ? 0 : 99} (-ngl)`],
+    [330, "debug", `  flash-attn  : ${instance.gpu === "cpu" ? "off (cpu)" : "on"}`],
+    [360, "info", `────────────────────────────────────────────────────────────────`],
+    [400, "info", `$ llama-server --model ${instance.model} --host ${instance.host} --port ${instance.port} -c ${instance.ctxSize} -t ${instance.threads} -ngl ${instance.gpu === "cpu" ? 0 : 99} ${instance.gpu === "cpu" ? "" : "--flash-attn"} --parallel 4 --cont-batching`],
+    [460, "debug", "build: 4402 (8f1f7e1) with AVX2=1 AVX512=1 BMI2=1 CUDA=1"],
+    [520, "info", "system_info: n_threads = " + instance.threads + " n_gpu_layers = 99"],
+    [600, "info", "loading model from " + instance.model],
+    [720, "debug", "llama_model_loader: loaded meta data with 24 KV pairs"],
+    [780, "debug", "llama_model_loader: - kv[ 0]:                       general.name = " + instance.name],
+    [860, "debug", "llama_model_loader: - kv[ 1]:          general.architecture = llama"],
+    [940, "info", `llama_model_loader: - kv[12]:                      llama.context_length = ${instance.ctxSize}`],
+    [1020, "debug", "llama_model_loader: - type  f16:  221 tensors"],
+    [1100, "info", "llama_model_loader: loading model part 1/1 from '" + instance.model + "'"],
+    [1240, "info", "llama_model_loader: model size = " + (instance.model.includes("7b") ? "13.9" : "4.1") + " GiB"],
+    [1320, "success", "llama_model_loader: model loaded successfully"],
+    [1400, "info", "using CUDA for GPU acceleration"],
+    [1480, "debug", "llama_kv_cache:  CUDA0 KV buffer size = " + Math.round(instance.ctxSize * 0.5) + " MiB"],
+    [1560, "info", "llama_new_context_with_model: n_ctx = " + instance.ctxSize + ", batch = 512"],
+    [1660, "success", "llama_new_context_with_model: graph initialized"],
+    [1740, "info", `llama server: listening on ${instance.host}:${instance.port}`],
+    [1820, "info", "llama server: loading model took " + (1200 + Math.floor(Math.random() * 600)) + " ms"],
+    [1900, "success", `llama server: model loaded, ready for requests at http://${instance.host}:${instance.port}`],
   ];
 
   let elapsed = 0;
@@ -428,12 +464,15 @@ function mkModel(
   hfDownloads: number,
   tags: string[],
   workspaceId = WS_PERSONAL,
+  isMoe = false,
+  expertCount?: number,
 ): LlamaModel {
   return {
     id, name, family, sizeGb, quant, downloaded, path, hfRepo, builder,
     architecture, contextLength, parameterCount, quantizationBits, license,
     description, uploadedAt, hfDownloads, tags, missing: false, workspaceId,
     addedAt: nowTs() - Math.floor(Math.random() * 30) * 86400000,
+    isMoe, expertCount,
   };
 }
 
@@ -449,6 +488,8 @@ const seedModels: LlamaModel[] = [
     m.missing = true;
     return m;
   })(),
+  // m7 — a MoE model (Mixtral) to demonstrate the MoE badge
+  mkModel("m7", "Mixtral 8x7B Q4_K_M", "mixtral", 26.0, "Q4_K_M", true, "/models/mixtral-8x7b-instruct-v0.1-q4_k_m.gguf", "bartowski/Mixtral-8x7B-Instruct-v0.1-GGUF", "bartowski", "llama", 32768, "46.7B", 4, "Apache 2.0", "Mixtral 8x7B Instruct v0.1 (MoE), Q4_K_M", "2023-12-13", 87400, ["instruct", "chat", "moe", "large"], WS_PERSONAL, true, 8),
 ];
 
 const seedProfiles: LlamaProfile[] = [
@@ -534,6 +575,7 @@ interface LlamaStore {
   // settings
   globalSettings: GlobalSettings;
   workspaceSettings: Record<string, WorkspaceSettings>;
+  systemCapabilities: SystemCapabilities;
 
   // app status / hibernation
   appStatus: AppStatus;
@@ -653,7 +695,7 @@ function startWatchdog() {
 
     if (s.appStatus === "waking" || s.appStatus === "hibernating") return;
 
-    if (since >= hibernateAfterMs && running.length > 0 && s.appStatus !== "hibernating") {
+    if (since >= hibernateAfterMs && running.length > 0) {
       s.setAppStatus("hibernating");
       emitLog(SYSTEM_CONSOLE_ID, "warn", `[${fmtTime(new Date())}] [hibernate] idle ${Math.round(since / 1000)}s — unloading ${running.length} model(s) from VRAM`);
       running.forEach((inst) => {
@@ -744,6 +786,13 @@ export const useLlamaStore = create<LlamaStore>((set, get) => {
       [WS_PERSONAL]: { ...defaultWorkspaceSettings },
       [WS_TEAM]: { ...defaultWorkspaceSettings, hibernateAfterSec: 300, maxConcurrentInstances: 8 },
       [WS_RESEARCH]: { ...defaultWorkspaceSettings, hibernateAfterSec: 0, autoCalibrate: false },
+    },
+    systemCapabilities: {
+      gpuName: "NVIDIA RTX 4070",
+      gpuVramGb: 12,
+      ramGb: 64,
+      cpuCores: 16,
+      hasCuda: true,
     },
 
     appStatus: "active",
@@ -902,50 +951,73 @@ export const useLlamaStore = create<LlamaStore>((set, get) => {
 
     startHFDownload: ({ repo, quant, modelName, builder }) => {
       const dlId = uid("dl");
+      const modelId = uid("m");
       const q = HF_QUANTS.find((x) => x.id === quant);
       const repoInfo = HF_CATALOG.find((r) => r.repo === repo);
       const sizeGb = (repoInfo?.baseSizeGb ?? 8) * (q?.sizeFactor ?? 0.6);
       const filename = `${repo.split("/")[1]}-${quant}.gguf`;
+
+      // Create an INLINE downloading model placeholder immediately — it appears
+      // as a card/row at the end of the grid/table and animates in place. This
+      // avoids layout shift from a separate "Active downloads" panel appearing
+      // at the top.
+      const placeholderModel: LlamaModel = {
+        id: modelId,
+        name: `${modelName} ${quant}`,
+        family: repoInfo?.family ?? "unknown",
+        sizeGb: Math.round(sizeGb * 10) / 10,
+        quant, downloaded: false, missing: false,
+        path: `/models/${filename}`, hfRepo: repo, builder,
+        architecture: repoInfo?.architecture ?? "llama",
+        contextLength: repoInfo?.contextLength ?? 8192,
+        parameterCount: repoInfo?.parameterCount ?? "?B",
+        quantizationBits: q?.bits ?? 4,
+        license: repoInfo?.license ?? "Unknown",
+        description: repoInfo?.description ?? modelName,
+        uploadedAt: repoInfo?.uploadedAt ?? new Date().toISOString().slice(0, 10),
+        hfDownloads: repoInfo?.downloads ?? 0,
+        tags: repoInfo?.tags ?? [],
+        isMoe: repoInfo?.isMoe ?? false,
+        expertCount: repoInfo?.expertCount,
+        workspaceId: get().activeWorkspaceId,
+        addedAt: nowTs(),
+        downloading: true,
+        downloadProgress: 0,
+      };
+
+      // Keep a downloads entry for the sidebar badge + system console log,
+      // but the visible UI lives on the model card itself.
       const dl: HFDownload = {
         id: dlId, repo, quant, filename, sizeGb, progress: 0, status: "downloading",
         startedAt: nowTs(), modelName, builder, kind: "model",
       };
-      set((s) => ({ downloads: [...s.downloads, dl] }));
+      set((s) => ({ downloads: [...s.downloads, dl], models: [...s.models, placeholderModel] }));
       emitLog(SYSTEM_CONSOLE_ID, "info", `[${fmtTime(new Date())}] [hf] downloading ${filename} from ${repo} (${sizeGb.toFixed(1)} GB, builder: ${builder})`);
 
-      // Smooth progressive download — small steady increments to avoid UI jitter
+      // Smooth progressive download — small steady increments to avoid UI jitter.
+      // Updates the model's downloadProgress in place (no new element added).
       let progress = 0;
       const tick = () => {
         progress += 1.5 + Math.random() * 1.5;
         if (progress >= 100) {
-          const newModel: LlamaModel = {
-            id: uid("m"),
-            name: `${modelName} ${quant}`,
-            family: repoInfo?.family ?? "unknown",
-            sizeGb: Math.round(sizeGb * 10) / 10,
-            quant, downloaded: true, missing: false,
-            path: `/models/${filename}`, hfRepo: repo, builder,
-            architecture: repoInfo?.architecture ?? "llama",
-            contextLength: repoInfo?.contextLength ?? 8192,
-            parameterCount: repoInfo?.parameterCount ?? "?B",
-            quantizationBits: q?.bits ?? 4,
-            license: repoInfo?.license ?? "Unknown",
-            description: repoInfo?.description ?? modelName,
-            uploadedAt: repoInfo?.uploadedAt ?? new Date().toISOString().slice(0, 10),
-            hfDownloads: repoInfo?.downloads ?? 0,
-            tags: repoInfo?.tags ?? [],
-            workspaceId: get().activeWorkspaceId,
-            addedAt: nowTs(),
-          };
           set((st) => ({
             downloads: st.downloads.map((d) => (d.id === dlId ? { ...d, progress: 100, status: "completed" } : d)),
-            models: [...st.models, newModel],
+            models: st.models.map((m) =>
+              m.id === modelId
+                ? { ...m, downloaded: true, downloading: false, downloadProgress: 100 }
+                : m,
+            ),
           }));
           emitLog(SYSTEM_CONSOLE_ID, "success", `[${fmtTime(new Date())}] [hf] download complete: ${filename} (${sizeGb.toFixed(1)} GB)`);
           get().addNotification({ kind: "download", title: "Model downloaded", body: `${modelName} ${quant} (${sizeGb.toFixed(1)} GB) is ready to use.` });
           return;
         }
-        set((st) => ({ downloads: st.downloads.map((d) => (d.id === dlId ? { ...d, progress } : d)) }));
+        set((st) => ({
+          downloads: st.downloads.map((d) => (d.id === dlId ? { ...d, progress } : d)),
+          models: st.models.map((m) =>
+            m.id === modelId ? { ...m, downloadProgress: progress } : m,
+          ),
+        }));
         setTimeout(tick, 200);
       };
       setTimeout(tick, 400);

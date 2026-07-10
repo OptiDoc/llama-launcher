@@ -29,13 +29,13 @@ import {
 } from "recharts";
 import {
   AlertCircle, AlertTriangle, ArrowLeft, Boxes, CheckCircle2, Copy, Cpu,
-  Database, Download, Edit3, ExternalLink, FileText, FolderOpen, HardDrive,
+  Download, Edit3, ExternalLink, FileText, FolderOpen, HardDrive,
   Loader2, Pencil, Play, Search, Sparkles, Tag, Trash2, XCircle,
 } from "lucide-react";
 import {
   useLlamaStore, searchHFModels, HF_QUANTS,
   fmtBytes, fmtNum,
-  type HFDownload, type HFSearchResult, type LlamaModel, type ViewMode,
+  type HFSearchResult, type LlamaModel, type ViewMode,
 } from "@/lib/llama-store";
 
 const CARD_COLORS = ["green", "orange", "blue", "pink", "purple"] as const;
@@ -61,6 +61,64 @@ function FamilyBadge({ family }: { family: string }) {
     >
       {family}
     </Badge>
+  );
+}
+
+/** Architecture badge — neutral/secondary, monospace (e.g. llama, qwen2, gemma2). */
+function ArchBadge({ architecture }: { architecture: string }) {
+  return (
+    <Badge
+      variant="secondary"
+      className="bg-white/60 font-mono text-[10px] font-semibold text-foreground/70 dark:bg-black/20"
+    >
+      {architecture}
+    </Badge>
+  );
+}
+
+/** MoE / Dense badge. MoE variant is violet with a tooltip listing active experts. */
+function MoeBadge({ isMoe, expertCount }: { isMoe: boolean; expertCount?: number }) {
+  if (isMoe) {
+    return (
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Badge
+            variant="secondary"
+            className="bg-violet-500/15 text-[10px] font-semibold text-violet-700 dark:text-violet-300"
+          >
+            MoE
+          </Badge>
+        </TooltipTrigger>
+        <TooltipContent>Mixture of Experts — {expertCount ?? "?"} active experts</TooltipContent>
+      </Tooltip>
+    );
+  }
+  return (
+    <Badge
+      variant="secondary"
+      className="bg-muted text-[10px] font-semibold text-muted-foreground"
+    >
+      Dense
+    </Badge>
+  );
+}
+
+/** Amber VRAM-exceed warning badge with a tooltip — shown when sizeGb > gpuVramGb. */
+function VramWarningBadge({ sizeGb, gpuVramGb }: { sizeGb: number; gpuVramGb: number }) {
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <Badge
+          variant="secondary"
+          className="gap-1 bg-amber-500/15 text-[10px] font-semibold text-amber-700 dark:text-amber-300"
+        >
+          <AlertTriangle className="size-3" /> VRAM
+        </Badge>
+      </TooltipTrigger>
+      <TooltipContent>
+        Model size ({sizeGb} GB) exceeds GPU VRAM ({gpuVramGb} GB). May require CPU offloading or fail to load.
+      </TooltipContent>
+    </Tooltip>
   );
 }
 
@@ -122,62 +180,6 @@ function CopyButton({ text, className }: { text: string; className?: string }) {
   );
 }
 
-// ---------- Active downloads panel ----------
-
-function ActiveDownloadsPanel({ downloads }: { downloads: HFDownload[] }) {
-  const active = downloads.filter((d) => d.status === "downloading" || d.status === "queued");
-  // Fixed-height container prevents layout shift / jitter as rows arrive/complete.
-  if (active.length === 0) return null;
-  return (
-    <Card className="border-0 bg-white shadow-soft dark:bg-zinc-900/60">
-      <CardContent className="p-5">
-        <div className="mb-3 flex items-center gap-2">
-          <Download className="size-4 text-primary" />
-          <h2 className="text-sm font-semibold">Active downloads</h2>
-          <Badge variant="secondary" className="text-[10px]">{active.length}</Badge>
-        </div>
-        <div className="space-y-2">
-          {active.map((d) => (
-            <div
-              key={d.id}
-              className="relative overflow-hidden rounded-lg border border-border/60 bg-muted/30 p-3"
-            >
-              {/* Horizontal fill bar — green grows left→right inside the row. */}
-              <div
-                className="pointer-events-none absolute inset-y-0 left-0 bg-emerald-500/10 transition-[width] duration-200 ease-linear"
-                style={{ width: `${d.progress}%` }}
-              />
-              <div className="relative flex items-center justify-between gap-2">
-                <div className="flex min-w-0 items-center gap-2">
-                  <Database className="size-3.5 shrink-0 text-foreground/60" />
-                  <span className="truncate text-xs font-medium">{d.repo}</span>
-                  <Badge variant="secondary" className="shrink-0 text-[10px] font-semibold">{d.quant}</Badge>
-                </div>
-                <div className="flex shrink-0 items-center gap-2 text-[11px] text-foreground/70">
-                  {d.status === "queued" ? (
-                    <span className="flex items-center gap-1">
-                      <Loader2 className="size-3.5 animate-spin" /> Queued
-                    </span>
-                  ) : (
-                    <span className="flex items-center gap-1">
-                      <Loader2 className="size-3.5 animate-spin" />
-                      <span className="font-mono font-semibold text-emerald-700 dark:text-emerald-400">
-                        {Math.round(d.progress)}%
-                      </span>
-                    </span>
-                  )}
-                  <span className="font-mono">{d.sizeGb.toFixed(1)} GB</span>
-                </div>
-              </div>
-              <p className="relative mt-1 truncate font-mono text-[10px] text-foreground/55">{d.filename}</p>
-            </div>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
 // ---------- Model card / row ----------
 
 interface CardActions {
@@ -187,19 +189,34 @@ interface CardActions {
   onLoad: (m: LlamaModel) => void;
 }
 
-function ModelCard({ model, index, actions }: { model: LlamaModel; index: number; actions: CardActions }) {
+function ModelCard({
+  model, index, actions, gpuVramGb,
+}: { model: LlamaModel; index: number; actions: CardActions; gpuVramGb: number }) {
   const color = CARD_COLORS[index % CARD_COLORS.length];
   const isMissing = model.missing;
   const isReady = model.downloaded && !isMissing;
+  const isDownloading = model.downloading === true;
+  const progress = Math.round(model.downloadProgress ?? 0);
+  const overVram = gpuVramGb > 0 && model.sizeGb > gpuVramGb;
+
+  // Downloading cards are not interactive — no detail navigation, no action buttons.
+  const interactive = !isDownloading;
 
   return (
     <Card
-      role="button"
-      tabIndex={0}
-      onClick={() => actions.onSelect(model)}
-      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); actions.onSelect(model); } }}
+      role={interactive ? "button" : undefined}
+      tabIndex={interactive ? 0 : undefined}
+      onClick={interactive ? () => actions.onSelect(model) : undefined}
+      onKeyDown={
+        interactive
+          ? (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); actions.onSelect(model); } }
+          : undefined
+      }
       className={cn(
-        "group cursor-pointer overflow-hidden border-0 shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lifted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+        "group overflow-hidden border-0 shadow-soft transition-all duration-200",
+        interactive
+          ? "cursor-pointer hover:-translate-y-0.5 hover:shadow-lifted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          : "cursor-default",
         `card-${color}`,
         isMissing && "grayscale opacity-60",
       )}
@@ -215,7 +232,11 @@ function ModelCard({ model, index, actions }: { model: LlamaModel; index: number
               <p className="text-xs text-foreground/70">{fmtBytes(model.sizeGb)}</p>
             </div>
           </div>
-          {isReady ? (
+          {isDownloading ? (
+            <Badge variant="secondary" className="shrink-0 gap-1 bg-amber-500/15 text-[10px] font-semibold uppercase text-amber-700 dark:text-amber-300">
+              <Loader2 className="size-3 animate-spin" /> Downloading
+            </Badge>
+          ) : isReady ? (
             <Badge variant="secondary" className="shrink-0 gap-1 bg-emerald-500/15 text-[10px] font-semibold uppercase text-emerald-700 dark:text-emerald-300">
               <CheckCircle2 className="size-3" /> Ready
             </Badge>
@@ -235,53 +256,82 @@ function ModelCard({ model, index, actions }: { model: LlamaModel; index: number
             {model.builder}
           </Badge>
           <FamilyBadge family={model.family} />
+          <ArchBadge architecture={model.architecture} />
+          <MoeBadge isMoe={model.isMoe} expertCount={model.expertCount} />
           <Badge variant="secondary" className="gap-1 bg-white/60 text-[10px] font-semibold dark:bg-black/20">
             <Cpu className="size-3" /> {model.quant}
           </Badge>
+          {overVram && <VramWarningBadge sizeGb={model.sizeGb} gpuVramGb={gpuVramGb} />}
         </div>
 
-        {isMissing && (
+        {isDownloading ? (
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between text-[11px]">
+              <span className="flex items-center gap-1 text-foreground/70">
+                <Download className="size-3" /> Downloading…
+              </span>
+              <span className="font-mono font-semibold text-emerald-700 dark:text-emerald-300">{progress}%</span>
+            </div>
+            {/* Horizontal fill bar — emerald grows left→right with a smooth 200ms transition. */}
+            <div className="h-2 w-full overflow-hidden rounded-full bg-muted/60">
+              <div
+                className="h-full rounded-full bg-emerald-500 transition-[width] duration-200 ease-linear"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+          </div>
+        ) : isMissing ? (
           <div className="rounded-md border border-red-300/50 bg-red-500/5 px-2.5 py-1.5 text-[11px] text-red-700 dark:text-red-300">
             <p className="font-medium">File not found at:</p>
             <p className="mt-0.5 truncate font-mono text-[10px] opacity-80">{model.path}</p>
             <p className="mt-1">Want to update the path?</p>
           </div>
-        )}
+        ) : null}
 
-        <div className="flex items-center gap-2">
-          {isReady ? (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button size="sm" className="h-8 flex-1 text-xs" onClick={(e) => { e.stopPropagation(); actions.onLoad(model); }}>
-                  <Sparkles className="mr-1.5 size-3.5" /> Load
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Launch instance with this model</TooltipContent>
-            </Tooltip>
-          ) : isMissing ? (
-            <Button
-              size="sm" variant="secondary"
-              className="h-8 flex-1 bg-white/60 text-xs dark:bg-black/20"
-              onClick={(e) => { e.stopPropagation(); actions.onEdit(model); }}
-            >
-              <Pencil className="mr-1.5 size-3.5" /> Edit
-            </Button>
-          ) : (
-            <Button
-              size="sm" variant="secondary"
-              className="h-8 flex-1 bg-white/60 text-xs dark:bg-black/20"
-              onClick={(e) => { e.stopPropagation(); actions.onDownload(model); }}
-            >
-              <Download className="mr-1.5 size-3.5" /> Download
-            </Button>
-          )}
-        </div>
+        {interactive && (
+          <div className="flex items-center gap-2">
+            {isReady ? (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button size="sm" className="h-8 flex-1 text-xs" onClick={(e) => { e.stopPropagation(); actions.onLoad(model); }}>
+                    <Sparkles className="mr-1.5 size-3.5" /> Load
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Launch instance with this model</TooltipContent>
+              </Tooltip>
+            ) : isMissing ? (
+              <Button
+                size="sm" variant="secondary"
+                className="h-8 flex-1 bg-white/60 text-xs dark:bg-black/20"
+                onClick={(e) => { e.stopPropagation(); actions.onEdit(model); }}
+              >
+                <Pencil className="mr-1.5 size-3.5" /> Edit
+              </Button>
+            ) : (
+              <Button
+                size="sm" variant="secondary"
+                className="h-8 flex-1 bg-white/60 text-xs dark:bg-black/20"
+                onClick={(e) => { e.stopPropagation(); actions.onDownload(model); }}
+              >
+                <Download className="mr-1.5 size-3.5" /> Download
+              </Button>
+            )}
+          </div>
+        )}
       </CardContent>
     </Card>
   );
 }
 
 function StatusBadge({ model }: { model: LlamaModel }) {
+  if (model.downloading === true) {
+    const progress = Math.round(model.downloadProgress ?? 0);
+    return (
+      <Badge variant="secondary" className="gap-1 bg-amber-500/15 text-[10px] font-semibold uppercase text-amber-700 dark:text-amber-300">
+        <Loader2 className="size-3 animate-spin" /> {progress}%
+      </Badge>
+    );
+  }
   if (model.missing) {
     return (
       <Badge variant="secondary" className="gap-1 bg-red-500/15 text-[10px] font-semibold uppercase text-red-700 dark:text-red-300">
@@ -303,7 +353,9 @@ function StatusBadge({ model }: { model: LlamaModel }) {
   );
 }
 
-function ModelTable({ models, actions }: { models: LlamaModel[]; actions: CardActions }) {
+function ModelTable({
+  models, actions, gpuVramGb,
+}: { models: LlamaModel[]; actions: CardActions; gpuVramGb: number }) {
   return (
     <Card className="border-0 bg-white shadow-soft dark:bg-zinc-900/60">
       <CardContent className="p-0">
@@ -313,6 +365,8 @@ function ModelTable({ models, actions }: { models: LlamaModel[]; actions: CardAc
               <TableHead className="pl-4 text-xs uppercase tracking-wide text-muted-foreground">Name</TableHead>
               <TableHead className="text-xs uppercase tracking-wide text-muted-foreground">Builder</TableHead>
               <TableHead className="text-xs uppercase tracking-wide text-muted-foreground">Family</TableHead>
+              <TableHead className="text-xs uppercase tracking-wide text-muted-foreground">Arch</TableHead>
+              <TableHead className="text-xs uppercase tracking-wide text-muted-foreground">Type</TableHead>
               <TableHead className="text-xs uppercase tracking-wide text-muted-foreground">Quant</TableHead>
               <TableHead className="text-xs uppercase tracking-wide text-muted-foreground">Size</TableHead>
               <TableHead className="text-xs uppercase tracking-wide text-muted-foreground">Status</TableHead>
@@ -320,69 +374,105 @@ function ModelTable({ models, actions }: { models: LlamaModel[]; actions: CardAc
             </TableRow>
           </TableHeader>
           <TableBody>
-            {models.map((m) => (
-              <TableRow
-                key={m.id}
-                onClick={() => actions.onSelect(m)}
-                className={cn("cursor-pointer", m.missing && "opacity-60")}
-              >
-                <TableCell className="pl-4 py-3">
-                  <div className="flex items-center gap-2">
-                    <Boxes className="size-4 shrink-0 text-foreground/50" />
-                    <span className="text-sm font-medium">{m.name}</span>
-                  </div>
-                </TableCell>
-                <TableCell className="py-3 text-xs text-muted-foreground">{m.builder}</TableCell>
-                <TableCell className="py-3"><FamilyBadge family={m.family} /></TableCell>
-                <TableCell className="py-3 text-xs font-mono text-muted-foreground">{m.quant}</TableCell>
-                <TableCell className="py-3 text-xs text-muted-foreground">{fmtBytes(m.sizeGb)}</TableCell>
-                <TableCell className="py-3"><StatusBadge model={m} /></TableCell>
-                <TableCell className="pr-4 py-3">
-                  <div className="flex items-center justify-end gap-1">
-                    {m.downloaded && !m.missing && (
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button variant="ghost" size="icon" className="size-7"
-                            onClick={(e) => { e.stopPropagation(); actions.onLoad(m); }}>
-                            <Play className="size-3.5" />
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>Launch instance</TooltipContent>
-                      </Tooltip>
+            {models.map((m) => {
+              const isDownloading = m.downloading === true;
+              const progress = Math.round(m.downloadProgress ?? 0);
+              const overVram = gpuVramGb > 0 && m.sizeGb > gpuVramGb;
+              return (
+                <TableRow
+                  key={m.id}
+                  onClick={isDownloading ? undefined : () => actions.onSelect(m)}
+                  className={cn(
+                    isDownloading ? "cursor-default opacity-90" : "cursor-pointer",
+                    m.missing && "opacity-60",
+                  )}
+                >
+                  <TableCell className="pl-4 py-3">
+                    <div className="flex items-center gap-2">
+                      <Boxes className="size-4 shrink-0 text-foreground/50" />
+                      <span className="text-sm font-medium">{m.name}</span>
+                    </div>
+                  </TableCell>
+                  <TableCell className="py-3 text-xs text-muted-foreground">{m.builder}</TableCell>
+                  <TableCell className="py-3"><FamilyBadge family={m.family} /></TableCell>
+                  <TableCell className="py-3"><ArchBadge architecture={m.architecture} /></TableCell>
+                  <TableCell className="py-3"><MoeBadge isMoe={m.isMoe} expertCount={m.expertCount} /></TableCell>
+                  <TableCell className="py-3 text-xs font-mono text-muted-foreground">
+                    <span className="inline-flex items-center gap-1.5">
+                      {m.quant}
+                      {overVram && (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <AlertTriangle className="size-3 text-amber-600 dark:text-amber-400" />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            Model size ({m.sizeGb} GB) exceeds GPU VRAM ({gpuVramGb} GB). May require CPU offloading or fail to load.
+                          </TooltipContent>
+                        </Tooltip>
+                      )}
+                    </span>
+                  </TableCell>
+                  <TableCell className="py-3 text-xs text-muted-foreground">{fmtBytes(m.sizeGb)}</TableCell>
+                  <TableCell className="py-3"><StatusBadge model={m} /></TableCell>
+                  <TableCell className="pr-4 py-3">
+                    {isDownloading ? (
+                      <div className="flex items-center justify-end gap-2">
+                        <div className="h-2 w-24 overflow-hidden rounded-full bg-muted/60">
+                          <div
+                            className="h-full rounded-full bg-emerald-500 transition-[width] duration-200 ease-linear"
+                            style={{ width: `${progress}%` }}
+                          />
+                        </div>
+                        <span className="font-mono text-[10px] text-muted-foreground">{progress}%</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-end gap-1">
+                        {m.downloaded && !m.missing && (
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button variant="ghost" size="icon" className="size-7"
+                                onClick={(e) => { e.stopPropagation(); actions.onLoad(m); }}>
+                                <Play className="size-3.5" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>Launch instance</TooltipContent>
+                          </Tooltip>
+                        )}
+                        {!m.downloaded && !m.missing && (
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button variant="ghost" size="icon" className="size-7"
+                                onClick={(e) => { e.stopPropagation(); actions.onDownload(m); }}>
+                                <Download className="size-3.5" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>Download</TooltipContent>
+                          </Tooltip>
+                        )}
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button variant="ghost" size="icon" className="size-7"
+                              onClick={(e) => { e.stopPropagation(); actions.onEdit(m); }}>
+                              <Edit3 className="size-3.5" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Edit</TooltipContent>
+                        </Tooltip>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button variant="ghost" size="icon" className="size-7 text-destructive hover:text-destructive"
+                              onClick={(e) => { e.stopPropagation(); actions.onEdit(m); }}>
+                              <Trash2 className="size-3.5" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Delete (in edit dialog)</TooltipContent>
+                        </Tooltip>
+                      </div>
                     )}
-                    {!m.downloaded && !m.missing && (
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button variant="ghost" size="icon" className="size-7"
-                            onClick={(e) => { e.stopPropagation(); actions.onDownload(m); }}>
-                            <Download className="size-3.5" />
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>Download</TooltipContent>
-                      </Tooltip>
-                    )}
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button variant="ghost" size="icon" className="size-7"
-                          onClick={(e) => { e.stopPropagation(); actions.onEdit(m); }}>
-                          <Edit3 className="size-3.5" />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>Edit</TooltipContent>
-                    </Tooltip>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button variant="ghost" size="icon" className="size-7 text-destructive hover:text-destructive"
-                          onClick={(e) => { e.stopPropagation(); actions.onEdit(m); }}>
-                          <Trash2 className="size-3.5" />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>Delete (in edit dialog)</TooltipContent>
-                    </Tooltip>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
+                  </TableCell>
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
       </CardContent>
@@ -1003,7 +1093,7 @@ function ModelDetailView({
 
 export function ModelsPage() {
   const models = useLlamaStore((s) => s.models);
-  const downloads = useLlamaStore((s) => s.downloads);
+  const systemCapabilities = useLlamaStore((s) => s.systemCapabilities);
   const activeWorkspaceId = useLlamaStore((s) => s.activeWorkspaceId);
 
   const workspaceModels = React.useMemo(
@@ -1108,8 +1198,6 @@ export function ModelsPage() {
         </div>
       </div>
 
-      <ActiveDownloadsPanel downloads={downloads} />
-
       {workspaceModels.length === 0 ? (
         <Card className="border-dashed border-2 border-border bg-transparent shadow-none">
           <CardContent className="flex flex-col items-center justify-center gap-3 py-14 text-center">
@@ -1128,11 +1216,11 @@ export function ModelsPage() {
       ) : view === "grid" ? (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {workspaceModels.map((m, i) => (
-            <ModelCard key={m.id} model={m} index={i} actions={actions} />
+            <ModelCard key={m.id} model={m} index={i} actions={actions} gpuVramGb={systemCapabilities.gpuVramGb} />
           ))}
         </div>
       ) : (
-        <ModelTable models={workspaceModels} actions={actions} />
+        <ModelTable models={workspaceModels} actions={actions} gpuVramGb={systemCapabilities.gpuVramGb} />
       )}
 
       <EditModelDialog model={editModel} open={editOpen} onOpenChange={setEditOpen} focusPath={editFocusPath} />
