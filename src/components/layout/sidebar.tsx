@@ -44,10 +44,8 @@ const navItems: { page: Page; label: string; icon: React.ReactNode }[] = [
 ];
 
 export function Sidebar({ collapsed, activePage, onNavigate }: SidebarProps) {
-  const instances = useLlamaStore((s) => s.instances);
   const downloads = useLlamaStore((s) => s.downloads);
   const activeDownloads = downloads.filter((d) => d.status === "downloading").length;
-  const runningCount = instances.filter((i) => i.status === "running").length;
   const toggleConsole = useLlamaStore((s) => s.toggleConsole);
   const consoleOpen = useLlamaStore((s) => s.consoleOpen);
 
@@ -58,38 +56,7 @@ export function Sidebar({ collapsed, activePage, onNavigate }: SidebarProps) {
         collapsed ? "w-[60px]" : "w-[232px]",
       )}
     >
-      {/* Running status pill */}
-      {!collapsed && (
-        <div className="mx-3 mt-3 flex items-center justify-between rounded-lg border border-border bg-accent/50 px-3 py-2 text-xs">
-          <div className="flex items-center gap-2">
-            <span className="relative flex size-2">
-              <span
-                className={cn(
-                  "absolute inline-flex h-full w-full rounded-full opacity-75",
-                  runningCount > 0 ? "bg-emerald-500 animate-ping" : "bg-muted-foreground/60",
-                )}
-              />
-              <span
-                className={cn(
-                  "relative inline-flex size-2 rounded-full",
-                  runningCount > 0 ? "bg-emerald-500" : "bg-muted-foreground/60",
-                )}
-              />
-            </span>
-            <span className="font-medium">
-              {runningCount > 0 ? `${runningCount} running` : "Idle"}
-            </span>
-          </div>
-          {activeDownloads > 0 && (
-            <Badge variant="secondary" className="h-5 gap-1 px-1.5 text-[10px]">
-              <Download className="size-2.5 animate-pulse" />
-              {activeDownloads}
-            </Badge>
-          )}
-        </div>
-      )}
-
-      <ScrollArea className="flex-1 py-2">
+      <ScrollArea className="flex-1 py-3">
         <nav className={cn("flex flex-col gap-0.5", collapsed ? "items-center px-2" : "px-3")}>
           {navItems.map(({ page, label, icon }) => {
             const active = activePage === page;
@@ -109,7 +76,15 @@ export function Sidebar({ collapsed, activePage, onNavigate }: SidebarProps) {
                 title={collapsed ? label : undefined}
               >
                 {icon}
-                {!collapsed && <span>{label}</span>}
+                {!collapsed && (
+                  <span className="flex-1 text-left">{label}</span>
+                )}
+                {!collapsed && activeDownloads > 0 && page === "models" && (
+                  <Badge variant="secondary" className="h-4 gap-0.5 px-1 text-[10px]">
+                    <Download className="size-2.5 animate-pulse" />
+                    {activeDownloads}
+                  </Badge>
+                )}
               </Button>
             );
           })}

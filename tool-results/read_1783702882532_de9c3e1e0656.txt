@@ -1,0 +1,1097 @@
+     1→/**
+     2→ * LlamaLauncher state store + simulator.
+     3→ *
+     4→ * Client-side simulation of llama.cpp server instances. Each instance is a
+     5→ * llama-server process that streams realistic startup logs to its own console
+     6→ * buffer.
+     7→ *
+     8→ * Features:
+     9→ * - Workspaces (isolated environments with own instances/profiles/releases)
+    10→ * - App status / hibernation (auto-unload models after idle period,
+    11→ *   hot-reload on next request) — hibernate delay is configurable
+    12→ * - Profiles with scope: 'global' | 'model' (for sharing + auto-calibration)
+    13→ * - HuggingFace model download (search-first, quantization picker)
+    14→ * - llama.cpp release variants (cuda12 / cuda13 / vulkan / cpu / …)
+    15→ * - Notifications (new GitHub release, download complete, …)
+    16→ * - Real-time system metrics stream (CPU/RAM/GPU/tok/s) for the dashboard
+    17→ * - Model metadata: builder, architecture, license, edit/delete/missing
+    18→ */
+    19→
+    20→import { create } from "zustand";
+    21→
+    22→// ---------- Types ----------
+    23→
+    24→export type InstanceStatus = "stopped" | "starting" | "running" | "stopping" | "error";
+    25→export type AppStatus = "active" | "idle" | "hibernating" | "waking";
+    26→export type LogKind = "info" | "success" | "warn" | "error" | "debug";
+    27→export type ViewMode = "grid" | "table";
+    28→export type ReleaseVariant = "cuda12" | "cuda13" | "vulkan" | "cpu" | "hip" | "opencl" | "metal";
+    29→
+    30→export interface ConsoleLine {
+    31→  id: string;
+    32→  instanceId: string;
+    33→  ts: number;
+    34→  kind: LogKind;
+    35→  text: string;
+    36→}
+    37→
+    38→export interface LlamaInstance {
+    39→  id: string;
+    40→  name: string;
+    41→  model: string;
+    42→  profile: string;
+    43→  port: number;
+    44→  host: string;
+    45→  status: InstanceStatus;
+    46→  gpu: string;
+    47→  ctxSize: number;
+    48→  threads: number;
+    49→  color: "green" | "orange" | "blue" | "pink" | "purple";
+    50→  startedAt?: number;
+    51→  uptimeSec?: number;
+    52→  promptTokens: number;
+    53→  generatedTokens: number;
+    54→  requestsPerMin: number;
+    55→  tokensPerSec: number;
+    56→  memoryMb: number;
+    57→  peakTokensPerSec: number;
+    58→  totalRequests: number;
+    59→  errorCount: number;
+    60→  workspaceId: string;
+    61→  hibernatedConfig?: { name: string; model: string; profile: string; port: number; host: string; gpu: string };
+    62→}
+    63→
+    64→export interface LlamaModel {
+    65→  id: string;
+    66→  name: string;
+    67→  family: string;
+    68→  sizeGb: number;
+    69→  quant: string;
+    70→  downloaded: boolean;
+    71→  path: string;
+    72→  hfRepo?: string;
+    73→  /** who built/quantized the model (bartowski, unsloth, TheBloke, …) */
+    74→  builder: string;
+    75→  /** GGUF metadata */
+    76→  architecture: string;
+    77→  contextLength: number;
+    78→  parameterCount: string; // "7B", "8B", "13B"
+    79→  quantizationBits: number;
+    80→  license: string;
+    81→  description: string;
+    82→  uploadedAt: string;
+    83→  hfDownloads: number;
+    84→  tags: string[];
+    85→  /** file is missing on disk (moved/deleted) — card shows greyed + "not found" */
+    86→  missing: boolean;
+    87→  workspaceId: string;
+    88→  addedAt: number;
+    89→}
+    90→
+    91→export type ProfileScope = "global" | "model";
+    92→
+    93→export interface LlamaProfile {
+    94→  id: string;
+    95→  name: string;
+    96→  description: string;
+    97→  ctxSize: number;
+    98→  threads: number;
+    99→  gpuLayers: number;
+   100→  flashAttention: boolean;
+   101→  extraArgs: string;
+   102→  scope: ProfileScope;
+   103→  modelId?: string;
+   104→  shared?: boolean;
+   105→  shareId?: string;
+   106→  calibrationScore?: number;
+   107→  workspaceId: string | null; // null = available in all workspaces
+   108→}
+   109→
+   110→export interface LlamaRelease {
+   111→  id: string;
+   112→  tag: string;
+   113→  publishedAt: string;
+   114→  commit: string;
+   115→  notes: string;
+   116→  installed: boolean;
+   117→  variant: ReleaseVariant;
+   118→  /** priority variants are shown first (cuda12, cuda13, vulkan); others hidden behind "show more" */
+   119→  priority: boolean;
+   120→  downloadUrl: string;
+   121→  sizeMb: number;
+   122→  workspaceId: string | null;
+   123→  installing?: boolean;
+   124→  installProgress?: number;
+   125→}
+   126→
+   127→export interface Workspace {
+   128→  id: string;
+   129→  name: string;
+   130→  color: "green" | "orange" | "blue" | "pink" | "purple";
+   131→  description?: string;
+   132→}
+   133→
+   134→export interface HFDownload {
+   135→  id: string;
+   136→  repo: string;
+   137→  quant: string;
+   138→  filename: string;
+   139→  sizeGb: number;
+   140→  progress: number; // 0..100
+   141→  status: "queued" | "downloading" | "completed" | "failed";
+   142→  startedAt: number;
+   143→  modelName: string;
+   144→  builder: string;
+   145→  kind: "model" | "release" | "cuda";
+   146→  /** release variant, when kind === 'release' */
+   147→  variant?: ReleaseVariant;
+   148→}
+   149→
+   150→export interface MetricSample {
+   151→  t: number;
+   152→  cpu: number;
+   153→  ram: number;
+   154→  gpu: number;
+   155→  gpuMem: number;
+   156→  tps: number;
+   157→  reqPerMin: number;
+   158→}
+   159→
+   160→export type NotificationKind = "release" | "download" | "info" | "warn" | "error";
+   161→
+   162→export interface AppNotification {
+   163→  id: string;
+   164→  kind: NotificationKind;
+   165→  title: string;
+   166→  body: string;
+   167→  ts: number;
+   168→  read: boolean;
+   169→  actionLabel?: string;
+   170→}
+   171→
+   172→export interface GlobalSettings {
+   173→  llamaCppPath: string;
+   174→  modelsDir: string;
+   175→  cudaLibsDir: string;
+   176→  defaultHost: string;
+   177→  portRangeStart: number;
+   178→  portRangeEnd: number;
+   179→  notifyOnCrash: boolean;
+   180→  notifyOnHighMemory: boolean;
+   181→  notifyOnNewRelease: boolean;
+   182→  checkForReleases: boolean;
+   183→  releaseChannel: "stable" | "pre-release";
+   184→}
+   185→
+   186→export interface WorkspaceSettings {
+   187→  hibernateAfterSec: number; // idle seconds before hibernation
+   188→  defaultGpuLayers: number;
+   189→  defaultThreads: number;
+   190→  autoCalibrate: boolean;
+   191→  maxConcurrentInstances: number;
+   192→}
+   193→
+   194→// ---------- HF search catalog ----------
+   195→
+   196→export interface HFSearchResult {
+   197→  repo: string;
+   198→  builder: string;
+   199→  family: string;
+   200→  baseSizeGb: number;
+   201→  parameterCount: string;
+   202→  description: string;
+   203→  architecture: string;
+   204→  contextLength: number;
+   205→  license: string;
+   206→  downloads: number;
+   207→  uploadedAt: string;
+   208→  tags: string[];
+   209→}
+   210→
+   211→// Curated catalog of ~24 GGUF repos across multiple builders
+   212→export const HF_CATALOG: HFSearchResult[] = [
+   213→  { repo: "bartowski/Llama-3.1-8B-Instruct-GGUF", builder: "bartowski", family: "llama3", baseSizeGb: 16.0, parameterCount: "8B", description: "Meta Llama 3.1 8B Instruct", architecture: "llama", contextLength: 131072, license: "Llama 3.1 Community", downloads: 184200, uploadedAt: "2024-07-23", tags: ["instruct", "chat", "meta"] },
+   214→  { repo: "unsloth/Llama-3.1-8B-Instruct-GGUF", builder: "unsloth", family: "llama3", baseSizeGb: 16.0, parameterCount: "8B", description: "Meta Llama 3.1 8B Instruct (unsloth)", architecture: "llama", contextLength: 131072, license: "Llama 3.1 Community", downloads: 98100, uploadedAt: "2024-07-24", tags: ["instruct", "chat", "meta", "unsloth"] },
+   215→  { repo: "bartowski/Qwen2.5-7B-Instruct-GGUF", builder: "bartowski", family: "qwen2", baseSizeGb: 14.5, parameterCount: "7B", description: "Qwen 2.5 7B Instruct", architecture: "qwen2", contextLength: 32768, license: "Apache 2.0", downloads: 142800, uploadedAt: "2024-09-19", tags: ["instruct", "chat", "qwen"] },
+   216→  { repo: "unsloth/Qwen2.5-7B-Instruct-GGUF", builder: "unsloth", family: "qwen2", baseSizeGb: 14.5, parameterCount: "7B", description: "Qwen 2.5 7B Instruct (unsloth)", architecture: "qwen2", contextLength: 32768, license: "Apache 2.0", downloads: 76400, uploadedAt: "2024-09-20", tags: ["instruct", "chat", "qwen", "unsloth"] },
+   217→  { repo: "bartowski/mistral-7b-instruct-v0.3-GGUF", builder: "bartowski", family: "mistral", baseSizeGb: 14.5, parameterCount: "7B", description: "Mistral 7B Instruct v0.3", architecture: "llama", contextLength: 32768, license: "Apache 2.0", downloads: 121000, uploadedAt: "2024-05-22", tags: ["instruct", "chat", "mistral"] },
+   218→  { repo: "TheBloke/Mistral-7B-Instruct-v0.2-GGUF", builder: "TheBloke", family: "mistral", baseSizeGb: 14.5, parameterCount: "7B", description: "Mistral 7B Instruct v0.2 (TheBloke)", architecture: "llama", contextLength: 32768, license: "Apache 2.0", downloads: 540000, uploadedAt: "2023-12-11", tags: ["instruct", "chat", "mistral", "legacy"] },
+   219→  { repo: "bartowski/Phi-3.1-mini-128k_instruct-GGUF", builder: "bartowski", family: "phi3", baseSizeGb: 7.5, parameterCount: "3.8B", description: "Microsoft Phi 3.1 Mini 128k Instruct", architecture: "phi3", contextLength: 131072, license: "MIT", downloads: 88200, uploadedAt: "2024-07-01", tags: ["instruct", "microsoft", "long-context"] },
+   220→  { repo: "bartowski/gemma-2-9b-it-GGUF", builder: "bartowski", family: "gemma2", baseSizeGb: 18.0, parameterCount: "9B", description: "Google Gemma 2 9B IT", architecture: "gemma2", contextLength: 8192, license: "Gemma", downloads: 95400, uploadedAt: "2024-06-27", tags: ["instruct", "google", "gemma"] },
+   221→  { repo: "bartowski/DeepSeek-R1-Distill-Qwen-7B-GGUF", builder: "bartowski", family: "deepseek", baseSizeGb: 14.5, parameterCount: "7B", description: "DeepSeek R1 Distill Qwen 7B", architecture: "qwen2", contextLength: 131072, license: "MIT", downloads: 67800, uploadedAt: "2025-01-20", tags: ["reasoning", "deepseek", "r1"] },
+   222→  { repo: "unsloth/DeepSeek-R1-Distill-Llama-8B-GGUF", builder: "unsloth", family: "deepseek", baseSizeGb: 16.0, parameterCount: "8B", description: "DeepSeek R1 Distill Llama 8B (unsloth)", architecture: "llama", contextLength: 131072, license: "MIT", downloads: 71200, uploadedAt: "2025-01-21", tags: ["reasoning", "deepseek", "r1", "unsloth"] },
+   223→  { repo: "bartowski/Mistral-Nemo-Instruct-2407-GGUF", builder: "bartowski", family: "mistral", baseSizeGb: 24.0, parameterCount: "12B", description: "Mistral Nemo 12B Instruct", architecture: "llama", contextLength: 131072, license: "Apache 2.0", downloads: 54300, uploadedAt: "2024-07-18", tags: ["instruct", "mistral", "long-context"] },
+   224→  { repo: "bartowski/Llama-3.3-70B-Instruct-GGUF", builder: "bartowski", family: "llama3", baseSizeGb: 140.0, parameterCount: "70B", description: "Meta Llama 3.3 70B Instruct", architecture: "llama", contextLength: 131072, license: "Llama 3.3 Community", downloads: 42100, uploadedAt: "2024-12-06", tags: ["instruct", "chat", "meta", "large"] },
+   225→  { repo: "unsloth/Llama-3.2-3B-Instruct-GGUF", builder: "unsloth", family: "llama3", baseSizeGb: 6.5, parameterCount: "3B", description: "Meta Llama 3.2 3B Instruct (unsloth)", architecture: "llama", contextLength: 131072, license: "Llama 3.2 Community", downloads: 89300, uploadedAt: "2024-09-25", tags: ["instruct", "small", "unsloth"] },
+   226→  { repo: "bartowski/Qwen2.5-Coder-14B-Instruct-GGUF", builder: "bartowski", family: "qwen2", baseSizeGb: 29.0, parameterCount: "14B", description: "Qwen 2.5 Coder 14B Instruct", architecture: "qwen2", contextLength: 32768, license: "Apache 2.0", downloads: 63900, uploadedAt: "2024-11-12", tags: ["coder", "code", "qwen"] },
+   227→  { repo: "bartowski/Qwen2.5-32B-Instruct-GGUF", builder: "bartowski", family: "qwen2", baseSizeGb: 64.0, parameterCount: "32B", description: "Qwen 2.5 32B Instruct", architecture: "qwen2", contextLength: 32768, license: "Qwen License", downloads: 38800, uploadedAt: "2024-09-25", tags: ["instruct", "chat", "large"] },
+   228→  { repo: "lmstudio-community/Meta-Llama-3.1-8B-Instruct-GGUF", builder: "lmstudio-community", family: "llama3", baseSizeGb: 16.0, parameterCount: "8B", description: "Meta Llama 3.1 8B Instruct (LM Studio)", architecture: "llama", contextLength: 131072, license: "Llama 3.1 Community", downloads: 67500, uploadedAt: "2024-07-23", tags: ["instruct", "chat", "lmstudio"] },
+   229→  { repo: "bartowski/gemma-2-27b-it-GGUF", builder: "bartowski", family: "gemma2", baseSizeGb: 54.0, parameterCount: "27B", description: "Google Gemma 2 27B IT", architecture: "gemma2", contextLength: 8192, license: "Gemma", downloads: 47100, uploadedAt: "2024-06-27", tags: ["instruct", "google", "large"] },
+   230→  { repo: "MaziyarPanahi/Llama-3.1-8B-Instruct-GGUF", builder: "MaziyarPanahi", family: "llama3", baseSizeGb: 16.0, parameterCount: "8B", description: "Meta Llama 3.1 8B Instruct (MaziyarPanahi)", architecture: "llama", contextLength: 131072, license: "Llama 3.1 Community", downloads: 32900, uploadedAt: "2024-07-23", tags: ["instruct", "chat"] },
+   231→  { repo: "bartowski/Phi-3-medium-128k-instruct-GGUF", builder: "bartowski", family: "phi3", baseSizeGb: 28.0, parameterCount: "14B", description: "Microsoft Phi 3 Medium 128k Instruct", architecture: "phi3", contextLength: 131072, license: "MIT", downloads: 29400, uploadedAt: "2024-05-21", tags: ["instruct", "microsoft", "long-context"] },
+   232→  { repo: "bartowski/Llama-3-8B-Instruct-GGUF", builder: "bartowski", family: "llama3", baseSizeGb: 16.0, parameterCount: "8B", description: "Meta Llama 3 8B Instruct (legacy)", architecture: "llama", contextLength: 8192, license: "Llama 3 Community", downloads: 156000, uploadedAt: "2024-04-09", tags: ["instruct", "chat", "legacy"] },
+   233→  { repo: "TheBloke/Llama-2-7B-Chat-GGUF", builder: "TheBloke", family: "llama2", baseSizeGb: 13.0, parameterCount: "7B", description: "Llama 2 7B Chat (TheBloke)", architecture: "llama", contextLength: 4096, license: "Llama 2 Community", downloads: 980000, uploadedAt: "2023-07-18", tags: ["chat", "legacy", "llama2"] },
+   234→  { repo: "bartowski/Mistral-Small-24B-Instruct-2501-GGUF", builder: "bartowski", family: "mistral", baseSizeGb: 48.0, parameterCount: "24B", description: "Mistral Small 24B Instruct 2501", architecture: "llama", contextLength: 32768, license: "Apache 2.0", downloads: 18600, uploadedAt: "2025-01-15", tags: ["instruct", "mistral", "small"] },
+   235→  { repo: "unsloth/Mistral-Nemo-Instruct-2407-GGUF", builder: "unsloth", family: "mistral", baseSizeGb: 24.0, parameterCount: "12B", description: "Mistral Nemo 12B (unsloth)", architecture: "llama", contextLength: 131072, license: "Apache 2.0", downloads: 23100, uploadedAt: "2024-07-19", tags: ["instruct", "mistral", "unsloth"] },
+   236→  { repo: "bartowski/Hermes-3-Llama-3.1-8B-GGUF", builder: "bartowski", family: "llama3", baseSizeGb: 16.0, parameterCount: "8B", description: "Hermes 3 Llama 3.1 8B (Nous Research)", architecture: "llama", contextLength: 131072, license: "Llama 3.1 Community", downloads: 15800, uploadedAt: "2024-08-10", tags: ["hermes", "nous", "instruct"] },
+   237→];
+   238→
+   239→export function searchHFModels(query: string): HFSearchResult[] {
+   240→  const q = query.trim().toLowerCase();
+   241→  if (!q) return [];
+   242→  return HF_CATALOG.filter(
+   243→    (r) =>
+   244→      r.repo.toLowerCase().includes(q) ||
+   245→      r.description.toLowerCase().includes(q) ||
+   246→      r.family.includes(q) ||
+   247→      r.builder.toLowerCase().includes(q) ||
+   248→      r.tags.some((t) => t.includes(q)),
+   249→  ).sort((a, b) => b.downloads - a.downloads);
+   250→}
+   251→
+   252→export const HF_QUANTS: { id: string; label: string; sizeFactor: number; note: string; bits: number }[] = [
+   253→  { id: "Q4_0", label: "Q4_0 · 4-bit", sizeFactor: 0.55, note: "Most compressed. Good for limited VRAM.", bits: 4 },
+   254→  { id: "Q4_K_M", label: "Q4_K_M · 4-bit", sizeFactor: 0.62, note: "Recommended default for most users.", bits: 4 },
+   255→  { id: "Q5_K_M", label: "Q5_K_M · 5-bit", sizeFactor: 0.72, note: "Better quality, ~15% more memory.", bits: 5 },
+   256→  { id: "Q6_K", label: "Q6_K · 6-bit", sizeFactor: 0.82, note: "Close to fp16 quality.", bits: 6 },
+   257→  { id: "Q8_0", label: "Q8_0 · 8-bit", sizeFactor: 0.95, note: "Nearly indistinguishable from fp16.", bits: 8 },
+   258→  { id: "F16", label: "F16 · 16-bit", sizeFactor: 1.0, note: "Full precision. Largest size.", bits: 16 },
+   259→];
+   260→
+   261→// ---------- Release variant catalog ----------
+   262→
+   263→export const RELEASE_VARIANTS: { id: ReleaseVariant; label: string; priority: boolean; note: string }[] = [
+   264→  { id: "cuda12", label: "CUDA 12.x", priority: true, note: "NVIDIA GPU (cuBLAS, recommended)" },
+   265→  { id: "cuda13", label: "CUDA 13.x", priority: true, note: "NVIDIA GPU (newest CUDA toolkit)" },
+   266→  { id: "vulkan", label: "Vulkan", priority: true, note: "Cross-vendor GPU (AMD/Intel/NVIDIA)" },
+   267→  { id: "cpu", label: "CPU", priority: false, note: "No GPU acceleration" },
+   268→  { id: "hip", label: "HIP / ROCm", priority: false, note: "AMD GPU (Linux)" },
+   269→  { id: "opencl", label: "OpenCL", priority: false, note: "OpenCL GPU backend" },
+   270→  { id: "metal", label: "Metal", priority: false, note: "Apple Silicon (macOS)" },
+   271→];
+   272→
+   273→// ---------- Simulator ----------
+   274→
+   275→interface SimState {
+   276→  running: boolean;
+   277→  ticks: number;
+   278→  stop: () => void;
+   279→}
+   280→
+   281→const instanceSims = new Map<string, SimState>();
+   282→const logSubscribers = new Set<(line: ConsoleLine) => void>();
+   283→
+   284→function uid(prefix = "id") {
+   285→  return `${prefix}_${Math.random().toString(36).slice(2, 9)}`;
+   286→}
+   287→
+   288→function nowTs() {
+   289→  return Date.now();
+   290→}
+   291→
+   292→function emitLog(instanceId: string, kind: LogKind, text: string) {
+   293→  const line: ConsoleLine = {
+   294→    id: uid("log"),
+   295→    instanceId,
+   296→    ts: nowTs(),
+   297→    kind,
+   298→    text,
+   299→  };
+   300→  logSubscribers.forEach((fn) => fn(line));
+   301→  return line;
+   302→}
+   303→
+   304→function fmtTime(d: Date) {
+   305→  return d.toTimeString().slice(0, 8);
+   306→}
+   307→
+   308→function runStartupSequence(instance: LlamaInstance, store: LlamaStore) {
+   309→  let cancelled = false;
+   310→  let reqTimer: ReturnType<typeof setTimeout> | null = null;
+   311→
+   312→  const sim: SimState = {
+   313→    running: true,
+   314→    ticks: 0,
+   315→    stop: () => {
+   316→      cancelled = true;
+   317→      sim.running = false;
+   318→      if (reqTimer) clearTimeout(reqTimer);
+   319→    },
+   320→  };
+   321→  instanceSims.set(instance.id, sim);
+   322→
+   323→  const steps: Array<[number, LogKind, string]> = [
+   324→    [50, "info", `$ llama-server --model ${instance.model} --host ${instance.host} --port ${instance.port} -c ${instance.ctxSize} -t ${instance.threads} -ngl ${instance.gpu === "cpu" ? 0 : 99}`],
+   325→    [120, "debug", "build: 4402 (8f1f7e1) with AVX2=1 AVX512=1 BMI2=1 CUDA=1"],
+   326→    [180, "info", "system_info: n_threads = " + instance.threads + " n_gpu_layers = 99"],
+   327→    [260, "info", "loading model from " + instance.model],
+   328→    [380, "debug", "llama_model_loader: loaded meta data with 24 KV pairs"],
+   329→    [440, "debug", "llama_model_loader: - kv[ 0]:                       general.name = " + instance.name],
+   330→    [520, "debug", "llama_model_loader: - kv[ 1]:          general.architecture = llama"],
+   331→    [600, "info", `llama_model_loader: - kv[12]:                      llama.context_length = ${instance.ctxSize}`],
+   332→    [680, "debug", "llama_model_loader: - type  f16:  221 tensors"],
+   333→    [760, "info", "llama_model_loader: loading model part 1/1 from '" + instance.model + "'"],
+   334→    [900, "info", "llama_model_loader: model size = " + (instance.model.includes("7b") ? "13.9" : "4.1") + " GiB"],
+   335→    [980, "success", "llama_model_loader: model loaded successfully"],
+   336→    [1060, "info", "using CUDA for GPU acceleration"],
+   337→    [1140, "debug", "llama_kv_cache:  CUDA0 KV buffer size = " + Math.round(instance.ctxSize * 0.5) + " MiB"],
+   338→    [1220, "info", "llama_new_context_with_model: n_ctx = " + instance.ctxSize + ", batch = 512"],
+   339→    [1320, "success", "llama_new_context_with_model: graph initialized"],
+   340→    [1400, "info", `llama server: listening on ${instance.host}:${instance.port}`],
+   341→    [1480, "info", "llama server: loading model took " + (1200 + Math.floor(Math.random() * 600)) + " ms"],
+   342→    [1560, "success", `llama server: model loaded, ready for requests at http://${instance.host}:${instance.port}`],
+   343→  ];
+   344→
+   345→  let elapsed = 0;
+   346→  steps.forEach(([delay, kind, text]) => {
+   347→    if (cancelled) return;
+   348→    setTimeout(() => {
+   349→      if (cancelled) return;
+   350→      emitLog(instance.id, kind, `[${fmtTime(new Date())}] ${text}`);
+   351→    }, delay);
+   352→    elapsed = delay;
+   353→  });
+   354→
+   355→  setTimeout(() => {
+   356→    if (cancelled) return;
+   357→    store.markRunning(instance.id);
+   358→    emitLog(instance.id, "success", `[${fmtTime(new Date())}] ✓ Server ready. Listening on http://${instance.host}:${instance.port}/completions`);
+   359→
+   360→    const tick = () => {
+   361→      if (cancelled || !sim.running) return;
+   362→      sim.ticks += 1;
+   363→      const t = sim.ticks;
+   364→      store.registerActivity();
+   365→      if (t % 3 === 0) {
+   366→        const promptTok = 8 + Math.floor(Math.random() * 80);
+   367→        const genTok = 12 + Math.floor(Math.random() * 120);
+   368→        const tps = 18 + Math.random() * 24;
+   369→        emitLog(instance.id, "info", `[${fmtTime(new Date())}] POST /v1/chat/completions 200 - prompt: ${promptTok} tok, gen: ${genTok} tok, ${tps.toFixed(1)} tok/s`);
+   370→        store.bumpStats(instance.id, promptTok, genTok, tps);
+   371→      } else if (t % 5 === 0) {
+   372→        emitLog(instance.id, "debug", `[${fmtTime(new Date())}] slot 0: cache reused, kv tokens = ${100 + Math.floor(Math.random() * 400)}`);
+   373→      } else if (t % 7 === 0) {
+   374→        emitLog(instance.id, "warn", `[${fmtTime(new Date())}] request queue depth = ${1 + Math.floor(Math.random() * 3)}`);
+   375→      }
+   376→      reqTimer = setTimeout(tick, 1800 + Math.random() * 1200);
+   377→    };
+   378→    reqTimer = setTimeout(tick, 1800);
+   379→  }, elapsed + 200);
+   380→}
+   381→
+   382→function runShutdownSequence(instance: LlamaInstance, store: LlamaStore) {
+   383→  const sim = instanceSims.get(instance.id);
+   384→  if (sim) sim.stop();
+   385→
+   386→  emitLog(instance.id, "warn", `[${fmtTime(new Date())}] received SIGINT, shutting down...`);
+   387→  setTimeout(() => {
+   388→    emitLog(instance.id, "info", `[${fmtTime(new Date())}] waiting for in-flight requests to finish`);
+   389→  }, 200);
+   390→  setTimeout(() => {
+   391→    emitLog(instance.id, "info", `[${fmtTime(new Date())}] freeing KV cache and model buffers`);
+   392→  }, 450);
+   393→  setTimeout(() => {
+   394→    emitLog(instance.id, "success", `[${fmtTime(new Date())}] server stopped cleanly. goodbye.`);
+   395→    store.markStopped(instance.id);
+   396→  }, 700);
+   397→}
+   398→
+   399→// ---------- Seed data ----------
+   400→
+   401→const WS_PERSONAL = "ws_personal";
+   402→const WS_TEAM = "ws_team";
+   403→const WS_RESEARCH = "ws_research";
+   404→
+   405→const seedWorkspaces: Workspace[] = [
+   406→  { id: WS_PERSONAL, name: "Personal", color: "blue", description: "Local dev & experiments" },
+   407→  { id: WS_TEAM, name: "Team Production", color: "green", description: "Shared serving profiles" },
+   408→  { id: WS_RESEARCH, name: "Research", color: "purple", description: "Benchmarks & calibration" },
+   409→];
+   410→
+   411→function mkModel(
+   412→  id: string,
+   413→  name: string,
+   414→  family: string,
+   415→  sizeGb: number,
+   416→  quant: string,
+   417→  downloaded: boolean,
+   418→  path: string,
+   419→  hfRepo: string,
+   420→  builder: string,
+   421→  architecture: string,
+   422→  contextLength: number,
+   423→  parameterCount: string,
+   424→  quantizationBits: number,
+   425→  license: string,
+   426→  description: string,
+   427→  uploadedAt: string,
+   428→  hfDownloads: number,
+   429→  tags: string[],
+   430→  workspaceId = WS_PERSONAL,
+   431→): LlamaModel {
+   432→  return {
+   433→    id, name, family, sizeGb, quant, downloaded, path, hfRepo, builder,
+   434→    architecture, contextLength, parameterCount, quantizationBits, license,
+   435→    description, uploadedAt, hfDownloads, tags, missing: false, workspaceId,
+   436→    addedAt: nowTs() - Math.floor(Math.random() * 30) * 86400000,
+   437→  };
+   438→}
+   439→
+   440→const seedModels: LlamaModel[] = [
+   441→  mkModel("m1", "Llama 3.1 8B Q4_K_M", "llama3", 4.9, "Q4_K_M", true, "/models/llama-3.1-8b-instruct-q4_k_m.gguf", "bartowski/Llama-3.1-8B-Instruct-GGUF", "bartowski", "llama", 131072, "8B", 4, "Llama 3.1 Community", "Meta Llama 3.1 8B Instruct, quantized to Q4_K_M", "2024-07-23", 184200, ["instruct", "chat", "meta"]),
+   442→  mkModel("m2", "Qwen2.5 7B Q5_K_M", "qwen2", 5.2, "Q5_K_M", true, "/models/qwen2.5-7b-instruct-q5_k_m.gguf", "bartowski/Qwen2.5-7B-Instruct-GGUF", "bartowski", "qwen2", 32768, "7B", 5, "Apache 2.0", "Qwen 2.5 7B Instruct, quantized to Q5_K_M", "2024-09-19", 142800, ["instruct", "chat", "qwen"]),
+   443→  mkModel("m3", "Mistral 7B Q4_0", "mistral", 4.1, "Q4_0", true, "/models/mistral-7b-instruct-q4_0.gguf", "bartowski/mistral-7b-instruct-v0.3-GGUF", "bartowski", "llama", 32768, "7B", 4, "Apache 2.0", "Mistral 7B Instruct v0.3, quantized to Q4_0", "2024-05-22", 121000, ["instruct", "chat", "mistral"]),
+   444→  mkModel("m4", "Phi 3.1 Mini Q8", "phi3", 3.8, "Q8_0", true, "/models/phi-3.1-mini-128k-instruct-q8.gguf", "bartowski/Phi-3.1-mini-128k_instruct-GGUF", "bartowski", "phi3", 131072, "3.8B", 8, "MIT", "Microsoft Phi 3.1 Mini 128k Instruct, Q8_0", "2024-07-01", 88200, ["instruct", "microsoft", "long-context"]),
+   445→  mkModel("m5", "Gemma 2 9B Q6_K", "gemma2", 6.6, "Q6_K", true, "/models/gemma-2-9b-it-q6_k.gguf", "bartowski/gemma-2-9b-it-GGUF", "bartowski", "gemma2", 8192, "9B", 6, "Gemma", "Google Gemma 2 9B IT, Q6_K", "2024-06-27", 95400, ["instruct", "google", "gemma"]),
+   446→  // m6 is "missing" — file moved on disk
+   447→  (() => {
+   448→    const m = mkModel("m6", "DeepSeek R1 Distill 7B", "deepseek", 4.4, "Q4_K_M", true, "/models/deepseek-r1-distill-qwen-7b-q4_k_m.gguf", "bartowski/DeepSeek-R1-Distill-Qwen-7B-GGUF", "bartowski", "qwen2", 131072, "7B", 4, "MIT", "DeepSeek R1 Distill Qwen 7B, Q4_K_M", "2025-01-20", 67800, ["reasoning", "deepseek", "r1"]);
+   449→    m.missing = true;
+   450→    return m;
+   451→  })(),
+   452→];
+   453→
+   454→const seedProfiles: LlamaProfile[] = [
+   455→  { id: "p1", name: "Balanced", description: "Good defaults for 7B–13B models on a single GPU", ctxSize: 8192, threads: 8, gpuLayers: 99, flashAttention: true, extraArgs: "--parallel 4 --cont-batching", scope: "global", shared: true, shareId: "sh_balanced_v1", calibrationScore: 88, workspaceId: null },
+   456→  { id: "p2", name: "Long Context", description: "Optimised for RAG and long documents", ctxSize: 32768, threads: 6, gpuLayers: 99, flashAttention: true, extraArgs: "--cache-type-k q8_0 --cache-type-v q8_0", scope: "global", calibrationScore: 82, workspaceId: null },
+   457→  { id: "p3", name: "High Throughput", description: "Maximise concurrent requests", ctxSize: 4096, threads: 12, gpuLayers: 99, flashAttention: true, extraArgs: "--parallel 8 --cont-batching -np 8", scope: "global", calibrationScore: 91, workspaceId: null },
+   458→  { id: "p4", name: "CPU Only", description: "No GPU layers, full CPU inference", ctxSize: 4096, threads: 16, gpuLayers: 0, flashAttention: false, extraArgs: "", scope: "global", calibrationScore: 74, workspaceId: null },
+   459→  { id: "p5", name: "Llama 3.1 Tuned", description: "Auto-calibrated for Llama 3.1 8B on RTX 4070", ctxSize: 16384, threads: 8, gpuLayers: 99, flashAttention: true, extraArgs: "--parallel 4 --cont-batching --no-mmap", scope: "model", modelId: "m1", calibrationScore: 96, workspaceId: WS_PERSONAL },
+   460→  { id: "p6", name: "Qwen 2.5 Tuned", description: "Auto-calibrated for Qwen 2.5 7B", ctxSize: 8192, threads: 8, gpuLayers: 99, flashAttention: true, extraArgs: "--parallel 4 --cont-batching", scope: "model", modelId: "m2", calibrationScore: 93, workspaceId: WS_PERSONAL },
+   461→];
+   462→
+   463→function mkRelease(
+   464→  id: string,
+   465→  tag: string,
+   466→  publishedAt: string,
+   467→  commit: string,
+   468→  notes: string,
+   469→  installed: boolean,
+   470→  variant: ReleaseVariant,
+   471→  priority: boolean,
+   472→  sizeMb: number,
+   473→  workspaceId: string | null = WS_PERSONAL,
+   474→): LlamaRelease {
+   475→  return {
+   476→    id, tag, publishedAt, commit, notes, installed, variant, priority,
+   477→    downloadUrl: `https://github.com/ggerganov/llama.cpp/releases/download/${tag}/llama-${tag}-bin-${variant}-x64.zip`,
+   478→    sizeMb, workspaceId,
+   479→  };
+   480→}
+   481→
+   482→// Generate releases for several tags × variants
+   483→const releaseTags = [
+   484→  { tag: "b4402", date: "2025-01-14", commit: "8f1f7e1", notes: "KV cache quantisation, faster prompt processing, RPC server fixes", installed: true },
+   485→  { tag: "b4390", date: "2024-12-20", commit: "a2c4f90", notes: "Improved FlashAttention path, new --cache-type-v flag", installed: false },
+   486→  { tag: "b4378", date: "2024-11-28", commit: "7bd12aa", notes: "Speculative decoding via draft models, multi-GPU tensor split fixes", installed: false },
+   487→  { tag: "b4360", date: "2024-10-15", commit: "3f8e221", notes: "Initial Qwen2.5 support, llama-server OpenAI-compatible refactor", installed: false },
+   488→  { tag: "b4345", date: "2024-09-02", commit: "c5d9012", notes: "Vulkan backend improvements, llama-perplexity fixes", installed: false },
+   489→  { tag: "b4321", date: "2024-08-11", commit: "e7a2b54", notes: "Batched decoding optimisations, KV cache reuse", installed: false },
+   490→  { tag: "b4300", date: "2024-07-05", commit: "1f6c890", notes: "gguf v3 support, llama-quantise rewrite", installed: false },
+   491→  { tag: "b4280", date: "2024-06-01", commit: "9b3a107", notes: "Metal backend updates, RPC server initial release", installed: false },
+   492→  { tag: "b4250", date: "2024-04-18", commit: "2d5e881", notes: "FlashAttention 2 path, KV cache paged", installed: false },
+   493→  { tag: "b4200", date: "2024-02-22", commit: "6c1f045", notes: "OpenAI-compatible /v1/chat/completions endpoint", installed: false },
+   494→];
+   495→
+   496→const seedReleases: LlamaRelease[] = [];
+   497→releaseTags.forEach((r, ti) => {
+   498→  RELEASE_VARIANTS.forEach((v, vi) => {
+   499→    const installed = r.installed && v.id === "cuda12" && ti === 0;
+   500→    seedReleases.push(
+   501→      mkRelease(
+   502→        `r_${r.tag}_${v.id}`,
+   503→        r.tag,
+   504→        r.date,
+   505→        r.commit,
+   506→        r.notes,
+   507→        installed,
+   508→        v.id,
+   509→        v.priority,
+   510→        v.id === "cpu" ? 18 : v.id === "cuda12" || v.id === "cuda13" ? 42 : 28,
+   511→      ),
+   512→    );
+   513→  });
+   514→});
+   515→
+   516→const seedInstances: LlamaInstance[] = [];
+   517→
+   518→// ---------- Store ----------
+   519→
+   520→interface LlamaStore {
+   521→  instances: LlamaInstance[];
+   522→  models: LlamaModel[];
+   523→  profiles: LlamaProfile[];
+   524→  releases: LlamaRelease[];
+   525→  workspaces: Workspace[];
+   526→  activeWorkspaceId: string;
+   527→  downloads: HFDownload[];
+   528→  logs: Record<string, ConsoleLine[]>;
+   529→  activeConsoleId: string;
+   530→  consoleOpen: boolean;
+   531→  consoleHeight: number;
+   532→  notifications: AppNotification[];
+   533→
+   534→  // settings
+   535→  globalSettings: GlobalSettings;
+   536→  workspaceSettings: Record<string, WorkspaceSettings>;
+   537→
+   538→  // app status / hibernation
+   539→  appStatus: AppStatus;
+   540→  lastActivityAt: number;
+   541→  hibernatedInstanceIds: string[];
+   542→  metrics: MetricSample[];
+   543→  registerActivity: () => void;
+   544→  setAppStatus: (s: AppStatus) => void;
+   545→  forceHibernate: () => void;
+   546→  forceWake: () => void;
+   547→  pushMetric: (m: MetricSample) => void;
+   548→
+   549→  // workspace
+   550→  setActiveWorkspace: (id: string) => void;
+   551→  addWorkspace: (w: { name: string; description: string; color: Workspace["color"] }) => string;
+   552→  updateWorkspace: (id: string, patch: Partial<Workspace>) => void;
+   553→  removeWorkspace: (id: string) => void;
+   554→  updateGlobalSettings: (patch: Partial<GlobalSettings>) => void;
+   555→  updateWorkspaceSettings: (workspaceId: string, patch: Partial<WorkspaceSettings>) => void;
+   556→
+   557→  // instance actions
+   558→  startInstance: (config: { name: string; model: string; profile: string; port: number; host: string; gpu: string }) => string;
+   559→  stopInstance: (id: string) => void;
+   560→  removeInstance: (id: string) => void;
+   561→  markRunning: (id: string) => void;
+   562→  markStopped: (id: string) => void;
+   563→  bumpStats: (id: string, prompt: number, gen: number, tps: number) => void;
+   564→  setActiveConsole: (id: string) => void;
+   565→  toggleConsole: () => void;
+   566→  setConsoleOpen: (open: boolean) => void;
+   567→  setConsoleHeight: (h: number) => void;
+   568→  clearConsole: (id: string) => void;
+   569→
+   570→  // models
+   571→  downloadModel: (id: string) => void;
+   572→  startHFDownload: (config: { repo: string; quant: string; modelName: string; builder: string }) => string;
+   573→  updateModel: (id: string, patch: Partial<LlamaModel>) => void;
+   574→  deleteModel: (id: string) => void;
+   575→  markModelMissing: (id: string, missing: boolean) => void;
+   576→  locateModel: (id: string, newPath: string) => void;
+   577→
+   578→  // releases
+   579→  installRelease: (id: string) => void;
+   580→  uninstallRelease: (id: string) => void;
+   581→  startReleaseDownload: (releaseId: string) => string;
+   582→  copyCudaLibs: (releaseId: string) => void;
+   583→
+   584→  // profiles
+   585→  addProfile: (p: Omit<LlamaProfile, "id">) => void;
+   586→  removeProfile: (id: string) => void;
+   587→  shareProfile: (id: string) => void;
+   588→  calibrateProfile: (id: string) => void;
+   589→
+   590→  // notifications
+   591→  addNotification: (n: Omit<AppNotification, "id" | "ts" | "read">) => void;
+   592→  markNotificationRead: (id: string) => void;
+   593→  markAllNotificationsRead: () => void;
+   594→  clearNotifications: () => void;
+   595→
+   596→  appendLog: (line: ConsoleLine) => void;
+   597→}
+   598→
+   599→const SYSTEM_CONSOLE_ID = "system";
+   600→
+   601→const initialSystemLogs: ConsoleLine[] = [
+   602→  { id: uid("log"), instanceId: SYSTEM_CONSOLE_ID, ts: nowTs() - 5000, kind: "info", text: "[boot] LlamaLauncher v0.4.2 ready" },
+   603→  { id: uid("log"), instanceId: SYSTEM_CONSOLE_ID, ts: nowTs() - 4800, kind: "debug", text: "[boot] detected 1 CUDA device: NVIDIA RTX 4070 (12 GB)" },
+   604→  { id: uid("log"), instanceId: SYSTEM_CONSOLE_ID, ts: nowTs() - 4600, kind: "info", text: "[boot] llama.cpp build b4402 (8f1f7e1) installed at /opt/llama.cpp" },
+   605→  { id: uid("log"), instanceId: SYSTEM_CONSOLE_ID, ts: nowTs() - 4400, kind: "success", text: "[boot] 6 models available, 6 profiles configured (4 global, 2 model-tuned)" },
+   606→  { id: uid("log"), instanceId: SYSTEM_CONSOLE_ID, ts: nowTs() - 4200, kind: "info", text: "[hibernate] auto-hibernation enabled: idle 75s → hibernate (models unloaded)" },
+   607→  { id: uid("log"), instanceId: SYSTEM_CONSOLE_ID, ts: nowTs() - 200, kind: "info", text: "[ready] start an instance to launch a llama-server process" },
+   608→];
+   609→
+   610→export const SYSTEM_CONSOLE = SYSTEM_CONSOLE_ID;
+   611→
+   612→const defaultGlobalSettings: GlobalSettings = {
+   613→  llamaCppPath: "/opt/llama.cpp/build/llama-server",
+   614→  modelsDir: "/models",
+   615→  cudaLibsDir: "/opt/cuda/lib64",
+   616→  defaultHost: "127.0.0.1",
+   617→  portRangeStart: 8080,
+   618→  portRangeEnd: 8099,
+   619→  notifyOnCrash: true,
+   620→  notifyOnHighMemory: true,
+   621→  notifyOnNewRelease: true,
+   622→  checkForReleases: true,
+   623→  releaseChannel: "stable",
+   624→};
+   625→
+   626→const defaultWorkspaceSettings: WorkspaceSettings = {
+   627→  hibernateAfterSec: 75,
+   628→  defaultGpuLayers: 99,
+   629→  defaultThreads: 8,
+   630→  autoCalibrate: true,
+   631→  maxConcurrentInstances: 4,
+   632→};
+   633→
+   634→function seedMetrics(): MetricSample[] {
+   635→  const now = Date.now();
+   636→  const out: MetricSample[] = [];
+   637→  for (let i = 59; i >= 0; i--) {
+   638→    out.push({ t: now - i * 1000, cpu: 0, ram: 0, gpu: 0, gpuMem: 0, tps: 0, reqPerMin: 0 });
+   639→  }
+   640→  return out;
+   641→}
+   642→
+   643→let watchdogTimer: ReturnType<typeof setInterval> | null = null;
+   644→
+   645→function startWatchdog() {
+   646→  if (watchdogTimer) clearInterval(watchdogTimer);
+   647→  watchdogTimer = setInterval(() => {
+   648→    const s = useLlamaStore.getState();
+   649→    const since = Date.now() - s.lastActivityAt;
+   650→    const wsSettings = s.workspaceSettings[s.activeWorkspaceId] ?? defaultWorkspaceSettings;
+   651→    const hibernateAfterMs = wsSettings.hibernateAfterSec * 1000;
+   652→    const running = s.instances.filter((i) => i.status === "running" || i.status === "starting");
+   653→
+   654→    if (s.appStatus === "waking" || s.appStatus === "hibernating") return;
+   655→
+   656→    if (since >= hibernateAfterMs && running.length > 0 && s.appStatus !== "hibernating") {
+   657→      s.setAppStatus("hibernating");
+   658→      emitLog(SYSTEM_CONSOLE_ID, "warn", `[${fmtTime(new Date())}] [hibernate] idle ${Math.round(since / 1000)}s — unloading ${running.length} model(s) from VRAM`);
+   659→      running.forEach((inst) => {
+   660→        useLlamaStore.getState().stopInstance(inst.id);
+   661→        useLlamaStore.setState((st) => ({
+   662→          hibernatedInstanceIds: [...st.hibernatedInstanceIds, inst.id],
+   663→          instances: st.instances.map((i) =>
+   664→            i.id === inst.id
+   665→              ? { ...i, hibernatedConfig: { name: i.name, model: i.model, profile: i.profile, port: i.port, host: i.host, gpu: i.gpu } }
+   666→              : i,
+   667→          ),
+   668→        }));
+   669→      });
+   670→      s.addNotification({ kind: "warn", title: "Hibernation started", body: `${running.length} model(s) unloaded from VRAM after ${Math.round(since / 1000)}s idle.` });
+   671→      setTimeout(() => {
+   672→        emitLog(SYSTEM_CONSOLE_ID, "info", `[${fmtTime(new Date())}] [hibernate] all models unloaded. VRAM freed. Awaiting next request to hot-reload.`);
+   673→      }, 1200);
+   674→    } else if (since >= hibernateAfterMs * 0.6 && s.appStatus === "active") {
+   675→      s.setAppStatus("idle");
+   676→      emitLog(SYSTEM_CONSOLE_ID, "debug", `[${fmtTime(new Date())}] [idle] no activity for ${Math.round(since / 1000)}s — will hibernate in ${Math.max(0, Math.round((hibernateAfterMs - since) / 1000))}s`);
+   677→    } else if (since < hibernateAfterMs * 0.6 && s.appStatus === "idle") {
+   678→      s.setAppStatus("active");
+   679→    }
+   680→  }, 3000);
+   681→}
+   682→
+   683→let metricsTimer: ReturnType<typeof setInterval> | null = null;
+   684→function startMetricsTicker() {
+   685→  if (metricsTimer) clearInterval(metricsTimer);
+   686→  metricsTimer = setInterval(() => {
+   687→    const s = useLlamaStore.getState();
+   688→    const running = s.instances.filter((i) => i.status === "running");
+   689→    const totalTps = running.reduce((sum, i) => sum + i.tokensPerSec, 0);
+   690→    const totalMem = running.reduce((sum, i) => sum + i.memoryMb, 0);
+   691→    const totalReq = running.reduce((sum, i) => sum + i.requestsPerMin, 0);
+   692→    const isHibernating = s.appStatus === "hibernating";
+   693→    const sample: MetricSample = {
+   694→      t: Date.now(),
+   695→      cpu: isHibernating ? 1 + Math.random() * 2 : 8 + Math.random() * 18 + running.length * 3,
+   696→      ram: isHibernating ? 18 + Math.random() * 4 : 32 + Math.random() * 6 + totalMem / 1024,
+   697→      gpu: isHibernating ? 0 : Math.min(100, 15 + running.length * 22 + Math.random() * 18),
+   698→      gpuMem: isHibernating ? 0 : Math.min(100, (totalMem / 12288) * 100),
+   699→      tps: totalTps,
+   700→      reqPerMin: totalReq,
+   701→    };
+   702→    useLlamaStore.getState().pushMetric(sample);
+   703→  }, 1500);
+   704→}
+   705→
+   706→// Simulated GitHub release poller — fires a "new release" notification once
+   707→let releaseCheckTimer: ReturnType<typeof setTimeout> | null = null;
+   708→function startReleaseChecker() {
+   709→  if (releaseCheckTimer) clearTimeout(releaseCheckTimer);
+   710→  releaseCheckTimer = setTimeout(() => {
+   711→    const s = useLlamaStore.getState();
+   712→    if (!s.globalSettings.notifyOnNewRelease || !s.globalSettings.checkForReleases) return;
+   713→    s.addNotification({
+   714→      kind: "release",
+   715→      title: "New llama.cpp release available",
+   716→      body: "b4403 (9a2c7f1) — Improved RPC server, fixed KV cache eviction bug. CUDA 12, CUDA 13, Vulkan builds available.",
+   717→      actionLabel: "Install",
+   718→    });
+   719→    emitLog(SYSTEM_CONSOLE_ID, "info", `[${fmtTime(new Date())}] [github] new release detected: b4403`);
+   720→  }, 12000);
+   721→}
+   722→
+   723→export const useLlamaStore = create<LlamaStore>((set, get) => {
+   724→  logSubscribers.add((line) => {
+   725→    get().appendLog(line);
+   726→  });
+   727→
+   728→  const store: LlamaStore = {
+   729→    instances: seedInstances,
+   730→    models: seedModels,
+   731→    profiles: seedProfiles,
+   732→    releases: seedReleases,
+   733→    workspaces: seedWorkspaces,
+   734→    activeWorkspaceId: WS_PERSONAL,
+   735→    downloads: [],
+   736→    logs: { [SYSTEM_CONSOLE_ID]: initialSystemLogs },
+   737→    activeConsoleId: SYSTEM_CONSOLE_ID,
+   738→    consoleOpen: false,
+   739→    consoleHeight: 240,
+   740→    notifications: [],
+   741→
+   742→    globalSettings: defaultGlobalSettings,
+   743→    workspaceSettings: {
+   744→      [WS_PERSONAL]: { ...defaultWorkspaceSettings },
+   745→      [WS_TEAM]: { ...defaultWorkspaceSettings, hibernateAfterSec: 300, maxConcurrentInstances: 8 },
+   746→      [WS_RESEARCH]: { ...defaultWorkspaceSettings, hibernateAfterSec: 0, autoCalibrate: false },
+   747→    },
+   748→
+   749→    appStatus: "active",
+   750→    lastActivityAt: nowTs(),
+   751→    hibernatedInstanceIds: [],
+   752→    metrics: seedMetrics(),
+   753→
+   754→    registerActivity: () => {
+   755→      const s = get();
+   756→      const wasHibernating = s.appStatus === "hibernating";
+   757→      set({ lastActivityAt: nowTs() });
+   758→      if (wasHibernating) {
+   759→        set({ appStatus: "waking" });
+   760→        emitLog(SYSTEM_CONSOLE_ID, "info", `[${fmtTime(new Date())}] [wake] activity detected — hot-reloading ${s.hibernatedInstanceIds.length} hibernated model(s)`);
+   761→        const hibernatedIds = [...s.hibernatedInstanceIds];
+   762→        set({ hibernatedInstanceIds: [] });
+   763→        let delay = 0;
+   764→        hibernatedIds.forEach((oldId) => {
+   765→          const oldInst = s.instances.find((i) => i.id === oldId);
+   766→          const cfg = oldInst?.hibernatedConfig;
+   767→          if (!cfg) return;
+   768→          setTimeout(() => {
+   769→            get().removeInstance(oldId);
+   770→            const newId = get().startInstance(cfg);
+   771→            emitLog(newId, "info", `[${fmtTime(new Date())}] [wake] hot-reloaded from hibernation`);
+   772→          }, delay);
+   773→          delay += 400;
+   774→        });
+   775→        setTimeout(() => {
+   776→          get().setAppStatus("active");
+   777→          emitLog(SYSTEM_CONSOLE_ID, "success", `[${fmtTime(new Date())}] [wake] all models reloaded, resuming normal operation`);
+   778→        }, delay + 2000);
+   779→      } else if (s.appStatus === "idle") {
+   780→        set({ appStatus: "active" });
+   781→      }
+   782→    },
+   783→
+   784→    setAppStatus: (st) => set({ appStatus: st }),
+   785→    forceHibernate: () => {
+   786→      const wsSettings = get().workspaceSettings[get().activeWorkspaceId];
+   787→      set({ lastActivityAt: nowTs() - (wsSettings?.hibernateAfterSec ?? 75) * 1000 - 1000 });
+   788→    },
+   789→    forceWake: () => { get().registerActivity(); },
+   790→    pushMetric: (m) => set((s) => ({ metrics: [...s.metrics.slice(-59), m] })),
+   791→
+   792→    setActiveWorkspace: (id) => {
+   793→      set({ activeWorkspaceId: id });
+   794→      const ws = get().workspaces.find((w) => w.id === id);
+   795→      if (ws) emitLog(SYSTEM_CONSOLE_ID, "info", `[${fmtTime(new Date())}] [workspace] switched to "${ws.name}"`);
+   796→    },
+   797→    addWorkspace: (w) => {
+   798→      const id = `ws_${Math.random().toString(36).slice(2, 8)}`;
+   799→      set((s) => ({
+   800→        workspaces: [...s.workspaces, { ...w, id }],
+   801→        workspaceSettings: { ...s.workspaceSettings, [id]: { ...defaultWorkspaceSettings } },
+   802→      }));
+   803→      return id;
+   804→    },
+   805→    updateWorkspace: (id, patch) =>
+   806→      set((s) => ({ workspaces: s.workspaces.map((w) => (w.id === id ? { ...w, ...patch } : w)) })),
+   807→    removeWorkspace: (id) =>
+   808→      set((s) => ({
+   809→        workspaces: s.workspaces.filter((w) => w.id !== id),
+   810→        instances: s.instances.filter((i) => i.workspaceId !== id),
+   811→        models: s.models.filter((m) => m.workspaceId !== id),
+   812→      })),
+   813→
+   814→    updateGlobalSettings: (patch) => set((s) => ({ globalSettings: { ...s.globalSettings, ...patch } })),
+   815→    updateWorkspaceSettings: (workspaceId, patch) =>
+   816→      set((s) => ({
+   817→        workspaceSettings: {
+   818→          ...s.workspaceSettings,
+   819→          [workspaceId]: { ...(s.workspaceSettings[workspaceId] ?? defaultWorkspaceSettings), ...patch },
+   820→        },
+   821→      })),
+   822→
+   823→    startInstance: ({ name, model, profile, port, host, gpu }) => {
+   824→      const id = uid("inst");
+   825→      const wsId = get().activeWorkspaceId;
+   826→      const prof = get().profiles.find((p) => p.id === profile) ?? get().profiles[0];
+   827→      const colors: LlamaInstance["color"][] = ["green", "orange", "blue", "pink", "purple"];
+   828→      const color = colors[get().instances.length % colors.length];
+   829→      const instance: LlamaInstance = {
+   830→        id, name, model, profile: prof.name, port, host, status: "starting",
+   831→        gpu, ctxSize: prof.ctxSize, threads: prof.threads, color,
+   832→        startedAt: nowTs(), promptTokens: 0, generatedTokens: 0,
+   833→        requestsPerMin: 0, tokensPerSec: 0, memoryMb: 0,
+   834→        peakTokensPerSec: 0, totalRequests: 0, errorCount: 0, workspaceId: wsId,
+   835→      };
+   836→      set((s) => ({
+   837→        instances: [...s.instances, instance],
+   838→        logs: { ...s.logs, [id]: [] },
+   839→        activeConsoleId: id, consoleOpen: true, appStatus: "active", lastActivityAt: nowTs(),
+   840→      }));
+   841→      emitLog(id, "info", `[${fmtTime(new Date())}] starting llama-server for "${name}" (model: ${model})`);
+   842→      runStartupSequence(instance, get());
+   843→      get().registerActivity();
+   844→      return id;
+   845→    },
+   846→
+   847→    stopInstance: (id) => {
+   848→      const inst = get().instances.find((i) => i.id === id);
+   849→      if (!inst) return;
+   850→      set((s) => ({ instances: s.instances.map((i) => (i.id === id ? { ...i, status: "stopping" } : i)) }));
+   851→      runShutdownSequence(inst, get());
+   852→    },
+   853→
+   854→    removeInstance: (id) => {
+   855→      const sim = instanceSims.get(id);
+   856→      if (sim) sim.stop();
+   857→      instanceSims.delete(id);
+   858→      set((s) => {
+   859→        const newLogs = { ...s.logs };
+   860→        delete newLogs[id];
+   861→        return {
+   862→          instances: s.instances.filter((i) => i.id !== id),
+   863→          logs: newLogs,
+   864→          activeConsoleId: s.activeConsoleId === id ? SYSTEM_CONSOLE_ID : s.activeConsoleId,
+   865→        };
+   866→      });
+   867→    },
+   868→
+   869→    markRunning: (id) => set((s) => ({
+   870→      instances: s.instances.map((i) => (i.id === id ? { ...i, status: "running", startedAt: i.startedAt ?? nowTs() } : i)),
+   871→    })),
+   872→    markStopped: (id) => set((s) => ({
+   873→      instances: s.instances.map((i) => (i.id === id ? { ...i, status: "stopped", startedAt: undefined } : i)),
+   874→    })),
+   875→
+   876→    bumpStats: (id, prompt, gen, tps) => set((s) => ({
+   877→      instances: s.instances.map((i) =>
+   878→        i.id === id
+   879→          ? {
+   880→              ...i,
+   881→              promptTokens: i.promptTokens + prompt,
+   882→              generatedTokens: i.generatedTokens + gen,
+   883→              tokensPerSec: tps,
+   884→              peakTokensPerSec: Math.max(i.peakTokensPerSec, tps),
+   885→              requestsPerMin: i.requestsPerMin + 1,
+   886→              totalRequests: i.totalRequests + 1,
+   887→              memoryMb: Math.round(i.ctxSize * 0.5 + 1200 + Math.random() * 200),
+   888→            }
+   889→          : i,
+   890→      ),
+   891→    })),
+   892→
+   893→    setActiveConsole: (id) => set({ activeConsoleId: id, consoleOpen: true }),
+   894→    toggleConsole: () => set((s) => ({ consoleOpen: !s.consoleOpen })),
+   895→    setConsoleOpen: (open) => set({ consoleOpen: open }),
+   896→    setConsoleHeight: (h) => set({ consoleHeight: Math.max(120, Math.min(600, h)) }),
+   897→    clearConsole: (id) => set((s) => ({ logs: { ...s.logs, [id]: [] } })),
+   898→
+   899→    downloadModel: (id) => set((s) => ({
+   900→      models: s.models.map((m) => (m.id === id ? { ...m, downloaded: true, missing: false } : m)),
+   901→    })),
+   902→
+   903→    startHFDownload: ({ repo, quant, modelName, builder }) => {
+   904→      const dlId = uid("dl");
+   905→      const q = HF_QUANTS.find((x) => x.id === quant);
+   906→      const repoInfo = HF_CATALOG.find((r) => r.repo === repo);
+   907→      const sizeGb = (repoInfo?.baseSizeGb ?? 8) * (q?.sizeFactor ?? 0.6);
+   908→      const filename = `${repo.split("/")[1]}-${quant}.gguf`;
+   909→      const dl: HFDownload = {
+   910→        id: dlId, repo, quant, filename, sizeGb, progress: 0, status: "downloading",
+   911→        startedAt: nowTs(), modelName, builder, kind: "model",
+   912→      };
+   913→      set((s) => ({ downloads: [...s.downloads, dl] }));
+   914→      emitLog(SYSTEM_CONSOLE_ID, "info", `[${fmtTime(new Date())}] [hf] downloading ${filename} from ${repo} (${sizeGb.toFixed(1)} GB, builder: ${builder})`);
+   915→
+   916→      // Smooth progressive download — small steady increments to avoid UI jitter
+   917→      let progress = 0;
+   918→      const tick = () => {
+   919→        progress += 1.5 + Math.random() * 1.5;
+   920→        if (progress >= 100) {
+   921→          const newModel: LlamaModel = {
+   922→            id: uid("m"),
+   923→            name: `${modelName} ${quant}`,
+   924→            family: repoInfo?.family ?? "unknown",
+   925→            sizeGb: Math.round(sizeGb * 10) / 10,
+   926→            quant, downloaded: true, missing: false,
+   927→            path: `/models/${filename}`, hfRepo: repo, builder,
+   928→            architecture: repoInfo?.architecture ?? "llama",
+   929→            contextLength: repoInfo?.contextLength ?? 8192,
+   930→            parameterCount: repoInfo?.parameterCount ?? "?B",
+   931→            quantizationBits: q?.bits ?? 4,
+   932→            license: repoInfo?.license ?? "Unknown",
+   933→            description: repoInfo?.description ?? modelName,
+   934→            uploadedAt: repoInfo?.uploadedAt ?? new Date().toISOString().slice(0, 10),
+   935→            hfDownloads: repoInfo?.downloads ?? 0,
+   936→            tags: repoInfo?.tags ?? [],
+   937→            workspaceId: get().activeWorkspaceId,
+   938→            addedAt: nowTs(),
+   939→          };
+   940→          set((st) => ({
+   941→            downloads: st.downloads.map((d) => (d.id === dlId ? { ...d, progress: 100, status: "completed" } : d)),
+   942→            models: [...st.models, newModel],
+   943→          }));
+   944→          emitLog(SYSTEM_CONSOLE_ID, "success", `[${fmtTime(new Date())}] [hf] download complete: ${filename} (${sizeGb.toFixed(1)} GB)`);
+   945→          get().addNotification({ kind: "download", title: "Model downloaded", body: `${modelName} ${quant} (${sizeGb.toFixed(1)} GB) is ready to use.` });
+   946→          return;
+   947→        }
+   948→        set((st) => ({ downloads: st.downloads.map((d) => (d.id === dlId ? { ...d, progress } : d)) }));
+   949→        setTimeout(tick, 200);
+   950→      };
+   951→      setTimeout(tick, 400);
+   952→      return dlId;
+   953→    },
+   954→
+   955→    updateModel: (id, patch) => set((s) => ({
+   956→      models: s.models.map((m) => (m.id === id ? { ...m, ...patch } : m)),
+   957→    })),
+   958→    deleteModel: (id) => set((s) => ({ models: s.models.filter((m) => m.id !== id) })),
+   959→    markModelMissing: (id, missing) => set((s) => ({
+   960→      models: s.models.map((m) => (m.id === id ? { ...m, missing, downloaded: missing ? false : m.downloaded } : m)),
+   961→    })),
+   962→    locateModel: (id, newPath) => set((s) => ({
+   963→      models: s.models.map((m) => (m.id === id ? { ...m, path: newPath, missing: false, downloaded: true } : m)),
+   964→    })),
+   965→
+   966→    installRelease: (id) => set((s) => ({
+   967→      releases: s.releases.map((r) => (r.id === id ? { ...r, installed: true, installing: false, installProgress: 100 } : r)),
+   968→    })),
+   969→    uninstallRelease: (id) => set((s) => ({
+   970→      releases: s.releases.map((r) => (r.id === id ? { ...r, installed: false } : r)),
+   971→    })),
+   972→
+   973→    startReleaseDownload: (releaseId) => {
+   974→      const dlId = uid("dl");
+   975→      const rel = get().releases.find((r) => r.id === releaseId);
+   976→      if (!rel) return dlId;
+   977→      const sizeGb = rel.sizeMb / 1024;
+   978→      const dl: HFDownload = {
+   979→        id: dlId, repo: `llama.cpp ${rel.tag} (${rel.variant})`, quant: rel.variant,
+   980→        filename: `llama-${rel.tag}-bin-${rel.variant}-x64.zip`, sizeGb, progress: 0,
+   981→        status: "downloading", startedAt: nowTs(), modelName: `llama.cpp ${rel.tag}`,
+   982→        builder: "ggerganov", kind: "release", variant: rel.variant,
+   983→      };
+   984→      set((s) => ({
+   985→        downloads: [...s.downloads, dl],
+   986→        releases: s.releases.map((r) => (r.id === releaseId ? { ...r, installing: true, installProgress: 0 } : r)),
+   987→      }));
+   988→      emitLog(SYSTEM_CONSOLE_ID, "info", `[${fmtTime(new Date())}] [release] downloading llama.cpp ${rel.tag} (${rel.variant}, ${rel.sizeMb} MB)`);
+   989→
+   990→      let progress = 0;
+   991→      const tick = () => {
+   992→        progress += 2 + Math.random() * 2;
+   993→        if (progress >= 100) {
+   994→          set((st) => ({
+   995→            downloads: st.downloads.map((d) => (d.id === dlId ? { ...d, progress: 100, status: "completed" } : d)),
+   996→            releases: st.releases.map((r) => (r.id === releaseId ? { ...r, installing: false, installProgress: 100, installed: true } : r)),
+   997→          }));
+   998→          emitLog(SYSTEM_CONSOLE_ID, "success", `[${fmtTime(new Date())}] [release] llama.cpp ${rel.tag} (${rel.variant}) installed`);
+   999→          get().addNotification({ kind: "download", title: "Release installed", body: `llama.cpp ${rel.tag} (${rel.variant}) is ready.` });
+  1000→          // For CUDA variants, simulate copying CUDA libs
+  1001→          if (rel.variant === "cuda12" || rel.variant === "cuda13") {
+  1002→            setTimeout(() => get().copyCudaLibs(releaseId), 600);
+  1003→          }
+  1004→          return;
+  1005→        }
+  1006→        set((st) => ({
+  1007→          downloads: st.downloads.map((d) => (d.id === dlId ? { ...d, progress } : d)),
+  1008→          releases: st.releases.map((r) => (r.id === releaseId ? { ...r, installProgress: progress } : r)),
+  1009→        }));
+  1010→        setTimeout(tick, 180);
+  1011→      };
+  1012→      setTimeout(tick, 400);
+  1013→      return dlId;
+  1014→    },
+  1015→
+  1016→    copyCudaLibs: (releaseId) => {
+  1017→      const rel = get().releases.find((r) => r.id === releaseId);
+  1018→      if (!rel) return;
+  1019→      const cudaDir = get().globalSettings.cudaLibsDir;
+  1020→      emitLog(SYSTEM_CONSOLE_ID, "info", `[${fmtTime(new Date())}] [cuda] copying CUDA libraries from ${cudaDir} → llama.cpp ${rel.tag} build dir`);
+  1021→      setTimeout(() => {
+  1022→        emitLog(SYSTEM_CONSOLE_ID, "debug", `[${fmtTime(new Date())}] [cuda] copied cublasLt.dll, cublas.dll, cudart64_*.dll, cudnn*.dll`);
+  1023→      }, 400);
+  1024→      setTimeout(() => {
+  1025→        emitLog(SYSTEM_CONSOLE_ID, "success", `[${fmtTime(new Date())}] [cuda] CUDA libraries linked. ${rel.variant.toUpperCase()} backend ready.`);
+  1026→        get().addNotification({ kind: "info", title: "CUDA libraries copied", body: `CUDA libs linked to llama.cpp ${rel.tag} (${rel.variant}).` });
+  1027→      }, 900);
+  1028→    },
+  1029→
+  1030→    addProfile: (p) => set((s) => ({ profiles: [...s.profiles, { ...p, id: uid("prof") }] })),
+  1031→    removeProfile: (id) => set((s) => ({ profiles: s.profiles.filter((p) => p.id !== id) })),
+  1032→    shareProfile: (id) => set((s) => ({
+  1033→      profiles: s.profiles.map((p) => (p.id === id ? { ...p, shared: true, shareId: p.shareId ?? `sh_${id}_v1` } : p)),
+  1034→    })),
+  1035→    calibrateProfile: (id) => set((s) => ({
+  1036→      profiles: s.profiles.map((p) =>
+  1037→        p.id === id ? { ...p, calibrationScore: Math.min(100, (p.calibrationScore ?? 70) + 5 + Math.floor(Math.random() * 8)) } : p,
+  1038→      ),
+  1039→    })),
+  1040→
+  1041→    addNotification: (n) => set((s) => ({
+  1042→      notifications: [{ ...n, id: uid("notif"), ts: nowTs(), read: false }, ...s.notifications].slice(0, 50),
+  1043→    })),
+  1044→    markNotificationRead: (id) => set((s) => ({
+  1045→      notifications: s.notifications.map((n) => (n.id === id ? { ...n, read: true } : n)),
+  1046→    })),
+  1047→    markAllNotificationsRead: () => set((s) => ({
+  1048→      notifications: s.notifications.map((n) => ({ ...n, read: true })),
+  1049→    })),
+  1050→    clearNotifications: () => set({ notifications: [] }),
+  1051→
+  1052→    appendLog: (line) => set((s) => {
+  1053→      const list = s.logs[line.instanceId] ?? [];
+  1054→      const next = list.length > 800 ? list.slice(list.length - 800) : list;
+  1055→      return { logs: { ...s.logs, [line.instanceId]: [...next, line] } };
+  1056→    }),
+  1057→  };
+  1058→
+  1059→  if (typeof window !== "undefined") {
+  1060→    setTimeout(() => {
+  1061→      startWatchdog();
+  1062→      startMetricsTicker();
+  1063→      startReleaseChecker();
+  1064→    }, 500);
+  1065→  }
+  1066→
+  1067→  return store;
+  1068→});
+  1069→
+  1070→// ---------- Selectors / helpers ----------
+  1071→
+  1072→export function uptimeString(startedAt?: number) {
+  1073→  if (!startedAt) return "--";
+  1074→  const sec = Math.floor((Date.now() - startedAt) / 1000);
+  1075→  const h = Math.floor(sec / 3600);
+  1076→  const m = Math.floor((sec % 3600) / 60);
+  1077→  const s = sec % 60;
+  1078→  if (h > 0) return `${h}h ${m}m`;
+  1079→  if (m > 0) return `${m}m ${s}s`;
+  1080→  return `${s}s`;
+  1081→}
+  1082→
+  1083→export function pickPort() {
+  1084→  return 8080 + Math.floor(Math.random() * 20);
+  1085→}
+  1086→
+  1087→export function fmtNum(n: number) {
+  1088→  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
+  1089→  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`;
+  1090→  return String(n);
+  1091→}
+  1092→
+  1093→export function fmtBytes(gb: number) {
+  1094→  if (gb >= 1) return `${gb.toFixed(1)} GB`;
+  1095→  return `${(gb * 1024).toFixed(0)} MB`;
+  1096→}
+  1097→

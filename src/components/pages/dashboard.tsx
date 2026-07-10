@@ -22,6 +22,9 @@ import {
   Clock,
   Radio,
   Gauge,
+  Boxes,
+  Download,
+  CheckCircle2,
 } from "lucide-react";
 import {
   BarChart,
@@ -44,6 +47,7 @@ import {
   useLlamaStore,
   uptimeString,
   type MetricSample,
+  RELEASE_VARIANTS,
 } from "@/lib/llama-store";
 
 const monthlyData = [
@@ -528,6 +532,7 @@ function LiveMetricsColumn() {
 export function Dashboard() {
   const instances = useLlamaStore((s) => s.instances);
   const models = useLlamaStore((s) => s.models);
+  const releases = useLlamaStore((s) => s.releases);
   const setActiveConsole = useLlamaStore((s) => s.setActiveConsole);
   const setConsoleOpen = useLlamaStore((s) => s.setConsoleOpen);
 
@@ -774,6 +779,58 @@ export function Dashboard() {
                   </div>
                 ))}
               </div>
+            </CardContent>
+          </Card>
+
+          {/* Available llama.cpp release variants */}
+          <Card className="border shadow-soft">
+            <CardHeader className="pb-2">
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="flex items-center gap-2 text-sm font-semibold">
+                    <Boxes className="size-4 text-primary" />
+                    llama.cpp Builds
+                  </CardTitle>
+                  <p className="text-xs text-muted-foreground">Available release variants · priority backends highlighted</p>
+                </div>
+                <Badge variant="secondary" className="bg-primary/10 text-primary">
+                  {releases.filter((r) => r.installed).length} installed
+                </Badge>
+              </div>
+            </CardHeader>
+            <CardContent className="pt-2">
+              <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                {RELEASE_VARIANTS.map((v) => {
+                  const variantReleases = releases.filter((r) => r.variant === v.id);
+                  const installed = variantReleases.some((r) => r.installed);
+                  return (
+                    <div
+                      key={v.id}
+                      className={cn(
+                        "flex flex-col gap-1 rounded-lg border p-3",
+                        v.priority ? "border-primary/30 bg-primary/5" : "border-border bg-muted/30",
+                      )}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-semibold">{v.label}</span>
+                        {installed ? (
+                          <CheckCircle2 className="size-3.5 text-emerald-500" />
+                        ) : v.priority ? (
+                          <Badge variant="secondary" className="h-4 px-1 text-[9px] bg-primary/15 text-primary">Priority</Badge>
+                        ) : null}
+                      </div>
+                      <p className="text-[10px] text-muted-foreground">{v.note}</p>
+                      <div className="mt-1 flex items-center gap-1 text-[10px] text-muted-foreground">
+                        <Download className="size-2.5" />
+                        {variantReleases.length} builds · {installed ? "1 active" : "none installed"}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              <p className="mt-3 text-[10px] text-muted-foreground">
+                Priority builds (CUDA 12, CUDA 13, Vulkan) are shown first when downloading releases. Other backends are available under "Show all variants" on the Releases page.
+              </p>
             </CardContent>
           </Card>
         </div>

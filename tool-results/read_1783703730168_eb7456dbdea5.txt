@@ -1,0 +1,265 @@
+     1→     1→# LlamaLauncher - Work Log
+     2→     2→
+     3→     3→## Project Overview
+     4→     4→Port the OptiDoc/llama-launcher (Tauri desktop app) UI to a Next.js 16 web app, matching the reference design (work-management-dashboard.jpg).
+     5→     5→
+     6→     6→## Key Requirements (from user)
+     7→     7→1. Clone & review repo - DONE (cloned to /tmp/llama-launcher)
+     8→     8→2. Re-check design - must match reference (mint green bg, pink accent, colored cards, charts, clean/minimal)
+     9→     9→3. Remove the top window panel/bar (NO TopBar component)
+    10→    10→4. Console moved to bottom of window, must be collapsible
+    11→    11→5. Each llama server runs in its own console - separate console tab per running instance
+    12→    12→
+    13→    13→## Reference Design Summary
+    14→    14→- Light mint green background (#E0F5E9 / #F0F7F0)
+    15→    15→- Soft pink accent (#FF9EB1 / #FF4D6D for primary buttons)
+    16→    16→- Flat cards with subtle shadows, rounded corners (8px)
+    17→    17→- Three colored cards (green, orange, blue) for projects/instances
+    18→    18→- Charts: bar chart, line chart, donut chart
+    19→    19→- Left sidebar navigation
+    20→    20→- Clean, minimalist, professional vibe
+    21→    21→- Sans-serif font (Inter-like)
+    22→    22→- Avatar groups with "+N" badges
+    23→    23→- Calendar widget
+    24→    24→
+    25→    25→## Architecture Decisions
+    26→    26→- Next.js 16 App Router, single `/` route
+    27→    27→- Zustand store for instances/models/profiles/console logs
+    28→    28→- Client-side llama server simulator (streams realistic llama.cpp startup logs)
+    29→    29→- recharts for dashboard charts
+    30→    30→- framer-motion for animations
+    31→    31→- react-resizable-panels for resizable console
+    32→    32→- shadcn/ui components throughout
+    33→    33→- Mint/pink theme in globals.css (light + dark)
+    34→    34→
+    35→    35→## Task IDs
+    36→    36→- Task 1: Design system (globals.css theme) - main agent
+    37→    37→- Task 2: Zustand store + simulator - main agent
+    38→    38→- Task 3: App shell (sidebar + bottom console, NO top bar) - main agent
+    39→    39→- Task 4: Dashboard page with charts - main agent
+    40→    40→- Task 5: Other pages (Models, Profiles, Instances, Releases, Logs, Settings) - main agent
+    41→    41→- Task 6: Collapsible bottom console with per-instance tabs - main agent
+    42→    42→- Task 7: Wire up page.tsx + browser verification - main agent
+    43→    43→
+    44→    44→---
+    45→    45→Task ID: 0
+    46→    46→Agent: main
+    47→    47→Task: Setup & planning
+    48→    48→
+    49→    49→Work Log:
+    50→    50→- Cloned https://github.com/OptiDoc/llama-launcher to /tmp/llama-launcher
+    51→    51→- Reviewed repo: Tauri + Vite + React + shadcn/ui, has TopBar, Sidebar, ConsoleTabs components
+    52→    52→- Analyzed reference image with VLM: mint green bg, pink accent, colored cards, 3 chart types
+    53→    53→- Confirmed Next.js project has recharts, zustand, framer-motion, react-resizable-panels, all shadcn/ui
+    54→    54→
+    55→    55→Stage Summary:
+    56→    56→- Plan locked: build Next.js port with reference design, no top bar, collapsible bottom console, per-instance console tabs
+    57→    57→- Starting implementation
+    58→    58→
+    59→    59→---
+    60→    60→Task ID: 5
+    61→    61→Agent: subagent (pages builder)
+    62→    62→Task: Build Instances, Models, Profiles, Releases, Logs, Settings pages
+    63→    63→
+    64→    64→Work Log:
+    65→    65→- Read worklog.md, llama-store.ts, dashboard.tsx, sidebar.tsx, app-shell.tsx, bottom-console.tsx, globals.css and shadcn ui primitives (dialog, select, switch, scroll-area, progress, badge) to learn types, design system and export conventions.
+    66→    66→- Created src/components/pages/instances.tsx — InstancesPage with colored instance cards (card-${color}), status badges, stat tiles (port/uptime/tps/req-min), memory + profile progress, per-card Console/Stop/Start/Remove actions, empty state, and a LaunchDialog form (name/model/profile/port/host/gpu) that calls startInstance + setActiveConsole + setConsoleOpen(true).
+    67→    67→- Created src/components/pages/models.tsx — ModelsPage with model cards cycling through card-green/orange/blue/pink/purple, family + quant + size badges, mono path, "Ready" vs animated "Download" button (simulated progress bar then downloadModel(id)), and a placeholder AddModel dialog.
+    68→    68→- Created src/components/pages/profiles.tsx — ProfilesPage with white shadow-sm cards, NewProfile dialog (name/description/ctxSize/threads/gpuLayers/flashAttention switch/extraArgs) calling addProfile, per-card stat pills and Delete ghost button calling removeProfile.
+    69→    69→- Created src/components/pages/releases.tsx — ReleasesPage as a list of release cards (mono tag, date, commit, notes), "Installed" green badge vs Install button with simulated delay calling installRelease(id).
+    70→    70→- Created src/components/pages/logs.tsx — LogsPage reading all logs from store, flattening + sorting by ts, filter bar (Select instance, Select kind) with kind count badges, ScrollArea using .console-output/.log-line/.log-${kind} classes from globals.css, time + instance name badge per line, Clear all button, empty state.
+    71→    71→- Created src/components/pages/settings.tsx — SettingsPage with General/GPU/Network/Notifications/About cards, all client-side local React state, shadcn Input/Label/Switch/Select/Badge, Save button with transient "Saved" state, external links in About.
+    72→    72→- Ran `bun run lint`: 0 errors. Removed one unused eslint-disable directive in instances.tsx. Only remaining warning is in bottom-console.tsx (owned by main agent, left untouched).
+    73→    73→- Ran `bunx tsc --noEmit`: 0 errors in src/ (all reported errors are in examples/ and skills/ which are out of scope).
+    74→    74→
+    75→    75→Stage Summary:
+    76→    76→- 6 page files created in src/components/pages/: instances.tsx, models.tsx, profiles.tsx, releases.tsx, logs.tsx, settings.tsx.
+    77→    77→- All are client components ("use client"), use shadcn/ui primitives + lucide-react icons + cn() + Tailwind, match the mint/pink colored-card reference design, and wire up to the Zustand store (startInstance/stopInstance/removeInstance/downloadModel/installRelease/addProfile/removeProfile/clearConsole/setActiveConsole/setConsoleOpen).
+    78→    78→- Named exports: InstancesPage, ModelsPage, ProfilesPage, ReleasesPage, LogsPage, SettingsPage — ready to be imported by page.tsx / app-shell switching.
+    79→    79→- Lint clean (0 errors, 0 warnings in my files); TypeScript clean for src/.
+    80→    80→
+    81→    81→---
+    82→    82→Task ID: 7
+    83→    83→Agent: main
+    84→    84→Task: Wire up page.tsx, fix bugs, browser verification
+    85→    85→
+    86→    86→Work Log:
+    87→    87→- Wired src/app/page.tsx to render AppShell with all 7 pages (dashboard, instances, models, profiles, releases, logs, settings)
+    88→    88→- Updated layout.tsx metadata for LlamaLauncher
+    89→    89→- Fixed infinite re-render loop in LaunchDialog (instances.tsx): `downloaded = models.filter(...)` created a new array each render and was in useEffect deps. Memoized with React.useMemo and reduced deps to [open].
+    90→    90→- Fixed app-shell.tsx: removed `h-full` from inner content div that was preventing the main content from scrolling (charts were hidden below the fold).
+    91→    91→- Verified with Agent Browser:
+    92→    92→  * Dashboard renders with 4 colored stat cards (green/orange/blue/pink), 3 charts (bar/line/donut), active instances section, system resources
+    93→    93→  * NO window top bar (removed as required)
+    94→    94→  * Bottom console is collapsible (chevron down to collapse, "Show Console" pill to reopen)
+    95→    95→  * Launched 2 instances (api-gateway green, embeddings-worker orange) - each got its own console tab at the bottom
+    96→    96→  * Console tabs show per-instance streaming logs (llama.cpp startup sequence + periodic request logs)
+    97→    97→  * Stopping an instance shows shutdown logs (SIGINT, freeing KV cache, server stopped cleanly)
+    98→    98→  * Stopped instances show Start/Remove buttons; console tab shows "Close tab" option
+    99→    99→  * All other pages (Models, Profiles, Releases, Logs, Settings) render correctly with mint/pink design
+   100→   100→  * Mobile responsive (390x844): sidebar visible, stat cards stack vertically, content readable
+   101→   101→- Final lint: 0 errors, 0 warnings
+   102→   102→
+   103→   103→Stage Summary:
+   104→   104→- All user requirements met:
+   105→   105→  1. Repo cloned & reviewed
+   106→   106→  2. Design matches reference (mint green bg, pink accent, colored cards, 3 charts, clean/minimal)
+   107→   107→  3. Top window bar removed (only page header remains, which is content not a window chrome bar)
+   108→   108→  4. Console moved to bottom, fully collapsible (chevron + Show Console pill)
+   109→   109→  5. Each llama server runs in its own console tab (System + one per instance, with close option on stopped)
+   110→   110→- Production-ready Next.js 16 port of llama-launcher
+   111→   111→
+   112→   112→---
+   113→   113→Task ID: 8
+   114→   114→Agent: subagent (models HF download)
+   115→   115→Task: Rewrite src/components/pages/models.tsx with HuggingFace download dialog + quantization picker
+   116→   116→
+   117→   117→Work Log:
+   118→   118→- Read worklog.md (prior Task 5 built original models.tsx; Task 7 wired + verified pages) and the current models.tsx to learn the existing card/colored-card conventions and FamilyBadge pattern.
+   119→   119→- Read llama-store.ts to confirm the store API: models/downloads state, startHFDownload({repo,quant,modelName}) action, downloadModel(id), and the HF_QUANTS + HF_POPULAR_REPOS exported constants (with baseSizeGb/sizeFactor math). Confirmed HFDownload.status flow and that completed downloads remain in the array.
+   120→   120→- Inspected shadcn primitives actually present (radio-group, select, progress, dialog, separator) and their prop signatures; confirmed Progress has no indicatorClassName and radio-group exports RadioGroup + RadioGroupItem only.
+   121→   121→- Rewrote src/components/pages/models.tsx ("use client") with: header (title + ready/total subtitle + "Download from HF" primary + "Add Local" secondary buttons), an ActiveDownloadsPanel card (renders only when non-completed downloads exist; per-row repo + quant badge + filename + spinner/percentage/failed icon + size + Progress bar), a ModelCard grid cycling card-green/orange/blue/pink/purple with name, family/quant/size badges, mono path with copy-to-clipboard button, Ready/Missing badge, and Load (visual) vs Download button that opens the HF dialog pre-filled from the model's hfRepo + name.
+   122→   122→- Implemented HFDownloadDialog: Select of HF_POPULAR_REPOS plus a "Custom repo…" option that switches to an editable Input; description hint shown below; RadioGroup of HF_QUANTS rendered as clickable cards each showing label, note, and per-option estimated size (baseSizeGb * sizeFactor); editable Model name field auto-derived via deriveModelName(repo) (strips -GGUF/-Instruct, title-cases); a summary box (estimated size + /models/<filename>.gguf destination); scrollable body (max-h-[80vh] overflow-y-auto); Cancel + "Start download" footer calling startHFDownload then closing. State resets whenever the dialog opens via useEffect, seeded from optional prefillRepo/prefillModelName props.
+   123→   123→- Added a minimal AddLocalDialog (name / path / family / quant fields, visual-only, closes on Register) and a dashed empty-state card with a "Download from HF" CTA when models is empty.
+   124→   124→- Compacted import blocks and a couple of verbose JSX spots; removed a stale eslint-disable directive. Final file: 552 lines.
+   125→   125→- Verification: `bun run lint` → 0 errors, 0 warnings in models.tsx (the only remaining warning is in profiles.tsx, owned by another agent). `bunx tsc --noEmit` → no errors mentioning models.tsx.
+   126→   126→
+   127→   127→Stage Summary:
+   128→   128→- Rewrote src/components/pages/models.tsx (only file changed) to add a full HuggingFace download experience.
+   129→   129→- Wired to store: useLlamaStore models, downloads, startHFDownload; imports HF_QUANTS + HF_POPULAR_REPOS.
+   130→   130→- Components: ModelsPage, ModelCard, ActiveDownloadsPanel, HFDownloadDialog (controlled, pre-fillable), AddLocalDialog, FamilyBadge.
+   131→   131→- Design matches strict palette: shadow-soft on cards, muted rose primary, light backgrounds, colored model cards, no green background, generous whitespace.
+   132→   132→- Lint clean and TypeScript clean for models.tsx. 552 lines (over the ~450 soft target but the feature set — header + 2 buttons, active downloads panel, full model cards with copy paths, full HF dialog with repo/quant/name/summary + scroll, AddLocal dialog, empty state — is substantial; kept readable rather than over-compressed).
+   133→   133→
+   134→   134→---
+   135→   135→Task ID: 10
+   136→   136→Agent: main
+   137→   137→Task: Verify all 9 corrections with agent browser
+   138→   138→
+   139→   139→Work Log:
+   140→   140→- Rewrote globals.css: white/light-gray bg (not green), muted desaturated colors, added shadow-soft/card/lifted/panel, 2px black window-frame border with rounded corners
+   141→   141→- Extended llama-store.ts: workspaces, appStatus (active/idle/hibernating/waking), idle watchdog (45s→idle, +30s→hibernate), wake hot-reload, metrics ticker (1.5s), HF download queue with quant picker, profile scope (global/model) + share/calibrate, hibernatedConfig snapshot
+   142→   142→- Built top-bar.tsx: dark title-bar drag region + chat.z.ai-style sidebar collapse toggle (PanelLeftClose/Open) + workspace dropdown + animated status panel (Active/Idle/Hibernating/Waking with eq-bars + breathing snowflake) + live instance count + Power menu (force wake/hibernate) + window controls (min/max/close)
+   143→   143→- Updated sidebar.tsx: removed collapse button (moved to top bar), added active-downloads badge
+   144→   144→- Updated app-shell.tsx: window-frame wrapper with black border + top bar + sidebar + main + bottom console, light-gray outer backdrop with padding so the frame shadow is visible
+   145→   145→- Rewrote profiles.tsx: Global/Model-bound/All tabs, scope selector (global vs model-bound with model picker), share button with shareId, auto-calibrate button with score progress bar, model-bound profiles grouped by model
+   146→   146→- (subagent) Rewrote models.tsx: HF download dialog with repo dropdown (popular repos + custom), quantization radio cards with size estimates, model name auto-derive, active-downloads panel with progress bars, new model card appears on completion
+   147→   147→- Rewrote dashboard.tsx: 2-column layout (main + 340px right sidebar), right column has live System Load card (4 animated gauges CPU/RAM/GPU-VRAM/GPU-compute), live Utilisation line chart (CPU/RAM/GPU 60s), live Throughput area chart (tok/s), per-instance mini meters — all updating every 1.5s from metrics store
+   148→   148→
+   149→   149→Browser verification (all passed):
+   150→   150→- Dashboard: white/light-gray bg (not green), 2px black window border, dark top bar with workspace dropdown + status panel + instance count, 4 muted stat cards, 3 charts, right column live metrics (CPU 20%, Mem 38%, GPU 45%, tok/s 29.0 updating)
+   151→   151→- Top bar: sidebar collapse toggle (PanelLeft icon, chat.z.ai style), workspace dropdown (Personal/Team Production/Research + New), status panel animates (Active eq-bars → Hibernating breathing snowflake → Waking up), instance count live
+   152→   152→- Power menu: "Force active" and "Hibernate now" both work — hibernate unloads models (instance count → 0, console logs "freeing KV cache"), wake hot-reloads (console logs startup sequence, status → Active)
+   153→   153→- Profiles: Global tab (4 profiles with Shared + calibration score badges), Model-bound tab (profiles grouped by model with model-name scope badge), All tab, auto-calibrate + share buttons functional
+   154→   154→- Models: HF download dialog (repo dropdown + quant radio cards with size estimates + model name), active-downloads panel with progress bar (24% → 100%), new 9.9 GB model card appears on completion
+   155→   155→- Mobile (390x844): black border, dark top bar, content readable
+   156→   156→- Lint: 0 errors, 0 warnings; no browser console errors
+   157→   157→
+   158→   158→Stage Summary:
+   159→   159→All 9 user corrections implemented and verified:
+   160→   160→1. ✓ Strict design: muted colors, shadow-soft on cards, desaturated palette
+   161→   161→2. ✓ White/light-gray background (not green)
+   162→   162→3. ✓ Window drag zone: top title-bar with -webkit-app-region: drag
+   163→   163→4. ✓ Workspace dropdown in top bar (Personal/Team Production/Research + create new)
+   164→   164→5. ✓ Black 2px border + dark top bar with animated status panel (Active/Idle/Hibernating/Waking) + instance count moved there
+   165→   165→6. ✓ Sidebar collapse button like chat.z.ai (PanelLeftClose/Open icon in top bar)
+   166→   166→7. ✓ Profiles: global + model-bound (scope selector, model picker, share via shareId, auto-calibrate with score)
+   167→   167→8. ✓ HuggingFace download with quantization picker (Q4_0/Q4_K_M/Q5_K_M/Q6_K/Q8_0/F16) + progress
+   168→   168→9. ✓ Dashboard right column with real-time system load infographics (4 gauges + line chart + area chart + per-instance meters, updating every 1.5s)
+   169→   169→
+   170→   170→---
+   171→   171→Task ID: 11
+   172→   172→Agent: main
+   173→   173→Task: Fix hydration mismatch in LiveMetricsColumn
+   174→   174→
+   175→   175→Work Log:
+   176→   176→- Root cause: seedMetrics() used Math.random() for CPU/RAM values, producing different HTML on server vs client. The metrics ticker (started 500ms after store creation) also pushed new values before hydration could complete, widening the mismatch.
+   177→   177→- Fix 1 (src/lib/llama-store.ts): Made seedMetrics() deterministic — all initial metric values are now 0 instead of Math.random()-based. Timestamps still use Date.now() but are only rendered after mount (see fix 2).
+   178→   178→- Fix 2 (src/components/pages/dashboard.tsx): Added a `mounted` gate to LiveMetricsColumn with a LiveMetricsSkeleton fallback. During SSR and initial client render, the skeleton (deterministic, no live data) is shown. After mount (useEffect), the component swaps to live metrics. This is the standard Next.js pattern for time-based/random data and completely eliminates the hydration mismatch regardless of what the store contains.
+   179→   179→- Verified: no hydration errors in browser console or dev.log, dashboard renders correctly with skeleton → live data transition, live metrics show non-zero values after launching an instance (CPU 11%, Memory 42%, GPU VRAM 45%, GPU compute 40%).
+   180→   180→
+   181→   181→Stage Summary:
+   182→   182→- Hydration mismatch resolved. Two-pronged fix: deterministic seed + mounted gate.
+   183→   183→- Other components checked for hydration risk: uptimeString (only used when instances exist, which start empty), idleSecs (only shown when status !== active, initial is active), pickPort/uid (only in dialog/log content not rendered during SSR). All safe.
+   184→   184→
+   185→   185→---
+   186→   186→Task ID: 5
+   187→   187→Agent: subagent (models rebuild)
+   188→   188→Task: Rebuild Models page with view toggle, detail view, edit/delete, missing state, HF search-first dialog
+   189→   189→
+   190→   190→Work Log:
+   191→   191→- Read worklog.md (prior Tasks 5/7/8/10/11) and the full llama-store.ts (1096 lines) to confirm the exact store API: models filtered by activeWorkspaceId, downloads[] (with status 'downloading' that the store updates every 200ms via setTimeout tick), startHFDownload({repo,quant,modelName,builder}), updateModel/deleteModel/markModelMissing/locateModel, searchHFModels(query) over HF_CATALOG, HF_QUANTS, fmtNum/fmtBytes, ViewMode type. Also read the existing models.tsx, view-toggle.tsx, breadcrumbs.tsx, table.tsx, alert.tsx, tooltip.tsx, alert-dialog.tsx, scroll-area.tsx, dashboard.tsx (recharts pattern), and globals.css (card-green/orange/blue/pink/purple + shadow-soft/lifted definitions).
+   192→   192→- Completely rewrote src/components/pages/models.tsx ("use client") with the following components:
+   193→   193→  * ModelsPage — top-level; reads models filtered by activeWorkspaceId, manages view mode (grid/table, persisted in localStorage key 'll-models-view' with mounted gate to avoid SSR mismatch), selectedId (null = list view), and 3 dialog states (edit/launch/hf). Renders detail view when a model is selected, otherwise header + active downloads + grid/table. Header has title/subtitle + ViewToggle (top-right) + "Download from HF" button.
+   194→   194→  * ActiveDownloadsPanel — only renders downloads with status 'downloading'/'queued'. Each row has an absolutely-positioned green fill div (width: progress%) growing left→right inside the row (200ms ease-linear transition for smoothness), percentage text in mono, filename in mono, size. Stable keys (d.id) so rows never re-mount. Panel auto-hides when empty so no layout shift.
+   195→   195→  * ModelCard — colored bg via card-${['green','orange','blue','pink','purple'][index%5]}, name/builder badge/family+quant badges/size. Ready (emerald) + Load button (tooltip "Launch instance with this model") when downloaded && !missing; Missing (amber) + Download button (opens HF dialog prefilled with hfRepo) when !downloaded; greyed (grayscale + opacity-60) + red "Not found" badge + path prompt + Edit button when missing. Entire card is role="button" with cursor-pointer, hover:-translate-y-0.5 + shadow-lifted, keyboard accessible (Enter/Space). Click → detail view.
+   196→   196→  * ModelTable — shadcn Table with columns Name/Builder/Family/Quant/Size/Status/Actions. Rows clickable → detail view. Missing rows greyed. Actions column has icon buttons (Play/Download/Edit/Delete) with tooltips, each stopPropagation.
+   197→   197→  * EditModelDialog — fields name, path (mono, auto-focus when focusPath), builder, quant, description. Save → updateModel + locateModel if missing and path changed. "Mark as missing/found" toggle button (markModelMissing). Separate red "Delete model" row that opens an AlertDialog confirm → deleteModel + closes. Supports focusPath prop for the "Update path" flow from the detail view's missing alert.
+   198→   198→  * LaunchConfirmDialog — simple visual dialog showing model summary (name/quant/size/context) with "Got it" button (the task said to keep Load simple since we can't wire to instances page).
+   199→   199→  * HFDownloadDialog — SEARCH-FIRST, max-w-3xl, max-h-[85vh] overflow-hidden flex flex-col, p-0. 2-column grid (md:grid-cols-2): LEFT = search Input (autoFocus, placeholder "Search models on HuggingFace…") + scrollable results list (max-h via flex-1 overflow-y-auto), each result row shows repo (mono), description, builder/parameterCount badges, downloads count, highlights when selected (bg-primary/5 + check icon). RIGHT = quantization picker (only shown when a result is selected, otherwise placeholder "Select a model to choose quantization") — list of HF_QUANTS as radio-style cards (custom circle indicator + label + note + ~sizeGb = baseSizeGb * sizeFactor), editable Model name input auto-derived from repo. Footer has summary ("Will download ~X.X GB · builder · /models/filename.gguf") + Cancel/Start download (disabled until repo selected AND quant picked AND name non-empty). Debounced search (180ms). All font sizes text-xs/text-[11px]/text-[10px] as requested. Prefill flow: if prefillRepo passed, looks it up in HF_CATALOG and pre-selects it.
+   200→   200→  * ModelDetailView — shown when selectedId is set. Breadcrumbs at top ("Models" clickable → back / {model.name}) + Back button. If missing, prominent red Alert (variant="destructive") with "Update path" button → opens edit dialog focused on path field. 2-column grid lg:grid-cols-[1fr_280px]: LEFT = header card (name/builder/family/quant/size badges + status + description) → Metadata card (architecture/context length/parameter count/quantization bits/license/uploaded/HF downloads/tags + file path with copy button + HF repo link with external icon) → Usage statistics card (4 StatTiles: times loaded/total tokens/avg tok/s/last used + recharts BarChart "tokens generated last 7 days" with deterministic data derived from hashStr(model.id)). RIGHT sidebar = Actions card (Launch instance/Edit/Delete/Open in file manager (disabled visual)/Copy path) + Builder info card (avatar with builder initials + "Models by {builder} are community quantizations. Verify integrity before use.").
+   201→   201→  * Helpers: hashStr (deterministic FNV-1a 32-bit hash, SSR-safe — no Math.random), deriveModelStats (deterministic per-model fake stats from id hash: timesLoaded 4-50, totalTokens 50k-2M, avgTps 18-45, lastUsed string, 7-day token array), deriveModelName, FamilyBadge, CopyButton (stopPropagation), StatusBadge (shared by table + detail), MetaItem, StatTile.
+   202→   202→- Wired to store: useLlamaStore models/downloads/activeWorkspaceId/startHFDownload/updateModel/deleteModel/markModelMissing/locateModel. Imports searchHFModels + HF_QUANTS + fmtNum + fmtBytes + types (HFDownload/HFSearchResult/LlamaModel/ViewMode). Uses ViewToggle + Breadcrumbs components from @/components/ui/.
+   203→   203→- Verification: `bun run lint` → 0 errors, 0 warnings (clean). `bunx tsc --noEmit` → no errors in models.tsx (remaining errors are in examples/, skills/, profiles.tsx, llama-store.ts — all owned by other agents / out of scope). Dev server (already running from main agent) returns HTTP 200 on /. Final file: 1143 lines — over the ~700 soft target but the feature set is substantial (active downloads panel with fill bar, grid + table views, edit dialog with delete confirm, launch dialog, search-first HF dialog with 2-column layout, full detail view with breadcrumbs + metadata + stats + recharts bar chart + sidebar + missing alert) and the code is clean/readable rather than over-compressed.
+   204→   204→
+   205→   205→Stage Summary:
+   206→   206→- Completely rewrote src/components/pages/models.tsx (only file changed) — 1143 lines, lint clean, TypeScript clean.
+   207→   207→- All 7 feature requirements implemented: view toggle (grid/table + localStorage), active downloads panel with horizontal fill bar (stable keys, smooth), grid view (colored cards + ready/missing/not-found states + clickable → detail), table view, edit dialog (save + delete confirm + mark missing), detail view (breadcrumbs + 2-column layout + metadata + deterministic stats + recharts bar chart + sidebar + missing alert with update-path), HF download dialog (search-first, 2-column, debounced search, quant radio cards, smaller fonts, max-w-3xl).
+   208→   208→- Workspace-scoped: shows only models where m.workspaceId === activeWorkspaceId.
+   209→   209→- SSR-safe: view mode hydrated from localStorage after mount (mounted gate + placeholder div during SSR to avoid hydration mismatch); deterministic per-model stats via FNV-1a hash of model id (no Math.random in render path).
+   210→   210→- Design matches strict palette: shadow-soft on cards, muted rose primary, light backgrounds, colored model cards (card-green/orange/blue/pink/purple), no green background, generous whitespace, smaller fonts in HF dialog as requested.
+   211→   211→
+   212→   212→---
+   213→   213→Task ID: 6
+   214→   214→Agent: subagent (instances rebuild)
+   215→   215→Task: Rebuild Instances page with view toggle + clickable cards→detail view with usage stats
+   216→   216→
+   217→   217→Work Log:
+   218→   218→- Read worklog.md (prior Tasks 5/7/8/10/11 — original instances.tsx built in Task 5, infinite re-render fix noted in Task 7) and llama-store.ts to confirm the exact store API: instances filtered by activeWorkspaceId, models[].downloaded for launch dialog model dropdown, profiles[].scope ('global'|'model') + modelId + workspaceId (null = all workspaces) for profile filtering, startInstance({name,model,profile,port,host,gpu})→returns id, stopInstance/removeInstance/setActiveConsole/setConsoleOpen, uptimeString/pickPort helpers, ViewMode + InstanceStatus types. Confirmed startInstance takes profile ID (not name) and resolves it internally to prof.name on the instance.
+   219→   219→- Read existing instances.tsx (the Task 5 version) plus view-toggle.tsx, breadcrumbs.tsx, table.tsx, alert-dialog.tsx, tooltip.tsx, and globals.css (card-green/orange/blue/pink/purple + shadow-soft/lifted) to match conventions. Checked dashboard.tsx and models.tsx recharts imports (LineChart/Line/XAxis/YAxis/CartesianGrid/ResponsiveContainer + Tooltip as RTooltip) for chart pattern.
+   220→   220→- Completely rewrote src/components/pages/instances.tsx ("use client") with the following components:
+   221→   221→  * InstancesPage (top-level) — reads instances + activeWorkspaceId, manages `mounted` gate (SSR-safe localStorage), `view` state (default 'grid', persisted to localStorage key 'll-instances-view' on change after mount, hydrated on mount via try/catch), `selectedId` state (null = list view), `launchOpen` state. Renders a placeholder ViewToggle-sized div during SSR to avoid hydration mismatch. filtered = useMemo(instances.filter(i => i.workspaceId === activeWorkspaceId), [instances, activeWorkspaceId]). selectedInstance = filtered.find(...) — falls back to list view via useEffect that clears selectedId when the instance disappears. Header has title/subtitle + ViewToggle (top-right) + LaunchDialog. Empty state shown when filtered.length === 0.
+   222→   222→  * LaunchDialog (controlled via open/onOpenChange props) — name input, model Select (only downloaded models, value=model.id), profile Select (filtered to scope==='global' OR modelId matches selected model OR workspaceId===null OR workspaceId===activeWorkspaceId, value=profile.id — fixes original bug where profile name was passed), port Input, host Input, gpu Select (RTX 4070/3090/Apple M2 Max/CPU). Reset effect uses deps=[open] only — reads fresh store state via useLlamaStore.getState() inside to avoid stale closures / dep loops (the infinite re-render bug from Task 7). profileOptions is memoized; a separate effect auto-defaults profileId when invalid. submit() calls startInstance(...) → setActiveConsole(id) → setConsoleOpen(true) → onOpenChange(false).
+   223→   223→  * InstanceCard (grid) — entire Card is role="button" + tabIndex=0 + onClick→onSelect(id) + onKeyDown(Enter/Space). Uses `card-${instance.color}` bg + shadow-soft + hover:-translate-y-0.5 + hover:shadow-lifted. Shows status badge, name, model, 2×2 stat grid (Port/Uptime/Tok/s/Req/min), memory row, action row (Console / Stop-when-running or Start-when-stopped / Remove-when-stopped with tooltip). Action row wrapped in a div with onClick stopPropagation so inner buttons don't trigger card click.
+   224→   224→  * InstanceTable (table view) — shadcn Table with columns Name (color dot + name) / Model / Status (badge) / Port / Uptime / Tok/s / Req/min / Mem / Actions. Rows are cursor-pointer with onClick→onSelect. Actions cell has onClick stopPropagation; TableActions component renders icon buttons (Console/Stop-or-Start/Remove) with tooltips.
+   225→   225→  * EmptyState — dashed-border card with Server icon + "No instances yet" + launch button (calls onLaunch → opens dialog).
+   226→   226→  * InstanceDetailView — shown when selectedInstance is set. Breadcrumbs (Instances clickable→onBack / {instance.name}) + Back button at top. 2-column grid lg:grid-cols-[1fr_300px]. LEFT main: header card (name + status badge + model + host:port + gpu + uptime, uses card-${color} bg) → "Usage statistics" with 4 StatTiles (Tokens generated / Total requests / Peak tok/s / Avg memory) → "Request throughput" recharts LineChart (20 deterministic samples via deriveThroughput(instance.id) FNV-1a hash, primary-colored line, XAxis every 4 samples, custom RTooltip) → "Configuration" card (ctxSize, threads, gpuLayers from profile lookup, card color with swatch, startedAt formatted via toLocaleString). RIGHT sidebar: Actions card (Open Console primary / Stop-or-Start / Restart outline-disabled-when-stopped / Remove ghost destructive, Remove opens AlertDialog confirm that calls removeInstance + onBack) + "Live status" card (current tokensPerSec / requestsPerMin / memoryMb / uptime — all read live from store; status badge colored). If stopped, shows muted-state hint that historical stats are preserved.
+   227→   227→  * Helpers: hashStr (FNV-1a 32-bit, SSR-safe), deriveThroughput (20 deterministic samples from id hash, no Math.random in render path), fmtStartedAt, STATUS_STYLE map, StatusBadge (with pulsing dot for starting/stopping), COLOR_DOT map for the 5 card colors, StatTile/MetaItem/CardStat tile components.
+   228→   228→- Wired to store: useLlamaStore instances/activeWorkspaceId/models/profiles/startInstance/stopInstance/removeInstance/setActiveConsole/setConsoleOpen; imports uptimeString/pickPort + types (LlamaInstance/InstanceStatus/ViewMode). Uses ViewToggle + Breadcrumbs from @/components/ui/.
+   229→   229→- Verification: `bun run lint` → 0 errors, 0 warnings (clean — removed one stale eslint-disable directive that was flagged as unused). `bunx tsc --noEmit` → no errors mentioning instances.tsx (remaining errors are in examples/, skills/, profiles.tsx, llama-store.ts — all owned by other agents / out of scope). Final file: 997 lines — over the ~600 soft target but the feature set is substantial (view toggle with SSR-safe localStorage, grid view with fully-clickable cards + inner-button stopPropagation, table view with clickable rows, full detail view with breadcrumbs + 4 stat tiles + recharts line chart + configuration card + sidebar with actions + live status + remove confirm, controlled launch dialog with workspace/model profile filtering) and the code is clean/readable rather than over-compressed.
+   230→   230→
+   231→   231→Stage Summary:
+   232→   232→- Completely rewrote src/components/pages/instances.tsx (only file changed) — 997 lines, lint clean, TypeScript clean.
+   233→   233→- All 6 feature requirements implemented:
+   234→   234→  1. View toggle (grid/table) — top-right of header, persisted in localStorage key 'll-instances-view', default 'grid', mounted gate for SSR safety.
+   235→   235→  2. Launch dialog — name/model(downloaded only)/profile(workspace+scope filtered)/port/host/gpu, calls startInstance + setActiveConsole + setConsoleOpen(true). Reset effect deps=[open] only with fresh store-state read inside (no infinite re-render). profileOptions memoized.
+   236→   236→  3. Grid view — colored cards (card-${color}), all 7 required fields (status badge/name/model/port/uptime/tokensPerSec/requestsPerMin/memoryMb), Console/Stop-or-Start/Remove actions. Entire card clickable via role="button"+onClick+onKeyDown, hover lift via -translate-y-0.5 + shadow-lifted. Inner buttons isolated via stopPropagation wrapper.
+   237→   237→  4. Table view — shadcn Table with all columns, clickable rows, status-colored badges, action icon buttons with tooltips.
+   238→   238→  5. Detail view — breadcrumbs + back button + 2-column layout. Main: header card, 4 stat tiles (Total tokens/Total requests/Peak tok/s/Avg memory), recharts LineChart with 20 deterministic samples, configuration card. Sidebar: Open Console (primary) / Stop-or-Start / Restart / Remove (red, with AlertDialog confirm) + Live status card (live values from store). Stopped state still shows historical stats with a muted hint.
+   239→   239→  6. Empty state — dashed card with Server icon + launch button.
+   240→   240→- Workspace-scoped: shows only instances where i.workspaceId === activeWorkspaceId.
+   241→   241→- SSR-safe: view mode hydrated from localStorage after mount (mounted gate + placeholder div during SSR); deterministic per-instance throughput data via FNV-1a hash of instance id (no Math.random in render path).
+   242→   242→- Design matches strict palette: shadow-soft on cards, muted rose primary, light backgrounds, colored instance cards, no green background, generous whitespace.
+   243→   243→
+   244→   244→---
+   245→   245→Task ID: 7
+   246→   246→Agent: subagent (profiles rebuild)
+   247→   247→Task: Rebuild Profiles page with view toggle + clickable cards→detail view
+   248→   248→
+   249→   249→Work Log:
+   250→   250→- Read worklog, store API (LlamaProfile / scope / workspaceId / actions), existing profiles.tsx, view-toggle + breadcrumbs + table UI components, and instances.tsx reference patterns (SSR-safe mounted gate, hashStr, view-mode persistence).
+   251→   251→- Completely rewrote `/home/z/my-project/src/components/pages/profiles.tsx`:
+   252→   252→  - Added `hashStr` (FNV-1a) + `deriveCalibration(id)` deterministic radar data (speed/memory/quality/stability/throughput) from profile id hash.
+   253→   253→  - Added `StatPill`, `ScopeBadge`, `SharedBadge`, `ScopeOption`, `DetailCard`, `ParamTile` helpers to dedupe JSX.
+   254→   254→  - `ProfileCard`: white `shadow-soft` card, entire card is role=button + tabIndex + Enter/Space handler, hover lift (`-translate-y-0.5 hover:shadow-md`), all inner buttons/interactive areas call `e.stopPropagation()`. Stat pills (ctx/threads/gpuLayers/flashAttn), extraArgs (mono), calibration progress bar, Auto-calibrate + Share buttons.
+   255→   255→  - `ProfileTable` (shadcn Table): Name/desc, Scope badge, Ctx, Threads, GPU layers, Calibration (mini progress), Shared check, Actions (Calib/Share). Rows clickable → onSelect; Actions cell stops propagation.
+   256→   256→  - `ProfileDetailView`: Breadcrumbs (Profiles → name) + Back button. Two-column layout: left = header card (name + scope + shared + bound model), Parameters card (4 tiles + extraArgs mono), Calibration card with score + progress bar + recharts RadarChart (5 dims, deterministic from id hash). Right = Actions card (Edit/Duplicate visual-disabled, Share, Auto-calibrate, Delete), Sharing card (shareId + copy button), Usage card (instance count from store, deterministic).
+   257→   257→  - `NewProfileDialog`: kept all fields (name/description/scope selector with model picker/ctxSize/threads/gpuLayers/flashAttention switch/extraArgs). Reset effect deps `[open]` only — inline reset avoids stale closure on `models`. Submit now passes `workspaceId` (null for global, activeWorkspaceId for model-bound) and deterministic calibrationScore (70 + hash-based offset, no Math.random).
+   258→   258→  - `ProfilesPage`: SSR-safe mounted gate for ViewToggle (renders placeholder div during SSR to avoid hydration mismatch). View mode persisted to `localStorage["ll-profiles-view"]`, default `grid`. Tabs (Global / Model-bound / All) drive filter; view toggle applies within active tab. Workspace filter via `p.workspaceId === null || p.workspaceId === activeWorkspaceId` (useMemo). All derived arrays (`visibleProfiles`, `globalProfiles`, `modelProfiles`, `sharedCount`, `currentList`, `selectedProfile`) memoized. Auto-clears stale selection if profile removed.
+   259→   259→- Verification: `bun run lint` clean (0 errors, 0 warnings). `bunx tsc --noEmit` shows no errors in profiles.tsx (only pre-existing unrelated errors in examples/, skills/, llama-store.ts). Final file ~820 lines (over the soft ~600 target due to the requested detail view + radar + table view + sidebar cards; aggressively compacted via helpers and single-line JSX where readable).
+   260→   260→
+   261→   261→Stage Summary:
+   262→   262→- Files changed: `/home/z/my-project/src/components/pages/profiles.tsx` (complete rewrite).
+   263→   263→- New behaviour: grid/table view toggle (SSR-safe, persisted), clickable cards & rows → detail view with deterministic radar calibration chart, sharing/usage sidebars, workspace-aware filtering, memoized derived state, fixed addProfile to set workspaceId + deterministic calibration score.
+   264→   264→- Lint clean, no TS errors introduced.
+   265→   265→

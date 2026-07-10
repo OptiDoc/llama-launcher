@@ -33,11 +33,19 @@ import {
   Minus,
   Square,
   X,
+  Bell,
+  Download,
+  Rocket,
+  Info,
+  AlertTriangle,
+  CheckCheck,
+  Trash2,
 } from "lucide-react";
 import {
   useLlamaStore,
   type AppStatus,
   type Workspace,
+  type NotificationKind,
 } from "@/lib/llama-store";
 
 interface TopBarProps {
@@ -79,6 +87,22 @@ const STATUS_CONFIG: Record<
   },
 };
 
+const NOTIF_ICON: Record<NotificationKind, React.ReactNode> = {
+  release: <Rocket className="size-4" />,
+  download: <Download className="size-4" />,
+  info: <Info className="size-4" />,
+  warn: <AlertTriangle className="size-4" />,
+  error: <AlertTriangle className="size-4" />,
+};
+
+const NOTIF_COLOR: Record<NotificationKind, string> = {
+  release: "text-violet-500",
+  download: "text-emerald-500",
+  info: "text-sky-500",
+  warn: "text-amber-500",
+  error: "text-red-500",
+};
+
 function workspaceColorDot(color: Workspace["color"]) {
   const map: Record<Workspace["color"], string> = {
     green: "bg-emerald-500",
@@ -118,6 +142,10 @@ export function TopBar({ collapsed, onToggleSidebar }: TopBarProps) {
   const forceHibernate = useLlamaStore((s) => s.forceHibernate);
   const forceWake = useLlamaStore((s) => s.forceWake);
   const lastActivityAt = useLlamaStore((s) => s.lastActivityAt);
+  const notifications = useLlamaStore((s) => s.notifications);
+  const markNotificationRead = useLlamaStore((s) => s.markNotificationRead);
+  const markAllNotificationsRead = useLlamaStore((s) => s.markAllNotificationsRead);
+  const clearNotifications = useLlamaStore((s) => s.clearNotifications);
   const [idleSecs, setIdleSecs] = React.useState(0);
 
   const activeWorkspace = workspaces.find((w) => w.id === activeWorkspaceId) ?? workspaces[0];
@@ -125,6 +153,7 @@ export function TopBar({ collapsed, onToggleSidebar }: TopBarProps) {
   const statusCfg = STATUS_CONFIG[appStatus];
   const isActive = appStatus === "active";
   const isHibernating = appStatus === "hibernating";
+  const unreadCount = notifications.filter((n) => !n.read).length;
 
   // Live idle timer display
   React.useEffect(() => {
@@ -267,8 +296,85 @@ export function TopBar({ collapsed, onToggleSidebar }: TopBarProps) {
         </div>
       </div>
 
-      {/* ===== Right cluster: power controls + window controls ===== */}
+      {/* ===== Right cluster: notifications + power + window controls ===== */}
       <div className="title-bar-no-drag flex items-center gap-1">
+        {/* Notifications bell */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button
+              className="relative grid size-7 place-items-center rounded text-zinc-300 hover:bg-white/10 hover:text-zinc-100"
+              aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ""}`}
+              title="Notifications"
+            >
+              <Bell className="size-4" />
+              {unreadCount > 0 && (
+                <span className="absolute -right-0.5 -top-0.5 grid min-w-[14px] place-items-center rounded-full bg-primary px-0.5 text-[9px] font-bold text-primary-foreground">
+                  {unreadCount > 9 ? "9+" : unreadCount}
+                </span>
+              )}
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-80 p-0">
+            <div className="flex items-center justify-between border-b px-3 py-2">
+              <span className="text-xs font-semibold">Notifications</span>
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={markAllNotificationsRead}
+                  className="grid size-6 place-items-center rounded text-muted-foreground hover:bg-accent hover:text-foreground"
+                  title="Mark all as read"
+                >
+                  <CheckCheck className="size-3.5" />
+                </button>
+                <button
+                  onClick={clearNotifications}
+                  className="grid size-6 place-items-center rounded text-muted-foreground hover:bg-accent hover:text-destructive"
+                  title="Clear all"
+                >
+                  <Trash2 className="size-3.5" />
+                </button>
+              </div>
+            </div>
+            <div className="max-h-[360px] overflow-y-auto">
+              {notifications.length === 0 ? (
+                <div className="flex flex-col items-center justify-center gap-2 py-10 text-center">
+                  <Bell className="size-6 text-muted-foreground/50" />
+                  <p className="text-xs text-muted-foreground">No notifications yet</p>
+                  <p className="text-[10px] text-muted-foreground/70">
+                    New releases, downloads and system alerts appear here.
+                  </p>
+                </div>
+              ) : (
+                notifications.map((n) => (
+                  <button
+                    key={n.id}
+                    onClick={() => markNotificationRead(n.id)}
+                    className={cn(
+                      "flex w-full items-start gap-2.5 border-b px-3 py-2.5 text-left transition-colors hover:bg-accent/50",
+                      !n.read && "bg-primary/5",
+                    )}
+                  >
+                    <span className={cn("mt-0.5 shrink-0", NOTIF_COLOR[n.kind])}>
+                      {NOTIF_ICON[n.kind]}
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className="truncate text-xs font-semibold">{n.title}</span>
+                        {!n.read && <span className="size-1.5 shrink-0 rounded-full bg-primary" />}
+                      </div>
+                      <p className="mt-0.5 line-clamp-2 text-[11px] text-muted-foreground">{n.body}</p>
+                      <span className="mt-1 block text-[10px] text-muted-foreground/60">
+                        {new Date(n.ts).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                      </span>
+                    </div>
+                  </button>
+                ))
+              )}
+            </div>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        <div className="mx-0.5 h-5 w-px bg-white/15" />
+
         {/* Power / hibernate controls */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -311,7 +417,7 @@ export function TopBar({ collapsed, onToggleSidebar }: TopBarProps) {
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <div className="px-2 py-1.5 text-[11px] text-muted-foreground">
-              Auto-hibernate: idle 45s → idle, +30s → hibernate
+              Auto-hibernate after {useLlamaStore.getState().workspaceSettings[activeWorkspaceId]?.hibernateAfterSec ?? 75}s idle (configurable in Settings)
             </div>
           </DropdownMenuContent>
         </DropdownMenu>
