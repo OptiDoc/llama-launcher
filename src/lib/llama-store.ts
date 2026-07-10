@@ -522,16 +522,34 @@ function mkRelease(
 
 // Generate releases for several tags × variants
 const releaseTags = [
+  // Latest releases (sorted newest-first here; the page sorts by publishedAt desc)
+  { tag: "b9951", date: "2026-07-10", commit: "f3a2c81", notes: "New Vulkan compute scheduler, KV cache eviction rewrite, llama-server multipart support, RPC over TLS", installed: false },
+  { tag: "b9940", date: "2026-07-08", commit: "c7e1d29", notes: "CUDA 13 build fixes, --cache-type-q flag, flash-attn v3 path for sm_90", installed: false },
+  { tag: "b9925", date: "2026-07-05", commit: "8b4f602", notes: "Speculative decoding improvements, llama-bench JSON output, RPC auth tokens", installed: false },
+  { tag: "b9908", date: "2026-07-01", commit: "2d9a157", notes: "MoE expert offload to CPU, llama-server /v1/embeddings endpoint, GGUF v4 metadata", installed: false },
+  { tag: "b9890", date: "2026-06-26", commit: "e5c8043", notes: "K-quants for DeepSeek V3 architecture, llama-server metrics endpoint", installed: false },
+  { tag: "b9872", date: "2026-06-20", commit: "a1b3e76", notes: "Multi-GPU pipeline parallelism, KV cache compression (zstd), build system refactor", installed: false },
+  { tag: "b9855", date: "2026-06-14", commit: "9f02d44", notes: "llama-server graceful shutdown, --slots-keep-alive flag, RPC reconnection", installed: false },
+  { tag: "b9830", date: "2026-06-06", commit: "4c8e9a1", notes: "FlashAttention 3 for Hopper, llama-quantise --keep-split, KV cache paged evict", installed: false },
+  { tag: "b9800", date: "2026-05-28", commit: "b7d20f5", notes: "llama-server OpenAI v1 chat template auto-detect, draft model warm-up", installed: false },
+  { tag: "b9775", date: "2026-05-20", commit: "3e6a8c2", notes: "Vulkan descriptor pool fixes, llama-imatrix JSONL output, CPU AVX-512 path", installed: false },
+  { tag: "b9750", date: "2026-05-12", commit: "7a2c5e9", notes: "llama-server concurrent slots rewrite, --no-context-shift flag", installed: false },
+  { tag: "b9720", date: "2026-05-04", commit: "d8f1b04", notes: "GGUF op count metadata, llama-perplexity ROCm path, build: CMake 3.22 required", installed: false },
+  { tag: "b9685", date: "2026-04-25", commit: "1c9e7a3", notes: "MoE expert routing API, llama-server /v1/rerank endpoint, KV cache quantised k/q", installed: false },
+  { tag: "b9640", date: "2026-04-15", commit: "f4b2e80", notes: "llama-server stream options, draft model speculative tree, RPC batching", installed: false },
+  { tag: "b9600", date: "2026-04-05", commit: "a7d3c15", notes: "FlashAttention 2 default for sm_80+, llama-quantise --imatrix, KV cache mmap", installed: false },
+  { tag: "b9550", date: "2026-03-26", commit: "2e8b4f9", notes: "llama-server /v1/completions streaming, ggml-backend device selection API", installed: false },
+  { tag: "b9500", date: "2026-03-15", commit: "c5d9012", notes: "Vulkan compute shader optimisation, llama-bench warmup iterations", installed: false },
+  { tag: "b9450", date: "2026-03-04", commit: "e7a2b54", notes: "Batched decoding optimisations, KV cache reuse, llama-server metrics", installed: false },
+  { tag: "b9400", date: "2026-02-20", commit: "1f6c890", notes: "gguf v3 support, llama-quantise rewrite, RPC server TLS", installed: false },
+  { tag: "b9350", date: "2026-02-08", commit: "9b3a107", notes: "Metal backend updates, RPC server initial release, KV cache paged", installed: false },
+  { tag: "b9280", date: "2026-01-25", commit: "2d5e881", notes: "FlashAttention 2 path, KV cache paged, llama-server /slots endpoint", installed: false },
+  { tag: "b9200", date: "2026-01-12", commit: "6c1f045", notes: "OpenAI-compatible /v1/chat/completions endpoint, draft model API", installed: false },
+  // Legacy releases (older)
   { tag: "b4402", date: "2025-01-14", commit: "8f1f7e1", notes: "KV cache quantisation, faster prompt processing, RPC server fixes", installed: true },
   { tag: "b4390", date: "2024-12-20", commit: "a2c4f90", notes: "Improved FlashAttention path, new --cache-type-v flag", installed: false },
   { tag: "b4378", date: "2024-11-28", commit: "7bd12aa", notes: "Speculative decoding via draft models, multi-GPU tensor split fixes", installed: false },
   { tag: "b4360", date: "2024-10-15", commit: "3f8e221", notes: "Initial Qwen2.5 support, llama-server OpenAI-compatible refactor", installed: false },
-  { tag: "b4345", date: "2024-09-02", commit: "c5d9012", notes: "Vulkan backend improvements, llama-perplexity fixes", installed: false },
-  { tag: "b4321", date: "2024-08-11", commit: "e7a2b54", notes: "Batched decoding optimisations, KV cache reuse", installed: false },
-  { tag: "b4300", date: "2024-07-05", commit: "1f6c890", notes: "gguf v3 support, llama-quantise rewrite", installed: false },
-  { tag: "b4280", date: "2024-06-01", commit: "9b3a107", notes: "Metal backend updates, RPC server initial release", installed: false },
-  { tag: "b4250", date: "2024-04-18", commit: "2d5e881", notes: "FlashAttention 2 path, KV cache paged", installed: false },
-  { tag: "b4200", date: "2024-02-22", commit: "6c1f045", notes: "OpenAI-compatible /v1/chat/completions endpoint", installed: false },
 ];
 
 const seedReleases: LlamaRelease[] = [];

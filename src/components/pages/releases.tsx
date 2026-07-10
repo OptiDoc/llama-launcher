@@ -161,7 +161,7 @@ function InstallFillBar({
   return (
     <div
       className={cn(
-        "relative h-8 w-full overflow-hidden rounded-md bg-emerald-500/10",
+        "relative h-6 w-full overflow-hidden rounded bg-emerald-500/10",
         className,
       )}
       role="progressbar"
@@ -174,8 +174,8 @@ function InstallFillBar({
         className="absolute inset-y-0 left-0 bg-emerald-500/80"
         style={{ width: `${pct}%`, transition: "width 180ms linear" }}
       />
-      <div className="absolute inset-0 flex items-center justify-center text-[11px] font-medium text-emerald-900 dark:text-emerald-50">
-        Installing… {pct}%
+      <div className="absolute inset-0 flex items-center justify-center text-[10px] font-medium text-emerald-900 dark:text-emerald-50">
+        {pct}%
       </div>
     </div>
   );
@@ -223,25 +223,25 @@ function ActionControl({
   // Fixed-height wrapper so the row/chip never jumps between states.
   if (release.installing) {
     return (
-      <div className="flex h-8 w-40 items-center">
-        <InstallFillBar progress={release.installProgress ?? 0} className="w-full" />
+      <div className="flex h-6 w-28 items-center">
+        <InstallFillBar progress={release.installProgress ?? 0} className="h-6 w-full" />
       </div>
     );
   }
 
   if (release.installed) {
     return (
-      <div className="flex h-8 items-center gap-1.5">
+      <div className="flex h-6 items-center gap-1">
         <InstalledBadge />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
               size="icon"
-              className="size-7 text-muted-foreground"
+              className="size-6 text-muted-foreground"
               aria-label="Release actions"
             >
-              <MoreHorizontal className="size-3.5" />
+              <MoreHorizontal className="size-3" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-40">
@@ -258,15 +258,19 @@ function ActionControl({
     );
   }
 
+  // Compact install trigger — small icon button with tooltip, keeps the
+  // row height tight and doesn't break the design with a wide button.
   return (
-    <div className="flex h-8 items-center">
+    <div className="flex h-6 items-center">
       <Button
-        size="sm"
-        variant={compact ? "outline" : "default"}
+        variant="ghost"
+        size="icon"
+        className="size-6 text-muted-foreground hover:bg-primary/10 hover:text-primary"
         onClick={() => startReleaseDownload(release.id)}
+        aria-label={`Download and install ${release.tag} (${release.variant})`}
+        title="Download & install"
       >
-        <Download className="mr-1.5 size-3.5" />
-        Download &amp; Install
+        <Download className="size-3.5" />
       </Button>
     </div>
   );

@@ -415,3 +415,22 @@ Lint: 0 errors, 0 warnings. No browser errors.
 
 Stage Summary:
 All 5 corrections implemented and verified. The download experience is now smooth (inline card, no panel jump), console shows full launch parameters, missing models can't be launched, capability warnings appear for oversized models, and all models show architecture + MoE/Dense badges.
+
+---
+Task ID: 14
+Agent: main
+Task: Fix oversized install buttons + add newest releases (b9951 today)
+
+Work Log:
+- Store: replaced old releaseTags (b4402 oldest-first) with 22 new tags newest-first, starting with b9951 (2026-07-10, today) down to b9200, plus 4 legacy b4xxx tags. Page sorts by publishedAt DESC so b9951 shows at top.
+- releases.tsx: replaced the big "Download & Install" text Button (size sm, wide) with a compact ghost icon button (size-6, Download icon only, tooltip "Download & install"). Shrunk the install-progress fill bar from h-8/w-40 to h-6/w-28 with smaller "{pct}%" text (was "Installing… {pct}%"). Shrunk installed-state wrapper and MoreHorizontal menu trigger to size-6. All states now fixed-height h-6 so rows never jump.
+
+Browser verification:
+1. ✓ Newest releases first: b9951 (2026-07-10) at top, then b9940, b9925, b9908, b9890...
+2. ✓ Install buttons now compact icon-only (Download icon, size-6, tooltip), no more big "Download & Install" text buttons breaking the design
+3. ✓ Download animation: compact green fill bar (h-6, w-28), 29% visible, row height stable
+
+Lint: 0 errors. No browser errors.
+
+Stage Summary:
+Both release-page issues fixed: buttons are now compact icon triggers (don't break layout), and the catalog starts at b9951 (today) sorted newest-first.
