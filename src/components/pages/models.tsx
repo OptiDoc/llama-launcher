@@ -724,7 +724,7 @@ function HFDownloadDialog({ open, onOpenChange, prefillRepo, prefillModelName }:
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl p-0 sm:max-w-3xl">
+      <DialogContent className="flex max-h-[calc(100vh-2rem)] flex-col overflow-hidden p-0 sm:max-w-3xl">
         <DialogHeader className="border-b border-border/60 px-5 py-4">
           <DialogTitle className="flex items-center gap-2 text-sm">
             <Download className="size-4 text-primary" /> Download from HuggingFace
@@ -734,7 +734,7 @@ function HFDownloadDialog({ open, onOpenChange, prefillRepo, prefillModelName }:
           </DialogDescription>
         </DialogHeader>
 
-        <div className="grid max-h-[85vh] flex-1 grid-cols-1 overflow-hidden md:grid-cols-2">
+        <div className="grid min-h-0 flex-1 grid-cols-1 overflow-hidden md:grid-cols-2">
           {/* LEFT: search + results */}
           <div className="flex min-h-0 flex-col border-b border-border/60 md:border-b-0 md:border-r">
             <div className="border-b border-border/60 p-3">
