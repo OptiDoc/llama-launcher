@@ -1,0 +1,13 @@
+/home/z/my-project/src-tauri/target/debug/deps/value_bag-eb850e1be6b4250c.d: /home/z/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/value-bag-1.12.0/src/lib.rs /home/z/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/value-bag-1.12.0/src/error.rs /home/z/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/value-bag-1.12.0/src/fill.rs /home/z/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/value-bag-1.12.0/src/impls.rs /home/z/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/value-bag-1.12.0/src/internal/mod.rs /home/z/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/value-bag-1.12.0/src/internal/cast/mod.rs /home/z/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/value-bag-1.12.0/src/internal/cast/primitive.rs /home/z/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/value-bag-1.12.0/src/internal/fmt.rs /home/z/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/value-bag-1.12.0/src/visit.rs
+
+/home/z/my-project/src-tauri/target/debug/deps/libvalue_bag-eb850e1be6b4250c.rmeta: /home/z/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/value-bag-1.12.0/src/lib.rs /home/z/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/value-bag-1.12.0/src/error.rs /home/z/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/value-bag-1.12.0/src/fill.rs /home/z/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/value-bag-1.12.0/src/impls.rs /home/z/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/value-bag-1.12.0/src/internal/mod.rs /home/z/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/value-bag-1.12.0/src/internal/cast/mod.rs /home/z/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/value-bag-1.12.0/src/internal/cast/primitive.rs /home/z/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/value-bag-1.12.0/src/internal/fmt.rs /home/z/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/value-bag-1.12.0/src/visit.rs
+
+/home/z/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/value-bag-1.12.0/src/lib.rs:
+/home/z/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/value-bag-1.12.0/src/error.rs:
+/home/z/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/value-bag-1.12.0/src/fill.rs:
+/home/z/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/value-bag-1.12.0/src/impls.rs:
+/home/z/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/value-bag-1.12.0/src/internal/mod.rs:
+/home/z/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/value-bag-1.12.0/src/internal/cast/mod.rs:
+/home/z/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/value-bag-1.12.0/src/internal/cast/primitive.rs:
+/home/z/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/value-bag-1.12.0/src/internal/fmt.rs:
+/home/z/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/value-bag-1.12.0/src/visit.rs:
