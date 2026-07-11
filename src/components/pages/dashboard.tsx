@@ -665,7 +665,7 @@ export function Dashboard() {
                           borderRadius: 8,
                           fontSize: 12,
                         }}
-                        cursor={{ fill: "hsl(var(--accent))" }}
+                        cursor={{ fill: "hsl(var(--muted-foreground) / 0.1)" }}
                       />
                       <Bar dataKey="value" fill="var(--chart-3)" radius={[4, 4, 0, 0]} />
                     </BarChart>

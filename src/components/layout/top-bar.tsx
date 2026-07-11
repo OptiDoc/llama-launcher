@@ -13,6 +13,10 @@ import {
 import {
   PanelLeftClose,
   PanelLeftOpen,
+  Server,
+  Activity,
+  Zap,
+  Snowflake,
   Minus,
   Square,
   X,
@@ -25,9 +29,6 @@ import {
   Trash2,
   Plus,
   ChevronDown,
-  Activity,
-  Snowflake,
-  Zap,
   Moon,
 } from "lucide-react";
 import {
@@ -45,27 +46,35 @@ interface TopBarProps {
 
 const STATUS_CONFIG: Record<
   AppStatus,
-  { label: string; icon: React.ReactNode; accent: string }
+  { label: string; icon: React.ReactNode; badgeBg: string; badgeText: string; badgeBorder: string }
 > = {
   active: {
     label: "Active",
     icon: <Activity className="size-3" />,
-    accent: "bg-emerald-500",
+    badgeBg: "bg-emerald-500/10",
+    badgeText: "text-emerald-600 dark:text-emerald-400",
+    badgeBorder: "border-emerald-500/30",
   },
   idle: {
     label: "Idle",
     icon: <Moon className="size-3" />,
-    accent: "bg-amber-500",
+    badgeBg: "bg-amber-500/10",
+    badgeText: "text-amber-600 dark:text-amber-400",
+    badgeBorder: "border-amber-500/30",
   },
   hibernating: {
     label: "Hibernating",
     icon: <Snowflake className="size-3" />,
-    accent: "bg-sky-500",
+    badgeBg: "bg-sky-500/10",
+    badgeText: "text-sky-600 dark:text-sky-400",
+    badgeBorder: "border-sky-500/30",
   },
   waking: {
-    label: "Waking up",
+    label: "Waking",
     icon: <Zap className="size-3" />,
-    accent: "bg-violet-500",
+    badgeBg: "bg-violet-500/10",
+    badgeText: "text-violet-600 dark:text-violet-400",
+    badgeBorder: "border-violet-500/30",
   },
 };
 
@@ -79,12 +88,12 @@ const NOTIF_ICON: Record<NotificationKind, React.ReactNode> = {
 };
 
 const NOTIF_COLOR: Record<NotificationKind, string> = {
-  release: "text-violet-400",
-  download: "text-emerald-400",
-  info: "text-sky-400",
-  success: "text-emerald-400",
-  warn: "text-amber-400",
-  error: "text-red-400",
+  release: "text-violet-500",
+  download: "text-emerald-500",
+  info: "text-sky-500",
+  success: "text-emerald-500",
+  warn: "text-amber-500",
+  error: "text-red-500",
 };
 
 function workspaceColorDot(color: Workspace["color"]) {
@@ -123,24 +132,6 @@ function useWindowControls() {
   return { minimize, toggleMaximize, close };
 }
 
-/** Animated equalizer bars — live activity indicator inside the status tab. */
-function Equalizer({ active }: { active: boolean }) {
-  return (
-    <div className="flex h-3 items-end gap-[2px]" aria-hidden>
-      {[0, 1, 2, 3].map((i) => (
-        <span
-          key={i}
-          className={cn(
-            "w-[2px] rounded-full bg-current",
-            active ? "eq-bar" : "h-[3px] opacity-40",
-          )}
-          style={active ? { height: "100%" } : undefined}
-        />
-      ))}
-    </div>
-  );
-}
-
 export function TopBar({ collapsed, onToggleSidebar }: TopBarProps) {
   const appStatus = useLlamaStore((s) => s.appStatus);
   const instances = useLlamaStore((s) => s.instances);
@@ -158,10 +149,9 @@ export function TopBar({ collapsed, onToggleSidebar }: TopBarProps) {
   const { minimize, toggleMaximize, close } = useWindowControls();
   const [idleSecs, setIdleSecs] = React.useState(0);
   const [maximized, setMaximized] = React.useState(false);
-  const tauriMode = isTauri();
 
   React.useEffect(() => {
-    if (!tauriMode) return;
+    if (!isTauri()) return;
     (async () => {
       try {
         const { getCurrentWindow } = await import("@tauri-apps/api/window");
@@ -172,7 +162,7 @@ export function TopBar({ collapsed, onToggleSidebar }: TopBarProps) {
         });
       } catch { /* ignore */ }
     })();
-  }, [tauriMode]);
+  }, []);
 
   React.useEffect(() => {
     const t = setInterval(() => {
@@ -184,16 +174,12 @@ export function TopBar({ collapsed, onToggleSidebar }: TopBarProps) {
   const activeWorkspace = workspaces.find((w) => w.id === activeWorkspaceId) ?? workspaces[0] ?? null;
   const runningCount = instances.filter((i) => i.status === "running" || i.status === "starting").length;
   const statusCfg = STATUS_CONFIG[appStatus];
-  const isActive = appStatus === "active";
   const isHibernating = appStatus === "hibernating";
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   return (
-    // Reference-style title bar: flat white (light) / dark navy (dark),
-    // ~48px tall, with a black border on top. The center contains a dark
-    // "bookmark/tab" shaped status element on a black/navy background.
-    <div className="title-bar relative flex h-12 items-center justify-between border-b border-border bg-card select-none">
-      {/* ===== Left: sidebar toggle + red logo + workspace ===== */}
+    <div className="title-bar flex h-11 items-center justify-between border-b border-border bg-card select-none">
+      {/* ===== Left: sidebar toggle + logo + workspace dropdown ===== */}
       <div className="title-bar-no-drag flex h-full items-center gap-2 pl-2">
         <button
           onClick={onToggleSidebar}
@@ -204,7 +190,6 @@ export function TopBar({ collapsed, onToggleSidebar }: TopBarProps) {
           {collapsed ? <PanelLeftOpen className="size-4" /> : <PanelLeftClose className="size-4" />}
         </button>
 
-        {/* Red square logo — reference style */}
         <div className="grid size-6 place-items-center rounded-md bg-primary text-[10px] font-bold text-primary-foreground">
           L
         </div>
@@ -250,80 +235,48 @@ export function TopBar({ collapsed, onToggleSidebar }: TopBarProps) {
         </DropdownMenu>
       </div>
 
-      {/* ===== Center: dark "bookmark tab" status element =====
-          A dark (black/navy) tab-shaped element sitting in the center of the
-          light top bar, spanning ~1/3 of the window width, with slanted
-          (skewed) vertical edges like a ribbon/bookmark. Shows the app status
-          (Active / Idle / Hibernating / Waking), live equalizer, idle timer,
-          and instance count. */}
-      <div className="title-bar-no-drag pointer-events-none absolute inset-x-0 top-0 flex justify-center">
+      {/* ===== Center: colored status badges ===== */}
+      <div className="title-bar-no-drag mx-2 flex h-full min-w-0 flex-1 items-center justify-center gap-2">
+        {/* Status badge */}
+        <div className={cn("flex h-6 items-center gap-1.5 rounded-md border px-2.5 text-[11px] font-semibold", statusCfg.badgeBg, statusCfg.badgeText, statusCfg.badgeBorder)}>
+          <span className={cn(isHibernating && "animate-pulse")}>{statusCfg.icon}</span>
+          <span>{statusCfg.label}</span>
+        </div>
+
+        {/* Instance count badge */}
+        <div className="flex h-6 items-center gap-1.5 rounded-md border border-border bg-muted/50 px-2.5 text-[11px]">
+          <Server className="size-3 text-muted-foreground" />
+          <span className="font-mono font-semibold text-foreground">{runningCount}</span>
+          <span className="text-muted-foreground">{runningCount === 1 ? "instance" : "instances"}</span>
+          {runningCount > 0 && (
+            <span className="relative ml-0.5 flex size-1.5">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-75" />
+              <span className="relative inline-flex size-1.5 rounded-full bg-emerald-500" />
+            </span>
+          )}
+        </div>
+
+        {/* Idle timer */}
+        {appStatus !== "active" && (
+          <div className="hidden h-6 items-center gap-1.5 rounded-md border border-border bg-muted/50 px-2.5 text-[10px] text-muted-foreground lg:flex">
+            <Moon className="size-3" />
+            <span className="font-mono">idle {idleSecs}s</span>
+          </div>
+        )}
+      </div>
+
+      {/* ===== Right: notifications + power + window controls ===== */}
+      <div className="title-bar-no-drag flex h-full items-center gap-1 pr-1">
+        {/* Power dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button
-              className="pointer-events-auto relative mt-0 flex h-12 w-[33vw] max-w-[520px] items-center justify-center gap-3 bg-[oklch(0.14_0.015_250)] px-10 text-zinc-200 transition-colors hover:bg-[oklch(0.18_0.015_250)]"
-              style={{
-                /* Ribbon/bookmark shape: wide at top, narrows with a strong
-                   slant toward the bottom, with a centered downward point
-                   (notch) at the bottom edge — like a bookmark tab.
-                   polygon points (clockwise from top-left):
-                     0,0 → 100%,0 (top edge full width)
-                     100%,0 → 88%,100% (right edge slants inward)
-                     88%,100% → 56%,100% (bottom-right flat)
-                     56%,100% → 50%,86% (right side of the point going up)
-                     50%,86% → 44%,100% (left side of the point going down)
-                     44%,100% → 12%,100% (bottom-left flat)
-                     12%,100% → 0,0 (left edge slants inward) */
-                clipPath:
-                  "polygon(0% 0%, 100% 0%, 100% 0%, 88% 100%, 56% 100%, 50% 82%, 44% 100%, 12% 100%, 0% 0%)",
-              }}
-            >
-              {/* Status icon + label */}
-              <span className={cn("flex items-center gap-1.5 text-xs font-semibold", statusCfg.accent.replace("bg-", "text-"))}>
-                <span className={cn(isHibernating && "animate-pulse")}>{statusCfg.icon}</span>
-                <span className="text-zinc-100">{statusCfg.label}</span>
-              </span>
-
-              {/* Divider */}
-              <span className="h-3 w-px bg-white/15" />
-
-              {/* Live equalizer */}
-              <div className={cn("flex items-center gap-1.5", isActive ? "text-emerald-400" : "text-zinc-500")}>
-                <Equalizer active={isActive} />
-                <span className="font-mono text-[9px] uppercase tracking-wide opacity-70">
-                  {isActive ? "live" : isHibernating ? "frozen" : appStatus}
-                </span>
-              </div>
-
-              {/* Divider */}
-              <span className="h-3 w-px bg-white/15" />
-
-              {/* Instance count */}
-              <span className="flex items-center gap-1 text-xs">
-                <span className="font-mono font-bold text-zinc-100">{runningCount}</span>
-                <span className="text-[9px] text-zinc-400">{runningCount === 1 ? "inst" : "insts"}</span>
-                {runningCount > 0 && (
-                  <span className="relative ml-0.5 flex size-1.5">
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-                    <span className="relative inline-flex size-1.5 rounded-full bg-emerald-400" />
-                  </span>
-                )}
-              </span>
-
-              {/* Idle timer — only when not active */}
-              {!isActive && (
-                <>
-                  <span className="h-3 w-px bg-white/15" />
-                  <span className="flex items-center gap-1 text-[10px] text-zinc-400">
-                    <Moon className="size-2.5" />
-                    <span className="font-mono">{idleSecs}s</span>
-                  </span>
-                </>
-              )}
-
-              <ChevronDown className="size-3 text-zinc-500" />
+            <button className="flex h-7 items-center gap-1 rounded px-1.5 text-[10px] font-medium text-muted-foreground hover:bg-accent hover:text-foreground">
+              <Zap className="size-3" />
+              <span className="hidden md:inline">Power</span>
+              <ChevronDown className="size-2.5 opacity-50" />
             </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="center" className="w-64">
+          <DropdownMenuContent align="end" className="w-56">
             <DropdownMenuLabel className="text-[10px] text-muted-foreground">Power management</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={forceWake} className="gap-2 py-1.5" disabled={appStatus === "active"}>
@@ -340,27 +293,20 @@ export function TopBar({ collapsed, onToggleSidebar }: TopBarProps) {
                 <span className="text-[10px] text-muted-foreground">Unload models from VRAM</span>
               </div>
             </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <div className="px-2 py-1.5 text-[10px] text-muted-foreground">
-              Status: <span className="font-medium text-foreground">{statusCfg.label}</span> · {runningCount} running · idle {idleSecs}s
-            </div>
           </DropdownMenuContent>
         </DropdownMenu>
-      </div>
 
-      {/* ===== Right: notifications + window controls ===== */}
-      <div className="title-bar-no-drag relative z-10 flex h-full items-center gap-1 pr-1">
         {/* Notifications */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button
-              className="relative grid size-8 place-items-center rounded text-muted-foreground hover:bg-accent hover:text-foreground"
+              className="relative grid size-7 place-items-center rounded text-muted-foreground hover:bg-accent hover:text-foreground"
               aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ""}`}
               title="Notifications"
             >
-              <Bell className="size-4" />
+              <Bell className="size-3.5" />
               {unreadCount > 0 && (
-                <span className="absolute right-1 top-1 grid min-w-[14px] place-items-center rounded-full bg-primary px-0.5 text-[8px] font-bold text-primary-foreground">
+                <span className="absolute right-0.5 top-0.5 grid min-w-[12px] place-items-center rounded-full bg-primary px-0.5 text-[8px] font-bold text-primary-foreground">
                   {unreadCount > 9 ? "9+" : unreadCount}
                 </span>
               )}
@@ -412,27 +358,21 @@ export function TopBar({ collapsed, onToggleSidebar }: TopBarProps) {
           </DropdownMenuContent>
         </DropdownMenu>
 
-        {!tauriMode && (
-          <span className="hidden rounded bg-amber-500/20 px-1.5 py-0.5 text-[9px] font-medium text-amber-600 dark:text-amber-400 sm:inline">
-            browser
-          </span>
-        )}
-
         <div className="mx-0.5 h-5 w-px bg-border" />
 
         {/* Window controls */}
         <div className="flex items-center">
           <button
             onClick={minimize}
-            className="grid size-8 place-items-center text-muted-foreground hover:bg-accent hover:text-foreground"
+            className="grid size-7 place-items-center text-muted-foreground hover:bg-accent hover:text-foreground"
             aria-label="Minimize"
             title="Minimize"
           >
-            <Minus className="size-4" />
+            <Minus className="size-3.5" />
           </button>
           <button
             onClick={toggleMaximize}
-            className="grid size-8 place-items-center text-muted-foreground hover:bg-accent hover:text-foreground"
+            className="grid size-7 place-items-center text-muted-foreground hover:bg-accent hover:text-foreground"
             aria-label={maximized ? "Restore" : "Maximize"}
             title={maximized ? "Restore" : "Maximize"}
           >
@@ -442,16 +382,16 @@ export function TopBar({ collapsed, onToggleSidebar }: TopBarProps) {
                 <path d="M4 3.5V2h6v6H8.5" />
               </svg>
             ) : (
-              <Square className="size-3" />
+              <Square className="size-2.5" />
             )}
           </button>
           <button
             onClick={close}
-            className="grid size-8 place-items-center text-muted-foreground hover:bg-red-500 hover:text-white"
+            className="grid size-7 place-items-center text-muted-foreground hover:bg-red-500 hover:text-white"
             aria-label="Close"
             title="Close"
           >
-            <X className="size-4" />
+            <X className="size-3.5" />
           </button>
         </div>
       </div>
