@@ -430,7 +430,7 @@ pub struct ProcessMetrics {
     pub avg_latency_ms: f32,
     pub context_used: usize,
     pub kv_cache_mb: f64,
-    pub last_update: SystemTime,
+    pub last_update: u64,
 }
 
 impl Default for ProcessMetrics {
@@ -446,7 +446,7 @@ impl Default for ProcessMetrics {
             avg_latency_ms: 0.0,
             context_used: 0,
             kv_cache_mb: 0.0,
-            last_update: std::time::UNIX_EPOCH,
+            last_update: 0,
         }
     }
 }
