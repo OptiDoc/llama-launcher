@@ -163,7 +163,7 @@ export interface MetricSample {
   reqPerMin: number;
 }
 
-export type NotificationKind = "release" | "download" | "info" | "warn" | "error";
+export type NotificationKind = "release" | "download" | "info" | "success" | "warn" | "error";
 
 export interface AppNotification {
   id: string;

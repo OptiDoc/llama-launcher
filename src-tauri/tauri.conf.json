@@ -27,8 +27,8 @@
         "maximizable": true,
         "minimizable": true,
         "closable": true,
-        "titleBarStyle": "Visible",
-        "hiddenTitle": false,
+        "titleBarStyle": "Overlay",
+        "hiddenTitle": true,
         "dragDropEnabled": true,
         "acceptFirstMouse": true
       }

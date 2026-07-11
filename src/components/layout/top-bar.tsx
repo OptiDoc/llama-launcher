@@ -5,13 +5,6 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -24,12 +17,11 @@ import {
   PanelLeftOpen,
   Server,
   Activity,
-  Moon,
+  Cpu,
+  MemoryStick,
   Zap,
   Snowflake,
-  Plus,
   ChevronDown,
-  Circle,
   Minus,
   Square,
   X,
@@ -40,6 +32,7 @@ import {
   AlertTriangle,
   CheckCheck,
   Trash2,
+  Copy,
 } from "lucide-react";
 import {
   useLlamaStore,
@@ -47,6 +40,7 @@ import {
   type Workspace,
   type NotificationKind,
 } from "@/lib/llama-store";
+import { isTauri } from "@/lib/tauri-api";
 
 interface TopBarProps {
   collapsed: boolean;
@@ -55,52 +49,30 @@ interface TopBarProps {
 
 const STATUS_CONFIG: Record<
   AppStatus,
-  { label: string; color: string; bg: string; icon: React.ReactNode; description: string }
+  { label: string; color: string; icon: React.ReactNode }
 > = {
-  active: {
-    label: "Active",
-    color: "text-emerald-600 dark:text-emerald-400",
-    bg: "bg-emerald-500/10 border-emerald-500/30",
-    icon: <Activity className="size-3.5" />,
-    description: "Serving requests",
-  },
-  idle: {
-    label: "Idle",
-    color: "text-amber-600 dark:text-amber-400",
-    bg: "bg-amber-500/10 border-amber-500/30",
-    icon: <Circle className="size-3.5" />,
-    description: "No recent activity · will hibernate soon",
-  },
-  hibernating: {
-    label: "Hibernating",
-    color: "text-sky-600 dark:text-sky-400",
-    bg: "bg-sky-500/10 border-sky-500/30",
-    icon: <Snowflake className="size-3.5" />,
-    description: "Models unloaded · will hot-reload on next request",
-  },
-  waking: {
-    label: "Waking up",
-    color: "text-violet-600 dark:text-violet-400",
-    bg: "bg-violet-500/10 border-violet-500/30",
-    icon: <Zap className="size-3.5" />,
-    description: "Hot-reloading hibernated models",
-  },
+  active: { label: "Active", color: "text-emerald-400", icon: <Activity className="size-3" /> },
+  idle: { label: "Idle", color: "text-amber-400", icon: <Activity className="size-3" /> },
+  hibernating: { label: "Hibernating", color: "text-sky-400", icon: <Snowflake className="size-3" /> },
+  waking: { label: "Waking", color: "text-violet-400", icon: <Zap className="size-3" /> },
 };
 
 const NOTIF_ICON: Record<NotificationKind, React.ReactNode> = {
-  release: <Rocket className="size-4" />,
-  download: <Download className="size-4" />,
-  info: <Info className="size-4" />,
-  warn: <AlertTriangle className="size-4" />,
-  error: <AlertTriangle className="size-4" />,
+  release: <Rocket className="size-3.5" />,
+  download: <Download className="size-3.5" />,
+  info: <Info className="size-3.5" />,
+  success: <CheckCheck className="size-3.5" />,
+  warn: <AlertTriangle className="size-3.5" />,
+  error: <AlertTriangle className="size-3.5" />,
 };
 
 const NOTIF_COLOR: Record<NotificationKind, string> = {
-  release: "text-violet-500",
-  download: "text-emerald-500",
-  info: "text-sky-500",
-  warn: "text-amber-500",
-  error: "text-red-500",
+  release: "text-violet-400",
+  download: "text-emerald-400",
+  info: "text-sky-400",
+  success: "text-emerald-400",
+  warn: "text-amber-400",
+  error: "text-red-400",
 };
 
 function workspaceColorDot(color: Workspace["color"]) {
@@ -114,22 +86,30 @@ function workspaceColorDot(color: Workspace["color"]) {
   return map[color];
 }
 
-/** Animated equalizer bars used as a live activity indicator */
-function Equalizer({ active }: { active: boolean }) {
-  return (
-    <div className="flex h-4 items-end gap-[2px]" aria-hidden>
-      {[0, 1, 2, 3].map((i) => (
-        <span
-          key={i}
-          className={cn(
-            "w-[2px] rounded-full bg-current",
-            active ? "eq-bar" : "h-[3px] opacity-40",
-          )}
-          style={!active ? undefined : { height: "100%" }}
-        />
-      ))}
-    </div>
-  );
+/** Window control actions via Tauri. In browser mode they're no-ops. */
+function useWindowControls() {
+  const minimize = React.useCallback(async () => {
+    if (!isTauri()) return;
+    try {
+      const { getCurrentWindow } = await import("@tauri-apps/api/window");
+      await getCurrentWindow().minimize();
+    } catch (e) { console.error(e); }
+  }, []);
+  const toggleMaximize = React.useCallback(async () => {
+    if (!isTauri()) return;
+    try {
+      const { getCurrentWindow } = await import("@tauri-apps/api/window");
+      await getCurrentWindow().toggleMaximize();
+    } catch (e) { console.error(e); }
+  }, []);
+  const close = React.useCallback(async () => {
+    if (!isTauri()) return;
+    try {
+      const { getCurrentWindow } = await import("@tauri-apps/api/window");
+      await getCurrentWindow().close();
+    } catch (e) { console.error(e); }
+  }, []);
+  return { minimize, toggleMaximize, close };
 }
 
 export function TopBar({ collapsed, onToggleSidebar }: TopBarProps) {
@@ -141,213 +121,197 @@ export function TopBar({ collapsed, onToggleSidebar }: TopBarProps) {
   const addWorkspace = useLlamaStore((s) => s.addWorkspace);
   const forceHibernate = useLlamaStore((s) => s.forceHibernate);
   const forceWake = useLlamaStore((s) => s.forceWake);
-  const lastActivityAt = useLlamaStore((s) => s.lastActivityAt);
   const notifications = useLlamaStore((s) => s.notifications);
   const markNotificationRead = useLlamaStore((s) => s.markNotificationRead);
   const markAllNotificationsRead = useLlamaStore((s) => s.markAllNotificationsRead);
   const clearNotifications = useLlamaStore((s) => s.clearNotifications);
+  const metrics = useLlamaStore((s) => s.metrics);
+  const systemCapabilities = useLlamaStore((s) => s.systemCapabilities);
+  const { minimize, toggleMaximize, close } = useWindowControls();
   const [idleSecs, setIdleSecs] = React.useState(0);
+  const [maximized, setMaximized] = React.useState(false);
+  const tauriMode = isTauri();
+
+  // Track maximized state for the toggle icon
+  React.useEffect(() => {
+    if (!tauriMode) return;
+    (async () => {
+      try {
+        const { getCurrentWindow } = await import("@tauri-apps/api/window");
+        const win = getCurrentWindow();
+        setMaximized(await win.isMaximized());
+        const unlisten = await win.onResized(() => {
+          win.isMaximized().then(setMaximized);
+        });
+        return unlisten;
+      } catch { /* ignore */ }
+    })();
+  }, [tauriMode]);
 
   const activeWorkspace = workspaces.find((w) => w.id === activeWorkspaceId) ?? workspaces[0] ?? null;
   const runningCount = instances.filter((i) => i.status === "running" || i.status === "starting").length;
   const statusCfg = STATUS_CONFIG[appStatus];
-  const isActive = appStatus === "active";
-  const isHibernating = appStatus === "hibernating";
   const unreadCount = notifications.filter((n) => !n.read).length;
 
-  // Live idle timer display
   React.useEffect(() => {
     const t = setInterval(() => {
-      setIdleSecs(Math.floor((Date.now() - lastActivityAt) / 1000));
+      setIdleSecs(Math.floor((Date.now() - useLlamaStore.getState().lastActivityAt) / 1000));
     }, 1000);
     return () => clearInterval(t);
-  }, [lastActivityAt]);
+  }, []);
 
   return (
-    <div className="title-bar flex h-11 items-center justify-between border-b border-black/80 bg-[oklch(0.14_0.005_250)] px-3 text-zinc-200 select-none">
-      {/* ===== Left cluster: drag handle + sidebar toggle + workspace ===== */}
-      <div className="title-bar-no-drag flex items-center gap-2">
-        {/* Sidebar collapse toggle (chat.z.ai style: panel icon) */}
-        <Button
-          variant="ghost"
-          size="icon"
+    // Thin dark title bar — flat, no gradient. Serves as the window drag region.
+    // Interactive elements use title-bar-no-drag so they remain clickable.
+    <div className="title-bar flex h-9 items-center justify-between border-b border-black bg-[oklch(0.12_0.005_250)] px-2 text-zinc-300 select-none">
+      {/* ===== Left: sidebar toggle + brand + workspace ===== */}
+      <div className="title-bar-no-drag flex items-center gap-1.5">
+        <button
           onClick={onToggleSidebar}
-          className="size-7 text-zinc-400 hover:bg-white/10 hover:text-zinc-100"
+          className="grid size-7 place-items-center rounded text-zinc-400 hover:bg-white/10 hover:text-zinc-100"
           aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
           {collapsed ? <PanelLeftOpen className="size-4" /> : <PanelLeftClose className="size-4" />}
-        </Button>
+        </button>
 
-        <div className="mx-1 h-5 w-px bg-white/15" />
+        <div className="mx-0.5 h-4 w-px bg-white/10" />
 
-        {/* Brand mark */}
-        <div className="flex items-center gap-2 pr-2">
-          <div className="grid size-6 place-items-center rounded-md bg-primary text-[10px] font-bold text-primary-foreground">
+        <div className="flex items-center gap-1.5">
+          <div className="grid size-5 place-items-center rounded bg-primary text-[9px] font-bold text-primary-foreground">
             L
           </div>
-          <span className="hidden text-xs font-semibold tracking-tight text-zinc-100 sm:inline">
+          <span className="hidden text-[11px] font-semibold tracking-tight text-zinc-100 sm:inline">
             LlamaLauncher
           </span>
+          {!tauriMode && (
+            <span className="rounded bg-amber-500/20 px-1 text-[8px] font-medium text-amber-300">browser</span>
+          )}
         </div>
 
-        <div className="mx-1 h-5 w-px bg-white/15" />
+        <div className="mx-0.5 h-4 w-px bg-white/10" />
 
         {/* Workspace dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              className="h-7 gap-2 px-2 text-xs font-medium text-zinc-200 hover:bg-white/10 hover:text-zinc-100"
-            >
+            <button className="flex h-6 items-center gap-1.5 rounded px-1.5 text-[11px] font-medium text-zinc-300 hover:bg-white/10 hover:text-zinc-100">
               {activeWorkspace ? (
                 <>
-                  <span className={cn("size-2 rounded-full", workspaceColorDot(activeWorkspace.color))} />
-                  <span className="max-w-[140px] truncate">{activeWorkspace.name}</span>
+                  <span className={cn("size-1.5 rounded-full", workspaceColorDot(activeWorkspace.color))} />
+                  <span className="max-w-[100px] truncate">{activeWorkspace.name}</span>
                 </>
               ) : (
-                <span className="text-zinc-400">No workspace</span>
+                <span className="text-zinc-500">No workspace</span>
               )}
-              <ChevronDown className="size-3 opacity-60" />
-            </Button>
+              <ChevronDown className="size-2.5 opacity-50" />
+            </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="w-64">
-            <DropdownMenuLabel className="text-xs text-muted-foreground">Workspaces</DropdownMenuLabel>
+          <DropdownMenuContent align="start" className="w-56">
+            <DropdownMenuLabel className="text-[10px] text-muted-foreground">Workspaces</DropdownMenuLabel>
             <DropdownMenuSeparator />
             {workspaces.map((w) => (
               <DropdownMenuItem
                 key={w.id}
                 onClick={() => setActiveWorkspace(w.id)}
-                className="gap-2 py-1.5"
+                className="gap-2 py-1"
               >
                 <span className={cn("size-2 rounded-full", workspaceColorDot(w.color))} />
                 <div className="flex flex-1 flex-col">
-                  <span className="text-sm font-medium">{w.name}</span>
+                  <span className="text-xs font-medium">{w.name}</span>
                   {w.description && (
-                    <span className="text-[11px] text-muted-foreground">{w.description}</span>
+                    <span className="text-[10px] text-muted-foreground">{w.description}</span>
                   )}
                 </div>
-                {w.id === activeWorkspaceId && (
-                  <span className="text-[10px] text-primary">active</span>
-                )}
+                {w.id === activeWorkspaceId && <span className="text-[9px] text-primary">active</span>}
               </DropdownMenuItem>
             ))}
             <DropdownMenuSeparator />
             <DropdownMenuItem
-              onClick={() =>
-                addWorkspace({
-                  name: `Workspace ${workspaces.length + 1}`,
-                  color: "orange",
-                  description: "New workspace",
-                })
-              }
-              className="gap-2 py-1.5 text-xs"
+              onClick={() => addWorkspace({ name: `Workspace ${workspaces.length + 1}`, color: "orange", description: "New workspace" })}
+              className="gap-2 py-1 text-[11px]"
             >
-              <Plus className="size-3.5" />
-              New workspace
+              <Copy className="size-3" /> New workspace
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
 
-      {/* ===== Center: drag region (visual status strip) ===== */}
-      <div className="title-bar-no-drag mx-3 flex min-w-0 flex-1 items-center justify-center gap-3">
-        {/* Animated status pill */}
-        <div
-          className={cn(
-            "flex h-7 items-center gap-2 rounded-md border px-3 text-xs font-medium transition-colors",
-            statusCfg.bg,
-            statusCfg.color,
-          )}
-          title={statusCfg.description}
-        >
-          <span className={cn(isHibernating && "animate-hibernate")}>
-            {statusCfg.icon}
-          </span>
-          <span className="font-semibold">{statusCfg.label}</span>
-          <span className="hidden text-[10px] opacity-70 md:inline">
-            {statusCfg.description}
-          </span>
+      {/* ===== Center: status strip (drag region) ===== */}
+      <div className="title-bar-no-drag mx-2 flex min-w-0 flex-1 items-center justify-center gap-2">
+        {/* Status pill */}
+        <div className={cn("flex h-5 items-center gap-1 rounded border px-1.5 text-[10px] font-medium", "border-white/10 bg-white/5", statusCfg.color)}>
+          {statusCfg.icon}
+          <span>{statusCfg.label}</span>
         </div>
 
-        {/* Live equalizer (animates when active, freezes when hibernating) */}
-        <div className={cn("hidden items-center gap-1.5 sm:flex", statusCfg.color)}>
-          <Equalizer active={isActive} />
-          <span className="font-mono text-[10px] opacity-70">
-            {isActive ? "live" : isHibernating ? "frozen" : appStatus}
+        {/* Instance count */}
+        <div className="flex h-5 items-center gap-1 rounded border border-white/10 bg-white/5 px-1.5 text-[10px]">
+          <Server className="size-2.5 text-zinc-400" />
+          <span className="font-mono font-semibold text-zinc-100">{runningCount}</span>
+          <span className="text-zinc-500">{runningCount === 1 ? "inst" : "insts"}</span>
+          {runningCount > 0 && (
+            <span className="relative ml-0.5 flex size-1">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+              <span className="relative inline-flex size-1 rounded-full bg-emerald-400" />
+            </span>
+          )}
+        </div>
+
+        {/* CPU */}
+        <div className="hidden h-5 items-center gap-1 rounded border border-white/10 bg-white/5 px-1.5 text-[10px] md:flex">
+          <Cpu className="size-2.5 text-zinc-400" />
+          <span className="font-mono text-zinc-200">{metrics.length > 0 ? `${Math.round(metrics[metrics.length - 1].cpu)}%` : "--"}</span>
+        </div>
+
+        {/* RAM */}
+        <div className="hidden h-5 items-center gap-1 rounded border border-white/10 bg-white/5 px-1.5 text-[10px] lg:flex">
+          <MemoryStick className="size-2.5 text-zinc-400" />
+          <span className="font-mono text-zinc-200">
+            {systemCapabilities.ramGb > 0 ? `${Math.round(metrics[metrics.length - 1]?.ram ?? 0)}%` : "--"}
           </span>
         </div>
 
         {/* Idle timer */}
-        {!isActive && (
-          <div className="hidden items-center gap-1.5 text-[11px] text-zinc-400 lg:flex">
-            <Moon className="size-3" />
-            <span className="font-mono">idle {idleSecs}s</span>
-          </div>
+        {appStatus !== "active" && (
+          <span className="hidden text-[9px] text-zinc-500 lg:inline">idle {idleSecs}s</span>
         )}
-
-        {/* Instance counter */}
-        <div className="flex h-7 items-center gap-2 rounded-md border border-white/10 bg-white/5 px-3 text-xs">
-          <Server className="size-3.5 text-zinc-300" />
-          <span className="font-mono font-semibold text-zinc-100">{runningCount}</span>
-          <span className="text-[10px] text-zinc-400">
-            {runningCount === 1 ? "instance" : "instances"}
-          </span>
-          {runningCount > 0 && (
-            <span className="relative ml-1 flex size-1.5">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex size-1.5 rounded-full bg-emerald-400" />
-            </span>
-          )}
-        </div>
       </div>
 
-      {/* ===== Right cluster: notifications + power + window controls ===== */}
-      <div className="title-bar-no-drag flex items-center gap-1">
-        {/* Notifications bell */}
+      {/* ===== Right: notifications + power + window controls ===== */}
+      <div className="title-bar-no-drag flex items-center gap-0.5">
+        {/* Notifications */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button
-              className="relative grid size-7 place-items-center rounded text-zinc-300 hover:bg-white/10 hover:text-zinc-100"
+              className="relative grid size-6 place-items-center rounded text-zinc-400 hover:bg-white/10 hover:text-zinc-100"
               aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ""}`}
               title="Notifications"
             >
-              <Bell className="size-4" />
+              <Bell className="size-3.5" />
               {unreadCount > 0 && (
-                <span className="absolute -right-0.5 -top-0.5 grid min-w-[14px] place-items-center rounded-full bg-primary px-0.5 text-[9px] font-bold text-primary-foreground">
+                <span className="absolute -right-0.5 -top-0.5 grid min-w-[12px] place-items-center rounded-full bg-primary px-0.5 text-[8px] font-bold text-primary-foreground">
                   {unreadCount > 9 ? "9+" : unreadCount}
                 </span>
               )}
             </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-80 p-0">
-            <div className="flex items-center justify-between border-b px-3 py-2">
-              <span className="text-xs font-semibold">Notifications</span>
-              <div className="flex items-center gap-1">
-                <button
-                  onClick={markAllNotificationsRead}
-                  className="grid size-6 place-items-center rounded text-muted-foreground hover:bg-accent hover:text-foreground"
-                  title="Mark all as read"
-                >
-                  <CheckCheck className="size-3.5" />
+          <DropdownMenuContent align="end" className="w-72 p-0">
+            <div className="flex items-center justify-between border-b px-2.5 py-1.5">
+              <span className="text-[11px] font-semibold">Notifications</span>
+              <div className="flex items-center gap-0.5">
+                <button onClick={markAllNotificationsRead} className="grid size-5 place-items-center rounded text-muted-foreground hover:bg-accent hover:text-foreground" title="Mark all read">
+                  <CheckCheck className="size-3" />
                 </button>
-                <button
-                  onClick={clearNotifications}
-                  className="grid size-6 place-items-center rounded text-muted-foreground hover:bg-accent hover:text-destructive"
-                  title="Clear all"
-                >
-                  <Trash2 className="size-3.5" />
+                <button onClick={clearNotifications} className="grid size-5 place-items-center rounded text-muted-foreground hover:bg-accent hover:text-destructive" title="Clear all">
+                  <Trash2 className="size-3" />
                 </button>
               </div>
             </div>
-            <div className="max-h-[360px] overflow-y-auto">
+            <div className="max-h-[320px] overflow-y-auto">
               {notifications.length === 0 ? (
-                <div className="flex flex-col items-center justify-center gap-2 py-10 text-center">
-                  <Bell className="size-6 text-muted-foreground/50" />
-                  <p className="text-xs text-muted-foreground">No notifications yet</p>
-                  <p className="text-[10px] text-muted-foreground/70">
-                    New releases, downloads and system alerts appear here.
-                  </p>
+                <div className="flex flex-col items-center justify-center gap-1.5 py-8 text-center">
+                  <Bell className="size-5 text-muted-foreground/40" />
+                  <p className="text-[11px] text-muted-foreground">No notifications</p>
                 </div>
               ) : (
                 notifications.map((n) => (
@@ -355,20 +319,18 @@ export function TopBar({ collapsed, onToggleSidebar }: TopBarProps) {
                     key={n.id}
                     onClick={() => markNotificationRead(n.id)}
                     className={cn(
-                      "flex w-full items-start gap-2.5 border-b px-3 py-2.5 text-left transition-colors hover:bg-accent/50",
+                      "flex w-full items-start gap-2 border-b px-2.5 py-2 text-left hover:bg-accent/50",
                       !n.read && "bg-primary/5",
                     )}
                   >
-                    <span className={cn("mt-0.5 shrink-0", NOTIF_COLOR[n.kind])}>
-                      {NOTIF_ICON[n.kind]}
-                    </span>
+                    <span className={cn("mt-0.5 shrink-0", NOTIF_COLOR[n.kind])}>{NOTIF_ICON[n.kind]}</span>
                     <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2">
-                        <span className="truncate text-xs font-semibold">{n.title}</span>
-                        {!n.read && <span className="size-1.5 shrink-0 rounded-full bg-primary" />}
+                      <div className="flex items-center gap-1.5">
+                        <span className="truncate text-[11px] font-semibold">{n.title}</span>
+                        {!n.read && <span className="size-1 shrink-0 rounded-full bg-primary" />}
                       </div>
-                      <p className="mt-0.5 line-clamp-2 text-[11px] text-muted-foreground">{n.body}</p>
-                      <span className="mt-1 block text-[10px] text-muted-foreground/60">
+                      <p className="mt-0.5 line-clamp-2 text-[10px] text-muted-foreground">{n.body}</p>
+                      <span className="mt-0.5 block text-[9px] text-muted-foreground/60">
                         {new Date(n.ts).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                       </span>
                     </div>
@@ -379,76 +341,65 @@ export function TopBar({ collapsed, onToggleSidebar }: TopBarProps) {
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <div className="mx-0.5 h-5 w-px bg-white/15" />
-
-        {/* Power / hibernate controls */}
+        {/* Power */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-7 gap-1.5 px-2 text-xs text-zinc-300 hover:bg-white/10 hover:text-zinc-100"
-            >
-              <Zap className="size-3.5" />
+            <button className="flex h-6 items-center gap-1 rounded px-1.5 text-[10px] font-medium text-zinc-400 hover:bg-white/10 hover:text-zinc-100">
+              <Zap className="size-3" />
               <span className="hidden md:inline">Power</span>
-              <ChevronDown className="size-3 opacity-60" />
-            </Button>
+            </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-60">
-            <DropdownMenuLabel className="text-xs text-muted-foreground">
-              Power management
-            </DropdownMenuLabel>
+          <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuLabel className="text-[10px] text-muted-foreground">Power management</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={forceWake}
-              className="gap-2 py-1.5"
-              disabled={appStatus === "active"}
-            >
-              <Activity className="size-3.5 text-emerald-500" />
+            <DropdownMenuItem onClick={forceWake} className="gap-2 py-1" disabled={appStatus === "active"}>
+              <Activity className="size-3 text-emerald-500" />
               <div className="flex flex-1 flex-col">
-                <span className="text-sm font-medium">Force active</span>
-                <span className="text-[11px] text-muted-foreground">Wake all hibernated models</span>
+                <span className="text-xs font-medium">Force active</span>
+                <span className="text-[10px] text-muted-foreground">Wake hibernated models</span>
               </div>
             </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={forceHibernate}
-              className="gap-2 py-1.5"
-              disabled={appStatus === "hibernating"}
-            >
-              <Snowflake className="size-3.5 text-sky-500" />
+            <DropdownMenuItem onClick={forceHibernate} className="gap-2 py-1" disabled={appStatus === "hibernating"}>
+              <Snowflake className="size-3 text-sky-500" />
               <div className="flex flex-1 flex-col">
-                <span className="text-sm font-medium">Hibernate now</span>
-                <span className="text-[11px] text-muted-foreground">Unload all models from VRAM</span>
+                <span className="text-xs font-medium">Hibernate now</span>
+                <span className="text-[10px] text-muted-foreground">Unload models from VRAM</span>
               </div>
             </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <div className="px-2 py-1.5 text-[11px] text-muted-foreground">
-              Auto-hibernate after {activeWorkspaceId ? (useLlamaStore.getState().workspaceSettings[activeWorkspaceId]?.hibernateAfterSec ?? 75) : 75}s idle (configurable in Settings)
-            </div>
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <div className="mx-1 h-5 w-px bg-white/15" />
+        <div className="mx-0.5 h-4 w-px bg-white/10" />
 
-        {/* Window controls (visual only — drag region for moving the window) */}
-        <div className="flex items-center gap-0.5">
+        {/* Window controls — work via Tauri window API */}
+        <div className="flex items-center">
           <button
-            className="grid size-7 place-items-center rounded text-zinc-400 hover:bg-white/10 hover:text-zinc-100"
-            aria-label="Minimize window"
+            onClick={minimize}
+            className="grid size-7 place-items-center text-zinc-400 hover:bg-white/10 hover:text-zinc-100"
+            aria-label="Minimize"
             title="Minimize"
           >
             <Minus className="size-3.5" />
           </button>
           <button
-            className="grid size-7 place-items-center rounded text-zinc-400 hover:bg-white/10 hover:text-zinc-100"
-            aria-label="Maximize window"
-            title="Maximize"
+            onClick={toggleMaximize}
+            className="grid size-7 place-items-center text-zinc-400 hover:bg-white/10 hover:text-zinc-100"
+            aria-label={maximized ? "Restore" : "Maximize"}
+            title={maximized ? "Restore" : "Maximize"}
           >
-            <Square className="size-3" />
+            {maximized ? (
+              <svg className="size-3" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.2">
+                <rect x="2" y="3.5" width="6.5" height="6.5" rx="0.5" />
+                <path d="M4 3.5V2h6v6H8.5" />
+              </svg>
+            ) : (
+              <Square className="size-2.5" />
+            )}
           </button>
           <button
-            className="grid size-7 place-items-center rounded text-zinc-400 hover:bg-red-500 hover:text-white"
-            aria-label="Close window"
+            onClick={close}
+            className="grid size-7 place-items-center text-zinc-400 hover:bg-red-500 hover:text-white"
+            aria-label="Close"
             title="Close"
           >
             <X className="size-3.5" />
