@@ -873,28 +873,118 @@ pub async fn run_benchmark(
 ) -> Result<BenchmarkResult, String> {
     let process = start_model(model_id.clone(), None).await?;
 
+    // Wait for llama-server to be ready
     tokio::time::sleep(Duration::from_secs(3)).await;
 
-    tokio::time::sleep(Duration::from_secs(config.runs as u64)).await;
+    let port = process.port;
+    let url = format!("http://127.0.0.1:{}/v1/completions", port);
+    let client = reqwest::Client::new();
+
+    let prompt_text = if config.prompt.is_empty() {
+        "Once upon a time".to_string()
+    } else {
+        config.prompt.clone()
+    };
+
+    // Warmup runs
+    for _ in 0..config.warmup_runs {
+        let _ = client
+            .post(&url)
+            .json(&serde_json::json!({
+                "prompt": &prompt_text,
+                "n_predict": 16,
+                "stream": false,
+            }))
+            .send()
+            .await;
+    }
+
+    // Real benchmark runs — measure tokens/sec and latency
+    let mut tps_samples = Vec::new();
+    let mut latency_samples = Vec::new();
+    let mut total_prompt_tokens = 0u64;
+    let mut total_completion_tokens = 0u64;
+
+    for _ in 0..config.runs {
+        let start = std::time::Instant::now();
+        let response = client
+            .post(&url)
+            .json(&serde_json::json!({
+                "prompt": &prompt_text,
+                "n_predict": config.n_predict,
+                "stream": false,
+            }))
+            .send()
+            .await;
+
+        if let Ok(resp) = response {
+            let elapsed_ms = start.elapsed().as_millis() as f64;
+            latency_samples.push(elapsed_ms);
+
+            if let Ok(json) = resp.json::<serde_json::Value>().await {
+                // llama-server returns timings in the response
+                let timings = &json["timings"];
+                if !timings.is_null() {
+                    let predicted_n = timings["predicted_n"].as_u64().unwrap_or(config.n_predict as u64);
+                    let predicted_ms = timings["predicted_ms"].as_f64().unwrap_or(elapsed_ms);
+                    if predicted_ms > 0.0 && predicted_n > 0 {
+                        let tps = predicted_n as f64 / (predicted_ms / 1000.0);
+                        tps_samples.push(tps as f32);
+                    }
+                    total_prompt_tokens += timings["prompt_n"].as_u64().unwrap_or(0);
+                    total_completion_tokens += predicted_n;
+                } else {
+                    // Fallback: estimate from elapsed time
+                    if elapsed_ms > 0.0 {
+                        tps_samples.push((config.n_predict as f64 / (elapsed_ms / 1000.0)) as f32);
+                        total_completion_tokens += config.n_predict as u64;
+                    }
+                }
+            }
+        }
+    }
+
+    // Get process metrics
+    let (mem_mb, gpu_mb) = {
+        let registry = GLOBAL_STATE.process_registry.lock().unwrap();
+        if let Some(p) = registry.get(&process.id) {
+            (p.metrics.cpu_memory_mb, p.metrics.gpu_memory_mb)
+        } else {
+            (0.0, 0.0)
+        }
+    };
+
+    // Calculate statistics
+    let avg_tps = if tps_samples.is_empty() { 0.0 } else { tps_samples.iter().sum::<f32>() / tps_samples.len() as f32 };
+    let min_tps = tps_samples.iter().cloned().fold(f32::INFINITY, f32::min);
+    let max_tps = tps_samples.iter().cloned().fold(0.0f32, f32::max);
+    let avg_latency = if latency_samples.is_empty() { 0.0 } else { latency_samples.iter().sum::<f64>() / latency_samples.len() as f64 };
+
+    // Percentiles
+    let mut sorted_lat = latency_samples.clone();
+    sorted_lat.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
+    let p50 = percentile(&sorted_lat, 0.50);
+    let p95 = percentile(&sorted_lat, 0.95);
+    let p99 = percentile(&sorted_lat, 0.99);
 
     let result = BenchmarkResult {
         id: uuid::Uuid::new_v4().to_string(),
-        model_id,
+        model_id: model_id.clone(),
         timestamp: SystemTime::now()
             .duration_since(SystemTime::UNIX_EPOCH)
             .unwrap()
             .as_secs(),
         config,
         results: BenchmarkMetrics {
-            avg_tokens_per_sec: 50.0,
-            min_tokens_per_sec: 45.0,
-            max_tokens_per_sec: 55.0,
-            avg_latency_ms: 20.0,
-            p50_latency_ms: 19.0,
-            p95_latency_ms: 22.0,
-            p99_latency_ms: 25.0,
-            memory_used_mb: 4096.0,
-            gpu_memory_used_mb: 0.0,
+            avg_tokens_per_sec: avg_tps,
+            min_tokens_per_sec: if tps_samples.is_empty() { 0.0 } else { min_tps },
+            max_tokens_per_sec: max_tps,
+            avg_latency_ms: avg_latency as f32,
+            p50_latency_ms: p50 as f32,
+            p95_latency_ms: p95 as f32,
+            p99_latency_ms: p99 as f32,
+            memory_used_mb: mem_mb,
+            gpu_memory_used_mb: gpu_mb,
             power_watts: None,
         },
     };
@@ -908,6 +998,15 @@ pub async fn run_benchmark(
     stop_model(process.id).await?;
 
     Ok(result)
+}
+
+/// Calculate the p-th percentile of a sorted slice.
+fn percentile(sorted: &[f64], p: f64) -> f64 {
+    if sorted.is_empty() {
+        return 0.0;
+    }
+    let idx = ((sorted.len() as f64 - 1.0) * p).round() as usize;
+    sorted[idx.min(sorted.len() - 1)]
 }
 
 #[tauri::command]

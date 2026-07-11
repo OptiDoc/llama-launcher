@@ -99,6 +99,16 @@ pub fn run() {
                 let _ = window.set_focus();
             }
 
+            // Start background metrics updater — refreshes CPU/memory for
+            // all running llama-server processes every 2 seconds.
+            tauri::async_runtime::spawn(async move {
+                loop {
+                    tokio::time::sleep(std::time::Duration::from_secs(2)).await;
+                    crate::processes::process_manager().update_metrics();
+                    crate::processes::process_manager().cleanup();
+                }
+            });
+
             Ok(())
         })
         .build(tauri::generate_context!())

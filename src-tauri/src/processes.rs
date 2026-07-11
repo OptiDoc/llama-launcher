@@ -317,12 +317,21 @@ impl ProcessManager {
         let mut sys = System::new_all();
         sys.refresh_all();
 
+        // Query nvidia-smi for per-process GPU memory usage
+        let gpu_mem_map = self.query_gpu_memory_per_pid();
+
         let mut procs = self.processes.lock();
         for (_, proc) in procs.iter_mut() {
             if proc.pid > 0 && matches!(proc.status, ProcessStatus::Running | ProcessStatus::Starting) {
                 if let Some(sys_proc) = sys.process(Pid::from_u32(proc.pid)) {
                     proc.metrics.cpu_memory_mb = sys_proc.memory() as f64 / 1024.0 / 1024.0;
                     proc.metrics.cpu_percent = sys_proc.cpu_usage();
+                    // GPU memory from nvidia-smi (if available)
+                    proc.metrics.gpu_memory_mb = gpu_mem_map.get(&proc.pid).copied().unwrap_or(0.0);
+                    proc.metrics.last_update = SystemTime::now()
+                        .duration_since(SystemTime::UNIX_EPOCH)
+                        .unwrap()
+                        .as_secs();
                 } else {
                     proc.status = ProcessStatus::Crashed;
                     proc.pid = 0;
@@ -330,6 +339,29 @@ impl ProcessManager {
                 }
             }
         }
+    }
+
+    /// Query nvidia-smi for per-PID GPU memory usage.
+    /// Returns a map of PID → GPU memory in MB.
+    fn query_gpu_memory_per_pid(&self) -> std::collections::HashMap<u32, f64> {
+        let mut map = std::collections::HashMap::new();
+        let output = std::process::Command::new("nvidia-smi")
+            .args(["--query-compute-apps=pid,used_memory", "--format=csv,noheader,nounits"])
+            .output();
+        if let Ok(out) = output {
+            if out.status.success() {
+                let stdout = String::from_utf8_lossy(&out.stdout);
+                for line in stdout.lines() {
+                    let parts: Vec<&str> = line.split(',').map(|s| s.trim()).collect();
+                    if parts.len() >= 2 {
+                        if let (Ok(pid), Ok(mem)) = (parts[0].parse::<u32>(), parts[1].parse::<f64>()) {
+                            map.insert(pid, mem);
+                        }
+                    }
+                }
+            }
+        }
+        map
     }
 
     pub fn cleanup(&self) {
