@@ -252,13 +252,22 @@ export function TopBar({ collapsed, onToggleSidebar }: TopBarProps) {
 
       {/* ===== Center: dark "bookmark tab" status element =====
           A dark (black/navy) tab-shaped element sitting in the center of the
-          light top bar, with a pointed bottom edge (bookmark shape). Shows the
-          app status (Active / Idle / Hibernating / Waking), live equalizer,
-          idle timer, and instance count. */}
+          light top bar, spanning ~1/3 of the window width, with slanted
+          (skewed) vertical edges like a ribbon/bookmark. Shows the app status
+          (Active / Idle / Hibernating / Waking), live equalizer, idle timer,
+          and instance count. */}
       <div className="title-bar-no-drag pointer-events-none absolute inset-x-0 top-0 flex justify-center">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="pointer-events-auto mt-0 flex items-center gap-2.5 rounded-b-lg border-x border-b border-black/60 bg-[oklch(0.14_0.015_250)] px-4 py-1.5 text-zinc-200 shadow-md transition-colors hover:bg-[oklch(0.18_0.015_250)]">
+            <button
+              className="pointer-events-auto relative mt-0 flex h-12 w-[33vw] max-w-[520px] items-center justify-center gap-3 border-x border-b border-black/60 bg-[oklch(0.14_0.015_250)] px-8 text-zinc-200 shadow-md transition-colors hover:bg-[oklch(0.18_0.015_250)]"
+              style={{
+                /* Slanted vertical edges (ribbon/bookmark shape):
+                   top edge is the full width of the bar, bottom edge is
+                   slightly narrower, creating angled side edges. */
+                clipPath: "polygon(3% 0, 97% 0, 94% 100%, 6% 100%)",
+              }}
+            >
               {/* Status icon + label */}
               <span className={cn("flex items-center gap-1.5 text-xs font-semibold", statusCfg.accent.replace("bg-", "text-"))}>
                 <span className={cn(isHibernating && "animate-pulse")}>{statusCfg.icon}</span>
