@@ -1014,6 +1014,13 @@ export const useLlamaStore = create<LlamaStore>((set, get) => {
     // ---------- bootstrap — fetch all real data from Tauri ----------
     bootstrap: async () => {
       if (!isTauri()) {
+        // Browser mode: ensure a default "Personal" workspace so the UI is usable
+        if (get().workspaces.length === 0) {
+          get().addWorkspace({ name: "Personal", color: "blue", description: "Local dev & experiments" });
+        }
+        if (!get().activeWorkspaceId && get().workspaces.length > 0) {
+          set({ activeWorkspaceId: get().workspaces[0].id });
+        }
         emitLog(SYSTEM_CONSOLE_ID, "warn", `[boot] not running in Tauri — data will be empty. Start the desktop app to scan real models.`);
         return;
       }
@@ -1026,8 +1033,14 @@ export const useLlamaStore = create<LlamaStore>((set, get) => {
         get().refreshReleases(),
         get().refreshSystem(),
       ]);
+      // Ensure at least one workspace exists (default: Personal)
+      let ws = get().workspaces;
+      if (ws.length === 0) {
+        await tauri.createWorkspace("Personal", "blue", "Local dev & experiments");
+        await get().refreshWorkspaces();
+        ws = get().workspaces;
+      }
       // Set active workspace if we have one
-      const ws = get().workspaces;
       if (ws.length > 0 && !get().activeWorkspaceId) {
         const activeId = await tauri.getActiveWorkspace();
         set({ activeWorkspaceId: activeId || ws[0].id });
@@ -1201,11 +1214,19 @@ export const useLlamaStore = create<LlamaStore>((set, get) => {
     updateWorkspace: (id, patch) =>
       set((s) => ({ workspaces: s.workspaces.map((w) => (w.id === id ? { ...w, ...patch } : w)) })),
     removeWorkspace: (id) =>
-      set((s) => ({
-        workspaces: s.workspaces.filter((w) => w.id !== id),
-        instances: s.instances.filter((i) => i.workspaceId !== id),
-        models: s.models.filter((m) => m.workspaceId !== id),
-      })),
+      set((s) => {
+        // Never delete the last remaining workspace
+        if (s.workspaces.length <= 1) return s;
+        const remaining = s.workspaces.filter((w) => w.id !== id);
+        // If we're removing the active workspace, switch to the first remaining
+        const newActive = s.activeWorkspaceId === id ? remaining[0]?.id ?? "" : s.activeWorkspaceId;
+        return {
+          workspaces: remaining,
+          instances: s.instances.filter((i) => i.workspaceId !== id),
+          models: s.models.filter((m) => m.workspaceId !== id),
+          activeWorkspaceId: newActive,
+        };
+      }),
 
     updateGlobalSettings: (patch) => set((s) => ({ globalSettings: { ...s.globalSettings, ...patch } })),
     updateWorkspaceSettings: (workspaceId, patch) =>

@@ -2,8 +2,6 @@
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -32,7 +30,7 @@ import {
   AlertTriangle,
   CheckCheck,
   Trash2,
-  Copy,
+  Plus,
 } from "lucide-react";
 import {
   useLlamaStore,
@@ -49,12 +47,12 @@ interface TopBarProps {
 
 const STATUS_CONFIG: Record<
   AppStatus,
-  { label: string; color: string; icon: React.ReactNode }
+  { label: string; dot: string }
 > = {
-  active: { label: "Active", color: "text-emerald-400", icon: <Activity className="size-3" /> },
-  idle: { label: "Idle", color: "text-amber-400", icon: <Activity className="size-3" /> },
-  hibernating: { label: "Hibernating", color: "text-sky-400", icon: <Snowflake className="size-3" /> },
-  waking: { label: "Waking", color: "text-violet-400", icon: <Zap className="size-3" /> },
+  active: { label: "Active", dot: "bg-emerald-500" },
+  idle: { label: "Idle", dot: "bg-amber-500" },
+  hibernating: { label: "Hibernating", dot: "bg-sky-500" },
+  waking: { label: "Waking", dot: "bg-violet-500" },
 };
 
 const NOTIF_ICON: Record<NotificationKind, React.ReactNode> = {
@@ -67,12 +65,12 @@ const NOTIF_ICON: Record<NotificationKind, React.ReactNode> = {
 };
 
 const NOTIF_COLOR: Record<NotificationKind, string> = {
-  release: "text-violet-400",
-  download: "text-emerald-400",
-  info: "text-sky-400",
-  success: "text-emerald-400",
-  warn: "text-amber-400",
-  error: "text-red-400",
+  release: "text-violet-500",
+  download: "text-emerald-500",
+  info: "text-sky-500",
+  success: "text-emerald-500",
+  warn: "text-amber-500",
+  error: "text-red-500",
 };
 
 function workspaceColorDot(color: Workspace["color"]) {
@@ -132,7 +130,6 @@ export function TopBar({ collapsed, onToggleSidebar }: TopBarProps) {
   const [maximized, setMaximized] = React.useState(false);
   const tauriMode = isTauri();
 
-  // Track maximized state for the toggle icon
   React.useEffect(() => {
     if (!tauriMode) return;
     (async () => {
@@ -140,10 +137,9 @@ export function TopBar({ collapsed, onToggleSidebar }: TopBarProps) {
         const { getCurrentWindow } = await import("@tauri-apps/api/window");
         const win = getCurrentWindow();
         setMaximized(await win.isMaximized());
-        const unlisten = await win.onResized(() => {
+        await win.onResized(() => {
           win.isMaximized().then(setMaximized);
         });
-        return unlisten;
       } catch { /* ignore */ }
     })();
   }, [tauriMode]);
@@ -152,6 +148,7 @@ export function TopBar({ collapsed, onToggleSidebar }: TopBarProps) {
   const runningCount = instances.filter((i) => i.status === "running" || i.status === "starting").length;
   const statusCfg = STATUS_CONFIG[appStatus];
   const unreadCount = notifications.filter((n) => !n.read).length;
+  const latestMetric = metrics[metrics.length - 1];
 
   React.useEffect(() => {
     const t = setInterval(() => {
@@ -161,47 +158,48 @@ export function TopBar({ collapsed, onToggleSidebar }: TopBarProps) {
   }, []);
 
   return (
-    // Thin dark title bar — flat, no gradient. Serves as the window drag region.
-    // Interactive elements use title-bar-no-drag so they remain clickable.
-    <div className="title-bar flex h-9 items-center justify-between border-b border-black bg-[oklch(0.12_0.005_250)] px-2 text-zinc-300 select-none">
+    // Reference-style title bar: flat, light background (bg-card), thin,
+    // borderless center nav strip. Draggable to move the window.
+    <div className="title-bar flex h-10 items-center justify-between border-b border-border bg-card select-none">
       {/* ===== Left: sidebar toggle + brand + workspace ===== */}
-      <div className="title-bar-no-drag flex items-center gap-1.5">
+      <div className="title-bar-no-drag flex h-full items-center gap-1 pl-2">
         <button
           onClick={onToggleSidebar}
-          className="grid size-7 place-items-center rounded text-zinc-400 hover:bg-white/10 hover:text-zinc-100"
+          className="grid size-7 place-items-center rounded text-muted-foreground hover:bg-accent hover:text-foreground"
           aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
           {collapsed ? <PanelLeftOpen className="size-4" /> : <PanelLeftClose className="size-4" />}
         </button>
 
-        <div className="mx-0.5 h-4 w-px bg-white/10" />
-
-        <div className="flex items-center gap-1.5">
-          <div className="grid size-5 place-items-center rounded bg-primary text-[9px] font-bold text-primary-foreground">
+        {/* Brand — small square logo like reference */}
+        <div className="flex items-center gap-1.5 px-1">
+          <div className="grid size-5 place-items-center rounded-md bg-primary text-[9px] font-bold text-primary-foreground">
             L
           </div>
-          <span className="hidden text-[11px] font-semibold tracking-tight text-zinc-100 sm:inline">
+          <span className="hidden text-[11px] font-semibold tracking-tight text-foreground sm:inline">
             LlamaLauncher
           </span>
           {!tauriMode && (
-            <span className="rounded bg-amber-500/20 px-1 text-[8px] font-medium text-amber-300">browser</span>
+            <span className="rounded bg-amber-500/20 px-1 text-[8px] font-medium text-amber-600 dark:text-amber-400">
+              browser
+            </span>
           )}
         </div>
 
-        <div className="mx-0.5 h-4 w-px bg-white/10" />
+        <div className="mx-1 h-4 w-px bg-border" />
 
         {/* Workspace dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="flex h-6 items-center gap-1.5 rounded px-1.5 text-[11px] font-medium text-zinc-300 hover:bg-white/10 hover:text-zinc-100">
+            <button className="flex h-6 items-center gap-1.5 rounded px-1.5 text-[11px] font-medium text-foreground hover:bg-accent">
               {activeWorkspace ? (
                 <>
                   <span className={cn("size-1.5 rounded-full", workspaceColorDot(activeWorkspace.color))} />
                   <span className="max-w-[100px] truncate">{activeWorkspace.name}</span>
                 </>
               ) : (
-                <span className="text-zinc-500">No workspace</span>
+                <span className="text-muted-foreground">No workspace</span>
               )}
               <ChevronDown className="size-2.5 opacity-50" />
             </button>
@@ -230,66 +228,75 @@ export function TopBar({ collapsed, onToggleSidebar }: TopBarProps) {
               onClick={() => addWorkspace({ name: `Workspace ${workspaces.length + 1}`, color: "orange", description: "New workspace" })}
               className="gap-2 py-1 text-[11px]"
             >
-              <Copy className="size-3" /> New workspace
+              <Plus className="size-3" /> New workspace
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
 
-      {/* ===== Center: status strip (drag region) ===== */}
-      <div className="title-bar-no-drag mx-2 flex min-w-0 flex-1 items-center justify-center gap-2">
-        {/* Status pill */}
-        <div className={cn("flex h-5 items-center gap-1 rounded border px-1.5 text-[10px] font-medium", "border-white/10 bg-white/5", statusCfg.color)}>
-          {statusCfg.icon}
-          <span>{statusCfg.label}</span>
+      {/* ===== Center: flat navigation-style status strip (reference design) =====
+          No borders, no pill backgrounds — just flat text items separated by
+          thin dividers, like the reference's horizontal nav menu. */}
+      <div className="title-bar-no-drag mx-2 flex h-full min-w-0 flex-1 items-center justify-center gap-0">
+        {/* Status item */}
+        <div className="flex h-full items-center gap-1.5 px-2.5 text-[11px] font-medium">
+          <span className={cn("size-1.5 rounded-full", statusCfg.dot, appStatus === "active" && "animate-pulse")} />
+          <span className="text-foreground/80">{statusCfg.label}</span>
         </div>
 
-        {/* Instance count */}
-        <div className="flex h-5 items-center gap-1 rounded border border-white/10 bg-white/5 px-1.5 text-[10px]">
-          <Server className="size-2.5 text-zinc-400" />
-          <span className="font-mono font-semibold text-zinc-100">{runningCount}</span>
-          <span className="text-zinc-500">{runningCount === 1 ? "inst" : "insts"}</span>
-          {runningCount > 0 && (
-            <span className="relative ml-0.5 flex size-1">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex size-1 rounded-full bg-emerald-400" />
-            </span>
-          )}
+        <div className="h-3 w-px bg-border" />
+
+        {/* Instance count item */}
+        <div className="flex h-full items-center gap-1.5 px-2.5 text-[11px]">
+          <Server className="size-3 text-muted-foreground" />
+          <span className="font-mono font-semibold text-foreground">{runningCount}</span>
+          <span className="text-muted-foreground">{runningCount === 1 ? "instance" : "instances"}</span>
         </div>
 
-        {/* CPU */}
-        <div className="hidden h-5 items-center gap-1 rounded border border-white/10 bg-white/5 px-1.5 text-[10px] md:flex">
-          <Cpu className="size-2.5 text-zinc-400" />
-          <span className="font-mono text-zinc-200">{metrics.length > 0 ? `${Math.round(metrics[metrics.length - 1].cpu)}%` : "--"}</span>
-        </div>
+        <div className="h-3 w-px bg-border" />
 
-        {/* RAM */}
-        <div className="hidden h-5 items-center gap-1 rounded border border-white/10 bg-white/5 px-1.5 text-[10px] lg:flex">
-          <MemoryStick className="size-2.5 text-zinc-400" />
-          <span className="font-mono text-zinc-200">
-            {systemCapabilities.ramGb > 0 ? `${Math.round(metrics[metrics.length - 1]?.ram ?? 0)}%` : "--"}
+        {/* CPU item */}
+        <div className="hidden h-full items-center gap-1.5 px-2.5 text-[11px] md:flex">
+          <Cpu className="size-3 text-muted-foreground" />
+          <span className="font-mono text-foreground/80">
+            {latestMetric ? `${Math.round(latestMetric.cpu)}%` : "--"}
           </span>
         </div>
 
-        {/* Idle timer */}
+        <div className="hidden h-3 w-px bg-border md:block" />
+
+        {/* RAM item */}
+        <div className="hidden h-full items-center gap-1.5 px-2.5 text-[11px] lg:flex">
+          <MemoryStick className="size-3 text-muted-foreground" />
+          <span className="font-mono text-foreground/80">
+            {systemCapabilities.ramGb > 0 ? `${Math.round(latestMetric?.ram ?? 0)}%` : "--"}
+          </span>
+        </div>
+
+        {/* Idle timer — only when not active */}
         {appStatus !== "active" && (
-          <span className="hidden text-[9px] text-zinc-500 lg:inline">idle {idleSecs}s</span>
+          <>
+            <div className="hidden h-3 w-px bg-border lg:block" />
+            <span className="hidden items-center text-[10px] text-muted-foreground lg:flex">
+              idle {idleSecs}s
+            </span>
+          </>
         )}
       </div>
 
       {/* ===== Right: notifications + power + window controls ===== */}
-      <div className="title-bar-no-drag flex items-center gap-0.5">
+      <div className="title-bar-no-drag flex h-full items-center gap-0.5 pr-1">
         {/* Notifications */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button
-              className="relative grid size-6 place-items-center rounded text-zinc-400 hover:bg-white/10 hover:text-zinc-100"
+              className="relative grid size-7 place-items-center rounded text-muted-foreground hover:bg-accent hover:text-foreground"
               aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ""}`}
               title="Notifications"
             >
               <Bell className="size-3.5" />
               {unreadCount > 0 && (
-                <span className="absolute -right-0.5 -top-0.5 grid min-w-[12px] place-items-center rounded-full bg-primary px-0.5 text-[8px] font-bold text-primary-foreground">
+                <span className="absolute -right-0.5 -top-0.5 grid min-w-[14px] place-items-center rounded-full bg-primary px-0.5 text-[8px] font-bold text-primary-foreground">
                   {unreadCount > 9 ? "9+" : unreadCount}
                 </span>
               )}
@@ -344,7 +351,7 @@ export function TopBar({ collapsed, onToggleSidebar }: TopBarProps) {
         {/* Power */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="flex h-6 items-center gap-1 rounded px-1.5 text-[10px] font-medium text-zinc-400 hover:bg-white/10 hover:text-zinc-100">
+            <button className="flex h-7 items-center gap-1 rounded px-1.5 text-[10px] font-medium text-muted-foreground hover:bg-accent hover:text-foreground">
               <Zap className="size-3" />
               <span className="hidden md:inline">Power</span>
             </button>
@@ -369,13 +376,13 @@ export function TopBar({ collapsed, onToggleSidebar }: TopBarProps) {
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <div className="mx-0.5 h-4 w-px bg-white/10" />
+        <div className="mx-0.5 h-4 w-px bg-border" />
 
         {/* Window controls — work via Tauri window API */}
         <div className="flex items-center">
           <button
             onClick={minimize}
-            className="grid size-7 place-items-center text-zinc-400 hover:bg-white/10 hover:text-zinc-100"
+            className="grid size-8 place-items-center text-muted-foreground hover:bg-accent hover:text-foreground"
             aria-label="Minimize"
             title="Minimize"
           >
@@ -383,7 +390,7 @@ export function TopBar({ collapsed, onToggleSidebar }: TopBarProps) {
           </button>
           <button
             onClick={toggleMaximize}
-            className="grid size-7 place-items-center text-zinc-400 hover:bg-white/10 hover:text-zinc-100"
+            className="grid size-8 place-items-center text-muted-foreground hover:bg-accent hover:text-foreground"
             aria-label={maximized ? "Restore" : "Maximize"}
             title={maximized ? "Restore" : "Maximize"}
           >
@@ -398,7 +405,7 @@ export function TopBar({ collapsed, onToggleSidebar }: TopBarProps) {
           </button>
           <button
             onClick={close}
-            className="grid size-7 place-items-center text-zinc-400 hover:bg-red-500 hover:text-white"
+            className="grid size-8 place-items-center text-muted-foreground hover:bg-red-500 hover:text-white"
             aria-label="Close"
             title="Close"
           >
