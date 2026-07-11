@@ -284,6 +284,22 @@
   border-color: oklch(0.4 0.06 290 / 0.4);
 }
 
+/* ---------- Recharts overrides ---------- */
+/* Fix: default recharts tooltip cursor is a solid dark rectangle.
+   Override to a subtle translucent fill that matches the theme. */
+.recharts-tooltip-cursor {
+  fill: hsl(var(--muted-foreground) / 0.08) !important;
+  stroke: hsl(var(--border)) !important;
+  stroke-width: 1 !important;
+  stroke-dasharray: 3 3 !important;
+}
+/* Line chart tooltip cursor (vertical line) */
+.recharts-cursor.recharts-tooltip-cursor {
+  stroke: hsl(var(--border)) !important;
+  stroke-width: 1 !important;
+  fill: transparent !important;
+}
+
 /* ---------- Animations ---------- */
 @keyframes soft-pulse {
   0%, 100% { opacity: 1; }

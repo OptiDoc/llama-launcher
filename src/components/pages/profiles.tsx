@@ -50,12 +50,11 @@ function hashStr(s: string): number {
 
 /** Deterministic calibration radar data derived from profile id hash. */
 function deriveCalibration(id: string) {
-  const h = hashStr(id);
+  // No per-dimension calibration data from backend yet — use the profile's
+  // overall calibrationScore for all dimensions (or 0 if unset).
+  const score = useLlamaStore.getState().profiles.find((p) => p.id === id)?.calibrationScore ?? 0;
   const dims = ["speed", "memory", "quality", "stability", "throughput"] as const;
-  return dims.map((dim, i) => {
-    const v = 40 + ((h >> (i * 4)) & 0x3f); // 40..103
-    return { dim, value: Math.min(100, v) };
-  });
+  return dims.map((dim) => ({ dim, value: score }));
 }
 
 // ---------- small bits ----------

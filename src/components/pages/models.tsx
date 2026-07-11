@@ -142,21 +142,16 @@ function hashStr(s: string): number {
   return Math.abs(h | 0);
 }
 
-/** Deterministic per-model fake usage stats (no Math.random — SSR safe). */
-function deriveModelStats(modelId: string) {
-  const h = hashStr(modelId);
-  const timesLoaded = 4 + (h % 47);
-  const totalTokens = 50_000 + ((h * 7) % 1_950_000);
-  const avgTps = 18 + ((h >> 3) % 28);
-  const daysAgo = (h >> 5) % 14;
-  const lastUsed = daysAgo === 0 ? "today" : daysAgo === 1 ? "yesterday" : `${daysAgo} days ago`;
-  // 7-day tokens generated — deterministic
-  const dayLabels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-  const daily = dayLabels.map((d, i) => {
-    const v = ((h >> (i * 3)) & 0x7) * 1200 + ((h >> (i + 1)) & 0xf) * 200 + 400;
-    return { day: d, tokens: v };
-  });
-  return { timesLoaded, totalTokens, avgTps, lastUsed, daily };
+/** Per-model usage stats. Until the backend tracks per-model history, these
+ *  are all zero/empty — no fake data. */
+function deriveModelStats(_modelId: string) {
+  return {
+    timesLoaded: 0,
+    totalTokens: 0,
+    avgTps: 0,
+    lastUsed: "—",
+    daily: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d) => ({ day: d, tokens: 0 })),
+  };
 }
 
 function CopyButton({ text, className }: { text: string; className?: string }) {

@@ -673,10 +673,17 @@ function InstanceDetailView({ instance, onBack }: { instance: LlamaInstance; onB
   const isRunning = instance.status === "running" || instance.status === "starting";
   const isStopped = instance.status === "stopped";
   const profile = profiles.find((p) => p.name === instance.profile);
-  const throughput = React.useMemo(() => deriveThroughput(instance.id), [instance.id]);
+  // Use real metrics from the store instead of fake deterministic data
+  const metrics = useLlamaStore((s) => s.metrics);
+  const throughput = React.useMemo(() => {
+    return metrics.slice(-20).map((m, i) => ({
+      idx: i + 1,
+      tps: Number((m.tps || instance.tokensPerSec || 0).toFixed(1)),
+    }));
+  }, [metrics, instance.tokensPerSec]);
   const [confirmRemove, setConfirmRemove] = React.useState(false);
 
-  const avgMemory = profile ? Math.round(profile.ctxSize * 0.5 + 1200) : instance.memoryMb;
+  const avgMemory = instance.memoryMb;
 
   return (
     <div className="space-y-5">

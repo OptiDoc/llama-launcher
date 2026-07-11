@@ -535,6 +535,7 @@ export function Dashboard() {
   const instances = useLlamaStore((s) => s.instances);
   const models = useLlamaStore((s) => s.models);
   const releases = useLlamaStore((s) => s.releases);
+  const metrics = useLlamaStore((s) => s.metrics);
   const setActiveConsole = useLlamaStore((s) => s.setActiveConsole);
   const setConsoleOpen = useLlamaStore((s) => s.setConsoleOpen);
 
@@ -641,125 +642,105 @@ export function Dashboard() {
             )}
           </div>
 
-          {/* Charts: bar + line + donut */}
+          {/* Charts: real data from metrics history */}
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {/* CPU history — real data */}
             <Card className="border shadow-soft">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <div>
-                  <CardTitle className="text-sm font-semibold">Monthly Tokens</CardTitle>
-                  <p className="text-xs text-muted-foreground">Total generated per month</p>
+                  <CardTitle className="text-sm font-semibold">CPU History</CardTitle>
+                  <p className="text-xs text-muted-foreground">Last 60s · real-time</p>
                 </div>
                 <Badge variant="secondary" className="bg-primary/10 text-primary">
-                  <TrendingUp className="mr-1 size-3" /> 64,318
+                  <Cpu className="mr-1 size-3" /> {metrics.length > 0 ? `${Math.round(metrics[metrics.length - 1].cpu)}%` : "--"}
                 </Badge>
               </CardHeader>
               <CardContent className="pt-2">
                 <div className="h-[180px]">
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={monthlyData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
+                    <AreaChart data={metrics.slice(-40).map((m) => ({ time: new Date(m.t).toLocaleTimeString([], { minute: "2-digit", second: "2-digit" }), cpu: Math.round(m.cpu) }))} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
+                      <defs>
+                        <linearGradient id="cpuGrad" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="var(--chart-4)" stopOpacity={0.4} />
+                          <stop offset="100%" stopColor="var(--chart-4)" stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
                       <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
-                      <XAxis dataKey="name" tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} />
-                      <YAxis tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} />
+                      <XAxis dataKey="time" tick={{ fontSize: 9, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} interval="preserveStartEnd" minTickGap={30} />
+                      <YAxis domain={[0, 100]} tick={{ fontSize: 9, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} />
                       <Tooltip
-                        contentStyle={{
-                          backgroundColor: "hsl(var(--popover))",
-                          border: "1px solid hsl(var(--border))",
-                          borderRadius: 8,
-                          fontSize: 12,
-                        }}
-                        cursor={{ fill: "hsl(var(--muted-foreground) / 0.1)" }}
+                        cursor={{ stroke: "hsl(var(--border))", strokeWidth: 1, strokeDasharray: "3 3" }}
+                        contentStyle={{ backgroundColor: "hsl(var(--popover))", border: "1px solid hsl(var(--border))", borderRadius: 8, fontSize: 12 }}
                       />
-                      <Bar dataKey="value" fill="var(--chart-3)" radius={[4, 4, 0, 0]} />
-                    </BarChart>
+                      <Area type="monotone" dataKey="cpu" stroke="var(--chart-4)" strokeWidth={2} fill="url(#cpuGrad)" isAnimationActive={false} />
+                    </AreaChart>
                   </ResponsiveContainer>
                 </div>
               </CardContent>
             </Card>
 
+            {/* Throughput history — real data */}
             <Card className="border shadow-soft">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <div>
-                  <CardTitle className="text-sm font-semibold">Weekly Request Views</CardTitle>
-                  <p className="text-xs text-muted-foreground">Last 7 days</p>
+                  <CardTitle className="text-sm font-semibold">Throughput History</CardTitle>
+                  <p className="text-xs text-muted-foreground">Tokens/sec · last 60s</p>
                 </div>
                 <Badge variant="secondary" className="bg-primary/10 text-primary">
-                  <Activity className="mr-1 size-3" /> 401
+                  <Zap className="mr-1 size-3" /> {totalTps.toFixed(1)}
                 </Badge>
               </CardHeader>
               <CardContent className="pt-2">
                 <div className="h-[180px]">
                   <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={weeklyData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
+                    <LineChart data={metrics.slice(-40).map((m) => ({ time: new Date(m.t).toLocaleTimeString([], { minute: "2-digit", second: "2-digit" }), tps: Number(m.tps.toFixed(1)) }))} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
-                      <XAxis dataKey="name" tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} />
-                      <YAxis tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} />
+                      <XAxis dataKey="time" tick={{ fontSize: 9, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} interval="preserveStartEnd" minTickGap={30} />
+                      <YAxis tick={{ fontSize: 9, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} />
                       <Tooltip
                         cursor={{ stroke: "hsl(var(--border))", strokeWidth: 1, strokeDasharray: "3 3" }}
-                        contentStyle={{
-                          backgroundColor: "hsl(var(--popover))",
-                          border: "1px solid hsl(var(--border))",
-                          borderRadius: 8,
-                          fontSize: 12,
-                        }}
+                        contentStyle={{ backgroundColor: "hsl(var(--popover))", border: "1px solid hsl(var(--border))", borderRadius: 8, fontSize: 12 }}
                       />
-                      <Line
-                        type="monotone"
-                        dataKey="views"
-                        stroke="var(--chart-1)"
-                        strokeWidth={2.5}
-                        dot={{ fill: "var(--chart-1)", r: 3 }}
-                        activeDot={{ r: 5, fill: "var(--chart-1)", stroke: "hsl(var(--popover))", strokeWidth: 2 }}
-                      />
+                      <Line type="monotone" dataKey="tps" stroke="var(--chart-2)" strokeWidth={2} dot={false} isAnimationActive={false} />
                     </LineChart>
                   </ResponsiveContainer>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="border shadow-soft md:col-span-2 xl:col-span-1">
+            {/* Instance summary — real data */}
+            <Card className="border shadow-soft">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <div>
-                  <CardTitle className="text-sm font-semibold">Request Mix</CardTitle>
-                  <p className="text-xs text-muted-foreground">Distribution by endpoint</p>
+                  <CardTitle className="text-sm font-semibold">Instances</CardTitle>
+                  <p className="text-xs text-muted-foreground">Running servers</p>
                 </div>
                 <Badge variant="secondary" className="bg-primary/10 text-primary">
-                  <Clock className="mr-1 size-3" /> 36 pending
+                  <Server className="mr-1 size-3" /> {running.length}
                 </Badge>
               </CardHeader>
               <CardContent className="pt-2">
-                <div className="h-[180px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie
-                        data={taskDistribution}
-                        dataKey="value"
-                        nameKey="name"
-                        cx="50%"
-                        cy="50%"
-                        innerRadius={45}
-                        outerRadius={68}
-                        paddingAngle={3}
-                      >
-                        {taskDistribution.map((entry) => (
-                          <Cell key={entry.name} fill={entry.color} />
-                        ))}
-                      </Pie>
-                      <Tooltip
-                        contentStyle={{
-                          backgroundColor: "hsl(var(--popover))",
-                          border: "1px solid hsl(var(--border))",
-                          borderRadius: 8,
-                          fontSize: 12,
-                        }}
-                      />
-                      <Legend
-                        verticalAlign="bottom"
-                        height={20}
-                        iconType="circle"
-                        formatter={(v) => <span className="text-[10px] text-muted-foreground">{v}</span>}
-                      />
-                    </PieChart>
-                  </ResponsiveContainer>
+                <div className="h-[180px] overflow-y-auto">
+                  {running.length === 0 ? (
+                    <div className="flex h-full items-center justify-center text-xs text-muted-foreground">
+                      No running instances
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      {running.map((inst) => (
+                        <div key={inst.id} className="flex items-center justify-between rounded-md border bg-muted/30 px-3 py-2">
+                          <div className="min-w-0 flex-1">
+                            <div className="truncate text-xs font-medium">{inst.name}</div>
+                            <div className="text-[10px] text-muted-foreground">:{inst.port} · {inst.tokensPerSec.toFixed(1)} tok/s</div>
+                          </div>
+                          <div className="ml-2 text-right">
+                            <div className="font-mono text-xs font-semibold">{Math.round(inst.memoryMb)} MB</div>
+                            <div className="text-[10px] text-muted-foreground">{inst.requestsPerMin} req/min</div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
