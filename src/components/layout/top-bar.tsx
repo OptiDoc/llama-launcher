@@ -260,12 +260,21 @@ export function TopBar({ collapsed, onToggleSidebar }: TopBarProps) {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button
-              className="pointer-events-auto relative mt-0 flex h-12 w-[33vw] max-w-[520px] items-center justify-center gap-3 border-x border-b border-black/60 bg-[oklch(0.14_0.015_250)] px-8 text-zinc-200 shadow-md transition-colors hover:bg-[oklch(0.18_0.015_250)]"
+              className="pointer-events-auto relative mt-0 flex h-12 w-[33vw] max-w-[520px] items-center justify-center gap-3 bg-[oklch(0.14_0.015_250)] px-10 text-zinc-200 transition-colors hover:bg-[oklch(0.18_0.015_250)]"
               style={{
-                /* Slanted vertical edges (ribbon/bookmark shape):
-                   top edge is the full width of the bar, bottom edge is
-                   slightly narrower, creating angled side edges. */
-                clipPath: "polygon(3% 0, 97% 0, 94% 100%, 6% 100%)",
+                /* Ribbon/bookmark shape: wide at top, narrows with a strong
+                   slant toward the bottom, with a centered downward point
+                   (notch) at the bottom edge — like a bookmark tab.
+                   polygon points (clockwise from top-left):
+                     0,0 → 100%,0 (top edge full width)
+                     100%,0 → 88%,100% (right edge slants inward)
+                     88%,100% → 56%,100% (bottom-right flat)
+                     56%,100% → 50%,86% (right side of the point going up)
+                     50%,86% → 44%,100% (left side of the point going down)
+                     44%,100% → 12%,100% (bottom-left flat)
+                     12%,100% → 0,0 (left edge slants inward) */
+                clipPath:
+                  "polygon(0% 0%, 100% 0%, 100% 0%, 88% 100%, 56% 100%, 50% 82%, 44% 100%, 12% 100%, 0% 0%)",
               }}
             >
               {/* Status icon + label */}
