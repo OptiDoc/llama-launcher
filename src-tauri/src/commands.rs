@@ -66,7 +66,7 @@ async fn detect_model(path: &Path) -> Result<ModelInfo, String> {
     let mut file = tokio::fs::File::open(path)
         .await
         .map_err(|e| format!("Failed to open file: {}", e))?;
-    let mut header = vec![0u8; 8192];
+    let mut header = vec![0u8; 65536];
     let _ = file.read(&mut header).await;
 
     let metadata = tokio::fs::metadata(path)
@@ -122,7 +122,7 @@ async fn detect_model(path: &Path) -> Result<ModelInfo, String> {
 }
 
 fn parse_gguf_header(
-    _header: &[u8],
+    header: &[u8],
 ) -> (
     ModelFormat,
     Option<String>,
@@ -130,13 +130,203 @@ fn parse_gguf_header(
     Option<usize>,
     Option<String>,
 ) {
-    (
-        ModelFormat::Gguf,
-        Some("llama".to_string()),
-        Some("Q4_K_M".to_string()),
-        Some(4096),
-        Some("7B".to_string()),
-    )
+    // GGUF binary format:
+    // - magic: "GGUF" (4 bytes)
+    // - version: u32 (3 or 4)
+    // - tensor_count: u64
+    // - metadata_kv_count: u64
+    // - then key-value pairs: key(gguf_string) + value_type(u32) + value( varies)
+    //
+    // We parse the metadata KV pairs we care about:
+    //   general.architecture, general.name, general.file_type,
+    //   <arch>.context_length, <arch>.block_count, <arch>.embedding_length,
+    //   <arch>.expert_count (for MoE detection)
+
+    let mut pos = 4usize; // skip "GGUF" magic
+    if header.len() < pos + 4 {
+        return (ModelFormat::Gguf, None, None, None, None);
+    }
+
+    // version
+    let version = u32::from_le_bytes([header[pos], header[pos+1], header[pos+2], header[pos+3]]);
+    pos += 4;
+
+    // tensor_count (u64)
+    if header.len() < pos + 8 { return (ModelFormat::Gguf, None, None, None, None); }
+    pos += 8;
+
+    // metadata_kv_count (u64)
+    if header.len() < pos + 8 { return (ModelFormat::Gguf, None, None, None, None); }
+    let kv_count = u64::from_le_bytes([
+        header[pos], header[pos+1], header[pos+2], header[pos+3],
+        header[pos+4], header[pos+5], header[pos+6], header[pos+7],
+    ]) as usize;
+    pos += 8;
+
+    let mut architecture = None::<String>;
+    let mut general_name = None::<String>;
+    let mut file_type = None::<u32>;
+    let mut context_length = None::<u64>;
+    let mut block_count = None::<u64>;
+    let mut embedding_length = None::<u64>;
+    let mut expert_count = None::<u64>;
+    let mut vocab_size = None::<u64>;
+
+    for _ in 0..kv_count {
+        // Read key (gguf_string: u64 length + bytes)
+        if header.len() < pos + 8 { break; }
+        let key_len = u64::from_le_bytes([
+            header[pos], header[pos+1], header[pos+2], header[pos+3],
+            header[pos+4], header[pos+5], header[pos+6], header[pos+7],
+        ]) as usize;
+        pos += 8;
+        if header.len() < pos + key_len { break; }
+        let key = String::from_utf8_lossy(&header[pos..pos + key_len]).to_string();
+        pos += key_len;
+
+        // Read value_type (u32)
+        if header.len() < pos + 4 { break; }
+        let vtype = u32::from_le_bytes([header[pos], header[pos+1], header[pos+2], header[pos+3]]);
+        pos += 4;
+
+        // Parse value based on type
+        // Types: 0=U8, 1=I8, 2=U16, 3=I16, 4=U32, 5=I32, 6=F32, 7=BOOL, 8=STRING, 9=ARRAY, 10=U64, 11=I64, 12=F64
+        match vtype {
+            0 => { pos += 1; } // U8
+            1 => { pos += 1; } // I8
+            2 => { pos += 2; } // U16
+            3 => { pos += 2; } // I16
+            4 => { // U32
+                if header.len() >= pos + 4 {
+                    let val = u32::from_le_bytes([header[pos], header[pos+1], header[pos+2], header[pos+3]]);
+                    if key.ends_with(".file_type") || key == "general.file_type" { file_type = Some(val); }
+                }
+                pos += 4;
+            }
+            5 => { pos += 4; } // I32
+            6 => { pos += 4; } // F32
+            7 => { pos += 1; } // BOOL
+            8 => { // STRING
+                if header.len() < pos + 8 { break; }
+                let s_len = u64::from_le_bytes([
+                    header[pos], header[pos+1], header[pos+2], header[pos+3],
+                    header[pos+4], header[pos+5], header[pos+6], header[pos+7],
+                ]) as usize;
+                pos += 8;
+                if header.len() < pos + s_len { break; }
+                let val = String::from_utf8_lossy(&header[pos..pos + s_len]).to_string();
+                pos += s_len;
+                if key == "general.architecture" { architecture = Some(val); }
+                else if key == "general.name" { general_name = Some(val); }
+            }
+            10 => { // U64
+                if header.len() >= pos + 8 {
+                    let val = u64::from_le_bytes([
+                        header[pos], header[pos+1], header[pos+2], header[pos+3],
+                        header[pos+4], header[pos+5], header[pos+6], header[pos+7],
+                    ]);
+                    if key.ends_with(".context_length") { context_length = Some(val); }
+                    else if key.ends_with(".block_count") { block_count = Some(val); }
+                    else if key.ends_with(".embedding_length") { embedding_length = Some(val); }
+                    else if key.ends_with(".expert_count") { expert_count = Some(val); }
+                    else if key.ends_with(".vocab_size") || key.ends_with(".tokenizer.ggml.tokens.size") { vocab_size = Some(val); }
+                }
+                pos += 8;
+            }
+            11 => { pos += 8; } // I64
+            12 => { pos += 8; } // F64
+            9 => { // ARRAY — skip (we'd need to read element type + count, too complex for header scan)
+                // Read array element type
+                if header.len() < pos + 4 { break; }
+                let _elem_type = u32::from_le_bytes([header[pos], header[pos+1], header[pos+2], header[pos+3]]);
+                pos += 4;
+                // Read array length
+                if header.len() < pos + 8 { break; }
+                let arr_len = u64::from_le_bytes([
+                    header[pos], header[pos+1], header[pos+2], header[pos+3],
+                    header[pos+4], header[pos+5], header[pos+6], header[pos+7],
+                ]) as usize;
+                pos += 8;
+                // Skip array data — we don't know element size without elem_type,
+                // so just break (arrays are usually tokenizer data at the end)
+                let _ = arr_len;
+                break;
+            }
+            _ => { break; } // unknown type, stop parsing
+        }
+
+        // Safety: stop if we've consumed most of the header buffer
+        if pos > header.len() - 4 { break; }
+    }
+
+    // Determine quantization from file_type
+    let quant = file_type.map(|ft| quant_name_from_file_type(ft));
+
+    // Estimate parameter count from block_count * embedding_length (rough)
+    // For MoE: block_count * embedding_length * (n_experts + 1)
+    let params = if let (Some(blocks), Some(embed)) = (block_count, embedding_length) {
+        if let Some(experts) = expert_count {
+            // MoE: rough estimate
+            let total = blocks as u64 * embed as u64 * (experts + 1) * 3;
+            Some(format_params(total))
+        } else {
+            // Dense: rough estimate (6 * blocks * embed^2 / 10^9 → approximate)
+            let total = blocks as u64 * embed as u64 * embed as u64 * 6 / 10;
+            Some(format_params(total))
+        }
+    } else {
+        // Fallback: estimate from file size (1 byte ≈ 1 parameter at Q8, 0.5 at Q4)
+        None
+    };
+
+    (ModelFormat::Gguf, architecture, quant, context_length.map(|c| c as usize), params)
+}
+
+/// Map GGUF file_type enum to human-readable quantization name.
+fn quant_name_from_file_type(ft: u32) -> String {
+    match ft {
+        0 => "F32".to_string(),
+        1 => "F16".to_string(),
+        2 => "Q4_0".to_string(),
+        3 => "Q4_1".to_string(),
+        6 => "Q5_0".to_string(),
+        7 => "Q5_1".to_string(),
+        8 => "Q8_0".to_string(),
+        9 => "Q8_1".to_string(),
+        10 => "Q2_K".to_string(),
+        11 => "Q3_K_S".to_string(),
+        12 => "Q3_K_M".to_string(),
+        13 => "Q3_K_L".to_string(),
+        14 => "Q4_K_S".to_string(),
+        15 => "Q4_K_M".to_string(),
+        16 => "Q5_K_S".to_string(),
+        17 => "Q5_K_M".to_string(),
+        18 => "Q6_K".to_string(),
+        19 => "IQ2_XXS".to_string(),
+        20 => "IQ2_XS".to_string(),
+        21 => "Q2_K_S".to_string(),
+        24 => "IQ3_XXS".to_string(),
+        25 => "IQ3_S".to_string(),
+        26 => "IQ3_M".to_string(),
+        27 => "IQ4_XS".to_string(),
+        28 => "IQ4_NL".to_string(),
+        29 => "IQ2_S".to_string(),
+        30 => "IQ2_M".to_string(),
+        _ => format!("Unknown({})", ft),
+    }
+}
+
+/// Format a parameter count into human-readable string (e.g. "7.0B", "46.7B").
+fn format_params(count: u64) -> String {
+    if count >= 1_000_000_000_000 {
+        format!("{:.1}T", count as f64 / 1e12)
+    } else if count >= 1_000_000_000 {
+        format!("{:.1}B", count as f64 / 1e9)
+    } else if count >= 1_000_000 {
+        format!("{:.1}M", count as f64 / 1e6)
+    } else {
+        format!("{}K", count / 1_000)
+    }
 }
 
 fn parse_ggml_header(
@@ -578,8 +768,38 @@ pub async fn get_system_info() -> Result<SystemSnapshot, String> {
 
 #[tauri::command]
 pub async fn get_gpu_info() -> Result<Vec<crate::GpuInfo>, String> {
-    let monitor = GLOBAL_STATE.system_monitor.lock().unwrap();
-    Ok(monitor.get_stats().gpus)
+    // Query nvidia-smi for real GPU data
+    let mut gpus = Vec::new();
+
+    let output = std::process::Command::new("nvidia-smi")
+        .args([
+            "--query-gpu=index,name,memory.total,memory.used,utilization.gpu,temperature.gpu",
+            "--format=csv,noheader,nounits",
+        ])
+        .output();
+
+    if let Ok(out) = output {
+        if out.status.success() {
+            let stdout = String::from_utf8_lossy(&out.stdout);
+            for line in stdout.lines() {
+                let parts: Vec<&str> = line.split(',').map(|s| s.trim()).collect();
+                if parts.len() >= 6 {
+                    gpus.push(crate::GpuInfo {
+                        index: parts[0].parse().unwrap_or(0),
+                        name: parts[1].to_string(),
+                        vendor: crate::GpuVendor::Nvidia,
+                        memory_total_mb: parts[2].parse().unwrap_or(0),
+                        memory_used_mb: parts[3].parse().unwrap_or(0),
+                        temperature_c: parts[5].parse().ok(),
+                        utilization_percent: parts[4].parse().ok(),
+                        compute_capability: None,
+                    });
+                }
+            }
+        }
+    }
+
+    Ok(gpus)
 }
 
 #[tauri::command]

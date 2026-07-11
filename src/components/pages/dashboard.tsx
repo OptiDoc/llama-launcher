@@ -412,6 +412,7 @@ function LiveMetricsColumn() {
                   tickLine={false}
                 />
                 <Tooltip
+                  cursor={{ stroke: "hsl(var(--border))", strokeWidth: 1, strokeDasharray: "3 3" }}
                   contentStyle={{
                     backgroundColor: "hsl(var(--popover))",
                     border: "1px solid hsl(var(--border))",
@@ -471,6 +472,7 @@ function LiveMetricsColumn() {
                   tickLine={false}
                 />
                 <Tooltip
+                  cursor={{ stroke: "hsl(var(--border))", strokeWidth: 1, strokeDasharray: "3 3" }}
                   contentStyle={{
                     backgroundColor: "hsl(var(--popover))",
                     border: "1px solid hsl(var(--border))",
@@ -692,6 +694,7 @@ export function Dashboard() {
                       <XAxis dataKey="name" tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} />
                       <YAxis tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} />
                       <Tooltip
+                        cursor={{ stroke: "hsl(var(--border))", strokeWidth: 1, strokeDasharray: "3 3" }}
                         contentStyle={{
                           backgroundColor: "hsl(var(--popover))",
                           border: "1px solid hsl(var(--border))",
@@ -705,7 +708,7 @@ export function Dashboard() {
                         stroke="var(--chart-1)"
                         strokeWidth={2.5}
                         dot={{ fill: "var(--chart-1)", r: 3 }}
-                        activeDot={{ r: 5 }}
+                        activeDot={{ r: 5, fill: "var(--chart-1)", stroke: "hsl(var(--popover))", strokeWidth: 2 }}
                       />
                     </LineChart>
                   </ResponsiveContainer>

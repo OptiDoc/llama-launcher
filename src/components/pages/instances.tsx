@@ -779,6 +779,7 @@ function InstanceDetailView({ instance, onBack }: { instance: LlamaInstance; onB
                       width={36}
                     />
                     <RTooltip
+                      cursor={{ stroke: "hsl(var(--border))", strokeWidth: 1, strokeDasharray: "3 3" }}
                       contentStyle={{
                         background: "hsl(var(--popover))",
                         border: "1px solid hsl(var(--border))",
