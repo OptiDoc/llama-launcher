@@ -1,0 +1,17 @@
+cargo:rerun-if-env-changed=TAURI_CONFIG
+cargo:rustc-check-cfg=cfg(desktop)
+cargo:rustc-cfg=desktop
+cargo:rustc-check-cfg=cfg(mobile)
+cargo:rerun-if-changed=E:\llama.cpp\kedr\src-tauri\tauri.conf.json
+cargo:rustc-env=TAURI_ANDROID_PACKAGE_NAME_APP_NAME=llama_launcher
+cargo:rustc-env=TAURI_ANDROID_PACKAGE_NAME_PREFIX=com_optidoc
+cargo:rustc-check-cfg=cfg(dev)
+cargo:PERMISSION_FILES_PATH=E:\llama.cpp\kedr\src-tauri\target\debug\build\llama-launcher-4f5899d39f0f0add\out\app-manifest\__app__-permission-files
+cargo:rerun-if-changed=capabilities
+cargo:rerun-if-env-changed=REMOVE_UNUSED_COMMANDS
+cargo:rustc-env=TAURI_ENV_TARGET_TRIPLE=x86_64-pc-windows-msvc
+package.metadata does not exist
+Microsoft (R) Windows (R) Resource Compiler Version 10.0.10011.16384
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+cargo:rustc-link-arg-bins=E:\llama.cpp\kedr\src-tauri\target\debug\build\llama-launcher-4f5899d39f0f0add\out\resource.lib

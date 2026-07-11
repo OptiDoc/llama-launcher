@@ -1,0 +1,138 @@
+[package]
+name = "llama-launcher"
+version = "0.2.0"
+description = "High-performance llama model launcher and manager"
+authors = ["OptiDoc"]
+edition = "2021"
+license = "MIT"
+repository = "https://github.com/OptiDoc/llama-launcher"
+
+[profile.dev]
+opt-level = 1
+debug = 1
+split-debuginfo = "unpacked"
+debug-assertions = true
+overflow-checks = true
+lto = false
+codegen-units = 1
+rpath = false
+
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+panic = "abort"
+strip = true
+debug = false
+debug-assertions = false
+overflow-checks = false
+incremental = false
+rpath = false
+
+[features]
+default = [
+  "shell",
+  "fs",
+  "dialog",
+  "opener",
+  "process",
+  "http",
+  "updater",
+  "log-plugin",
+  "sql",
+  "store",
+  "single-instance"
+]
+shell = ["tauri-plugin-shell"]
+fs = ["tauri-plugin-fs"]
+dialog = ["tauri-plugin-dialog"]
+opener = ["tauri-plugin-opener"]
+process = ["tauri-plugin-process"]
+http = ["tauri-plugin-http"]
+updater = ["tauri-plugin-updater"]
+log-plugin = ["tauri-plugin-log"]
+sql = ["tauri-plugin-sql"]
+store = ["tauri-plugin-store"]
+single-instance = ["tauri-plugin-single-instance"]
+
+[dependencies]
+tauri = { version = "2.0", features = ["custom-protocol", "tray-icon"] }
+tauri-plugin-shell = { version = "2", optional = true }
+tauri-plugin-fs = { version = "2", optional = true }
+tauri-plugin-dialog = { version = "2", optional = true }
+tauri-plugin-opener = { version = "2", optional = true }
+tauri-plugin-process = { version = "2", optional = true }
+tauri-plugin-http = { version = "2", optional = true }
+tauri-plugin-updater = { version = "2", optional = true }
+tauri-plugin-log = { version = "2", features = ["tracing"], optional = true }
+tauri-plugin-single-instance = { version = "2", optional = true }
+tauri-plugin-store = { version = "2", optional = true }
+tauri-plugin-sql = { version = "2", features = ["sqlite"], optional = true }
+log = "0.4"
+
+# System utilities
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tokio = { version = "1.0", features = ["full", "rt-multi-thread"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt", "json"] }
+anyhow = "1.0"
+thiserror = "1.0"
+once_cell = "1.0"
+parking_lot = "0.12"
+dashmap = "5.0"
+crossbeam = "0.8"
+rayon = "1.0"
+sysinfo = "0.31"
+reqwest = { version = "0.12", features = ["rustls-tls-native-roots", "json", "multipart", "stream", "gzip", "brotli", "cookies"] }
+futures-util = { version = "0.3", features = ["sink"] }
+uuid = { version = "1.0", features = ["v4"] }
+md5 = "0.7"
+num_cpus = "1.0"
+shellexpand = "3.0"
+sha2 = "0.10"
+semver = { version = "1.0", features = ["serde"] }
+urlencoding = "2.0"
+
+[build-dependencies]
+tauri-build = { version = "2.0", features = [] }
+cc = "1.0"
+
+[workspace]
+members = []
+
+[patch.crates-io]
+
+[target.'cfg(windows)'.dependencies]
+windows = { version = "0.58", features = [
+  "Win32_Foundation",
+  "Win32_System_Threading",
+  "Win32_System_Memory",
+  "Win32_System_ProcessStatus",
+  "Win32_System_JobObjects",
+  "Win32_System_Console",
+  "Win32_UI_WindowsAndMessaging",
+  "Win32_UI_Shell",
+  "Win32_Storage_FileSystem",
+  "Win32_Security",
+  "Win32_Networking_WinSock",
+  "Win32_UI_Controls",
+  "Win32_Graphics_Gdi",
+  "Win32_System_Com",
+  "Win32_System_Ole",
+  "Win32_System_Variant",
+] }
+
+[target.'cfg(target_os = "macos")'.dependencies]
+objc = "0.2"
+core-foundation = "0.9"
+core-foundation-sys = "0.8"
+security-framework = "2.0"
+security-framework-sys = "2.0"
+
+[target.'cfg(target_os = "linux")'.dependencies]
+libudev = "0.1"
+dbus = "0.9"
+x11 = { version = "2.0", features = ["xlib"] }
+gtk = "0.18"
+webkit2gtk = "2.0"

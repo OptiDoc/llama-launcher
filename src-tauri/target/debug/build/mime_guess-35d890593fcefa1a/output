@@ -1,0 +1,1 @@
+cargo:rustc-env=MIME_TYPES_GENERATED_PATH=E:\llama.cpp\kedr\src-tauri\target\debug\build\mime_guess-35d890593fcefa1a\out\mime_types_generated.rs
