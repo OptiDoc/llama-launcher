@@ -19,7 +19,7 @@ export function AppShell({ activePage, onNavigate, children }: AppShellProps) {
     // The window is borderless (decorations: false in tauri.conf.json),
     // so the TopBar serves as the title bar.
     <div className="flex h-screen w-full flex-col overflow-hidden bg-background">
-      {/* Top bar: drag region + workspace + status + window controls */}
+      {/* Top bar: drag region + status tab + workspace + window controls */}
       <TopBar
         collapsed={collapsed}
         onToggleSidebar={() => setCollapsed((c) => !c)}
