@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 const fs = require('fs');
 const path = require('path');
 
@@ -15,7 +16,7 @@ function copyRecursive(src, dest) {
     if (!fs.existsSync(dest)) {
       fs.mkdirSync(dest, { recursive: true });
     }
-    
+
     const entries = fs.readdirSync(src);
     for (const entry of entries) {
       copyRecursive(path.join(src, entry), path.join(dest, entry));
