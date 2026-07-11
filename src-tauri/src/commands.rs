@@ -730,3 +730,10 @@ pub async fn serve_asset_file(path: String) -> Result<String, String> {
         urlencoding::encode(&path)
     ))
 }
+
+/// Get the stdout output (last N lines) for a running process.
+#[tauri::command]
+pub async fn get_process_stdout(id: String, lines: Option<usize>) -> Result<Vec<String>, String> {
+    let n = lines.unwrap_or(200);
+    Ok(crate::processes::process_manager().get_stdout(&id, n))
+}

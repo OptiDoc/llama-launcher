@@ -1,16 +1,11 @@
 /**
- * Tauri API bridge.
+ * Tauri API bridge — typed wrappers for every Rust command in the backend.
  *
- * Wraps every Rust command exposed in `src-tauri/src/commands.rs` so the
- * frontend can call them with typed signatures. When running outside Tauri
- * (plain browser / Next.js dev server), every call resolves to `null`/empty
- * so the UI can render honest empty states instead of fake data.
- *
- * Detection: Tauri 2 with `withGlobalTauri: true` exposes `window.__TAURI_INTERNALS__`
- * and `window.__TAURI__`. We check both for robustness.
+ * When running outside Tauri (plain browser), every call returns null/empty
+ * so the UI can render honest empty states. No fake data is ever injected.
  */
 
-// ---------- Tauri type mirrors (from src-tauri/src/core.rs) ----------
+// ---------- Backend type mirrors ----------
 
 export type ModelFormat = "gguf" | "ggml" | "pytorch" | "safetensors" | "onnx" | "tensorrt" | "other";
 export type ProcessStatus = "starting" | "running" | "stopping" | "stopped" | "crashed" | "error";
@@ -31,13 +26,13 @@ export interface ModelInfo {
   id: string;
   name: string;
   path: string;
-  size: number; // bytes
+  size: number;
   format: ModelFormat;
   architecture: string | null;
   quantization: string | null;
   context_size: number | null;
   parameter_count: string | null;
-  modified: number; // unix seconds
+  modified: number;
   metadata: ModelMetadata;
   checksum: string | null;
 }
@@ -61,7 +56,7 @@ export interface ProcessInfo {
   pid: number | null;
   port: number;
   status: ProcessStatus;
-  started_at: number; // unix seconds
+  started_at: number;
   gpu_memory: number;
   cpu_memory: number;
   tokens_per_sec: number;
@@ -98,6 +93,16 @@ export interface GpuInfo {
   temperature_c: number | null;
   utilization_percent: number | null;
   compute_capability: string | null;
+}
+
+export interface SystemCapabilities {
+  gpu_name: string;
+  gpu_vram_gb: number;
+  ram_gb: number;
+  cpu_cores: number;
+  has_cuda: boolean;
+  has_vulkan: boolean;
+  has_metal: boolean;
 }
 
 export interface AppConfig {
@@ -143,36 +148,39 @@ export interface DownloadProgress {
   speed: number;
 }
 
-export interface BenchmarkConfig {
-  prompt: string;
-  n_predict: number;
-  n_threads: number;
-  n_gpu_layers: number;
-  batch_size: number;
-  context_size: number;
-  runs: number;
-  warmup_runs: number;
-}
-
-export interface BenchmarkMetrics {
-  avg_tokens_per_sec: number;
-  min_tokens_per_sec: number;
-  max_tokens_per_sec: number;
-  avg_latency_ms: number;
-  p50_latency_ms: number;
-  p95_latency_ms: number;
-  p99_latency_ms: number;
-  memory_used_mb: number;
-  gpu_memory_used_mb: number;
-  power_watts: number | null;
-}
-
-export interface BenchmarkResult {
+export interface Workspace {
   id: string;
-  model_id: string;
-  timestamp: number;
-  config: BenchmarkConfig;
-  results: BenchmarkMetrics;
+  name: string;
+  color: string;
+  description: string | null;
+}
+
+export interface WorkspaceSettings {
+  hibernate_after_sec: number;
+  default_gpu_layers: number;
+  default_threads: number;
+  auto_calibrate: boolean;
+  max_concurrent_instances: number;
+}
+
+export interface ReleaseVariant {
+  id: string;
+  label: string;
+  priority: boolean;
+  note: string;
+}
+
+export interface GitHubRelease {
+  id: string;
+  tag: string;
+  published_at: string;
+  commit: string;
+  notes: string;
+  installed: boolean;
+  variant: string;
+  priority: boolean;
+  download_url: string;
+  size_mb: number;
 }
 
 // ---------- Tauri detection ----------
@@ -188,20 +196,13 @@ declare global {
   }
 }
 
-/** True when running inside a Tauri webview (production desktop app). */
 export function isTauri(): boolean {
   if (typeof window === "undefined") return false;
   return Boolean(window.__TAURI_INTERNALS__ || window.__TAURI__?.core?.invoke);
 }
 
-/**
- * Invoke a Tauri command. Returns `null` when not running in Tauri so callers
- * can render empty states. Never throws in browser mode — the error is logged.
- */
 async function invoke<T>(cmd: string, args?: Record<string, unknown>): Promise<T | null> {
-  if (!isTauri()) {
-    return null;
-  }
+  if (!isTauri()) return null;
   try {
     const fn = window.__TAURI__?.core?.invoke;
     if (!fn) return null;
@@ -217,15 +218,11 @@ async function invoke<T>(cmd: string, args?: Record<string, unknown>): Promise<T
 export const tauri = {
   isTauri,
 
-  // --- Models ---
+  // Models
   scanModels: () => invoke<ModelInfo[]>("scan_models"),
   getModelInfo: (id: string) => invoke<ModelInfo | null>("get_model_info", { id }),
   deleteModel: (id: string) => invoke<null>("delete_model", { id }),
   verifyModel: (id: string) => invoke<VerificationResult>("verify_model", { id }),
-  /**
-   * Download a model from HuggingFace. `onProgress` is called on every chunk.
-   * Uses the Tauri Channel API to stream progress from Rust.
-   */
   downloadModel: async (
     repo: string,
     file: string,
@@ -235,7 +232,6 @@ export const tauri = {
     try {
       const fn = window.__TAURI__?.core?.invoke;
       if (!fn) return null;
-      // Tauri 2 Channel — created via @tauri-apps/api/core
       const { Channel } = await import("@tauri-apps/api/core");
       const channel = new Channel<DownloadProgress>();
       if (onProgress) channel.onmessage = onProgress;
@@ -246,7 +242,7 @@ export const tauri = {
     }
   },
 
-  // --- Processes ---
+  // Processes
   startModel: (modelId: string, config?: Partial<ProcessConfig>) =>
     invoke<ProcessInfo>("start_model", { modelId, config: config ?? null }),
   stopModel: (id: string) => invoke<null>("stop_model", { id }),
@@ -254,21 +250,42 @@ export const tauri = {
   getProcessStatus: (id: string) => invoke<ProcessInfo | null>("get_process_status", { id }),
   listProcesses: () => invoke<ProcessInfo[]>("list_processes"),
   getProcessMetrics: (id: string) => invoke<ProcessMetrics | null>("get_process_metrics", { id }),
+  getProcessStdout: (id: string, lines?: number) =>
+    invoke<string[]>("get_process_stdout", { id, lines: lines ?? 200 }),
 
-  // --- System ---
+  // System
   getSystemInfo: () => invoke<SystemSnapshot>("get_system_info"),
   getGpuInfo: () => invoke<GpuInfo[]>("get_gpu_info"),
+  getSystemCapabilities: () => invoke<SystemCapabilities>("get_system_capabilities"),
   detectLlamaBinary: () => invoke<string | null>("detect_llama_binary"),
 
-  // --- Config ---
+  // Config
   getConfig: () => invoke<AppConfig>("get_config"),
   updateConfig: (config: AppConfig) => invoke<null>("update_config", { config }),
 
-  // --- Benchmark ---
-  runBenchmark: (modelId: string, config: BenchmarkConfig) =>
-    invoke<BenchmarkResult>("run_benchmark", { modelId, config }),
+  // Workspaces
+  listWorkspaces: () => invoke<Workspace[]>("list_workspaces"),
+  createWorkspace: (name: string, color: string, description: string | null) =>
+    invoke<Workspace>("create_workspace", { name, color, description }),
+  updateWorkspace: (
+    id: string,
+    name?: string,
+    color?: string,
+    description?: string | null,
+  ) => invoke<null>("update_workspace", { id, name, color, description }),
+  deleteWorkspace: (id: string) => invoke<null>("delete_workspace", { id }),
+  getActiveWorkspace: () => invoke<string>("get_active_workspace"),
+  setActiveWorkspace: (id: string) => invoke<null>("set_active_workspace", { id }),
+  getWorkspaceSettings: (workspaceId: string) =>
+    invoke<WorkspaceSettings>("get_workspace_settings", { workspaceId }),
+  updateWorkspaceSettings: (workspaceId: string, settings: WorkspaceSettings) =>
+    invoke<null>("update_workspace_settings", { workspaceId, settings }),
 
-  // --- File / dialog ---
+  // Releases
+  listReleaseVariants: () => invoke<ReleaseVariant[]>("list_release_variants"),
+  listGithubReleases: () => invoke<GitHubRelease[]>("list_github_releases"),
+
+  // File / dialog
   openModelFolder: () => invoke<null>("open_model_folder"),
   selectModelFile: () => invoke<string | null>("select_model_file"),
 };

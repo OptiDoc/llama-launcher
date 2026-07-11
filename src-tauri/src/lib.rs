@@ -10,6 +10,8 @@ pub mod models;
 pub mod processes;
 pub mod system;
 pub mod updater;
+pub mod workspaces;
+pub mod releases;
 
 pub use core::*;
 use log::LevelFilter;
@@ -68,6 +70,21 @@ pub fn run() {
             commands::select_model_file,
             commands::serve_model_file,
             commands::serve_asset_file,
+            // Workspace management
+            workspaces::list_workspaces,
+            workspaces::create_workspace,
+            workspaces::update_workspace,
+            workspaces::delete_workspace,
+            workspaces::get_active_workspace,
+            workspaces::set_active_workspace,
+            workspaces::get_workspace_settings,
+            workspaces::update_workspace_settings,
+            // Releases & system capabilities
+            releases::list_release_variants,
+            releases::list_github_releases,
+            releases::get_system_capabilities,
+            // Process console output
+            commands::get_process_stdout,
         ])
         .setup(|app| {
             if let Some(window) = app.get_webview_window("main") {
