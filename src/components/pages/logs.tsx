@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import { cn, fmtTime } from "@/lib/utils";
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -83,8 +82,8 @@ export function LogsPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Logs</h1>
-          <p className="text-sm text-muted-foreground">
+          <h1 className="text-lg font-bold tracking-tight text-foreground">Logs</h1>
+          <p className="text-[12px] text-muted-foreground">
             Aggregated log viewer across all instances. {allLines.length} lines total.
           </p>
         </div>
@@ -95,8 +94,8 @@ export function LogsPage() {
       </div>
 
       {/* Filter bar */}
-      <Card className="shadow-sm">
-        <CardContent className="flex flex-wrap items-center gap-3 p-4">
+      <div className="rounded-xl border border-border/60 bg-card">
+        <div className="flex flex-wrap items-center gap-3 p-4">
           <div className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
             <Filter className="size-3.5" />
             Filters
@@ -158,12 +157,12 @@ export function LogsPage() {
               </Badge>
             ))}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Log output */}
-      <Card className="overflow-hidden shadow-sm">
-        <CardContent className="p-0">
+      <div className="overflow-hidden rounded-xl border border-border/60 bg-card">
+        <div className="p-0">
           {filtered.length === 0 ? (
             <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
               <div className="grid size-14 place-items-center rounded-2xl bg-accent">
@@ -191,8 +190,8 @@ export function LogsPage() {
               </div>
             </ScrollArea>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }

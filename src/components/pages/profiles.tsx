@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import { cn, hashStr } from "@/lib/utils";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -130,22 +129,22 @@ function ProfileCard({ profile, onSelect }: {
   const hasCalib = typeof profile.calibrationScore === "number";
 
   return (
-    <Card
+    <div
       role="button"
       tabIndex={0}
       onClick={() => onSelect(profile.id)}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onSelect(profile.id); }
       }}
-      className="group cursor-pointer border shadow-soft transition-all hover:-translate-y-0.5 hover:shadow-md"
+      className="group cursor-pointer rounded-xl border border-border/60 bg-card transition-all hover:-translate-y-0.5 hover:shadow-md"
     >
-      <CardContent className="flex flex-col gap-3 p-5">
+      <div className="flex flex-col gap-3 p-5">
         <div className="flex items-start gap-3">
           <div className="grid size-10 place-items-center rounded-xl bg-primary/10 text-primary">
             <Cpu className="size-5" />
           </div>
           <div className="min-w-0 flex-1">
-            <h3 className="truncate text-sm font-semibold">{profile.name}</h3>
+            <h3 className="truncate text-[13px] font-semibold text-foreground">{profile.name}</h3>
             <p className="truncate text-xs text-muted-foreground">{profile.description}</p>
           </div>
         </div>
@@ -201,8 +200,8 @@ function ProfileCard({ profile, onSelect }: {
             {copied ? "Copied" : "Share"}
           </Button>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
 
@@ -228,8 +227,8 @@ function ProfileTable({ profiles, onSelect }: {
   };
 
   return (
-    <Card className="border shadow-soft">
-      <CardContent className="p-0">
+    <div className="rounded-xl border border-border/60 bg-card">
+      <div className="p-0">
         <Table>
           <TableHeader>
             <TableRow className="border-border/60">
@@ -287,8 +286,8 @@ function ProfileTable({ profiles, onSelect }: {
             ))}
           </TableBody>
         </Table>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
 
@@ -298,17 +297,17 @@ function DetailCard({ title, action, children }: {
   title?: React.ReactNode; action?: React.ReactNode; children: React.ReactNode;
 }) {
   return (
-    <Card className="border shadow-soft">
-      <CardContent className="p-5">
+    <div className="rounded-xl border border-border/60 bg-card">
+      <div className="p-5">
         {(title || action) && (
           <div className="mb-3 flex items-center justify-between">
-            {title && <h3 className="text-sm font-semibold text-foreground/80">{title}</h3>}
+            {title && <h3 className="text-[13px] font-semibold text-foreground">{title}</h3>}
             {action}
           </div>
         )}
         {children}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
 
@@ -374,8 +373,8 @@ function ProfileDetailView({ profile, onBack }: {
         {/* ---------- main column ---------- */}
         <div className="space-y-5">
           {/* Header */}
-          <Card className="border shadow-soft">
-            <CardContent className="p-5">
+          <div className="rounded-xl border border-border/60 bg-card">
+            <div className="p-5">
               <div className="flex items-start gap-3">
                 <div className="grid size-12 place-items-center rounded-xl bg-primary/10 text-primary">
                   <Cpu className="size-6" />
@@ -395,8 +394,8 @@ function ProfileDetailView({ profile, onBack }: {
                   )}
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* Parameters */}
           <DetailCard title="Parameters">
@@ -986,19 +985,19 @@ function NewProfileDialog() {
 
 function EmptyState() {
   return (
-    <Card className="border-dashed border-2 shadow-soft">
-      <CardContent className="flex flex-col items-center justify-center gap-3 py-16 text-center">
+    <div className="rounded-xl border-2 border-dashed border-border/60 bg-card">
+      <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
         <div className="grid size-14 place-items-center rounded-2xl bg-accent">
           <Cpu className="size-7 text-muted-foreground" />
         </div>
         <div className="space-y-1">
-          <p className="text-sm font-semibold">No profiles here</p>
+          <p className="text-[13px] font-semibold text-foreground">No profiles here</p>
           <p className="text-xs text-muted-foreground">
             Create a launch profile — global or bound to a specific model.
           </p>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
 
@@ -1069,10 +1068,10 @@ export function ProfilesPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Profiles</h1>
-          <p className="text-sm text-muted-foreground">
+          <h1 className="text-lg font-bold tracking-tight text-foreground">Profiles</h1>
+          <p className="text-[12px] text-muted-foreground">
             Reusable llama-server argument presets · {visibleProfiles.length} total (
             {globalProfiles.length} global, {modelProfiles.length} model-bound, {sharedCount} shared)
           </p>
@@ -1081,7 +1080,7 @@ export function ProfilesPage() {
           {mounted ? (
             <ViewToggle value={view} onChange={setView} />
           ) : (
-            <div className="h-8 w-[112px] rounded-lg border bg-card shadow-soft" />
+            <div className="h-8 w-[112px] rounded-lg border border-border/60 bg-card" />
           )}
           <NewProfileDialog />
         </div>
@@ -1112,7 +1111,7 @@ export function ProfilesPage() {
           ) : view === "table" ? (
             <ProfileTable profiles={currentList} onSelect={handleSelect} />
           ) : (
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {currentList.map((p) => (
                 <ProfileCard key={p.id} profile={p} onSelect={handleSelect} />
               ))}

@@ -8,9 +8,6 @@ import {
   type Workspace,
   type WorkspaceSettings,
 } from "@/lib/llama-store";
-import {
-  Card, CardContent, CardDescription, CardHeader, CardTitle,
-} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -77,16 +74,16 @@ function SectionCard({ icon, title, description, children, className }: {
   children: React.ReactNode; className?: string;
 }) {
   return (
-    <Card className={cn("border bg-card/70 shadow-soft backdrop-blur-sm", className)}>
-      <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 text-sm font-semibold">
+    <div className={cn("rounded-xl border border-border/60 bg-card", className)}>
+      <div className="pb-3">
+        <h3 className="flex items-center gap-2 text-[13px] font-semibold text-foreground">
           <span className="text-primary">{icon}</span>
           {title}
-        </CardTitle>
-        {description && <CardDescription className="text-xs">{description}</CardDescription>}
-      </CardHeader>
-      <CardContent className="space-y-4">{children}</CardContent>
-    </Card>
+        </h3>
+        {description && <p className="text-[11px] text-muted-foreground">{description}</p>}
+      </div>
+      <div className="space-y-4">{children}</div>
+    </div>
   );
 }
 
@@ -212,7 +209,7 @@ function GlobalSettingsTab() {
               <span className="text-base font-bold">L</span>
             </div>
             <div>
-              <div className="text-sm font-semibold">LlamaLauncher</div>
+              <div className="text-[13px] font-semibold text-foreground">LlamaLauncher</div>
               <div className="text-xs text-muted-foreground">Version 0.4.2 · llama.cpp build b4402</div>
             </div>
           </div>
@@ -324,11 +321,11 @@ function WorkspaceSettingsTab() {
 
   if (!active) {
     return (
-      <Card className="border shadow-soft">
-        <CardContent className="py-10 text-center text-sm text-muted-foreground">
+      <div className="rounded-xl border border-border/60 bg-card">
+        <div className="py-10 text-center text-sm text-muted-foreground">
           No workspaces available.
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     );
   }
 
@@ -345,8 +342,8 @@ function WorkspaceSettingsTab() {
 
   return (
     <div className="space-y-6">
-      <Card className="border bg-card/70 shadow-soft backdrop-blur-sm">
-        <CardContent className="flex flex-col gap-3 py-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="rounded-xl border border-border/60 bg-card">
+        <div className="flex flex-col gap-3 py-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-1 flex-col gap-2 sm:flex-row sm:items-center">
             <Label className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Editing</Label>
             <Select value={active.id} onValueChange={setActiveWorkspace}>
@@ -373,8 +370,8 @@ function WorkspaceSettingsTab() {
           <Button variant="outline" size="sm" onClick={() => setNewWsOpen(true)}>
             <Plus className="mr-1.5 size-3.5" />New workspace
           </Button>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       <NewWorkspaceDialog open={newWsOpen} onOpenChange={setNewWsOpen} />
 
@@ -464,14 +461,14 @@ function WorkspaceSettingsTab() {
         </SectionCard>
       </div>
 
-      <Card className="border border-red-200/70 shadow-soft dark:border-red-900/40">
-        <CardHeader className="pb-3">
-          <CardTitle className="flex items-center gap-2 text-sm font-semibold text-red-600 dark:text-red-400">
+      <div className="rounded-xl border border-red-200/70 bg-card dark:border-red-900/40">
+        <div className="pb-3">
+          <h3 className="flex items-center gap-2 text-[13px] font-semibold text-red-600 dark:text-red-400">
             <AlertTriangle className="size-4" />Danger zone
-          </CardTitle>
-          <CardDescription className="text-xs">Irreversible actions affecting this workspace.</CardDescription>
-        </CardHeader>
-        <CardContent>
+          </h3>
+          <p className="text-[11px] text-muted-foreground">Irreversible actions affecting this workspace.</p>
+        </div>
+        <div>
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <div className="text-sm font-medium">Delete this workspace</div>
@@ -504,8 +501,8 @@ function WorkspaceSettingsTab() {
               </AlertDialogContent>
             </AlertDialog>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }
@@ -516,8 +513,8 @@ export function SettingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Settings</h1>
-        <p className="text-sm text-muted-foreground">
+        <h1 className="text-lg font-bold tracking-tight text-foreground">Settings</h1>
+        <p className="text-[12px] text-muted-foreground">
           Global paths, updates and notifications — plus per-workspace defaults and hibernation.
         </p>
       </div>

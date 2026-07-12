@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import { cn, hashStr } from "@/lib/utils";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -144,16 +143,16 @@ function StatTile({ icon, label, value, sub }: {
   sub?: string;
 }) {
   return (
-    <Card className="border-0 bg-white shadow-soft dark:bg-zinc-900/60">
-      <CardContent className="p-4">
+    <div className="rounded-xl border border-border/60 bg-card">
+      <div className="p-4">
         <div className="flex items-center gap-1.5 text-[10px] font-medium uppercase tracking-wide text-foreground/55">
           {icon}
           {label}
         </div>
         <div className="mt-2 text-2xl font-bold tracking-tight">{value}</div>
         {sub && <div className="mt-0.5 text-[11px] text-muted-foreground">{sub}</div>}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
 
@@ -168,8 +167,8 @@ function MetaItem({ label, value }: { label: string; value: React.ReactNode }) {
 
 function CardStat({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
-    <div className="flex items-center gap-2 rounded-lg bg-white/50 px-2.5 py-1.5 dark:bg-black/15">
-      <span className="grid size-6 place-items-center rounded-md bg-white/70 text-foreground/70 dark:bg-black/25">
+    <div className="flex items-center gap-2 rounded-lg bg-muted/50 px-2.5 py-1.5">
+      <span className="grid size-6 place-items-center rounded-md bg-card text-foreground/70">
         {icon}
       </span>
       <div className="min-w-0 leading-tight">
@@ -449,20 +448,20 @@ function InstanceCard({ instance, onSelect }: { instance: LlamaInstance; onSelec
   };
 
   return (
-    <Card
+    <div
       role="button"
       tabIndex={0}
       onClick={() => onSelect(instance.id)}
       onKeyDown={handleKey}
       className={cn(
-        "group cursor-pointer overflow-hidden border-0 shadow-soft transition-all duration-150 hover:-translate-y-0.5 hover:shadow-lifted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40",
+        "group cursor-pointer overflow-hidden rounded-xl border border-border/60 bg-card transition-all duration-150 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40",
         `card-${instance.color}`,
       )}
     >
-      <CardContent className="flex flex-col gap-4 p-5">
+      <div className="flex flex-col gap-3 p-5">
         <div className="flex items-start justify-between gap-2">
           <div className="flex min-w-0 items-center gap-3">
-            <div className="grid size-10 shrink-0 place-items-center rounded-xl bg-white/60 dark:bg-black/20">
+            <div className="grid size-10 shrink-0 place-items-center rounded-xl bg-card">
               <Server className="size-5" />
             </div>
             <div className="min-w-0">
@@ -480,7 +479,7 @@ function InstanceCard({ instance, onSelect }: { instance: LlamaInstance; onSelec
           <CardStat icon={<Cpu className="size-3.5" />} label="Req/min" value={String(instance.requestsPerMin)} />
         </div>
 
-        <div className="flex items-center justify-between rounded-lg bg-white/40 px-2.5 py-1.5 text-[11px] dark:bg-black/15">
+        <div className="flex items-center justify-between rounded-lg bg-muted/40 px-2.5 py-1.5 text-[11px]">
           <span className="flex items-center gap-1.5 text-foreground/70">
             <MemoryStick className="size-3.5" />
             Memory
@@ -495,7 +494,7 @@ function InstanceCard({ instance, onSelect }: { instance: LlamaInstance; onSelec
           <Button
             size="sm"
             variant="secondary"
-            className="h-8 flex-1 bg-white/60 text-xs dark:bg-black/20"
+            className="h-8 flex-1 text-xs"
             onClick={() => setActiveConsole(instance.id)}
           >
             <TerminalSquare className="mr-1.5 size-3.5" />
@@ -505,7 +504,7 @@ function InstanceCard({ instance, onSelect }: { instance: LlamaInstance; onSelec
             <Button
               size="sm"
               variant="secondary"
-              className="h-8 flex-1 bg-white/60 text-xs text-red-600 hover:bg-white/80 dark:bg-black/20 dark:text-red-300"
+              className="h-8 flex-1 text-xs text-red-600 dark:text-red-300"
               onClick={() => stopInstance(instance.id)}
             >
               <Square className="mr-1.5 size-3.5" />
@@ -547,14 +546,14 @@ function InstanceCard({ instance, onSelect }: { instance: LlamaInstance; onSelec
             </Tooltip>
           )}
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
 
 function InstanceGrid({ instances, onSelect }: { instances: LlamaInstance[]; onSelect: (id: string) => void }) {
   return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {instances.map((inst) => (
         <InstanceCard key={inst.id} instance={inst} onSelect={onSelect} />
       ))}
@@ -566,8 +565,8 @@ function InstanceGrid({ instances, onSelect }: { instances: LlamaInstance[]; onS
 
 function InstanceTable({ instances, onSelect }: { instances: LlamaInstance[]; onSelect: (id: string) => void }) {
   return (
-    <Card className="border-0 bg-white shadow-soft dark:bg-zinc-900/60">
-      <CardContent className="p-0">
+    <div className="rounded-xl border border-border/60 bg-card">
+      <div className="p-0">
         <Table>
           <TableHeader>
             <TableRow className="border-border/60">
@@ -611,8 +610,8 @@ function InstanceTable({ instances, onSelect }: { instances: LlamaInstance[]; on
             ))}
           </TableBody>
         </Table>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
 
@@ -675,8 +674,8 @@ function TableActions({ instance }: { instance: LlamaInstance }) {
 
 function EmptyState({ onLaunch }: { onLaunch: () => void }) {
   return (
-    <Card className="border-dashed border-2 shadow-soft">
-      <CardContent className="flex flex-col items-center justify-center gap-3 py-16 text-center">
+    <div className="rounded-xl border-2 border-dashed border-border/60 bg-card">
+      <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
         <div className="grid size-14 place-items-center rounded-2xl bg-muted">
           <Server className="size-7 text-muted-foreground" />
         </div>
@@ -690,8 +689,8 @@ function EmptyState({ onLaunch }: { onLaunch: () => void }) {
           <Plus className="mr-1.5 size-3.5" />
           Launch Instance
         </Button>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
 
@@ -738,16 +737,16 @@ function InstanceDetailView({ instance, onBack }: { instance: LlamaInstance; onB
         {/* ---------- main column ---------- */}
         <div className="space-y-5">
           {/* Header card */}
-          <Card className={cn("border-0 shadow-soft", `card-${instance.color}`)}>
-            <CardContent className="p-5">
+          <div className={cn("rounded-xl border border-border/60 bg-card", `card-${instance.color}`)}>
+            <div className="p-5">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div className="flex items-center gap-3">
-                  <div className="grid size-12 place-items-center rounded-xl bg-white/60 dark:bg-black/20">
+                  <div className="grid size-12 place-items-center rounded-xl bg-card">
                     <Server className="size-6" />
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <h2 className="text-lg font-bold tracking-tight">{instance.name}</h2>
+                      <h2 className="text-lg font-bold tracking-tight text-foreground">{instance.name}</h2>
                       <StatusBadge status={instance.status} />
                     </div>
                     <p className="mt-0.5 text-xs text-foreground/70">{instance.model}</p>
@@ -761,12 +760,12 @@ function InstanceDetailView({ instance, onBack }: { instance: LlamaInstance; onB
                   <span className="flex items-center gap-1"><Clock className="size-3" /> {uptimeString(instance.startedAt)}</span>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* Usage statistics */}
           <div className="space-y-3">
-            <h3 className="text-sm font-semibold text-foreground/80">Usage statistics</h3>
+            <h3 className="text-[13px] font-semibold text-foreground">Usage statistics</h3>
             <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
               <StatTile
                 icon={<TrendingUp className="size-3.5" />}
@@ -796,10 +795,10 @@ function InstanceDetailView({ instance, onBack }: { instance: LlamaInstance; onB
           </div>
 
           {/* Throughput chart */}
-          <Card className="border-0 bg-white shadow-soft dark:bg-zinc-900/60">
-            <CardContent className="p-5">
+          <div className="rounded-xl border border-border/60 bg-card">
+            <div className="p-5">
               <div className="mb-3 flex items-center justify-between">
-                <h3 className="text-sm font-semibold text-foreground/80">Request throughput</h3>
+                <h3 className="text-[13px] font-semibold text-foreground">Request throughput</h3>
                 <span className="text-[11px] text-muted-foreground">last 20 samples · tok/s</span>
               </div>
               <div className="h-44 w-full">
@@ -841,13 +840,13 @@ function InstanceDetailView({ instance, onBack }: { instance: LlamaInstance; onB
                   </LineChart>
                 </ResponsiveContainer>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* Configuration */}
-          <Card className="border-0 bg-white shadow-soft dark:bg-zinc-900/60">
-            <CardContent className="p-5">
-              <h3 className="mb-3 text-sm font-semibold text-foreground/80">Configuration</h3>
+          <div className="rounded-xl border border-border/60 bg-card">
+            <div className="p-5">
+              <h3 className="mb-3 text-[13px] font-semibold text-foreground">Configuration</h3>
               <Separator className="mb-2" />
               <MetaItem label="Context size" value={<span className="font-mono">{instance.ctxSize}</span>} />
               <MetaItem label="Threads" value={<span className="font-mono">{instance.threads}</span>} />
@@ -865,16 +864,16 @@ function InstanceDetailView({ instance, onBack }: { instance: LlamaInstance; onB
                 }
               />
               <MetaItem label="Started at" value={<span className="font-mono text-[11px]">{fmtStartedAt(instance.startedAt)}</span>} />
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
 
         {/* ---------- sidebar ---------- */}
         <div className="space-y-5">
           {/* Actions */}
-          <Card className="border-0 bg-white shadow-soft dark:bg-zinc-900/60">
-            <CardContent className="space-y-2 p-5">
-              <h3 className="text-sm font-semibold text-foreground/80">Actions</h3>
+          <div className="rounded-xl border border-border/60 bg-card">
+            <div className="space-y-2 p-5">
+              <h3 className="text-[13px] font-semibold text-foreground">Actions</h3>
               <Separator className="mb-1" />
               <Button className="w-full justify-start" onClick={() => setActiveConsole(instance.id)}>
                 <TerminalSquare className="mr-2 size-4" />
@@ -928,14 +927,14 @@ function InstanceDetailView({ instance, onBack }: { instance: LlamaInstance; onB
                 <Trash2 className="mr-2 size-4" />
                 Remove instance
               </Button>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* Live status */}
-          <Card className="border-0 bg-white shadow-soft dark:bg-zinc-900/60">
-            <CardContent className="p-5">
+          <div className="rounded-xl border border-border/60 bg-card">
+            <div className="p-5">
               <div className="mb-3 flex items-center justify-between">
-                <h3 className="text-sm font-semibold text-foreground/80">Live status</h3>
+                <h3 className="text-[13px] font-semibold text-foreground">Live status</h3>
                 <Badge variant="secondary" className={cn("text-[10px] uppercase", STATUS_STYLE[instance.status])}>
                   {instance.status}
                 </Badge>
@@ -957,8 +956,8 @@ function InstanceDetailView({ instance, onBack }: { instance: LlamaInstance; onB
                 label="Uptime"
                 value={<span className="flex items-center gap-1 font-mono"><Clock className="size-3" /> {uptimeString(instance.startedAt)}</span>}
               />
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {isStopped && (
             <p className="px-1 text-[11px] text-muted-foreground">
@@ -1059,8 +1058,8 @@ export function InstancesPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Instances</h1>
-          <p className="text-sm text-muted-foreground">
+          <h1 className="text-lg font-bold tracking-tight text-foreground">Instances</h1>
+          <p className="text-[12px] text-muted-foreground">
             Launch, monitor and manage your llama.cpp server processes.
           </p>
         </div>
@@ -1069,7 +1068,7 @@ export function InstancesPage() {
           {mounted ? (
             <ViewToggle value={view} onChange={setView} />
           ) : (
-            <div className="h-8 w-[112px] rounded-lg border bg-card shadow-soft" />
+            <div className="h-8 w-[112px] rounded-lg border bg-card" />
           )}
           <LaunchDialog open={launchOpen} onOpenChange={setLaunchOpen} />
         </div>

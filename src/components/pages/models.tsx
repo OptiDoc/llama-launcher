@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import { cn, hashStr } from "@/lib/utils";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -188,7 +187,7 @@ function ModelCard({
   const interactive = !isDownloading;
 
   return (
-    <Card
+    <div
       role={interactive ? "button" : undefined}
       tabIndex={interactive ? 0 : undefined}
       onClick={interactive ? () => actions.onSelect(model) : undefined}
@@ -198,7 +197,7 @@ function ModelCard({
           : undefined
       }
       className={cn(
-        "group overflow-hidden border-0 shadow-soft transition-all duration-200",
+        "group overflow-hidden rounded-xl border border-border/60 bg-card transition-all duration-200",
         interactive
           ? "cursor-pointer hover:-translate-y-0.5 hover:shadow-lifted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           : "cursor-default",
@@ -206,7 +205,7 @@ function ModelCard({
         isMissing && "grayscale opacity-60",
       )}
     >
-      <CardContent className="flex flex-col gap-3 p-5">
+      <div className="flex flex-col gap-3 p-5">
         <div className="flex items-start justify-between gap-2">
           <div className="flex min-w-0 items-center gap-3">
             <div className="grid size-10 shrink-0 place-items-center rounded-xl bg-white/60 dark:bg-black/20">
@@ -303,8 +302,8 @@ function ModelCard({
             )}
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
 
@@ -342,8 +341,8 @@ function ModelTable({
   models, actions, gpuVramGb,
 }: { models: LlamaModel[]; actions: CardActions; gpuVramGb: number }) {
   return (
-    <Card className="border-0 bg-white shadow-soft dark:bg-zinc-900/60">
-      <CardContent className="p-0">
+    <div className="rounded-xl border border-border/60 bg-card">
+      <div className="p-0">
         <Table>
           <TableHeader>
             <TableRow className="border-border/60">
@@ -460,8 +459,8 @@ function ModelTable({
             })}
           </TableBody>
         </Table>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
 
@@ -876,7 +875,7 @@ function MetaItem({ label, value, mono }: { label: string; value: React.ReactNod
 
 function StatTile({ label, value, sub }: { label: string; value: string; sub?: string }) {
   return (
-    <div className="rounded-lg border border-border/60 bg-white p-3 shadow-soft dark:bg-zinc-900/60">
+    <div className="rounded-lg border border-border/60 bg-card p-3">
       <p className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">{label}</p>
       <p className="mt-1 text-lg font-semibold">{value}</p>
       {sub && <p className="text-[10px] text-muted-foreground">{sub}</p>}
@@ -918,8 +917,8 @@ function ModelDetailView({
         {/* MAIN column */}
         <div className="space-y-5">
           {/* Header card */}
-          <Card className="border-0 bg-white shadow-soft dark:bg-zinc-900/60">
-            <CardContent className="p-5">
+          <div className="rounded-xl border border-border/60 bg-card">
+            <div className="p-5">
               <div className="flex items-start justify-between gap-3">
                 <div className="flex min-w-0 items-center gap-3">
                   <div className="grid size-12 shrink-0 place-items-center rounded-xl bg-muted">
@@ -944,13 +943,13 @@ function ModelDetailView({
               {model.description && (
                 <p className="mt-3 text-sm text-muted-foreground">{model.description}</p>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* Metadata */}
-          <Card className="border-0 bg-white shadow-soft dark:bg-zinc-900/60">
-            <CardContent className="p-5">
-              <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold">
+          <div className="rounded-xl border border-border/60 bg-card">
+            <div className="p-5">
+              <h3 className="mb-2 flex items-center gap-2 text-[13px] font-semibold text-foreground">
                 <FileText className="size-4 text-foreground/60" /> Metadata
               </h3>
               <Separator className="mb-1" />
@@ -985,13 +984,13 @@ function ModelDetailView({
                   }
                 />
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* Usage statistics */}
-          <Card className="border-0 bg-white shadow-soft dark:bg-zinc-900/60">
-            <CardContent className="p-5">
-              <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold">
+          <div className="rounded-xl border border-border/60 bg-card">
+            <div className="p-5">
+              <h3 className="mb-3 flex items-center gap-2 text-[13px] font-semibold text-foreground">
                 <Sparkles className="size-4 text-foreground/60" /> Usage statistics on this device
               </h3>
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -1017,15 +1016,15 @@ function ModelDetailView({
                   </ResponsiveContainer>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
 
         {/* SIDEBAR */}
         <div className="space-y-5">
-          <Card className="border-0 bg-white shadow-soft dark:bg-zinc-900/60">
-            <CardContent className="p-4">
-              <h3 className="mb-3 text-sm font-semibold">Actions</h3>
+          <div className="rounded-xl border border-border/60 bg-card">
+            <div className="p-4">
+              <h3 className="mb-3 text-[13px] font-semibold text-foreground">Actions</h3>
               <div className="space-y-2">
                 <Button className="w-full justify-start" disabled={model.missing || !model.downloaded} onClick={() => onLoad(model)}>
                   <Play className="mr-2 size-4" /> Launch instance
@@ -1046,12 +1045,12 @@ function ModelDetailView({
                   <Copy className="mr-2 size-4" /> Copy path
                 </Button>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
-          <Card className="border-0 bg-white shadow-soft dark:bg-zinc-900/60">
-            <CardContent className="p-4">
-              <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold">
+          <div className="rounded-xl border border-border/60 bg-card">
+            <div className="p-4">
+              <h3 className="mb-2 flex items-center gap-2 text-[13px] font-semibold text-foreground">
                 <Tag className="size-4 text-foreground/60" /> Builder info
               </h3>
               <div className="mb-2 flex items-center gap-2">
@@ -1066,8 +1065,8 @@ function ModelDetailView({
               <p className="text-[11px] leading-relaxed text-muted-foreground">
                 Models by <span className="font-medium text-foreground">{model.builder}</span> are community quantizations. Verify integrity before use.
               </p>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -1165,8 +1164,8 @@ export function ModelsPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Models</h1>
-          <p className="text-sm text-muted-foreground">
+          <h1 className="text-lg font-bold tracking-tight text-foreground">Models</h1>
+          <p className="text-[12px] text-muted-foreground">
             Browse, download and manage GGUF model files. {ready} of {workspaceModels.length} ready.
           </p>
         </div>
@@ -1184,8 +1183,8 @@ export function ModelsPage() {
       </div>
 
       {workspaceModels.length === 0 ? (
-        <Card className="border-dashed border-2 border-border bg-transparent shadow-none">
-          <CardContent className="flex flex-col items-center justify-center gap-3 py-14 text-center">
+        <div className="rounded-xl border-dashed border-2 border-border bg-transparent">
+          <div className="flex flex-col items-center justify-center gap-3 py-14 text-center">
             <div className="grid size-12 place-items-center rounded-full bg-muted text-muted-foreground">
               <Boxes className="size-6" />
             </div>
@@ -1196,10 +1195,10 @@ export function ModelsPage() {
             <Button size="sm" onClick={openHF}>
               <Download className="mr-1.5 size-3.5" /> Download from HF
             </Button>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       ) : view === "grid" ? (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {workspaceModels.map((m, i) => (
             <ModelCard key={m.id} model={m} index={i} actions={actions} gpuVramGb={systemCapabilities.gpuVramGb} />
           ))}

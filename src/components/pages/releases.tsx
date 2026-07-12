@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -379,7 +378,7 @@ function TableView({
   onToggleExpand: (tag: string) => void;
 }) {
   return (
-    <div className="overflow-hidden rounded-lg border bg-card shadow-soft">
+    <div className="overflow-hidden rounded-lg border bg-card">
       <Table>
         <TableHeader>
           <TableRow className="bg-muted/40 hover:bg-muted/40">
@@ -414,8 +413,8 @@ const ReleaseCard = React.memo(function ReleaseCard({
   release: LlamaRelease;
 }) {
   return (
-    <Card className="overflow-hidden border bg-card shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lifted">
-      <CardContent className="flex flex-col gap-3 p-4">
+    <div className="rounded-xl border border-border/60 bg-card overflow-hidden transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lifted">
+      <div className="flex flex-col gap-3 p-4">
         <div className="flex items-start justify-between gap-2">
           <div className="flex min-w-0 flex-col gap-1.5">
             <div className="flex items-center gap-2">
@@ -474,8 +473,8 @@ const ReleaseCard = React.memo(function ReleaseCard({
           <StatusCell release={release} />
           <ActionControl release={release} compact />
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 });
 
@@ -493,8 +492,8 @@ function GridView({ releases }: { releases: LlamaRelease[] }) {
 
 function EmptyState({ hasQuery }: { hasQuery: boolean }) {
   return (
-    <Card className="border-dashed shadow-soft">
-      <CardContent className="flex flex-col items-center justify-center gap-3 py-16 text-center">
+    <div className="rounded-xl border border-border/60 bg-card border-dashed">
+      <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
         <div className="grid size-12 place-items-center rounded-full bg-muted text-muted-foreground">
           <Rocket className="size-6" />
         </div>
@@ -508,8 +507,8 @@ function EmptyState({ hasQuery }: { hasQuery: boolean }) {
               : "Releases will appear here once published."}
           </p>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
 
@@ -613,8 +612,8 @@ export function ReleasesPage() {
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Releases</h1>
-          <p className="text-sm text-muted-foreground">
+          <h1 className="text-lg font-bold tracking-tight text-foreground">Releases</h1>
+          <p className="text-[12px] text-muted-foreground">
             llama.cpp builds. Active build:{" "}
             <span className="font-mono font-semibold text-foreground">
               {installedTag ?? "none"}
