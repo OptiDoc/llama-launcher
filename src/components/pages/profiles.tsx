@@ -703,7 +703,7 @@ function NewProfileDialog() {
   );
 
   const SW = ({ checked, onCheckedChange }: { checked: boolean; onCheckedChange: (v: boolean) => void }) => (
-    <Switch checked={checked} onCheckedChange={onCheckedChange} className="scale-75" />
+    <Switch checked={checked} onCheckedChange={onCheckedChange} />
   );
 
   return (

@@ -46,8 +46,8 @@ function FieldRow({ id, label, hint, children }: {
   return (
     <div className="grid gap-1.5 sm:grid-cols-[220px_1fr] sm:items-center sm:gap-4">
       <div>
-        <Label htmlFor={id} className="text-sm font-medium">{label}</Label>
-        {hint && <p className="text-xs text-muted-foreground">{hint}</p>}
+        <Label htmlFor={id} className="text-[13px] font-medium text-foreground">{label}</Label>
+        {hint && <p className="text-[11px] text-muted-foreground">{hint}</p>}
       </div>
       <div className="w-full">{children}</div>
     </div>
@@ -59,10 +59,10 @@ function ToggleRow({ id, label, hint, checked, onChange, disabled }: {
   onChange: (v: boolean) => void; disabled?: boolean;
 }) {
   return (
-    <div className="flex items-center justify-between gap-4 rounded-lg border bg-muted/30 px-3 py-2.5">
+    <div className="flex items-center justify-between gap-4 rounded-lg border border-border/60 bg-muted/40 px-3 py-2.5">
       <div className="min-w-0">
-        <Label htmlFor={id} className="text-sm font-medium">{label}</Label>
-        <p className="text-xs text-muted-foreground">{hint}</p>
+        <Label htmlFor={id} className="text-[13px] font-medium text-foreground">{label}</Label>
+        <p className="text-[11px] text-muted-foreground">{hint}</p>
       </div>
       <Switch id={id} checked={checked} onCheckedChange={onChange} disabled={disabled} />
     </div>
@@ -74,15 +74,15 @@ function SectionCard({ icon, title, description, children, className }: {
   children: React.ReactNode; className?: string;
 }) {
   return (
-    <div className={cn("rounded-xl border border-border/60 bg-card", className)}>
-      <div className="pb-3">
+    <div className={cn("rounded-xl border border-border/60 bg-card p-4", className)}>
+      <div className="mb-3">
         <h3 className="flex items-center gap-2 text-[13px] font-semibold text-foreground">
           <span className="text-primary">{icon}</span>
           {title}
         </h3>
         {description && <p className="text-[11px] text-muted-foreground">{description}</p>}
       </div>
-      <div className="space-y-4">{children}</div>
+      <div className="space-y-3">{children}</div>
     </div>
   );
 }
@@ -109,11 +109,11 @@ function ResourceStat({ icon, label, value, hint }: {
   icon: React.ReactNode; label: string; value: number; hint?: string;
 }) {
   return (
-    <div className="rounded-lg border bg-muted/30 px-3 py-2.5">
+    <div className="rounded-lg border border-border/60 bg-muted/40 px-3 py-2.5">
       <div className="flex items-center gap-1.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
         {icon}{label}
       </div>
-      <div className="mt-0.5 text-xl font-semibold tabular-nums">{value}</div>
+      <div className="mt-0.5 text-xl font-semibold tabular-nums text-foreground">{value}</div>
       {hint && <div className="text-[10px] text-muted-foreground/80">{hint}</div>}
     </div>
   );
