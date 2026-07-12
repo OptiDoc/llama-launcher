@@ -504,45 +504,78 @@ pub async fn start_model(
             .ok_or("Model not found")?
     };
 
-    let process_config = config.unwrap_or_default();
-    let port = 8080u16;
+    let pc = config.unwrap_or_default();
 
     let llama_binary = get_llama_binary().await?;
     let mut args = vec![
-        "-m".to_string(),
-        model.path.clone(),
-        "-c".to_string(),
-        process_config.context_size.to_string(),
-        "-ngl".to_string(),
-        process_config.gpu_layers.to_string(),
-        "-t".to_string(),
-        process_config.threads.to_string(),
-        "-b".to_string(),
-        process_config.batch_size.to_string(),
-        "-ub".to_string(),
-        process_config.ubatch_size.to_string(),
-        "--port".to_string(),
-        port.to_string(),
-        "--host".to_string(),
-        "127.0.0.1".to_string(),
+        "-m".to_string(), model.path.clone(),
+        "-c".to_string(), pc.context_size.to_string(),
+        "-ngl".to_string(), pc.gpu_layers.to_string(),
+        "-t".to_string(), pc.threads.to_string(),
+        "-b".to_string(), pc.batch_size.to_string(),
+        "-ub".to_string(), pc.ubatch_size.to_string(),
+        "--port".to_string(), pc.port.to_string(),
+        "--host".to_string(), pc.host.clone(),
     ];
 
-    if process_config.flash_attn {
-        args.push("-fa".to_string());
-    }
-    if process_config.no_mmap {
-        args.push("--no-mmap".to_string());
-    }
-    if process_config.no_mlock {
-        args.push("--no-mlock".to_string());
-    }
-    if process_config.numa {
-        args.push("--numa".to_string());
-    }
+    // Server
+    if pc.parallel != -1 { args.push("-np".into()); args.push(pc.parallel.to_string()); }
+    if !pc.cont_batching { args.push("--no-cont-batching".into()); }
+    if pc.n_predict != -1 { args.push("-n".into()); args.push(pc.n_predict.to_string()); }
+    if pc.timeout != 3600 { args.push("--timeout".into()); args.push(pc.timeout.to_string()); }
+    if pc.metrics { args.push("--metrics".into()); }
+    if !pc.api_key.is_empty() { args.push("--api-key".into()); args.push(pc.api_key.clone()); }
 
-    args.extend(process_config.arguments.clone());
+    // Performance
+    if pc.threads_batch != -1 { args.push("-tb".into()); args.push(pc.threads_batch.to_string()); }
+    if pc.cache_type_k != "f16" { args.push("-ctk".into()); args.push(pc.cache_type_k.clone()); }
+    if pc.cache_type_v != "f16" { args.push("-ctv".into()); args.push(pc.cache_type_v.clone()); }
+    if pc.split_mode != "layer" { args.push("-sm".into()); args.push(pc.split_mode.clone()); }
+    if !pc.tensor_split.is_empty() { args.push("-ts".into()); args.push(pc.tensor_split.clone()); }
+    if pc.main_gpu != 0 { args.push("-mg".into()); args.push(pc.main_gpu.to_string()); }
+    if !pc.kv_offload { args.push("--no-kv-offload".into()); }
+    if !pc.fit { args.push("--no-fit".into()); }
 
-    info!("Starting llama-server on port {} with model {}", port, model.path);
+    // Flash attention (three-state: on/off/auto)
+    if pc.flash_attn { args.push("-fa".into()); args.push("on".into()); }
+    else { args.push("-fa".into()); args.push("off".into()); }
+
+    // Memory
+    if pc.no_mmap { args.push("--no-mmap".into()); }
+    if pc.no_mlock { args.push("--mlock".into()); }
+    if pc.numa { args.push("--numa".into()); args.push("distribute".into()); }
+
+    // Sampling
+    if (pc.temperature - 0.8).abs() > f32::EPSILON { args.push("--temp".into()); args.push(pc.temperature.to_string()); }
+    if pc.top_k != 40 { args.push("--top-k".into()); args.push(pc.top_k.to_string()); }
+    if (pc.top_p - 0.95).abs() > f32::EPSILON { args.push("--top-p".into()); args.push(pc.top_p.to_string()); }
+    if (pc.min_p - 0.05).abs() > f32::EPSILON { args.push("--min-p".into()); args.push(pc.min_p.to_string()); }
+    if (pc.repeat_penalty - 1.0).abs() > f32::EPSILON { args.push("--repeat-penalty".into()); args.push(pc.repeat_penalty.to_string()); }
+    if pc.repeat_last_n != 64 { args.push("--repeat-last-n".into()); args.push(pc.repeat_last_n.to_string()); }
+    if pc.presence_penalty > f32::EPSILON { args.push("--presence-penalty".into()); args.push(pc.presence_penalty.to_string()); }
+    if pc.frequency_penalty > f32::EPSILON { args.push("--frequency-penalty".into()); args.push(pc.frequency_penalty.to_string()); }
+    if pc.seed != -1 { args.push("-s".into()); args.push(pc.seed.to_string()); }
+
+    // Advanced
+    if !pc.lora.is_empty() { args.push("--lora".into()); args.push(pc.lora.clone()); }
+    if !pc.mmproj.is_empty() { args.push("-mm".into()); args.push(pc.mmproj.clone()); }
+    if pc.jinja { args.push("--jinja".into()); }
+    if !pc.reasoning_format.is_empty() && pc.reasoning_format != "auto" {
+        args.push("--reasoning-format".into()); args.push(pc.reasoning_format.clone());
+    }
+    if pc.reasoning_budget != -1 { args.push("--reasoning-budget".into()); args.push(pc.reasoning_budget.to_string()); }
+    if !pc.chat_template.is_empty() { args.push("--chat-template".into()); args.push(pc.chat_template.clone()); }
+    if !pc.rope_scaling.is_empty() { args.push("--rope-scaling".into()); args.push(pc.rope_scaling.clone()); }
+    if pc.rope_scale > f32::EPSILON { args.push("--rope-scale".into()); args.push(pc.rope_scale.to_string()); }
+    if pc.rope_freq_base > f32::EPSILON { args.push("--rope-freq-base".into()); args.push(pc.rope_freq_base.to_string()); }
+    if pc.rope_freq_scale > f32::EPSILON { args.push("--rope-freq-scale".into()); args.push(pc.rope_freq_scale.to_string()); }
+    if !pc.grammar.is_empty() { args.push("--grammar".into()); args.push(pc.grammar.clone()); }
+    if !pc.json_schema.is_empty() { args.push("-j".into()); args.push(pc.json_schema.clone()); }
+    if pc.log_level != 3 { args.push("-lv".into()); args.push(pc.log_level.to_string()); }
+
+    args.extend(pc.arguments.clone());
+
+    info!("Starting llama-server on port {} with model {}", pc.port, model.path);
 
     let mut child = tokio::process::Command::new(&llama_binary)
         .args(&args)
@@ -560,10 +593,10 @@ pub async fn start_model(
         model_id: model.id.clone(),
         model_path: model.path.clone(),
         pid: Some(pid),
-        port,
+        port: pc.port,
         status: ProcessStatus::Running,
         started_at: now,
-        config: process_config,
+        config: pc,
         metrics: ProcessMetrics::default(),
     };
 
@@ -586,7 +619,7 @@ pub async fn start_model(
         id: process_id,
         model_id: model.id,
         pid: Some(pid),
-        port,
+        port: pc.port,
         status: ProcessStatus::Running,
         started_at: now
             .duration_since(SystemTime::UNIX_EPOCH)
@@ -614,9 +647,10 @@ async fn get_llama_binary() -> Result<String, String> {
         "llama-server"
     };
 
-    if let Ok(output) = std::process::Command::new("which")
+    if let Ok(output) = tokio::process::Command::new("which")
         .arg(binary_name)
         .output()
+        .await
     {
         let path = String::from_utf8_lossy(&output.stdout).trim().to_string();
         if !path.is_empty() {
@@ -642,35 +676,47 @@ async fn get_llama_binary() -> Result<String, String> {
 
 #[tauri::command]
 pub async fn stop_model(id: String) -> Result<(), String> {
-    let mut registry = GLOBAL_STATE.process_registry.lock().unwrap();
-
-    if let Some(proc) = registry.get_mut(&id) {
-        proc.status = ProcessStatus::Stopping;
-
-        if let Some(pid) = proc.pid {
-            #[cfg(target_os = "windows")]
-            {
-                std::process::Command::new("taskkill")
-                    .args(["/F", "/PID", &pid.to_string()])
-                    .status()
-                    .ok();
-            }
-            #[cfg(not(target_os = "windows"))]
-            {
-                std::process::Command::new("kill")
-                    .args(["-TERM", &pid.to_string()])
-                    .status()
-                    .ok();
-                tokio::time::sleep(Duration::from_secs(2)).await;
-                std::process::Command::new("kill")
-                    .args(["-KILL", &pid.to_string()])
-                    .status()
-                    .ok();
-            }
+    let pid = {
+        let mut registry = GLOBAL_STATE.process_registry.lock().unwrap();
+        if let Some(proc) = registry.get_mut(&id) {
+            proc.status = ProcessStatus::Stopping;
+            proc.pid
+        } else {
+            return Ok(());
         }
+    };
 
-        proc.status = ProcessStatus::Stopped;
-        proc.pid = None;
+    if let Some(pid) = pid {
+        #[cfg(target_os = "windows")]
+        {
+            tokio::process::Command::new("taskkill")
+                .args(["/F", "/PID", &pid.to_string()])
+                .output()
+                .await
+                .ok();
+        }
+        #[cfg(not(target_os = "windows"))]
+        {
+            tokio::process::Command::new("kill")
+                .args(["-TERM", &pid.to_string()])
+                .output()
+                .await
+                .ok();
+            tokio::time::sleep(Duration::from_secs(2)).await;
+            tokio::process::Command::new("kill")
+                .args(["-KILL", &pid.to_string()])
+                .output()
+                .await
+                .ok();
+        }
+    }
+
+    {
+        let mut registry = GLOBAL_STATE.process_registry.lock().unwrap();
+        if let Some(proc) = registry.get_mut(&id) {
+            proc.status = ProcessStatus::Stopped;
+            proc.pid = None;
+        }
     }
 
     Ok(())
@@ -760,25 +806,33 @@ pub async fn get_system_info() -> Result<SystemSnapshot, String> {
     let stats = monitor.get_stats();
     Ok(SystemSnapshot {
         cpu_percent: stats.cpu_percent,
+        cpu_name: stats.cpu_name,
+        cpu_cores_physical: stats.cpu_cores_physical,
+        cpu_cores_logical: stats.cpu_cores_logical,
         memory_total_mb: stats.memory_total_mb,
         memory_used_mb: stats.memory_used_mb,
         memory_available_mb: stats.memory_available_mb,
+        disk_total_gb: stats.disk_total_gb,
+        disk_used_gb: stats.disk_used_gb,
+        disk_free_gb: stats.disk_free_gb,
+        os_name: stats.os_name,
+        os_version: stats.os_version,
     })
 }
 
 #[tauri::command]
 pub async fn get_gpu_info() -> Result<Vec<crate::GpuInfo>, String> {
-    // Query nvidia-smi for real GPU data
     let mut gpus = Vec::new();
 
-    let output = std::process::Command::new("nvidia-smi")
+    // Try NVIDIA first
+    if let Ok(out) = tokio::process::Command::new("nvidia-smi")
         .args([
-            "--query-gpu=index,name,memory.total,memory.used,utilization.gpu,temperature.gpu",
+            "--query-gpu=index,name,memory.total,memory.used,memory.free,utilization.gpu,temperature.gpu,compute_cap,driver_version",
             "--format=csv,noheader,nounits",
         ])
-        .output();
-
-    if let Ok(out) = output {
+        .output()
+        .await
+    {
         if out.status.success() {
             let stdout = String::from_utf8_lossy(&out.stdout);
             for line in stdout.lines() {
@@ -790,10 +844,106 @@ pub async fn get_gpu_info() -> Result<Vec<crate::GpuInfo>, String> {
                         vendor: crate::GpuVendor::Nvidia,
                         memory_total_mb: parts[2].parse().unwrap_or(0),
                         memory_used_mb: parts[3].parse().unwrap_or(0),
-                        temperature_c: parts[5].parse().ok(),
-                        utilization_percent: parts[4].parse().ok(),
-                        compute_capability: None,
+                        memory_free_mb: parts.get(4).and_then(|s| s.parse().ok()).unwrap_or(0),
+                        utilization_percent: parts.get(5).and_then(|s| s.parse().ok()),
+                        temperature_c: parts.get(6).and_then(|s| s.parse().ok()),
+                        compute_capability: parts.get(7).filter(|s| !s.is_empty()).map(|s| s.to_string()),
+                        driver_version: parts.get(8).filter(|s| !s.is_empty()).map(|s| s.to_string()),
                     });
+                }
+            }
+        }
+    }
+
+    // If no NVIDIA GPUs found, try AMD (Linux: rocm-smi, Windows: WMI)
+    if gpus.is_empty() {
+        #[cfg(target_os = "linux")]
+        {
+            if let Ok(out) = tokio::process::Command::new("rocm-smi")
+                .args(["--showproductname", "--showmeminfo", "vram", "--showuse", "--showtemp", "--csv"])
+                .output()
+                .await
+            {
+                if out.status.success() {
+                    let stdout = String::from_utf8_lossy(&out.stdout);
+                    let lines: Vec<&str> = stdout.lines().collect();
+                    for (i, line) in lines.iter().enumerate().skip(1) {
+                        let parts: Vec<&str> = line.split(',').map(|s| s.trim()).collect();
+                        if !parts.is_empty() {
+                            let name = parts[0].to_string();
+                            let mut vram_total = 0u64;
+                            let mut vram_used = 0u64;
+                            let mut temp = None;
+                            let mut util = None;
+                            for p in &parts[1..] {
+                                if let Ok(v) = p.parse::<u64>() {
+                                    if v > 1_000_000 {
+                                        vram_total = v / (1024 * 1024);
+                                    } else if v > 100 && vram_total == 0 {
+                                        vram_total = v;
+                                    } else if v > 100 && vram_total > 0 && vram_used == 0 {
+                                        vram_used = v;
+                                    }
+                                }
+                                if let Ok(v) = p.parse::<f32>() {
+                                    if v > 0.0 && v <= 100.0 && util.is_none() {
+                                        util = Some(v as u32);
+                                    } else if v > 0.0 && v < 200.0 && temp.is_none() {
+                                        temp = Some(v as u32);
+                                    }
+                                }
+                            }
+                            gpus.push(crate::GpuInfo {
+                                index: i - 1,
+                                name,
+                                vendor: crate::GpuVendor::Amd,
+                                memory_total_mb: vram_total,
+                                memory_used_mb: vram_used,
+                                memory_free_mb: vram_total.saturating_sub(vram_used),
+                                utilization_percent: util,
+                                temperature_c: temp,
+                                compute_capability: None,
+                                driver_version: None,
+                            });
+                        }
+                    }
+                }
+            }
+        }
+
+        #[cfg(target_os = "windows")]
+        {
+            if let Ok(out) = tokio::process::Command::new("wmic")
+                .args(["path", "win32_videocontroller", "get", "name,AdapterRAM,DriverVersion", "/format:csv"])
+                .output()
+                .await
+            {
+                if out.status.success() {
+                    let stdout = String::from_utf8_lossy(&out.stdout);
+                    for (i, line) in stdout.lines().enumerate().skip(1) {
+                        let parts: Vec<&str> = line.split(',').collect();
+                        if parts.len() >= 3 {
+                            let name = parts.get(2).unwrap_or(&"GPU").trim().to_string();
+                            let ram_bytes: u64 = parts.get(1).unwrap_or(&"0").trim().parse().unwrap_or(0);
+                            let driver = parts.get(3).filter(|s| !s.trim().is_empty()).map(|s| s.trim().to_string());
+                            let vendor = if name.to_lowercase().contains("nvidia") { crate::GpuVendor::Nvidia }
+                                else if name.to_lowercase().contains("amd") || name.to_lowercase().contains("radeon") { crate::GpuVendor::Amd }
+                                else if name.to_lowercase().contains("intel") { crate::GpuVendor::Intel }
+                                else { crate::GpuVendor::Other };
+                            gpus.push(crate::GpuInfo {
+                                index: i,
+                                name,
+                                vendor,
+                                memory_total_mb: ram_bytes / (1024 * 1024),
+                                memory_used_mb: 0,
+                                memory_free_mb: ram_bytes / (1024 * 1024),
+                                utilization_percent: None,
+                                temperature_c: None,
+                                compute_capability: None,
+                                driver_version: driver,
+                            });
+                        }
+                    }
                 }
             }
         }
@@ -810,9 +960,10 @@ pub async fn detect_llama_binary() -> Result<Option<String>, String> {
         "llama-server"
     };
 
-    if let Ok(output) = std::process::Command::new("which")
+    if let Ok(output) = tokio::process::Command::new("which")
         .arg(binary_name)
         .output()
+        .await
     {
         let path = String::from_utf8_lossy(&output.stdout).trim().to_string();
         if !path.is_empty() {

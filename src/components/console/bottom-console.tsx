@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { cn } from "@/lib/utils";
+import { cn, fmtTime } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -33,11 +33,6 @@ function StatusDot({ status }: { status: LlamaInstance["status"] }) {
             ? "bg-red-500"
             : "bg-muted-foreground/50";
   return <span className={cn("inline-block size-1.5 rounded-full", color)} />;
-}
-
-function fmtTime(ts: number) {
-  const d = new Date(ts);
-  return d.toTimeString().slice(0, 8);
 }
 
 function LogView({ instanceId }: { instanceId: string }) {

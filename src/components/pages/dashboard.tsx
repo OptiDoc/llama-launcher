@@ -50,38 +50,6 @@ import {
   RELEASE_VARIANTS,
 } from "@/lib/llama-store";
 
-const monthlyData = [
-  { name: "Jan", value: 4200 },
-  { name: "Feb", value: 5100 },
-  { name: "Mar", value: 4800 },
-  { name: "Apr", value: 6200 },
-  { name: "May", value: 7400 },
-  { name: "Jun", value: 6900 },
-  { name: "Jul", value: 8200 },
-  { name: "Aug", value: 7600 },
-  { name: "Sep", value: 9100 },
-  { name: "Oct", value: 8800 },
-  { name: "Nov", value: 9600 },
-  { name: "Dec", value: 10200 },
-];
-
-const weeklyData = [
-  { name: "Mon", views: 240 },
-  { name: "Tue", views: 310 },
-  { name: "Wed", views: 280 },
-  { name: "Thu", views: 420 },
-  { name: "Fri", views: 380 },
-  { name: "Sat", views: 180 },
-  { name: "Sun", views: 140 },
-];
-
-const taskDistribution = [
-  { name: "Completions", value: 45, color: "var(--chart-1)" },
-  { name: "Embeddings", value: 18, color: "var(--chart-2)" },
-  { name: "Chat", value: 28, color: "var(--chart-3)" },
-  { name: "Other", value: 9, color: "var(--chart-4)" },
-];
-
 function StatCard({
   label,
   value,
@@ -318,20 +286,21 @@ function LiveMetricsColumn() {
     setMounted(true);
   }, []);
 
-  if (!mounted) {
-    return <LiveMetricsSkeleton />;
-  }
-
-  const latest = metrics[metrics.length - 1];
-  const running = instances.filter((i) => i.status === "running");
-  const chartData = metrics.slice(-40).map((m) => ({
+  const chartData = React.useMemo(() => metrics.slice(-40).map((m) => ({
     time: fmtClock(m.t).slice(3), // mm:ss
     cpu: Math.round(m.cpu),
     ram: Math.round(m.ram),
     gpu: Math.round(m.gpu),
     tps: Number(m.tps.toFixed(1)),
     req: m.reqPerMin,
-  }));
+  })), [metrics]);
+
+  const latest = metrics[metrics.length - 1];
+  const running = instances.filter((i) => i.status === "running");
+
+  if (!mounted) {
+    return <LiveMetricsSkeleton />;
+  }
 
   const isLive = appStatus === "active";
 

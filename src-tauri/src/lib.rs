@@ -47,7 +47,11 @@ pub fn run() {
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_opener::init())
-        .manage(AppState::default())
+        .plugin(
+            tauri_plugin_sql::Builder::default()
+                .add_migrations("sqlite:llama-launcher.db", core::get_migrations())
+                .build(),
+        )
         .invoke_handler(tauri::generate_handler![
             commands::scan_models,
             commands::get_model_info,
@@ -99,6 +103,37 @@ pub fn run() {
                 let _ = window.set_focus();
             }
 
+            // System tray with Quit menu item
+            use tauri::tray::TrayIconBuilder;
+            let _tray = TrayIconBuilder::new()
+                .icon(app.default_window_icon().cloned().unwrap_or_else(|| {
+                    todo!("No default icon")
+                }))
+                .menu(&tauri::menu::MenuBuilder::new(app)
+                    .item(&tauri::menu::MenuItemBuilder::new("Quit")
+                        .id("quit")
+                        .accelerator("CmdOrCtrl+Q")
+                        .build(app)
+                        .unwrap())
+                    .build()
+                    .unwrap())
+                .on_menu_event(move |app, event| {
+                    if event.id() == "quit" {
+                        app.exit(0);
+                    }
+                })
+                .on_tray_icon_event(|tray, event| {
+                    if let tauri::tray::TrayIconEvent::DoubleClick { .. } = event {
+                        let app = tray.app_handle();
+                        if let Some(window) = app.get_webview_window("main") {
+                            let _ = window.show();
+                            let _ = window.set_focus();
+                        }
+                    }
+                })
+                .build(app)
+                .unwrap();
+
             // Start background metrics updater — refreshes CPU/memory for
             // all running llama-server processes every 2 seconds.
             tauri::async_runtime::spawn(async move {
@@ -118,26 +153,6 @@ pub fn run() {
                 api.prevent_exit();
             }
         });
-}
-
-use parking_lot::{Mutex as PLMutex, RwLock};
-use std::collections::HashMap;
-
-#[derive(Debug)]
-pub struct AppState {
-    pub models: RwLock<HashMap<String, ModelInfo>>,
-    pub processes: PLMutex<HashMap<String, ProcessInfo>>,
-    pub config: RwLock<AppConfig>,
-}
-
-impl Default for AppState {
-    fn default() -> Self {
-        Self {
-            models: RwLock::new(HashMap::new()),
-            processes: PLMutex::new(HashMap::new()),
-            config: RwLock::new(AppConfig::default()),
-        }
-    }
 }
 
 #[cfg(test)]

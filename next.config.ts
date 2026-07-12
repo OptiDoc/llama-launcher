@@ -6,10 +6,7 @@ const nextConfig: NextConfig = {
   output: isTauri ? "export" : "standalone",
   outputFileTracingRoot: isTauri ? undefined : process.cwd(),
   /* config options here */
-  typescript: {
-    ignoreBuildErrors: true,
-  },
-  reactStrictMode: false,
+  reactStrictMode: true,
   images: {
     unoptimized: true,
   },

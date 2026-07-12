@@ -38,6 +38,7 @@ import {
   type NotificationKind,
 } from "@/lib/llama-store";
 import { isTauri } from "@/lib/tauri-api";
+import { useShallow } from "zustand/react/shallow";
 
 interface TopBarProps {
   collapsed: boolean;
@@ -133,35 +134,44 @@ function useWindowControls() {
 }
 
 export function TopBar({ collapsed, onToggleSidebar }: TopBarProps) {
-  const appStatus = useLlamaStore((s) => s.appStatus);
-  const instances = useLlamaStore((s) => s.instances);
-  const workspaces = useLlamaStore((s) => s.workspaces);
-  const activeWorkspaceId = useLlamaStore((s) => s.activeWorkspaceId);
-  const setActiveWorkspace = useLlamaStore((s) => s.setActiveWorkspace);
-  const addWorkspace = useLlamaStore((s) => s.addWorkspace);
-  const forceHibernate = useLlamaStore((s) => s.forceHibernate);
-  const forceWake = useLlamaStore((s) => s.forceWake);
-  const lastActivityAt = useLlamaStore((s) => s.lastActivityAt);
-  const notifications = useLlamaStore((s) => s.notifications);
-  const markNotificationRead = useLlamaStore((s) => s.markNotificationRead);
-  const markAllNotificationsRead = useLlamaStore((s) => s.markAllNotificationsRead);
-  const clearNotifications = useLlamaStore((s) => s.clearNotifications);
+  const {
+    appStatus, instances, workspaces, activeWorkspaceId,
+    setActiveWorkspace, addWorkspace, forceHibernate, forceWake,
+    lastActivityAt, notifications, markNotificationRead,
+    markAllNotificationsRead, clearNotifications,
+  } = useLlamaStore(useShallow((s) => ({
+    appStatus: s.appStatus,
+    instances: s.instances,
+    workspaces: s.workspaces,
+    activeWorkspaceId: s.activeWorkspaceId,
+    setActiveWorkspace: s.setActiveWorkspace,
+    addWorkspace: s.addWorkspace,
+    forceHibernate: s.forceHibernate,
+    forceWake: s.forceWake,
+    lastActivityAt: s.lastActivityAt,
+    notifications: s.notifications,
+    markNotificationRead: s.markNotificationRead,
+    markAllNotificationsRead: s.markAllNotificationsRead,
+    clearNotifications: s.clearNotifications,
+  })));
   const { minimize, toggleMaximize, close } = useWindowControls();
   const [idleSecs, setIdleSecs] = React.useState(0);
   const [maximized, setMaximized] = React.useState(false);
 
   React.useEffect(() => {
     if (!isTauri()) return;
+    let unlisten: (() => void) | undefined;
     (async () => {
       try {
         const { getCurrentWindow } = await import("@tauri-apps/api/window");
         const win = getCurrentWindow();
         setMaximized(await win.isMaximized());
-        await win.onResized(() => {
+        unlisten = await win.onResized(() => {
           win.isMaximized().then(setMaximized);
         });
       } catch { /* ignore */ }
     })();
+    return () => { unlisten?.(); };
   }, []);
 
   React.useEffect(() => {

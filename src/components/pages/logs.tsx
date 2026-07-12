@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { cn } from "@/lib/utils";
+import { cn, fmtTime } from "@/lib/utils";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -29,11 +29,6 @@ const KINDS: { value: LogKind | "all"; label: string }[] = [
   { value: "error", label: "Errors" },
   { value: "debug", label: "Debug" },
 ];
-
-function fmtTime(ts: number) {
-  const d = new Date(ts);
-  return d.toTimeString().slice(0, 8);
-}
 
 function instanceNameMap(instances: { id: string; name: string }[]) {
   const map = new Map<string, string>();
@@ -183,7 +178,7 @@ export function LogsPage() {
             </div>
           ) : (
             <ScrollArea className="h-[60vh] min-h-[320px]">
-              <div className="console-output px-4 py-3">
+              <div className="console-output px-4 py-3" role="log" aria-live="polite">
                 {filtered.map((l) => (
                   <div key={l.id} className={cn("log-line", `log-${l.kind}`)}>
                     <span className="log-time">{fmtTime(l.ts)}</span>

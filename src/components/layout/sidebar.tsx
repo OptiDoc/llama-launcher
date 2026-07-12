@@ -66,6 +66,7 @@ export function Sidebar({ collapsed, activePage, onNavigate }: SidebarProps) {
                 variant={active ? "secondary" : "ghost"}
                 size="sm"
                 onClick={() => onNavigate(page)}
+                aria-current={active ? "page" : undefined}
                 className={cn(
                   "h-8 w-full justify-start gap-2.5 text-[13px] font-medium",
                   collapsed && "justify-center px-0 w-9 h-9",

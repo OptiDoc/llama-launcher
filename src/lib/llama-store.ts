@@ -15,6 +15,7 @@
 
 import { create } from "zustand";
 import { tauri, isTauri } from "@/lib/tauri-api";
+import { fmtTime } from "@/lib/utils";
 
 // ---------- Types ----------
 
@@ -100,17 +101,65 @@ export interface LlamaProfile {
   id: string;
   name: string;
   description: string;
+  // Core
   ctxSize: number;
   threads: number;
   gpuLayers: number;
   flashAttention: boolean;
+  // Server
+  port: number;
+  host: string;
+  parallel: number;           // -1 = auto
+  contBatching: boolean;
+  nPredict: number;           // -1 = infinity
+  timeout: number;            // seconds
+  metrics: boolean;
+  apiKey: string;
+  // Performance
+  threadsBatch: number;       // -1 = same as threads
+  batchSize: number;
+  ubatchSize: number;
+  cacheTypeK: string;         // f32/f16/bf16/q8_0/q4_0/q4_1/iq4_nl/q5_0/q5_1
+  cacheTypeV: string;
+  splitMode: string;          // none/layer/row/tensor
+  tensorSplit: string;        // comma-separated ratios, e.g. "3,1"
+  mainGpu: number;
+  kvOffload: boolean;
+  fit: boolean;
+  mmap: boolean;
+  mlock: boolean;
+  numa: boolean;
+  // Sampling
+  temperature: number;
+  topK: number;
+  topP: number;
+  minP: number;
+  repeatPenalty: number;
+  repeatLastN: number;
+  presencePenalty: number;
+  frequencyPenalty: number;
+  seed: number;               // -1 = random
+  // Advanced
+  lora: string;               // file path
+  mmproj: string;             // file path
+  jinja: boolean;
+  reasoningFormat: string;    // none/deepseek/auto
+  reasoningBudget: number;    // -1 = unlimited
+  chatTemplate: string;       // custom template name or path
+  ropeScaling: string;        // none/linear/yarn
+  ropeScale: number;
+  ropeFreqBase: number;
+  ropeFreqScale: number;
+  grammar: string;            // BNF grammar
+  jsonSchema: string;         // JSON schema string
+  logLevel: number;           // 0-5
   extraArgs: string;
   scope: ProfileScope;
   modelId?: string;
   shared?: boolean;
   shareId?: string;
   calibrationScore?: number;
-  workspaceId: string | null; // null = available in all workspaces
+  workspaceId: string | null;
 }
 
 export interface LlamaRelease {
@@ -192,10 +241,17 @@ export interface GlobalSettings {
 /** Detected system capabilities — used to warn when a model is too large */
 export interface SystemCapabilities {
   gpuName: string;
-  gpuVramGb: number; // total VRAM in GB
-  ramGb: number; // total system RAM in GB
+  gpuVramGb: number;
+  gpuVendor: string;
+  ramGb: number;
+  cpuName: string;
   cpuCores: number;
   hasCuda: boolean;
+  hasVulkan: boolean;
+  hasMetal: boolean;
+  hasRocm: boolean;
+  diskFreeGb: number;
+  osName: string;
 }
 
 export interface WorkspaceSettings {
@@ -434,10 +490,6 @@ function emitLog(instanceId: string, kind: LogKind, text: string) {
   };
   logSubscribers.forEach((fn) => fn(line));
   return line;
-}
-
-function fmtTime(d: Date) {
-  return d.toTimeString().slice(0, 8);
 }
 
 /** Rename a key in the logs record (used when swapping a placeholder id for a real Tauri process id). */
@@ -1001,9 +1053,16 @@ export const useLlamaStore = create<LlamaStore>((set, get) => {
     systemCapabilities: {
       gpuName: "",
       gpuVramGb: 0,
+      gpuVendor: "none",
       ramGb: 0,
+      cpuName: "",
       cpuCores: 0,
       hasCuda: false,
+      hasVulkan: false,
+      hasMetal: false,
+      hasRocm: false,
+      diskFreeGb: 0,
+      osName: "",
     },
 
     appStatus: "active",
@@ -1131,8 +1190,9 @@ export const useLlamaStore = create<LlamaStore>((set, get) => {
           reqPerMin: get().instances.reduce((sum, i) => sum + i.requestsPerMin, 0),
         };
         if (gpus && gpus.length > 0) {
-          sample.gpuMem = gpus[0].memory_total_mb > 0 ? (gpus[0].memory_used_mb / gpus[0].memory_total_mb) * 100 : 0;
-          sample.gpu = gpus[0].utilization_percent ?? 0;
+          const g = gpus[0];
+          sample.gpuMem = g.memory_total_mb > 0 ? (g.memory_used_mb / g.memory_total_mb) * 100 : 0;
+          sample.gpu = g.utilization_percent ?? 0;
         }
         get().pushMetric(sample);
       }
@@ -1140,9 +1200,16 @@ export const useLlamaStore = create<LlamaStore>((set, get) => {
         set({ systemCapabilities: {
           gpuName: caps.gpu_name,
           gpuVramGb: caps.gpu_vram_gb,
+          gpuVendor: caps.gpu_vendor,
           ramGb: caps.ram_gb,
+          cpuName: caps.cpu_name,
           cpuCores: caps.cpu_cores,
           hasCuda: caps.has_cuda,
+          hasVulkan: caps.has_vulkan,
+          hasMetal: caps.has_metal,
+          hasRocm: caps.has_rocm,
+          diskFreeGb: caps.disk_free_gb,
+          osName: caps.os_name,
         }});
       }
     },
@@ -1272,15 +1339,58 @@ export const useLlamaStore = create<LlamaStore>((set, get) => {
         // Call Tauri backend (async)
         (async () => {
           const tauriProc = await tauri.startModel(model, {
+            // Core
             context_size: prof?.ctxSize ?? 8192,
             gpu_layers: prof?.gpuLayers ?? -1,
             threads: prof?.threads ?? 4,
-            batch_size: 512,
-            ubatch_size: 512,
+            batch_size: prof?.batchSize ?? 512,
+            ubatch_size: prof?.ubatchSize ?? 512,
             flash_attn: prof?.flashAttention ?? true,
-            no_mmap: false,
-            no_mlock: false,
-            numa: false,
+            no_mmap: !(prof?.mmap ?? true),
+            no_mlock: prof?.mlock ?? false,
+            numa: prof?.numa ?? false,
+            // Server
+            port: prof?.port ?? 8080,
+            host: prof?.host ?? "127.0.0.1",
+            parallel: prof?.parallel ?? -1,
+            cont_batching: prof?.contBatching ?? true,
+            n_predict: prof?.nPredict ?? -1,
+            timeout: prof?.timeout ?? 3600,
+            metrics: prof?.metrics ?? false,
+            api_key: prof?.apiKey ?? "",
+            // Performance
+            threads_batch: prof?.threadsBatch ?? -1,
+            cache_type_k: prof?.cacheTypeK ?? "f16",
+            cache_type_v: prof?.cacheTypeV ?? "f16",
+            split_mode: prof?.splitMode ?? "layer",
+            tensor_split: prof?.tensorSplit ?? "",
+            main_gpu: prof?.mainGpu ?? 0,
+            kv_offload: prof?.kvOffload ?? true,
+            fit: prof?.fit ?? true,
+            // Sampling
+            temperature: prof?.temperature ?? 0.8,
+            top_k: prof?.topK ?? 40,
+            top_p: prof?.topP ?? 0.95,
+            min_p: prof?.minP ?? 0.05,
+            repeat_penalty: prof?.repeatPenalty ?? 1.1,
+            repeat_last_n: prof?.repeatLastN ?? 64,
+            presence_penalty: prof?.presencePenalty ?? 0,
+            frequency_penalty: prof?.frequencyPenalty ?? 0,
+            seed: prof?.seed ?? -1,
+            // Advanced
+            lora: prof?.lora ?? "",
+            mmproj: prof?.mmproj ?? "",
+            jinja: prof?.jinja ?? true,
+            reasoning_format: prof?.reasoningFormat ?? "auto",
+            reasoning_budget: prof?.reasoningBudget ?? -1,
+            chat_template: prof?.chatTemplate ?? "",
+            rope_scaling: prof?.ropeScaling ?? "",
+            rope_scale: prof?.ropeScale ?? 0,
+            rope_freq_base: prof?.ropeFreqBase ?? 0,
+            rope_freq_scale: prof?.ropeFreqScale ?? 0,
+            grammar: prof?.grammar ?? "",
+            json_schema: prof?.jsonSchema ?? "",
+            log_level: prof?.logLevel ?? 3,
             arguments: prof?.extraArgs ? prof.extraArgs.split(" ").filter(Boolean) : [],
           });
           if (tauriProc) {
@@ -1303,7 +1413,7 @@ export const useLlamaStore = create<LlamaStore>((set, get) => {
             }));
             emitLog(placeholderId, "error", `[${fmtTime(new Date())}] ✗ Failed to start llama-server. Check the binary path in Settings.`);
           }
-        })();
+        })().catch(console.error);
         get().registerActivity();
         return placeholderId;
       }
@@ -1322,7 +1432,7 @@ export const useLlamaStore = create<LlamaStore>((set, get) => {
           await tauri.stopModel(id);
           await get().refreshProcesses();
           emitLog(id, "success", `[${fmtTime(new Date())}] server stopped cleanly.`);
-        })();
+        })().catch(console.error);
       }
     },
 
@@ -1444,7 +1554,7 @@ export const useLlamaStore = create<LlamaStore>((set, get) => {
           }));
           emitLog(SYSTEM_CONSOLE_ID, "error", `[${fmtTime(new Date())}] [hf] download requires Tauri desktop app.`);
         }
-      })();
+      })().catch(console.error);
       return dlId;
     },
 

@@ -1,6 +1,7 @@
 use std::collections::HashMap;
+use std::path::Path;
 use std::sync::Mutex as StdMutex;
-use std::time::{Instant, SystemTime};
+use std::time::{Duration, Instant, SystemTime};
 
 use once_cell::sync::Lazy;
 use parking_lot::RwLock;
@@ -182,6 +183,7 @@ pub enum ProcessStatus {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ProcessConfig {
+    // Core
     pub context_size: usize,
     pub gpu_layers: i32,
     pub threads: usize,
@@ -191,6 +193,48 @@ pub struct ProcessConfig {
     pub no_mmap: bool,
     pub no_mlock: bool,
     pub numa: bool,
+    // Server
+    pub port: u16,
+    pub host: String,
+    pub parallel: i32,          // -1 = auto
+    pub cont_batching: bool,
+    pub n_predict: i32,         // -1 = infinity
+    pub timeout: u32,           // seconds
+    pub metrics: bool,
+    pub api_key: String,
+    // Performance
+    pub threads_batch: i32,     // -1 = same as threads
+    pub cache_type_k: String,
+    pub cache_type_v: String,
+    pub split_mode: String,     // none/layer/row/tensor
+    pub tensor_split: String,   // comma-separated
+    pub main_gpu: i32,
+    pub kv_offload: bool,
+    pub fit: bool,
+    // Sampling
+    pub temperature: f32,
+    pub top_k: i32,
+    pub top_p: f32,
+    pub min_p: f32,
+    pub repeat_penalty: f32,
+    pub repeat_last_n: i32,
+    pub presence_penalty: f32,
+    pub frequency_penalty: f32,
+    pub seed: i32,
+    // Advanced
+    pub lora: String,
+    pub mmproj: String,
+    pub jinja: bool,
+    pub reasoning_format: String,
+    pub reasoning_budget: i32,
+    pub chat_template: String,
+    pub rope_scaling: String,
+    pub rope_scale: f32,
+    pub rope_freq_base: f32,
+    pub rope_freq_scale: f32,
+    pub grammar: String,
+    pub json_schema: String,
+    pub log_level: i32,
     pub arguments: Vec<String>,
 }
 
@@ -202,11 +246,53 @@ impl Default for ProcessConfig {
             gpu_layers: config.default_gpu_layers,
             threads: config.default_threads,
             batch_size: config.default_batch_size,
-            ubatch_size: 512,
+            ubatch_size: config.ubatch_size,
             flash_attn: config.flash_attn,
             no_mmap: config.no_mmap,
             no_mlock: config.no_mlock,
             numa: config.numa,
+            // Server
+            port: config.server_port,
+            host: "127.0.0.1".to_string(),
+            parallel: -1,
+            cont_batching: true,
+            n_predict: -1,
+            timeout: 3600,
+            metrics: false,
+            api_key: String::new(),
+            // Performance
+            threads_batch: -1,
+            cache_type_k: "f16".to_string(),
+            cache_type_v: "f16".to_string(),
+            split_mode: "layer".to_string(),
+            tensor_split: String::new(),
+            main_gpu: 0,
+            kv_offload: true,
+            fit: true,
+            // Sampling
+            temperature: 0.8,
+            top_k: 40,
+            top_p: 0.95,
+            min_p: 0.05,
+            repeat_penalty: 1.1,
+            repeat_last_n: 64,
+            presence_penalty: 0.0,
+            frequency_penalty: 0.0,
+            seed: -1,
+            // Advanced
+            lora: String::new(),
+            mmproj: String::new(),
+            jinja: true,
+            reasoning_format: "auto".to_string(),
+            reasoning_budget: -1,
+            chat_template: String::new(),
+            rope_scaling: String::new(),
+            rope_scale: 0.0,
+            rope_freq_base: 0.0,
+            rope_freq_scale: 0.0,
+            grammar: String::new(),
+            json_schema: String::new(),
+            log_level: 3,
             arguments: Vec::new(),
         }
     }
@@ -230,10 +316,18 @@ pub struct ProcessMetrics {
 #[derive(Debug)]
 pub struct SystemMonitor {
     cpu_usage: f32,
+    cpu_name: String,
+    cpu_cores_physical: usize,
+    cpu_cores_logical: usize,
     memory_total: u64,
     memory_used: u64,
+    disk_total: u64,
+    disk_used: u64,
+    os_name: String,
+    os_version: String,
     gpu_info: Vec<GpuInfo>,
     last_update: Instant,
+    last_gpu_update: Instant,
 }
 
 impl Default for SystemMonitor {
@@ -244,31 +338,81 @@ impl Default for SystemMonitor {
 
 impl SystemMonitor {
     pub fn new() -> Self {
+        let mut sys = System::new_all();
+        sys.refresh_all();
+
+        let cpu_name = sys.cpus().first().map(|c| c.brand().to_string()).unwrap_or_default();
+        let cpu_cores_physical = sys.cpus().len();
+        let cpu_cores_logical = num_cpus::get();
+
+        let (disk_total, disk_used) = Self::get_disk_stats();
+
         Self {
-            cpu_usage: 0.0,
-            memory_total: 0,
-            memory_used: 0,
+            cpu_usage: sys.global_cpu_usage(),
+            cpu_name,
+            cpu_cores_physical,
+            cpu_cores_logical,
+            memory_total: sys.total_memory(),
+            memory_used: sys.used_memory(),
+            disk_total,
+            disk_used,
+            os_name: System::name().unwrap_or_default(),
+            os_version: System::os_version().unwrap_or_default(),
             gpu_info: Vec::new(),
             last_update: Instant::now(),
+            last_gpu_update: Instant::now() - Duration::from_secs(60),
+        }
+    }
+
+    fn get_disk_stats() -> (u64, u64) {
+        let home = std::env::var("HOME")
+            .or_else(|_| std::env::var("USERPROFILE"))
+            .unwrap_or_else(|_| ".".to_string());
+        let disk = sysinfo::Disks::new_with_specific_list(&[Path::new(&home)]);
+        if let Some(d) = disk.iter().next() {
+            (d.total_space(), d.total_space() - d.available_space())
+        } else {
+            (0, 0)
         }
     }
 
     pub fn update(&mut self) {
+        // CPU/RAM every call (cheap)
         let mut sys = System::new_all();
         sys.refresh_all();
-
         self.cpu_usage = sys.global_cpu_usage();
         self.memory_total = sys.total_memory();
         self.memory_used = sys.used_memory();
-        self.last_update = Instant::now();
+
+        // Disk every 10 seconds
+        let now = Instant::now();
+        if now.duration_since(self.last_update) > Duration::from_secs(10) || self.disk_total == 0 {
+            let (total, used) = Self::get_disk_stats();
+            self.disk_total = total;
+            self.disk_used = used;
+        }
+        self.last_update = now;
+    }
+
+    pub fn update_gpu(&mut self, gpus: Vec<GpuInfo>) {
+        self.gpu_info = gpus;
+        self.last_gpu_update = Instant::now();
     }
 
     pub fn get_stats(&self) -> SystemStats {
         SystemStats {
             cpu_percent: self.cpu_usage,
+            cpu_name: self.cpu_name.clone(),
+            cpu_cores_physical: self.cpu_cores_physical,
+            cpu_cores_logical: self.cpu_cores_logical,
             memory_total_mb: self.memory_total / 1024 / 1024,
             memory_used_mb: self.memory_used / 1024 / 1024,
             memory_available_mb: (self.memory_total - self.memory_used) / 1024 / 1024,
+            disk_total_gb: self.disk_total as f64 / (1024.0 * 1024.0 * 1024.0),
+            disk_used_gb: self.disk_used as f64 / (1024.0 * 1024.0 * 1024.0),
+            disk_free_gb: (self.disk_total - self.disk_used) as f64 / (1024.0 * 1024.0 * 1024.0),
+            os_name: self.os_name.clone(),
+            os_version: self.os_version.clone(),
             gpu_count: self.gpu_info.len(),
             gpus: self.gpu_info.clone(),
         }
@@ -278,9 +422,17 @@ impl SystemMonitor {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SystemStats {
     pub cpu_percent: f32,
+    pub cpu_name: String,
+    pub cpu_cores_physical: usize,
+    pub cpu_cores_logical: usize,
     pub memory_total_mb: u64,
     pub memory_used_mb: u64,
     pub memory_available_mb: u64,
+    pub disk_total_gb: f64,
+    pub disk_used_gb: f64,
+    pub disk_free_gb: f64,
+    pub os_name: String,
+    pub os_version: String,
     pub gpu_count: usize,
     pub gpus: Vec<GpuInfo>,
 }
@@ -292,9 +444,11 @@ pub struct GpuInfo {
     pub vendor: GpuVendor,
     pub memory_total_mb: u64,
     pub memory_used_mb: u64,
+    pub memory_free_mb: u64,
     pub temperature_c: Option<u32>,
     pub utilization_percent: Option<u32>,
     pub compute_capability: Option<String>,
+    pub driver_version: Option<String>,
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
@@ -398,9 +552,17 @@ pub struct ProcessInfo {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SystemSnapshot {
     pub cpu_percent: f32,
+    pub cpu_name: String,
+    pub cpu_cores_physical: usize,
+    pub cpu_cores_logical: usize,
     pub memory_total_mb: u64,
     pub memory_used_mb: u64,
     pub memory_available_mb: u64,
+    pub disk_total_gb: f64,
+    pub disk_used_gb: f64,
+    pub disk_free_gb: f64,
+    pub os_name: String,
+    pub os_version: String,
 }
 
 pub fn get_migrations() -> Vec<tauri_plugin_sql::Migration> {

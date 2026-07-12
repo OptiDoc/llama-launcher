@@ -7,6 +7,10 @@ edition = "2021"
 license = "MIT"
 repository = "https://github.com/OptiDoc/llama-launcher"
 
+[lib]
+name = "llama_launcher"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
 [profile.dev]
 opt-level = 1
 debug = 1

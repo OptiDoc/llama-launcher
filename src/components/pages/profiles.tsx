@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { cn } from "@/lib/utils";
+import { cn, hashStr } from "@/lib/utils";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -37,16 +37,6 @@ import {
 } from "@/lib/llama-store";
 
 const VIEW_STORAGE_KEY = "ll-profiles-view";
-
-/** Deterministic 32-bit FNV-1a hash — SSR safe (no Math.random). */
-function hashStr(s: string): number {
-  let h = 2166136261;
-  for (let i = 0; i < s.length; i++) {
-    h ^= s.charCodeAt(i);
-    h = Math.imul(h, 16777619);
-  }
-  return Math.abs(h | 0);
-}
 
 /** Deterministic calibration radar data derived from profile id hash. */
 function deriveCalibration(id: string) {
@@ -533,43 +523,154 @@ function NewProfileDialog() {
   const models = useLlamaStore((s) => s.models);
   const activeWorkspaceId = useLlamaStore((s) => s.activeWorkspaceId);
   const [open, setOpen] = React.useState(false);
+
+  // Basic
   const [name, setName] = React.useState("");
   const [description, setDescription] = React.useState("");
   const [scope, setScope] = React.useState<ProfileScope>("global");
   const [modelId, setModelId] = React.useState("");
+
+  // Core
   const [ctxSize, setCtxSize] = React.useState("8192");
   const [threads, setThreads] = React.useState("8");
   const [gpuLayers, setGpuLayers] = React.useState("99");
   const [flashAttention, setFlashAttention] = React.useState(true);
+
+  // Server
+  const [port, setPort] = React.useState("8080");
+  const [host, setHost] = React.useState("127.0.0.1");
+  const [parallel, setParallel] = React.useState("-1");
+  const [contBatching, setContBatching] = React.useState(true);
+  const [nPredict, setNPredict] = React.useState("-1");
+  const [timeout, setTimeout_] = React.useState("3600");
+  const [metrics, setMetrics] = React.useState(false);
+  const [apiKey, setApiKey] = React.useState("");
+
+  // Performance
+  const [threadsBatch, setThreadsBatch] = React.useState("-1");
+  const [batchSize, setBatchSize] = React.useState("2048");
+  const [ubatchSize, setUbatchSize] = React.useState("512");
+  const [cacheTypeK, setCacheTypeK] = React.useState("f16");
+  const [cacheTypeV, setCacheTypeV] = React.useState("f16");
+  const [splitMode, setSplitMode] = React.useState("layer");
+  const [tensorSplit, setTensorSplit] = React.useState("");
+  const [mainGpu, setMainGpu] = React.useState("0");
+  const [kvOffload, setKvOffload] = React.useState(true);
+  const [fit, setFit] = React.useState(true);
+  const [mmap, setMmap] = React.useState(true);
+  const [mlock, setMlock] = React.useState(false);
+  const [numa, setNuma] = React.useState(false);
+
+  // Sampling
+  const [temperature, setTemperature] = React.useState("0.8");
+  const [topK, setTopK] = React.useState("40");
+  const [topP, setTopP] = React.useState("0.95");
+  const [minP, setMinP] = React.useState("0.05");
+  const [repeatPenalty, setRepeatPenalty] = React.useState("1.1");
+  const [repeatLastN, setRepeatLastN] = React.useState("64");
+  const [presencePenalty, setPresencePenalty] = React.useState("0");
+  const [frequencyPenalty, setFrequencyPenalty] = React.useState("0");
+  const [seed, setSeed] = React.useState("-1");
+
+  // Advanced
+  const [lora, setLora] = React.useState("");
+  const [mmproj, setMmproj] = React.useState("");
+  const [jinja, setJinja] = React.useState(true);
+  const [reasoningFormat, setReasoningFormat] = React.useState("auto");
+  const [reasoningBudget, setReasoningBudget] = React.useState("-1");
+  const [chatTemplate, setChatTemplate] = React.useState("");
+  const [ropeScaling, setRopeScaling] = React.useState("");
+  const [ropeScale, setRopeScale] = React.useState("0");
+  const [ropeFreqBase, setRopeFreqBase] = React.useState("0");
+  const [ropeFreqScale, setRopeFreqScale] = React.useState("0");
+  const [grammar, setGrammar] = React.useState("");
+  const [jsonSchema, setJsonSchema] = React.useState("");
+  const [logLevel, setLogLevel] = React.useState("3");
   const [extraArgs, setExtraArgs] = React.useState("");
 
-  // Reset all fields when the dialog opens. Deps intentionally limited to
-  // `[open]` so we only reset on open transitions (not on every model list
-  // change), and pick up the latest models[0] at open-time.
+  const [openSections, setOpenSections] = React.useState<Record<string, boolean>>({});
+
+  const [errors, setErrors] = React.useState<Record<string, string>>({});
+
+  const toggleSection = (s: string) => setOpenSections((p) => ({ ...p, [s]: !p[s] }));
+
+  const clearError = (k: string) => setErrors((p) => { const n = { ...p }; delete n[k]; return n; });
+
   React.useEffect(() => {
     if (!open) return;
-    setName("");
-    setDescription("");
-    setScope("global");
-    setModelId(models[0]?.id ?? "");
-    setCtxSize("8192");
-    setThreads("8");
-    setGpuLayers("99");
-    setFlashAttention(true);
-    setExtraArgs("");
+    setName(""); setDescription(""); setScope("global"); setModelId(models[0]?.id ?? "");
+    setCtxSize("8192"); setThreads("8"); setGpuLayers("99"); setFlashAttention(true);
+    setPort("8080"); setHost("127.0.0.1"); setParallel("-1"); setContBatching(true);
+    setNPredict("-1"); setTimeout_("3600"); setMetrics(false); setApiKey("");
+    setThreadsBatch("-1"); setBatchSize("2048"); setUbatchSize("512");
+    setCacheTypeK("f16"); setCacheTypeV("f16"); setSplitMode("layer"); setTensorSplit("");
+    setMainGpu("0"); setKvOffload(true); setFit(true); setMmap(true); setMlock(false); setNuma(false);
+    setTemperature("0.8"); setTopK("40"); setTopP("0.95"); setMinP("0.05");
+    setRepeatPenalty("1.1"); setRepeatLastN("64"); setPresencePenalty("0"); setFrequencyPenalty("0"); setSeed("-1");
+    setLora(""); setMmproj(""); setJinja(true); setReasoningFormat("auto"); setReasoningBudget("-1");
+    setChatTemplate(""); setRopeScaling(""); setRopeScale("0"); setRopeFreqBase("0"); setRopeFreqScale("0");
+    setGrammar(""); setJsonSchema(""); setLogLevel("3"); setExtraArgs("");
+    setErrors({}); setOpenSections({});
   }, [open]);
 
+  const v = {
+    name: () => { if (!name.trim()) return "Required"; if (name.trim().length > 100) return "Max 100 chars"; return ""; },
+    ctxSize: () => { const n = Number(ctxSize); if (!ctxSize || isNaN(n) || !Number.isInteger(n) || n < 512 || n > 1048576) return "512–1,048,576"; return ""; },
+    threads: () => { const n = Number(threads); if (!threads || isNaN(n) || !Number.isInteger(n) || n < 1 || n > 128) return "1–128"; return ""; },
+    gpuLayers: () => { const n = Number(gpuLayers); if (gpuLayers !== "" && (isNaN(n) || !Number.isInteger(n) || n < -1 || n > 128)) return "-1–128"; return ""; },
+    port: () => { const n = Number(port); if (!port || isNaN(n) || !Number.isInteger(n) || n < 1024 || n > 65535) return "1024–65535"; return ""; },
+    host: () => { if (!host.trim()) return "Required"; return ""; },
+    parallel: () => { const n = Number(parallel); if (parallel !== "" && (isNaN(n) || !Number.isInteger(n) || n < -1 || n > 128)) return "-1–128"; return ""; },
+    nPredict: () => { const n = Number(nPredict); if (nPredict !== "" && (isNaN(n) || !Number.isInteger(n) || n < -1 || n > 100000)) return "-1–100,000"; return ""; },
+    timeout: () => { const n = Number(timeout); if (!timeout || isNaN(n) || n < 1 || n > 86400) return "1–86400"; return ""; },
+    threadsBatch: () => { const n = Number(threadsBatch); if (threadsBatch !== "" && (isNaN(n) || !Number.isInteger(n) || n < -1 || n > 128)) return "-1–128"; return ""; },
+    batchSize: () => { const n = Number(batchSize); if (!batchSize || isNaN(n) || !Number.isInteger(n) || n < 1 || n > 1048576) return "1–1,048,576"; return ""; },
+    ubatchSize: () => { const n = Number(ubatchSize); if (!ubatchSize || isNaN(n) || !Number.isInteger(n) || n < 1 || n > 1048576) return "1–1,048,576"; return ""; },
+    mainGpu: () => { const n = Number(mainGpu); if (mainGpu !== "" && (isNaN(n) || !Number.isInteger(n) || n < 0)) return "≥0"; return ""; },
+    temperature: () => { const n = Number(temperature); if (temperature !== "" && (isNaN(n) || n < 0 || n > 2)) return "0–2"; return ""; },
+    topK: () => { const n = Number(topK); if (topK !== "" && (isNaN(n) || !Number.isInteger(n) || n < 0 || n > 1000)) return "0–1000"; return ""; },
+    topP: () => { const n = Number(topP); if (topP !== "" && (isNaN(n) || n < 0 || n > 1)) return "0–1"; return ""; },
+    minP: () => { const n = Number(minP); if (minP !== "" && (isNaN(n) || n < 0 || n > 1)) return "0–1"; return ""; },
+    repeatPenalty: () => { const n = Number(repeatPenalty); if (repeatPenalty !== "" && (isNaN(n) || n < 1 || n > 2)) return "1–2"; return ""; },
+    repeatLastN: () => { const n = Number(repeatLastN); if (repeatLastN !== "" && (isNaN(n) || !Number.isInteger(n) || n < -1 || n > 1048576)) return "-1–1,048,576"; return ""; },
+    presencePenalty: () => { const n = Number(presencePenalty); if (presencePenalty !== "" && (isNaN(n) || n < 0 || n > 2)) return "0–2"; return ""; },
+    frequencyPenalty: () => { const n = Number(frequencyPenalty); if (frequencyPenalty !== "" && (isNaN(n) || n < 0 || n > 2)) return "0–2"; return ""; },
+    seed: () => { const n = Number(seed); if (seed !== "" && (isNaN(n) || !Number.isInteger(n) || n < -1)) return "-1 = random"; return ""; },
+    reasoningBudget: () => { const n = Number(reasoningBudget); if (reasoningBudget !== "" && (isNaN(n) || !Number.isInteger(n) || n < -1 || n > 100000)) return "-1–100,000"; return ""; },
+    ropeScale: () => { const n = Number(ropeScale); if (ropeScale !== "" && (isNaN(n) || n < 0)) return "≥0"; return ""; },
+    ropeFreqBase: () => { const n = Number(ropeFreqBase); if (ropeFreqBase !== "" && (isNaN(n) || n < 0)) return "≥0"; return ""; },
+    ropeFreqScale: () => { const n = Number(ropeFreqScale); if (ropeFreqScale !== "" && (isNaN(n) || n < 0)) return "≥0"; return ""; },
+    logLevel: () => { const n = Number(logLevel); if (logLevel !== "" && (isNaN(n) || !Number.isInteger(n) || n < 0 || n > 5)) return "0–5"; return ""; },
+  };
+
+  const validate = (): boolean => {
+    const errs: Record<string, string> = {};
+    for (const [k, fn] of Object.entries(v)) { const e = fn(); if (e) errs[k] = e; }
+    setErrors(errs);
+    return Object.keys(errs).length === 0;
+  };
+
   const submit = () => {
-    if (!name.trim()) return;
+    if (!validate()) return;
+    const num = (s: string, d: number) => { const n = Number(s); return isNaN(n) ? d : n; };
     addProfile({
-      name: name.trim(),
-      description: description.trim() || "Custom profile",
-      ctxSize: Number(ctxSize) || 4096,
-      threads: Number(threads) || 4,
-      gpuLayers: Number(gpuLayers) || 0,
-      flashAttention,
-      extraArgs: extraArgs.trim(),
-      scope,
+      name: name.trim(), description: description.trim() || "Custom profile",
+      ctxSize: num(ctxSize, 8192), threads: num(threads, 8), gpuLayers: num(gpuLayers, -1), flashAttention,
+      port: num(port, 8080), host: host.trim() || "127.0.0.1",
+      parallel: num(parallel, -1), contBatching, nPredict: num(nPredict, -1),
+      timeout: num(timeout, 3600), metrics, apiKey: apiKey.trim(),
+      threadsBatch: num(threadsBatch, -1), batchSize: num(batchSize, 2048), ubatchSize: num(ubatchSize, 512),
+      cacheTypeK, cacheTypeV, splitMode, tensorSplit: tensorSplit.trim(),
+      mainGpu: num(mainGpu, 0), kvOffload, fit, mmap, mlock, numa,
+      temperature: num(temperature, 0.8), topK: num(topK, 40), topP: num(topP, 0.95), minP: num(minP, 0.05),
+      repeatPenalty: num(repeatPenalty, 1.1), repeatLastN: num(repeatLastN, 64),
+      presencePenalty: num(presencePenalty, 0), frequencyPenalty: num(frequencyPenalty, 0), seed: num(seed, -1),
+      lora: lora.trim(), mmproj: mmproj.trim(), jinja,
+      reasoningFormat, reasoningBudget: num(reasoningBudget, -1),
+      chatTemplate: chatTemplate.trim(), ropeScaling, ropeScale: num(ropeScale, 0),
+      ropeFreqBase: num(ropeFreqBase, 0), ropeFreqScale: num(ropeFreqScale, 0),
+      grammar: grammar.trim(), jsonSchema: jsonSchema.trim(), logLevel: num(logLevel, 3),
+      extraArgs: extraArgs.trim(), scope,
       modelId: scope === "model" ? modelId : undefined,
       calibrationScore: 70 + ((hashStr(name) & 0xf) % 15),
       workspaceId: scope === "global" ? null : activeWorkspaceId,
@@ -577,99 +678,301 @@ function NewProfileDialog() {
     setOpen(false);
   };
 
+  const Section = ({ id, title, children }: { id: string; title: string; children: React.ReactNode }) => (
+    <div className="rounded-lg border">
+      <button type="button" onClick={() => toggleSection(id)}
+        className="flex w-full items-center justify-between px-3 py-2 text-sm font-medium hover:bg-muted/50">
+        {title}
+        <span className="text-muted-foreground text-xs">{openSections[id] ? "▲" : "▼"}</span>
+      </button>
+      {openSections[id] && <div className="border-t px-3 py-3 space-y-3">{children}</div>}
+    </div>
+  );
+
+  const Field = ({ label, error, children }: { label: string; error?: string; children: React.ReactNode }) => (
+    <div className="grid gap-1.5">
+      <Label className="text-xs">{label}</Label>
+      {children}
+      {error && <p className="text-xs text-red-500">{error}</p>}
+    </div>
+  );
+
+  const NumInput = ({ value, onChange, error, placeholder, ...props }: { value: string; onChange: (v: string) => void; error?: string; placeholder?: string } & Omit<React.InputHTMLAttributes<HTMLInputElement>, "value" | "onChange">) => (
+    <Input type="number" value={value} placeholder={placeholder}
+      onChange={(e) => { onChange(e.target.value); }}
+      className={cn("h-8 text-xs", error && "border-red-500")} {...props} />
+  );
+
+  const SW = ({ checked, onCheckedChange }: { checked: boolean; onCheckedChange: (v: boolean) => void }) => (
+    <Switch checked={checked} onCheckedChange={onCheckedChange} className="scale-75" />
+  );
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button size="sm">
-          <Plus className="mr-1.5 size-3.5" /> New Profile
-        </Button>
+        <Button size="sm"><Plus className="mr-1.5 size-3.5" /> New Profile</Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="sm:max-w-[640px] max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>New launch profile</DialogTitle>
-          <DialogDescription>
-            Profiles can be global (reusable across models) or bound to a
-            specific model for tuning and sharing.
-          </DialogDescription>
+          <DialogDescription>Configure all llama-server parameters. Unchanged fields use system defaults.</DialogDescription>
         </DialogHeader>
 
-        <div className="grid gap-4 py-2">
+        <div className="grid gap-3 py-2">
+          {/* Basic */}
           <div className="grid gap-2">
-            <Label htmlFor="prof-name">Name</Label>
-            <Input id="prof-name" placeholder="e.g. Balanced" value={name}
-              onChange={(e) => setName(e.target.value)} />
-          </div>
-          <div className="grid gap-2">
-            <Label htmlFor="prof-desc">Description</Label>
-            <Input id="prof-desc" placeholder="Short note about this profile"
-              value={description} onChange={(e) => setDescription(e.target.value)} />
-          </div>
-
-          <div className="grid gap-2">
-            <Label>Scope</Label>
-            <div className="grid grid-cols-2 gap-2">
-              <ScopeOption active={scope === "global"} onClick={() => setScope("global")}
-                icon={<Globe className="size-3.5 text-sky-500" />} label="Global"
-                desc="Reusable across all models" />
-              <ScopeOption active={scope === "model"} onClick={() => setScope("model")}
-                icon={<Boxes className="size-3.5 text-violet-500" />} label="Model-bound"
-                desc="Tuned for one model, shareable" />
+            <div className="grid gap-1.5">
+              <Label htmlFor="prof-name">Name</Label>
+              <Input id="prof-name" placeholder="e.g. Balanced" value={name}
+                onChange={(e) => { setName(e.target.value); clearError("name"); }}
+                className={cn("h-8 text-xs", errors.name && "border-red-500")} />
+              {errors.name && <p className="text-xs text-red-500">{errors.name}</p>}
             </div>
-          </div>
-
-          {scope === "model" && (
-            <div className="grid gap-2">
-              <Label>Bound model</Label>
-              <Select value={modelId} onValueChange={setModelId}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select a model" />
-                </SelectTrigger>
-                <SelectContent>
-                  {models.map((m) => (
-                    <SelectItem key={m.id} value={m.id}>{m.name}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            <div className="grid gap-1.5">
+              <Label htmlFor="prof-desc">Description</Label>
+              <Input id="prof-desc" placeholder="Short note" value={description}
+                onChange={(e) => setDescription(e.target.value)} className="h-8 text-xs" />
             </div>
-          )}
-
-          <div className="grid grid-cols-3 gap-4">
-            <div className="grid gap-2">
-              <Label htmlFor="prof-ctx">Context size</Label>
-              <Input id="prof-ctx" type="number" value={ctxSize}
-                onChange={(e) => setCtxSize(e.target.value)} />
+            <div className="grid gap-1.5">
+              <Label>Scope</Label>
+              <div className="grid grid-cols-2 gap-2">
+                <ScopeOption active={scope === "global"} onClick={() => setScope("global")}
+                  icon={<Globe className="size-3.5 text-sky-500" />} label="Global" desc="All models" />
+                <ScopeOption active={scope === "model"} onClick={() => setScope("model")}
+                  icon={<Boxes className="size-3.5 text-violet-500" />} label="Model-bound" desc="One model" />
+              </div>
             </div>
-            <div className="grid gap-2">
-              <Label htmlFor="prof-threads">Threads</Label>
-              <Input id="prof-threads" type="number" value={threads}
-                onChange={(e) => setThreads(e.target.value)} />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="prof-ngl">GPU layers</Label>
-              <Input id="prof-ngl" type="number" value={gpuLayers}
-                onChange={(e) => setGpuLayers(e.target.value)} />
-            </div>
+            {scope === "model" && (
+              <div className="grid gap-1.5">
+                <Label>Bound model</Label>
+                <Select value={modelId} onValueChange={setModelId}>
+                  <SelectTrigger className="w-full h-8 text-xs"><SelectValue placeholder="Select" /></SelectTrigger>
+                  <SelectContent>
+                    {models.map((m) => <SelectItem key={m.id} value={m.id}>{m.name}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
           </div>
 
-          <div className="flex items-center justify-between rounded-lg border bg-muted/30 px-3 py-2.5">
-            <div>
-              <Label htmlFor="prof-fa" className="text-sm font-medium">Flash Attention</Label>
-              <p className="text-xs text-muted-foreground">Reduce KV cache memory for long contexts.</p>
-            </div>
-            <Switch id="prof-fa" checked={flashAttention} onCheckedChange={setFlashAttention} />
+          <Separator />
+
+          {/* Core */}
+          <div className="grid grid-cols-4 gap-3">
+            <Field label="Context size" error={errors.ctxSize}>
+              <NumInput value={ctxSize} onChange={setCtxSize} error={errors.ctxSize} placeholder="8192" />
+            </Field>
+            <Field label="Threads" error={errors.threads}>
+              <NumInput value={threads} onChange={setThreads} error={errors.threads} placeholder="8" />
+            </Field>
+            <Field label="GPU layers" error={errors.gpuLayers}>
+              <NumInput value={gpuLayers} onChange={setGpuLayers} error={errors.gpuLayers} placeholder="-1" />
+            </Field>
+            <Field label="Flash attn">
+              <div className="flex items-center h-8"><SW checked={flashAttention} onCheckedChange={setFlashAttention} /></div>
+            </Field>
           </div>
 
-          <div className="grid gap-2">
-            <Label htmlFor="prof-args">Extra args</Label>
-            <Input id="prof-args" placeholder="--parallel 4 --cont-batching"
-              value={extraArgs} onChange={(e) => setExtraArgs(e.target.value)}
-              className="font-mono text-xs" />
+          <Separator />
+
+          {/* Server */}
+          <Section id="server" title="Server">
+            <div className="grid grid-cols-3 gap-3">
+              <Field label="Port" error={errors.port}>
+                <NumInput value={port} onChange={setPort} error={errors.port} />
+              </Field>
+              <Field label="Host" error={errors.host}>
+                <Input value={host} onChange={(e) => { setHost(e.target.value); clearError("host"); }}
+                  className={cn("h-8 text-xs", errors.host && "border-red-500")} />
+              </Field>
+              <Field label="Parallel slots" error={errors.parallel}>
+                <NumInput value={parallel} onChange={setParallel} error={errors.parallel} placeholder="-1 = auto" />
+              </Field>
+            </div>
+            <div className="grid grid-cols-3 gap-3">
+              <Field label="Max predict (-1=∞)" error={errors.nPredict}>
+                <NumInput value={nPredict} onChange={setNPredict} error={errors.nPredict} />
+              </Field>
+              <Field label="Timeout (sec)" error={errors.timeout}>
+                <NumInput value={timeout} onChange={(s) => setTimeout_(s)} error={errors.timeout} />
+              </Field>
+              <div className="grid gap-1.5">
+                <Label className="text-xs">Options</Label>
+                <div className="flex items-center gap-4 h-8">
+                  <label className="flex items-center gap-1.5 text-xs"><SW checked={contBatching} onCheckedChange={setContBatching} /> Cont. batching</label>
+                  <label className="flex items-center gap-1.5 text-xs"><SW checked={metrics} onCheckedChange={setMetrics} /> Metrics</label>
+                </div>
+              </div>
+            </div>
+            <Field label="API key">
+              <Input value={apiKey} onChange={(e) => setApiKey(e.target.value)} placeholder="optional" className="h-8 text-xs font-mono" />
+            </Field>
+          </Section>
+
+          {/* Performance */}
+          <Section id="perf" title="Performance & Memory">
+            <div className="grid grid-cols-3 gap-3">
+              <Field label="Threads batch (-1=same)" error={errors.threadsBatch}>
+                <NumInput value={threadsBatch} onChange={setThreadsBatch} error={errors.threadsBatch} />
+              </Field>
+              <Field label="Batch size" error={errors.batchSize}>
+                <NumInput value={batchSize} onChange={setBatchSize} error={errors.batchSize} />
+              </Field>
+              <Field label="Ubatch size" error={errors.ubatchSize}>
+                <NumInput value={ubatchSize} onChange={setUbatchSize} error={errors.ubatchSize} />
+              </Field>
+            </div>
+            <div className="grid grid-cols-3 gap-3">
+              <Field label="Cache type K">
+                <Select value={cacheTypeK} onValueChange={setCacheTypeK}>
+                  <SelectTrigger className="w-full h-8 text-xs"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {["f32","f16","bf16","q8_0","q4_0","q4_1","iq4_nl","q5_0","q5_1"].map((t) =>
+                      <SelectItem key={t} value={t}>{t}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </Field>
+              <Field label="Cache type V">
+                <Select value={cacheTypeV} onValueChange={setCacheTypeV}>
+                  <SelectTrigger className="w-full h-8 text-xs"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {["f32","f16","bf16","q8_0","q4_0","q4_1","iq4_nl","q5_0","q5_1"].map((t) =>
+                      <SelectItem key={t} value={t}>{t}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </Field>
+              <Field label="Split mode">
+                <Select value={splitMode} onValueChange={setSplitMode}>
+                  <SelectTrigger className="w-full h-8 text-xs"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {["layer","row","tensor","none"].map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </Field>
+            </div>
+            <div className="grid grid-cols-3 gap-3">
+              <Field label="Tensor split" error={errors.mainGpu}>
+                <Input value={tensorSplit} onChange={(e) => setTensorSplit(e.target.value)} placeholder="e.g. 3,1" className="h-8 text-xs font-mono" />
+              </Field>
+              <Field label="Main GPU" error={errors.mainGpu}>
+                <NumInput value={mainGpu} onChange={setMainGpu} error={errors.mainGpu} />
+              </Field>
+              <div className="grid gap-1.5">
+                <Label className="text-xs">Flags</Label>
+                <div className="flex flex-wrap items-center gap-3 h-8">
+                  {([["KV offload", kvOffload, setKvOffload], ["Fit", fit, setFit], ["mmap", mmap, setMmap], ["mlock", mlock, setMlock], ["NUMA", numa, setNuma]] as const).map(([l, v, s]) =>
+                    <label key={l} className="flex items-center gap-1 text-xs"><SW checked={v} onCheckedChange={s} /> {l}</label>)}
+                </div>
+              </div>
+            </div>
+          </Section>
+
+          {/* Sampling */}
+          <Section id="sampling" title="Sampling">
+            <div className="grid grid-cols-4 gap-3">
+              <Field label="Temperature" error={errors.temperature}>
+                <NumInput value={temperature} onChange={setTemperature} error={errors.temperature} />
+              </Field>
+              <Field label="Top K" error={errors.topK}>
+                <NumInput value={topK} onChange={setTopK} error={errors.topK} />
+              </Field>
+              <Field label="Top P" error={errors.topP}>
+                <NumInput value={topP} onChange={setTopP} error={errors.topP} />
+              </Field>
+              <Field label="Min P" error={errors.minP}>
+                <NumInput value={minP} onChange={setMinP} error={errors.minP} />
+              </Field>
+            </div>
+            <div className="grid grid-cols-4 gap-3">
+              <Field label="Repeat penalty" error={errors.repeatPenalty}>
+                <NumInput value={repeatPenalty} onChange={setRepeatPenalty} error={errors.repeatPenalty} />
+              </Field>
+              <Field label="Repeat last N" error={errors.repeatLastN}>
+                <NumInput value={repeatLastN} onChange={setRepeatLastN} error={errors.repeatLastN} />
+              </Field>
+              <Field label="Presence penalty" error={errors.presencePenalty}>
+                <NumInput value={presencePenalty} onChange={setPresencePenalty} error={errors.presencePenalty} />
+              </Field>
+              <Field label="Frequency penalty" error={errors.frequencyPenalty}>
+                <NumInput value={frequencyPenalty} onChange={setFrequencyPenalty} error={errors.frequencyPenalty} />
+              </Field>
+            </div>
+            <Field label="Seed (-1=random)" error={errors.seed}>
+              <NumInput value={seed} onChange={setSeed} error={errors.seed} />
+            </Field>
+          </Section>
+
+          {/* Advanced */}
+          <Section id="advanced" title="Advanced">
+            <div className="grid grid-cols-2 gap-3">
+              <Field label="LoRA path">
+                <Input value={lora} onChange={(e) => setLora(e.target.value)} placeholder="optional" className="h-8 text-xs font-mono" />
+              </Field>
+              <Field label="MMProj path">
+                <Input value={mmproj} onChange={(e) => setMmproj(e.target.value)} placeholder="optional" className="h-8 text-xs font-mono" />
+              </Field>
+            </div>
+            <div className="grid grid-cols-3 gap-3">
+              <Field label="Reasoning format">
+                <Select value={reasoningFormat} onValueChange={setReasoningFormat}>
+                  <SelectTrigger className="w-full h-8 text-xs"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {["auto","none","deepseek","deepseek-legacy"].map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </Field>
+              <Field label="Reasoning budget (-1=∞)" error={errors.reasoningBudget}>
+                <NumInput value={reasoningBudget} onChange={setReasoningBudget} error={errors.reasoningBudget} />
+              </Field>
+              <Field label="Log level (0-5)" error={errors.logLevel}>
+                <NumInput value={logLevel} onChange={setLogLevel} error={errors.logLevel} />
+              </Field>
+            </div>
+            <Field label="Chat template">
+              <Input value={chatTemplate} onChange={(e) => setChatTemplate(e.target.value)} placeholder="e.g. chatml, llama3" className="h-8 text-xs font-mono" />
+            </Field>
+            <div className="grid grid-cols-4 gap-3">
+              <Field label="RoPE scaling">
+                <Select value={ropeScaling} onValueChange={setRopeScaling}>
+                  <SelectTrigger className="w-full h-8 text-xs"><SelectValue placeholder="default" /></SelectTrigger>
+                  <SelectContent>
+                    {["","none","linear","yarn"].map((t) => <SelectItem key={t} value={t}>{t || "default"}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </Field>
+              <Field label="RoPE scale" error={errors.ropeScale}>
+                <NumInput value={ropeScale} onChange={setRopeScale} error={errors.ropeScale} />
+              </Field>
+              <Field label="RoPE freq base" error={errors.ropeFreqBase}>
+                <NumInput value={ropeFreqBase} onChange={setRopeFreqBase} error={errors.ropeFreqBase} />
+              </Field>
+              <Field label="RoPE freq scale" error={errors.ropeFreqScale}>
+                <NumInput value={ropeFreqScale} onChange={setRopeFreqScale} error={errors.ropeFreqScale} />
+              </Field>
+            </div>
+            <div className="grid gap-1.5">
+              <Label className="text-xs">Jinja templates</Label>
+              <div className="flex items-center h-8"><SW checked={jinja} onCheckedChange={setJinja} /></div>
+            </div>
+            <Field label="Grammar (BNF)">
+              <Input value={grammar} onChange={(e) => setGrammar(e.target.value)} placeholder="optional BNF grammar" className="h-8 text-xs font-mono" />
+            </Field>
+            <Field label="JSON schema">
+              <Input value={jsonSchema} onChange={(e) => setJsonSchema(e.target.value)} placeholder='{"type":"object",...}' className="h-8 text-xs font-mono" />
+            </Field>
+          </Section>
+
+          {/* Extra args */}
+          <div className="grid gap-1.5">
+            <Label className="text-xs">Extra args</Label>
+            <Input value={extraArgs} onChange={(e) => setExtraArgs(e.target.value)}
+              placeholder="--override-kv ... " className="h-8 text-xs font-mono" />
           </div>
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
-          <Button onClick={submit}
+          <Button variant="outline" onClick={() => setOpen(false)} className="h-8 text-xs">Cancel</Button>
+          <Button onClick={submit} className="h-8 text-xs"
             disabled={!name.trim() || (scope === "model" && !modelId)}>
             Create profile
           </Button>

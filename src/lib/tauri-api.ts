@@ -38,6 +38,7 @@ export interface ModelInfo {
 }
 
 export interface ProcessConfig {
+  // Core
   context_size: number;
   gpu_layers: number;
   threads: number;
@@ -47,6 +48,48 @@ export interface ProcessConfig {
   no_mmap: boolean;
   no_mlock: boolean;
   numa: boolean;
+  // Server
+  port: number;
+  host: string;
+  parallel: number;
+  cont_batching: boolean;
+  n_predict: number;
+  timeout: number;
+  metrics: boolean;
+  api_key: string;
+  // Performance
+  threads_batch: number;
+  cache_type_k: string;
+  cache_type_v: string;
+  split_mode: string;
+  tensor_split: string;
+  main_gpu: number;
+  kv_offload: boolean;
+  fit: boolean;
+  // Sampling
+  temperature: number;
+  top_k: number;
+  top_p: number;
+  min_p: number;
+  repeat_penalty: number;
+  repeat_last_n: number;
+  presence_penalty: number;
+  frequency_penalty: number;
+  seed: number;
+  // Advanced
+  lora: string;
+  mmproj: string;
+  jinja: boolean;
+  reasoning_format: string;
+  reasoning_budget: number;
+  chat_template: string;
+  rope_scaling: string;
+  rope_scale: number;
+  rope_freq_base: number;
+  rope_freq_scale: number;
+  grammar: string;
+  json_schema: string;
+  log_level: number;
   arguments: string[];
 }
 
@@ -79,9 +122,17 @@ export interface ProcessMetrics {
 
 export interface SystemSnapshot {
   cpu_percent: number;
+  cpu_name: string;
+  cpu_cores_physical: number;
+  cpu_cores_logical: number;
   memory_total_mb: number;
   memory_used_mb: number;
   memory_available_mb: number;
+  disk_total_gb: number;
+  disk_used_gb: number;
+  disk_free_gb: number;
+  os_name: string;
+  os_version: string;
 }
 
 export interface GpuInfo {
@@ -90,19 +141,26 @@ export interface GpuInfo {
   vendor: GpuVendor;
   memory_total_mb: number;
   memory_used_mb: number;
+  memory_free_mb: number;
   temperature_c: number | null;
   utilization_percent: number | null;
   compute_capability: string | null;
+  driver_version: string | null;
 }
 
 export interface SystemCapabilities {
   gpu_name: string;
   gpu_vram_gb: number;
+  gpu_vendor: string;
   ram_gb: number;
+  cpu_name: string;
   cpu_cores: number;
   has_cuda: boolean;
   has_vulkan: boolean;
   has_metal: boolean;
+  has_rocm: boolean;
+  disk_free_gb: number;
+  os_name: string;
 }
 
 export interface AppConfig {

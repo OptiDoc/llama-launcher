@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { cn } from "@/lib/utils";
+import { cn, hashStr } from "@/lib/utils";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -130,16 +130,6 @@ function deriveModelName(repo: string): string {
     .replace(/[_-]/g, " ")
     .trim();
   return base.replace(/\b\w/g, (c) => c.toUpperCase());
-}
-
-/** Deterministic 32-bit hash from a string. Stable across server/client. */
-function hashStr(s: string): number {
-  let h = 2166136261;
-  for (let i = 0; i < s.length; i++) {
-    h ^= s.charCodeAt(i);
-    h = Math.imul(h, 16777619);
-  }
-  return Math.abs(h | 0);
 }
 
 /** Per-model usage stats. Until the backend tracks per-model history, these

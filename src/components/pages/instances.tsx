@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { cn } from "@/lib/utils";
+import { cn, hashStr } from "@/lib/utils";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -112,16 +112,6 @@ function StatusBadge({ status }: { status: InstanceStatus }) {
   );
 }
 
-/** Deterministic 32-bit FNV-1a hash — SSR safe (no Math.random). */
-function hashStr(s: string): number {
-  let h = 2166136261;
-  for (let i = 0; i < s.length; i++) {
-    h ^= s.charCodeAt(i);
-    h = Math.imul(h, 16777619);
-  }
-  return Math.abs(h | 0);
-}
-
 /** Deterministic 20-sample throughput series for the detail-view chart. */
 function deriveThroughput(id: string) {
   const h = hashStr(id);
@@ -212,7 +202,22 @@ function LaunchDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (v:
   const [profileId, setProfileId] = React.useState("");
   const [port, setPort] = React.useState("");
   const [host, setHost] = React.useState("127.0.0.1");
-  const [gpu, setGpu] = React.useState("NVIDIA RTX 4070");
+  const [gpu, setGpu] = React.useState("");
+  const [errors, setErrors] = React.useState<{ port?: string; host?: string }>({});
+
+  // Build GPU options dynamically from detected system capabilities.
+  const gpuOptions = React.useMemo(() => {
+    const opts: { value: string; label: string }[] = [];
+    if (systemCapabilities.gpuName && systemCapabilities.gpuName !== "CPU only") {
+      opts.push({ value: systemCapabilities.gpuName, label: systemCapabilities.gpuName });
+    }
+    if (systemCapabilities.hasCuda) opts.push({ value: "auto-cuda", label: "Auto (CUDA)" });
+    if (systemCapabilities.hasRocm) opts.push({ value: "auto-rocm", label: "Auto (ROCm)" });
+    if (systemCapabilities.hasVulkan) opts.push({ value: "auto-vulkan", label: "Auto (Vulkan)" });
+    if (systemCapabilities.hasMetal) opts.push({ value: "auto-metal", label: "Auto (Metal)" });
+    opts.push({ value: "cpu", label: "CPU" });
+    return opts;
+  }, [systemCapabilities]);
 
   // Reset form whenever dialog opens. Deps intentionally [open] only — we read
   // fresh store state inside to avoid stale closures / dep loops.
@@ -221,7 +226,9 @@ function LaunchDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (v:
     setName("");
     setPort(String(pickPort()));
     setHost("127.0.0.1");
-    setGpu("NVIDIA RTX 4070");
+    setErrors({});
+    const caps = useLlamaStore.getState().systemCapabilities;
+    setGpu(caps.gpuName || "cpu");
     const dl = useLlamaStore.getState().models.filter((m) => m.downloaded && !m.missing && !m.downloading);
     setModelId(dl[0]?.id ?? "");
     setProfileId("");
@@ -260,14 +267,36 @@ function LaunchDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (v:
   const submit = () => {
     if (downloaded.length === 0 || profileOptions.length === 0) return;
     if (selectedModelMissing || overRam) return;
+
+    // Validate port
+    const portNum = Number(port);
+    if (!port || isNaN(portNum) || portNum < 1024 || portNum > 65535 || !Number.isInteger(portNum)) {
+      setErrors({ port: "Port must be 1024–65535" });
+      return;
+    }
+
+    // Validate host
+    const hostTrimmed = host.trim();
+    if (!hostTrimmed) {
+      setErrors({ host: "Host is required" });
+      return;
+    }
+    // Basic host validation: IP or hostname pattern
+    const hostPattern = /^(localhost|(\d{1,3}\.){3}\d{1,3}|[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?)*|::1|0\.0\.0\.0|\[::\])$/;
+    if (!hostPattern.test(hostTrimmed)) {
+      setErrors({ host: "Invalid host (IP, hostname, or localhost)" });
+      return;
+    }
+
+    setErrors({});
     const model = models.find((m) => m.id === modelId)?.name ?? downloaded[0].name;
     const safeName = name.trim() || `${model.split(" ")[0] || "llama"}-${port}`;
     const id = startInstance({
       name: safeName,
       model,
       profile: profileId,
-      port: Number(port) || pickPort(),
-      host,
+      port: portNum,
+      host: hostTrimmed,
       gpu,
     });
     setActiveConsole(id);
@@ -362,11 +391,17 @@ function LaunchDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (v:
           <div className="grid grid-cols-2 gap-4">
             <div className="grid gap-2">
               <Label htmlFor="inst-port">Port</Label>
-              <Input id="inst-port" type="number" value={port} onChange={(e) => setPort(e.target.value)} />
+              <Input id="inst-port" type="number" value={port}
+                onChange={(e) => { setPort(e.target.value); setErrors((p) => ({ ...p, port: undefined })); }}
+                className={errors.port ? "border-red-500" : ""} />
+              {errors.port && <p className="text-xs text-red-500">{errors.port}</p>}
             </div>
             <div className="grid gap-2">
               <Label htmlFor="inst-host">Host</Label>
-              <Input id="inst-host" value={host} onChange={(e) => setHost(e.target.value)} />
+              <Input id="inst-host" value={host}
+                onChange={(e) => { setHost(e.target.value); setErrors((p) => ({ ...p, host: undefined })); }}
+                className={errors.host ? "border-red-500" : ""} />
+              {errors.host && <p className="text-xs text-red-500">{errors.host}</p>}
             </div>
           </div>
 
@@ -375,10 +410,9 @@ function LaunchDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (v:
             <Select value={gpu} onValueChange={setGpu}>
               <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="NVIDIA RTX 4070">NVIDIA RTX 4070</SelectItem>
-                <SelectItem value="NVIDIA RTX 3090">NVIDIA RTX 3090</SelectItem>
-                <SelectItem value="Apple M2 Max">Apple M2 Max</SelectItem>
-                <SelectItem value="CPU">CPU</SelectItem>
+                {gpuOptions.map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
