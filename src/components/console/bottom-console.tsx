@@ -38,11 +38,24 @@ function StatusDot({ status }: { status: LlamaInstance["status"] }) {
 function LogView({ instanceId }: { instanceId: string }) {
   const logs = useLlamaStore((s) => s.logs[instanceId] ?? []);
   const scrollRef = React.useRef<HTMLDivElement>(null);
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   React.useEffect(() => {
     const el = scrollRef.current;
     if (el) el.scrollTop = el.scrollHeight;
   }, [logs]);
+
+  if (!mounted) {
+    return (
+      <div className="flex h-full items-center justify-center text-xs text-muted-foreground/70">
+        Loading...
+      </div>
+    );
+  }
 
   if (logs.length === 0) {
     return (
@@ -88,7 +101,7 @@ export function BottomConsole() {
     const onMove = (ev: MouseEvent) => {
       if (!resizeRef.current) return;
       const delta = resizeRef.current.startY - ev.clientY;
-      setConsoleHeight(resizeRef.current.startH + delta);
+      setConsoleHeight(Math.max(150, Math.min(window.innerHeight * 0.7, resizeRef.current.startH + delta)));
     };
     const onUp = () => {
       resizeRef.current = null;
@@ -99,7 +112,6 @@ export function BottomConsole() {
     window.addEventListener("mouseup", onUp);
   };
 
-  // Build tab list: System + one per instance
   const tabs = [
     {
       id: SYSTEM_CONSOLE,
@@ -118,7 +130,6 @@ export function BottomConsole() {
     })),
   ];
 
-  // If active tab no longer exists, fall back to system
   React.useEffect(() => {
     if (!tabs.some((t) => t.id === activeConsoleId)) {
       setActiveConsole(SYSTEM_CONSOLE);
@@ -128,23 +139,21 @@ export function BottomConsole() {
   return (
     <div
       className={cn(
-        "flex flex-col border-t bg-card text-card-foreground transition-[height] duration-200 ease-out",
-        consoleOpen ? "" : "h-10",
+        "absolute bottom-0 z-20 flex flex-col border border-border/60 bg-card text-card-foreground transition-[height,left,right] duration-200 ease-out rounded-t-xl shadow-lg",
+        consoleOpen ? "" : "h-0 overflow-hidden",
       )}
-      style={consoleOpen ? { height: consoleHeight } : undefined}
+      style={consoleOpen ? { height: consoleHeight, left: "12px", right: "12px" } : { left: "12px", right: "12px" }}
     >
       {/* Drag handle */}
-      {consoleOpen && (
-        <div
-          onMouseDown={onResizeStart}
-          className="group flex h-1.5 cursor-row-resize items-center justify-center bg-border/60 hover:bg-primary/30"
-        >
-          <div className="h-0.5 w-10 rounded-full bg-muted-foreground/30 group-hover:bg-primary/50" />
-        </div>
-      )}
+      <div
+        onMouseDown={onResizeStart}
+        className="group flex h-1.5 cursor-row-resize items-center justify-center bg-border/60 hover:bg-primary/30 shrink-0"
+      >
+        <div className="h-0.5 w-10 rounded-full bg-muted-foreground/30 group-hover:bg-primary/50" />
+      </div>
 
       {/* Tab bar / header */}
-      <div className="flex h-9 items-center justify-between border-b bg-muted/40 px-2">
+      <div className="flex h-9 shrink-0 items-center justify-between border-b bg-muted/40 px-2">
         <div className="flex h-full items-center gap-1 overflow-x-auto">
           {tabs.map((t) => {
             const active = activeConsoleId === t.id && consoleOpen;
@@ -211,17 +220,15 @@ export function BottomConsole() {
       </div>
 
       {/* Body */}
-      {consoleOpen && (
-        <div className="flex-1 overflow-hidden bg-[hsl(var(--background))]">
-          <Tabs value={activeConsoleId} onValueChange={setActiveConsole} className="h-full">
-            {tabs.map((t) => (
-              <TabsContent key={t.id} value={t.id} className="m-0 h-full data-[state=inactive]:hidden">
-                <LogView instanceId={t.id} />
-              </TabsContent>
-            ))}
-          </Tabs>
-        </div>
-      )}
+      <div className="flex-1 overflow-hidden bg-[hsl(var(--background))]">
+        <Tabs value={activeConsoleId} onValueChange={setActiveConsole} className="h-full">
+          {tabs.map((t) => (
+            <TabsContent key={t.id} value={t.id} className="m-0 h-full data-[state=inactive]:hidden">
+              <LogView instanceId={t.id} />
+            </TabsContent>
+          ))}
+        </Tabs>
+      </div>
     </div>
   );
 }
@@ -234,7 +241,7 @@ export function ConsoleShowPill() {
   return (
     <button
       onClick={() => setConsoleOpen(true)}
-      className="absolute bottom-4 right-6 z-30 flex items-center gap-2 rounded-full border bg-card px-4 py-2 text-xs font-medium shadow-lg hover:bg-accent"
+      className="absolute bottom-4 right-6 z-30 flex items-center gap-2 rounded-full border bg-card px-4 py-2 text-xs font-medium shadow-lg hover:bg-accent transition-colors"
     >
       <PanelBottomClose className="size-3.5" />
       Show Console

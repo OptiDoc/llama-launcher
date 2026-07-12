@@ -30,6 +30,7 @@ import {
   Plus,
   ChevronDown,
   Moon,
+  ChevronRight,
 } from "lucide-react";
 import {
   useLlamaStore,
@@ -47,35 +48,31 @@ interface TopBarProps {
 
 const STATUS_CONFIG: Record<
   AppStatus,
-  { label: string; icon: React.ReactNode; badgeBg: string; badgeText: string; badgeBorder: string }
+  { label: string; icon: React.ReactNode; dotColor: string; textColor: string }
 > = {
   active: {
     label: "Active",
     icon: <Activity className="size-3" />,
-    badgeBg: "bg-emerald-500/10",
-    badgeText: "text-emerald-600 dark:text-emerald-400",
-    badgeBorder: "border-emerald-500/30",
+    dotColor: "bg-emerald-500",
+    textColor: "text-emerald-600",
   },
   idle: {
     label: "Idle",
     icon: <Moon className="size-3" />,
-    badgeBg: "bg-amber-500/10",
-    badgeText: "text-amber-600 dark:text-amber-400",
-    badgeBorder: "border-amber-500/30",
+    dotColor: "bg-amber-500",
+    textColor: "text-amber-600",
   },
   hibernating: {
     label: "Hibernating",
     icon: <Snowflake className="size-3" />,
-    badgeBg: "bg-sky-500/10",
-    badgeText: "text-sky-600 dark:text-sky-400",
-    badgeBorder: "border-sky-500/30",
+    dotColor: "bg-sky-500",
+    textColor: "text-sky-600",
   },
   waking: {
     label: "Waking",
     icon: <Zap className="size-3" />,
-    badgeBg: "bg-violet-500/10",
-    badgeText: "text-violet-600 dark:text-violet-400",
-    badgeBorder: "border-violet-500/30",
+    dotColor: "bg-violet-500",
+    textColor: "text-violet-600",
   },
 };
 
@@ -166,9 +163,7 @@ export function TopBar({ collapsed, onToggleSidebar }: TopBarProps) {
         const { getCurrentWindow } = await import("@tauri-apps/api/window");
         const win = getCurrentWindow();
         setMaximized(await win.isMaximized());
-        unlisten = await win.onResized(() => {
-          win.isMaximized().then(setMaximized);
-        });
+        unlisten = await win.onResized(() => { win.isMaximized().then(setMaximized); });
       } catch { /* ignore */ }
     })();
     return () => { unlisten?.(); };
@@ -188,76 +183,72 @@ export function TopBar({ collapsed, onToggleSidebar }: TopBarProps) {
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   return (
-    <div className="title-bar flex h-11 items-center justify-between border-b border-border bg-card select-none">
-      {/* ===== Left: sidebar toggle + logo + workspace dropdown ===== */}
-      <div className="title-bar-no-drag flex h-full items-center gap-2 pl-2">
+    <div className="title-bar flex h-12 shrink-0 items-center justify-between bg-background px-2 select-none">
+      {/* Left */}
+      <div className="title-bar-no-drag flex h-full items-center gap-1">
         <button
           onClick={onToggleSidebar}
-          className="grid size-7 place-items-center rounded text-muted-foreground hover:bg-accent hover:text-foreground"
+          className="grid size-8 place-items-center rounded-lg text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
           aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-          title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
           {collapsed ? <PanelLeftOpen className="size-4" /> : <PanelLeftClose className="size-4" />}
         </button>
 
-        <div className="grid size-6 place-items-center rounded-md bg-primary text-[10px] font-bold text-primary-foreground">
-          L
+        {/* Logo + app name */}
+        <div className="flex items-center gap-2 pl-1">
+          <div className="grid size-7 place-items-center rounded-lg bg-linear-to-br from-violet-500 to-indigo-600 text-[10px] font-bold text-white shadow-sm">
+            LL
+          </div>
+          <span className="text-[14px] font-semibold text-foreground tracking-tight">LlamaLauncher</span>
         </div>
 
-        <div className="mx-1 h-5 w-px bg-border" />
-
-        {/* Workspace dropdown */}
+        <div className="mx-1 h-4 w-px bg-border/60" />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="flex h-7 items-center gap-1.5 rounded px-2 text-xs font-medium text-foreground hover:bg-accent">
-              {activeWorkspace ? (
-                <>
-                  <span className={cn("size-2 rounded-full", workspaceColorDot(activeWorkspace.color))} />
-                  <span className="max-w-[120px] truncate">{activeWorkspace.name}</span>
-                </>
-              ) : (
-                <span className="text-muted-foreground">No workspace</span>
+            <button className="flex h-7 items-center gap-1.5 rounded-lg px-2 text-[12px] font-medium text-foreground/80 hover:bg-accent transition-colors">
+              {activeWorkspace && (
+                <span className="grid size-4.5 place-items-center rounded-md border">
+                  <span className={cn("size-1.5 rounded-sm", workspaceColorDot(activeWorkspace.color))} />
+                </span>
               )}
-              <ChevronDown className="size-3 opacity-50" />
+              <span className="max-w-25 truncate">{activeWorkspace?.name ?? "Workspace"}</span>
+              <ChevronDown className="size-3 opacity-40" />
             </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="w-56">
-            <DropdownMenuLabel className="text-[10px] text-muted-foreground">Workspaces</DropdownMenuLabel>
+          <DropdownMenuContent align="start" className="w-52">
+            <DropdownMenuLabel className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">Workspaces</DropdownMenuLabel>
             <DropdownMenuSeparator />
             {workspaces.map((w) => (
               <DropdownMenuItem key={w.id} onClick={() => setActiveWorkspace(w.id)} className="gap-2 py-1.5">
-                <span className={cn("size-2 rounded-full", workspaceColorDot(w.color))} />
+                <span className="grid size-4.5 place-items-center border rounded-md">
+                  <span className={cn("size-1.5 rounded-sm", workspaceColorDot(w.color))} />
+                </span>
                 <div className="flex flex-1 flex-col">
-                  <span className="text-xs font-medium">{w.name}</span>
+                  <span className="text-[12px] font-medium">{w.name}</span>
                   {w.description && <span className="text-[10px] text-muted-foreground">{w.description}</span>}
                 </div>
-                {w.id === activeWorkspaceId && <span className="text-[9px] text-primary">active</span>}
+                {w.id === activeWorkspaceId && <span className="text-[9px] font-medium text-primary">active</span>}
               </DropdownMenuItem>
             ))}
             <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() => addWorkspace({ name: `Workspace ${workspaces.length + 1}`, color: "orange", description: "New workspace" })}
-              className="gap-2 py-1.5 text-[11px]"
-            >
+            <DropdownMenuItem onClick={() => addWorkspace({ name: `Workspace ${workspaces.length + 1}`, color: "orange", description: "New workspace" })} className="gap-2 py-1.5 text-[11px]">
               <Plus className="size-3" /> New workspace
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+        <ChevronRight className="size-3 text-muted-foreground/40" />
+        <div className={cn("flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium", statusCfg.textColor)}>
+          <span className={cn("size-1.5 rounded-full", statusCfg.dotColor, isHibernating && "animate-pulse")} />
+          {statusCfg.label}
+        </div>
       </div>
 
-      {/* ===== Center: colored status badges ===== */}
-      <div className="title-bar-no-drag mx-2 flex h-full min-w-0 flex-1 items-center justify-center gap-2">
-        {/* Status badge */}
-        <div className={cn("flex h-6 items-center gap-1.5 rounded-md border px-2.5 text-[11px] font-semibold", statusCfg.badgeBg, statusCfg.badgeText, statusCfg.badgeBorder)}>
-          <span className={cn(isHibernating && "animate-pulse")}>{statusCfg.icon}</span>
-          <span>{statusCfg.label}</span>
-        </div>
-
-        {/* Instance count badge */}
-        <div className="flex h-6 items-center gap-1.5 rounded-md border border-border bg-muted/50 px-2.5 text-[11px]">
-          <Server className="size-3 text-muted-foreground" />
+      {/* Center */}
+      <div className="title-bar-no-drag flex h-full items-center gap-3">
+        <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+          <Server className="size-3" />
           <span className="font-mono font-semibold text-foreground">{runningCount}</span>
-          <span className="text-muted-foreground">{runningCount === 1 ? "instance" : "instances"}</span>
+          <span>{runningCount === 1 ? "instance" : "instances"}</span>
           {runningCount > 0 && (
             <span className="relative ml-0.5 flex size-1.5">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-75" />
@@ -265,71 +256,63 @@ export function TopBar({ collapsed, onToggleSidebar }: TopBarProps) {
             </span>
           )}
         </div>
-
-        {/* Idle timer */}
         {appStatus !== "active" && (
-          <div className="hidden h-6 items-center gap-1.5 rounded-md border border-border bg-muted/50 px-2.5 text-[10px] text-muted-foreground lg:flex">
+          <div className="hidden items-center gap-1.5 text-[10px] text-muted-foreground/60 lg:flex">
             <Moon className="size-3" />
             <span className="font-mono">idle {idleSecs}s</span>
           </div>
         )}
       </div>
 
-      {/* ===== Right: notifications + power + window controls ===== */}
-      <div className="title-bar-no-drag flex h-full items-center gap-1 pr-1">
-        {/* Power dropdown */}
+      {/* Right */}
+      <div className="title-bar-no-drag flex h-full items-center gap-0.5">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="flex h-7 items-center gap-1 rounded px-1.5 text-[10px] font-medium text-muted-foreground hover:bg-accent hover:text-foreground">
+            <button className="flex h-8 items-center gap-1 rounded-lg px-2 text-[11px] font-medium text-muted-foreground hover:bg-accent hover:text-foreground transition-colors">
               <Zap className="size-3" />
               <span className="hidden md:inline">Power</span>
-              <ChevronDown className="size-2.5 opacity-50" />
+              <ChevronDown className="size-2.5 opacity-40" />
             </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56">
-            <DropdownMenuLabel className="text-[10px] text-muted-foreground">Power management</DropdownMenuLabel>
+          <DropdownMenuContent align="end" className="w-52">
+            <DropdownMenuLabel className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">Power management</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={forceWake} className="gap-2 py-1.5" disabled={appStatus === "active"}>
               <Activity className="size-3.5 text-emerald-500" />
               <div className="flex flex-1 flex-col">
-                <span className="text-xs font-medium">Force active</span>
+                <span className="text-[12px] font-medium">Force active</span>
                 <span className="text-[10px] text-muted-foreground">Wake hibernated models</span>
               </div>
             </DropdownMenuItem>
             <DropdownMenuItem onClick={forceHibernate} className="gap-2 py-1.5" disabled={appStatus === "hibernating"}>
               <Snowflake className="size-3.5 text-sky-500" />
               <div className="flex flex-1 flex-col">
-                <span className="text-xs font-medium">Hibernate now</span>
+                <span className="text-[12px] font-medium">Hibernate now</span>
                 <span className="text-[10px] text-muted-foreground">Unload models from VRAM</span>
               </div>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
 
-        {/* Notifications */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button
-              className="relative grid size-7 place-items-center rounded text-muted-foreground hover:bg-accent hover:text-foreground"
-              aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ""}`}
-              title="Notifications"
-            >
+            <button className="relative grid size-8 place-items-center rounded-lg text-muted-foreground hover:bg-accent hover:text-foreground transition-colors" aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ""}`}>
               <Bell className="size-3.5" />
               {unreadCount > 0 && (
-                <span className="absolute right-0.5 top-0.5 grid min-w-[12px] place-items-center rounded-full bg-primary px-0.5 text-[8px] font-bold text-primary-foreground">
+                <span className="absolute right-1 top-1 grid min-w-[14px] place-items-center rounded-full bg-primary px-1 text-[8px] font-bold text-primary-foreground leading-none">
                   {unreadCount > 9 ? "9+" : unreadCount}
                 </span>
               )}
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-72 p-0">
-            <div className="flex items-center justify-between border-b px-2.5 py-1.5">
+            <div className="flex items-center justify-between border-b border-border/60 px-3 py-2">
               <span className="text-[11px] font-semibold">Notifications</span>
               <div className="flex items-center gap-0.5">
-                <button onClick={markAllNotificationsRead} className="grid size-5 place-items-center rounded text-muted-foreground hover:bg-accent hover:text-foreground" title="Mark all read">
+                <button onClick={markAllNotificationsRead} className="grid size-6 place-items-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground" title="Mark all read">
                   <CheckCheck className="size-3" />
                 </button>
-                <button onClick={clearNotifications} className="grid size-5 place-items-center rounded text-muted-foreground hover:bg-accent hover:text-destructive" title="Clear all">
+                <button onClick={clearNotifications} className="grid size-6 place-items-center rounded-md text-muted-foreground hover:bg-accent hover:text-destructive" title="Clear all">
                   <Trash2 className="size-3" />
                 </button>
               </div>
@@ -337,19 +320,12 @@ export function TopBar({ collapsed, onToggleSidebar }: TopBarProps) {
             <div className="max-h-[320px] overflow-y-auto">
               {notifications.length === 0 ? (
                 <div className="flex flex-col items-center justify-center gap-1.5 py-8 text-center">
-                  <Bell className="size-5 text-muted-foreground/40" />
+                  <Bell className="size-5 text-muted-foreground/25" />
                   <p className="text-[11px] text-muted-foreground">No notifications</p>
                 </div>
               ) : (
                 notifications.map((n) => (
-                  <button
-                    key={n.id}
-                    onClick={() => markNotificationRead(n.id)}
-                    className={cn(
-                      "flex w-full items-start gap-2 border-b px-2.5 py-2 text-left hover:bg-accent/50",
-                      !n.read && "bg-primary/5",
-                    )}
-                  >
+                  <button key={n.id} onClick={() => markNotificationRead(n.id)} className={cn("flex w-full items-start gap-2.5 border-b border-border/40 px-3 py-2.5 text-left transition-colors hover:bg-accent/40", !n.read && "bg-primary/5")}>
                     <span className={cn("mt-0.5 shrink-0", NOTIF_COLOR[n.kind])}>{NOTIF_ICON[n.kind]}</span>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-1.5">
@@ -357,9 +333,7 @@ export function TopBar({ collapsed, onToggleSidebar }: TopBarProps) {
                         {!n.read && <span className="size-1 shrink-0 rounded-full bg-primary" />}
                       </div>
                       <p className="mt-0.5 line-clamp-2 text-[10px] text-muted-foreground">{n.body}</p>
-                      <span className="mt-0.5 block text-[9px] text-muted-foreground/60">
-                        {new Date(n.ts).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-                      </span>
+                      <span className="mt-0.5 block text-[9px] text-muted-foreground/40">{new Date(n.ts).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
                     </div>
                   </button>
                 ))
@@ -368,39 +342,20 @@ export function TopBar({ collapsed, onToggleSidebar }: TopBarProps) {
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <div className="mx-0.5 h-5 w-px bg-border" />
+        <div className="mx-1 h-4 w-px bg-border/60" />
 
-        {/* Window controls */}
         <div className="flex items-center">
-          <button
-            onClick={minimize}
-            className="grid size-7 place-items-center text-muted-foreground hover:bg-accent hover:text-foreground"
-            aria-label="Minimize"
-            title="Minimize"
-          >
+          <button onClick={minimize} className="grid size-8 place-items-center rounded-lg text-muted-foreground hover:bg-accent hover:text-foreground transition-colors" aria-label="Minimize">
             <Minus className="size-3.5" />
           </button>
-          <button
-            onClick={toggleMaximize}
-            className="grid size-7 place-items-center text-muted-foreground hover:bg-accent hover:text-foreground"
-            aria-label={maximized ? "Restore" : "Maximize"}
-            title={maximized ? "Restore" : "Maximize"}
-          >
+          <button onClick={toggleMaximize} className="grid size-8 place-items-center rounded-lg text-muted-foreground hover:bg-accent hover:text-foreground transition-colors" aria-label={maximized ? "Restore" : "Maximize"}>
             {maximized ? (
-              <svg className="size-3" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.2">
-                <rect x="2" y="3.5" width="6.5" height="6.5" rx="0.5" />
-                <path d="M4 3.5V2h6v6H8.5" />
-              </svg>
+              <svg className="size-3" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.2"><rect x="2" y="3.5" width="6.5" height="6.5" rx="0.5" /><path d="M4 3.5V2h6v6H8.5" /></svg>
             ) : (
               <Square className="size-2.5" />
             )}
           </button>
-          <button
-            onClick={close}
-            className="grid size-7 place-items-center text-muted-foreground hover:bg-red-500 hover:text-white"
-            aria-label="Close"
-            title="Close"
-          >
+          <button onClick={close} className="grid size-8 place-items-center rounded-lg text-muted-foreground hover:bg-red-500 hover:text-white transition-colors" aria-label="Close">
             <X className="size-3.5" />
           </button>
         </div>
