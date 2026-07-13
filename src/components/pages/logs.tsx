@@ -4,6 +4,7 @@ import * as React from "react";
 import { cn, fmtTime } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Select,
@@ -94,8 +95,8 @@ export function LogsPage() {
       </div>
 
       {/* Filter bar */}
-      <div className="rounded-xl border border-border/60 bg-card">
-        <div className="flex flex-wrap items-center gap-3 p-4">
+      <Card className="py-0">
+        <CardContent className="flex flex-wrap items-center gap-3 p-4">
           <div className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
             <Filter className="size-3.5" />
             Filters
@@ -157,12 +158,12 @@ export function LogsPage() {
               </Badge>
             ))}
           </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
 
       {/* Log output */}
-      <div className="overflow-hidden rounded-xl border border-border/60 bg-card">
-        <div className="p-0">
+      <Card className="overflow-hidden">
+        <CardContent className="p-0">
           {filtered.length === 0 ? (
             <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
               <div className="grid size-14 place-items-center rounded-2xl bg-accent">
@@ -190,8 +191,8 @@ export function LogsPage() {
               </div>
             </ScrollArea>
           )}
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

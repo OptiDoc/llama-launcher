@@ -196,13 +196,13 @@ export function TopBar({ collapsed, onToggleSidebar }: TopBarProps) {
 
         {/* Logo + app name */}
         <div className="flex items-center gap-2 pl-1">
-          <div className="grid size-7 place-items-center rounded-lg bg-linear-to-br from-violet-500 to-indigo-600 text-[10px] font-bold text-white shadow-sm">
+          <div className="grid size-6 place-items-center rounded-md bg-linear-to-br from-blue-400 to-blue-500 text-[13px] font-bold text-white shadow-sm">
             LL
           </div>
-          <span className="text-[14px] font-semibold text-foreground tracking-tight">LlamaLauncher</span>
+          <span className="text-[14px] font-semibold text-foreground tracking-tight">Llama launcher</span>
         </div>
 
-        <div className="mx-1 h-4 w-px bg-border/60" />
+        <div className="mx-1 h-4 w-px " />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button className="flex h-7 items-center gap-1.5 rounded-lg px-2 text-[12px] font-medium text-foreground/80 hover:bg-accent transition-colors">

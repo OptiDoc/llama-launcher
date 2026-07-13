@@ -29,7 +29,7 @@ export function AppShell({ activePage, onNavigate, children }: AppShellProps) {
         {/* Content area — relative container for console overlay */}
         <div className="relative flex min-w-0 flex-1 flex-col">
           <main className="min-h-0 flex-1 overflow-y-auto">
-            <div className="mx-auto w-full max-w-[1400px] px-5 py-4">
+            <div className="mx-auto w-full max-w-350 px-5 py-4">
               {children}
             </div>
           </main>

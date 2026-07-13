@@ -4,6 +4,7 @@ import * as React from "react";
 import { cn, hashStr } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
@@ -39,8 +40,6 @@ const VIEW_STORAGE_KEY = "ll-profiles-view";
 
 /** Deterministic calibration radar data derived from profile id hash. */
 function deriveCalibration(id: string) {
-  // No per-dimension calibration data from backend yet — use the profile's
-  // overall calibrationScore for all dimensions (or 0 if unset).
   const score = useLlamaStore.getState().profiles.find((p) => p.id === id)?.calibrationScore ?? 0;
   const dims = ["speed", "memory", "quality", "stability", "throughput"] as const;
   return dims.map((dim) => ({ dim, value: score }));
@@ -52,13 +51,15 @@ function StatPill({ icon, label, value }: {
   icon: React.ReactNode; label: string; value: string;
 }) {
   return (
-    <div className="flex items-center gap-2 rounded-lg border bg-muted/40 px-2.5 py-1.5">
-      <span className="grid size-6 place-items-center rounded-md bg-background text-primary">{icon}</span>
-      <div className="leading-tight">
-        <div className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">{label}</div>
-        <div className="text-xs font-semibold">{value}</div>
-      </div>
-    </div>
+    <Card className="rounded-lg border bg-muted/40 p-0 shadow-none">
+      <CardContent className="flex items-center gap-2 p-2.5">
+        <span className="grid size-6 place-items-center rounded-md bg-background text-primary">{icon}</span>
+        <div className="leading-tight">
+          <div className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">{label}</div>
+          <div className="text-xs font-semibold">{value}</div>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
 
@@ -129,16 +130,16 @@ function ProfileCard({ profile, onSelect }: {
   const hasCalib = typeof profile.calibrationScore === "number";
 
   return (
-    <div
+    <Card
       role="button"
       tabIndex={0}
       onClick={() => onSelect(profile.id)}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onSelect(profile.id); }
       }}
-      className="group cursor-pointer rounded-xl border border-border/60 bg-card transition-all hover:-translate-y-0.5 hover:shadow-md"
+      className="group cursor-pointer p-0 shadow-none transition-all hover:-translate-y-0.5 hover:shadow-md"
     >
-      <div className="flex flex-col gap-3 p-5">
+      <CardContent className="flex flex-col gap-3 p-5">
         <div className="flex items-start gap-3">
           <div className="grid size-10 place-items-center rounded-xl bg-primary/10 text-primary">
             <Cpu className="size-5" />
@@ -188,20 +189,20 @@ function ProfileCard({ profile, onSelect }: {
         )}
 
         <div className="flex items-center gap-2 pt-1" onClick={stop}>
-          <Button size="sm" variant="outline" className="h-7 flex-1 gap-1.5 text-xs"
+          <Button size="sm" variant="outline" className="flex-1 gap-1.5"
             onClick={onCalibrate} disabled={calibrating}>
             <Wand2 className={cn("size-3.5", calibrating && "animate-spin")} />
             {calibrating ? "Calibrating…" : "Auto-calibrate"}
           </Button>
-          <Button size="sm" variant="outline" className="h-7 gap-1.5 text-xs"
+          <Button size="sm" variant="outline" className="gap-1.5"
             onClick={onShare}
             title={profile.shared ? `Share ID: ${profile.shareId}` : "Share profile"}>
             {copied ? <Check className="size-3.5 text-emerald-500" /> : <Link2 className="size-3.5" />}
             {copied ? "Copied" : "Share"}
           </Button>
         </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }
 
@@ -227,67 +228,65 @@ function ProfileTable({ profiles, onSelect }: {
   };
 
   return (
-    <div className="rounded-xl border border-border/60 bg-card">
-      <div className="p-0">
-        <Table>
-          <TableHeader>
-            <TableRow className="border-border/60">
-              <TableHead className="pl-4">Name</TableHead>
-              <TableHead>Scope</TableHead>
-              <TableHead className="text-right">Ctx</TableHead>
-              <TableHead className="text-right">Threads</TableHead>
-              <TableHead className="text-right">GPU layers</TableHead>
-              <TableHead className="text-center">Calibration</TableHead>
-              <TableHead className="text-center">Shared</TableHead>
-              <TableHead className="pr-4 text-right">Actions</TableHead>
+    <Card className="p-0">
+      <Table>
+        <TableHeader>
+          <TableRow className="border-border/60">
+            <TableHead className="pl-4">Name</TableHead>
+            <TableHead>Scope</TableHead>
+            <TableHead className="text-right">Ctx</TableHead>
+            <TableHead className="text-right">Threads</TableHead>
+            <TableHead className="text-right">GPU layers</TableHead>
+            <TableHead className="text-center">Calibration</TableHead>
+            <TableHead className="text-center">Shared</TableHead>
+            <TableHead className="pr-4 text-right">Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {profiles.map((p) => (
+            <TableRow key={p.id} onClick={() => onSelect(p.id)} className="cursor-pointer border-border/60">
+              <TableCell className="pl-4 py-3">
+                <div className="flex flex-col">
+                  <span className="font-medium">{p.name}</span>
+                  <span className="max-w-[280px] truncate text-xs text-muted-foreground">{p.description}</span>
+                </div>
+              </TableCell>
+              <TableCell className="py-3"><ScopeBadge scope={p.scope} modelName={modelName(p)} /></TableCell>
+              <TableCell className="py-3 text-right font-mono text-xs">{p.ctxSize.toLocaleString()}</TableCell>
+              <TableCell className="py-3 text-right font-mono text-xs">{p.threads}</TableCell>
+              <TableCell className="py-3 text-right font-mono text-xs">{p.gpuLayers}</TableCell>
+              <TableCell className="py-3 text-center">
+                {typeof p.calibrationScore === "number" ? (
+                  <div className="flex items-center justify-center gap-1.5">
+                    <Progress value={p.calibrationScore} className="h-1.5 w-12" />
+                    <span className="font-mono text-[10px] text-muted-foreground">{p.calibrationScore}</span>
+                  </div>
+                ) : <span className="text-xs text-muted-foreground">—</span>}
+              </TableCell>
+              <TableCell className="py-3 text-center">
+                {p.shared ? (
+                  <Badge variant="secondary" className="gap-1 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                    <Check className="size-3" />
+                  </Badge>
+                ) : <span className="text-xs text-muted-foreground">—</span>}
+              </TableCell>
+              <TableCell className="pr-4 py-3 text-right" onClick={(e) => e.stopPropagation()}>
+                <div className="flex items-center justify-end gap-1">
+                  <Button size="sm" variant="ghost" className="px-2"
+                    onClick={(e) => onCalib(e, p)} disabled={busy === p.id}>
+                    <Wand2 className={cn("mr-1 size-3", busy === p.id && "animate-spin")} />
+                    Calib
+                  </Button>
+                  <Button size="sm" variant="ghost" className="px-2" onClick={(e) => onShare(e, p)}>
+                    <Share2 className="size-3" />
+                  </Button>
+                </div>
+              </TableCell>
             </TableRow>
-          </TableHeader>
-          <TableBody>
-            {profiles.map((p) => (
-              <TableRow key={p.id} onClick={() => onSelect(p.id)} className="cursor-pointer border-border/60">
-                <TableCell className="pl-4 py-3">
-                  <div className="flex flex-col">
-                    <span className="font-medium">{p.name}</span>
-                    <span className="max-w-[280px] truncate text-xs text-muted-foreground">{p.description}</span>
-                  </div>
-                </TableCell>
-                <TableCell className="py-3"><ScopeBadge scope={p.scope} modelName={modelName(p)} /></TableCell>
-                <TableCell className="py-3 text-right font-mono text-xs">{p.ctxSize.toLocaleString()}</TableCell>
-                <TableCell className="py-3 text-right font-mono text-xs">{p.threads}</TableCell>
-                <TableCell className="py-3 text-right font-mono text-xs">{p.gpuLayers}</TableCell>
-                <TableCell className="py-3 text-center">
-                  {typeof p.calibrationScore === "number" ? (
-                    <div className="flex items-center justify-center gap-1.5">
-                      <Progress value={p.calibrationScore} className="h-1.5 w-12" />
-                      <span className="font-mono text-[10px] text-muted-foreground">{p.calibrationScore}</span>
-                    </div>
-                  ) : <span className="text-xs text-muted-foreground">—</span>}
-                </TableCell>
-                <TableCell className="py-3 text-center">
-                  {p.shared ? (
-                    <Badge variant="secondary" className="gap-1 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
-                      <Check className="size-3" />
-                    </Badge>
-                  ) : <span className="text-xs text-muted-foreground">—</span>}
-                </TableCell>
-                <TableCell className="pr-4 py-3 text-right" onClick={(e) => e.stopPropagation()}>
-                  <div className="flex items-center justify-end gap-1">
-                    <Button size="sm" variant="ghost" className="h-7 px-2 text-xs"
-                      onClick={(e) => onCalib(e, p)} disabled={busy === p.id}>
-                      <Wand2 className={cn("mr-1 size-3", busy === p.id && "animate-spin")} />
-                      Calib
-                    </Button>
-                    <Button size="sm" variant="ghost" className="h-7 px-2 text-xs" onClick={(e) => onShare(e, p)}>
-                      <Share2 className="size-3" />
-                    </Button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
-    </div>
+          ))}
+        </TableBody>
+      </Table>
+    </Card>
   );
 }
 
@@ -297,17 +296,17 @@ function DetailCard({ title, action, children }: {
   title?: React.ReactNode; action?: React.ReactNode; children: React.ReactNode;
 }) {
   return (
-    <div className="rounded-xl border border-border/60 bg-card">
-      <div className="p-5">
-        {(title || action) && (
-          <div className="mb-3 flex items-center justify-between">
-            {title && <h3 className="text-[13px] font-semibold text-foreground">{title}</h3>}
-            {action}
-          </div>
-        )}
+    <Card className="gap-0 py-5">
+      {(title || action) && (
+        <CardHeader className="px-5 pt-0 pb-3">
+          {title && <CardTitle className="text-[13px]">{title}</CardTitle>}
+          {action}
+        </CardHeader>
+      )}
+      <CardContent className="px-5 pt-0">
         {children}
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }
 
@@ -315,12 +314,14 @@ function ParamTile({ icon, label, value }: {
   icon: React.ReactNode; label: string; value: string;
 }) {
   return (
-    <div className="rounded-lg border bg-muted/30 p-3">
-      <div className="flex items-center gap-1.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
-        {icon} {label}
-      </div>
-      <div className="mt-1 font-mono text-sm font-semibold">{value}</div>
-    </div>
+    <Card className="rounded-lg border bg-muted/30 p-0 shadow-none">
+      <CardContent className="p-3">
+        <div className="flex items-center gap-1.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+          {icon} {label}
+        </div>
+        <div className="mt-1 font-mono text-sm font-semibold">{value}</div>
+      </CardContent>
+    </Card>
   );
 }
 
@@ -364,7 +365,7 @@ function ProfileDetailView({ profile, onBack }: {
           { label: "Profiles", onClick: onBack },
           { label: profile.name },
         ]} />
-        <Button variant="ghost" size="sm" className="text-xs" onClick={onBack}>
+        <Button variant="ghost" size="sm" onClick={onBack}>
           <ArrowLeft className="mr-1.5 size-3.5" /> Back
         </Button>
       </div>
@@ -373,8 +374,8 @@ function ProfileDetailView({ profile, onBack }: {
         {/* ---------- main column ---------- */}
         <div className="space-y-5">
           {/* Header */}
-          <div className="rounded-xl border border-border/60 bg-card">
-            <div className="p-5">
+          <Card className="py-0">
+            <CardContent className="p-5">
               <div className="flex items-start gap-3">
                 <div className="grid size-12 place-items-center rounded-xl bg-primary/10 text-primary">
                   <Cpu className="size-6" />
@@ -394,8 +395,8 @@ function ProfileDetailView({ profile, onBack }: {
                   )}
                 </div>
               </div>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
 
           {/* Parameters */}
           <DetailCard title="Parameters">
@@ -406,12 +407,14 @@ function ProfileDetailView({ profile, onBack }: {
               <ParamTile icon={<Flashlight className="size-3.5" />} label="Flash attention" value={profile.flashAttention ? "Enabled" : "Disabled"} />
             </div>
             {profile.extraArgs && (
-              <div className="mt-4 rounded-lg border bg-muted/40 px-3 py-2">
-                <div className="flex items-center gap-1.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
-                  <Terminal className="size-3" /> Extra args
-                </div>
-                <p className="mt-1 font-mono text-xs text-foreground/80">{profile.extraArgs}</p>
-              </div>
+              <Card className="mt-4 rounded-lg border bg-muted/40 p-0 shadow-none">
+                <CardContent className="px-3 py-2">
+                  <div className="flex items-center gap-1.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+                    <Terminal className="size-3" /> Extra args
+                  </div>
+                  <p className="mt-1 font-mono text-xs text-foreground/80">{profile.extraArgs}</p>
+                </CardContent>
+              </Card>
             )}
           </DetailCard>
 
@@ -860,7 +863,7 @@ function NewProfileDialog() {
                 <Label className="text-xs">Flags</Label>
                 <div className="flex flex-wrap items-center gap-3 h-8">
                   {([["KV offload", kvOffload, setKvOffload], ["Fit", fit, setFit], ["mmap", mmap, setMmap], ["mlock", mlock, setMlock], ["NUMA", numa, setNuma]] as const).map(([l, v, s]) =>
-                    <label key={l} className="flex items-center gap-1 text-xs"><SW checked={v} onCheckedChange={s} /> {l}</label>)}
+                    <label key={l} className="flex items-center gap-1.5 text-xs"><SW checked={v} onCheckedChange={s} /> {l}</label>)}
                 </div>
               </div>
             </div>
@@ -970,8 +973,8 @@ function NewProfileDialog() {
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => setOpen(false)} className="h-8 text-xs">Cancel</Button>
-          <Button onClick={submit} className="h-8 text-xs"
+          <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
+          <Button onClick={submit}
             disabled={!name.trim() || (scope === "model" && !modelId)}>
             Create profile
           </Button>
@@ -985,8 +988,8 @@ function NewProfileDialog() {
 
 function EmptyState() {
   return (
-    <div className="rounded-xl border-2 border-dashed border-border/60 bg-card">
-      <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
+    <Card className="border-2 border-dashed border-border/60 py-0">
+      <CardContent className="flex flex-col items-center justify-center gap-3 py-16 text-center">
         <div className="grid size-14 place-items-center rounded-2xl bg-accent">
           <Cpu className="size-7 text-muted-foreground" />
         </div>
@@ -996,8 +999,8 @@ function EmptyState() {
             Create a launch profile — global or bound to a specific model.
           </p>
         </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }
 
@@ -1077,16 +1080,12 @@ export function ProfilesPage() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          {mounted ? (
-            <ViewToggle value={view} onChange={setView} />
-          ) : (
-            <div className="h-8 w-[112px] rounded-lg border border-border/60 bg-card" />
-          )}
           <NewProfileDialog />
         </div>
       </div>
 
       <Tabs value={tab} onValueChange={(v) => setTab(v as typeof tab)}>
+        <div className='flex w-full justify-between'>
         <TabsList>
           <TabsTrigger value="global" className="gap-1.5">
             <Globe className="size-3.5" /> Global
@@ -1105,6 +1104,12 @@ export function ProfilesPage() {
           </TabsTrigger>
         </TabsList>
 
+        {mounted ? (
+            <ViewToggle value={view} onChange={setView} />
+        ) : (
+            <div className="h-8 w-28 rounded-lg border border-border/60 bg-card" />
+        )}
+        </div>
         <TabsContent value={tab} className="mt-4">
           {currentList.length === 0 ? (
             <EmptyState />

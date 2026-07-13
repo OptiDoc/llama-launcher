@@ -8,6 +8,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from "@/components/ui/card";
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -143,16 +150,16 @@ function StatTile({ icon, label, value, sub }: {
   sub?: string;
 }) {
   return (
-    <div className="rounded-xl border border-border/60 bg-card">
-      <div className="p-4">
+    <Card className="py-4">
+      <CardContent>
         <div className="flex items-center gap-1.5 text-[10px] font-medium uppercase tracking-wide text-foreground/55">
           {icon}
           {label}
         </div>
         <div className="mt-2 text-2xl font-bold tracking-tight">{value}</div>
         {sub && <div className="mt-0.5 text-[11px] text-muted-foreground">{sub}</div>}
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }
 
@@ -167,15 +174,17 @@ function MetaItem({ label, value }: { label: string; value: React.ReactNode }) {
 
 function CardStat({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
-    <div className="flex items-center gap-2 rounded-lg bg-muted/50 px-2.5 py-1.5">
-      <span className="grid size-6 place-items-center rounded-md bg-card text-foreground/70">
-        {icon}
-      </span>
-      <div className="min-w-0 leading-tight">
-        <div className="text-[10px] font-medium uppercase tracking-wide text-foreground/55">{label}</div>
-        <div className="truncate text-xs font-semibold">{value}</div>
-      </div>
-    </div>
+    <Card className="py-0">
+      <CardContent className="flex items-center gap-2 px-2.5 py-1.5">
+        <span className="grid size-6 place-items-center rounded-md bg-card text-foreground/70">
+          {icon}
+        </span>
+        <div className="min-w-0 leading-tight">
+          <div className="text-[10px] font-medium uppercase tracking-wide text-foreground/55">{label}</div>
+          <div className="truncate text-xs font-semibold">{value}</div>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
 
@@ -325,14 +334,14 @@ function LaunchDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (v:
         <div className="grid gap-4 py-2">
           <div className="grid gap-2">
             <Label htmlFor="inst-name">Name</Label>
-            <Input id="inst-name" placeholder="e.g. chat-prod-01" value={name} onChange={(e) => setName(e.target.value)} />
+            <Input id="inst-name" placeholder="e.g. chat-prod-01" value={name} onChange={(e) => setName(e.target.value)} className="h-8" />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="grid gap-2">
               <Label>Model</Label>
               <Select value={modelId} onValueChange={setModelId}>
-                <SelectTrigger className="w-full"><SelectValue placeholder="Select model" /></SelectTrigger>
+                <SelectTrigger className="w-full h-8"><SelectValue placeholder="Select model" /></SelectTrigger>
                 <SelectContent>
                   {downloaded.length === 0 ? (
                     <SelectItem value="__none" disabled>No models available</SelectItem>
@@ -347,7 +356,7 @@ function LaunchDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (v:
             <div className="grid gap-2">
               <Label>Profile</Label>
               <Select value={profileId} onValueChange={setProfileId}>
-                <SelectTrigger className="w-full"><SelectValue placeholder="Select profile" /></SelectTrigger>
+                <SelectTrigger className="w-full h-8"><SelectValue placeholder="Select profile" /></SelectTrigger>
                 <SelectContent>
                   {profileOptions.length === 0 ? (
                     <SelectItem value="__none" disabled>No profiles available</SelectItem>
@@ -392,14 +401,14 @@ function LaunchDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (v:
               <Label htmlFor="inst-port">Port</Label>
               <Input id="inst-port" type="number" value={port}
                 onChange={(e) => { setPort(e.target.value); setErrors((p) => ({ ...p, port: undefined })); }}
-                className={errors.port ? "border-red-500" : ""} />
+                className={cn("h-8", errors.port ? "border-red-500" : "")} />
               {errors.port && <p className="text-xs text-red-500">{errors.port}</p>}
             </div>
             <div className="grid gap-2">
               <Label htmlFor="inst-host">Host</Label>
               <Input id="inst-host" value={host}
                 onChange={(e) => { setHost(e.target.value); setErrors((p) => ({ ...p, host: undefined })); }}
-                className={errors.host ? "border-red-500" : ""} />
+                className={cn("h-8", errors.host ? "border-red-500" : "")} />
               {errors.host && <p className="text-xs text-red-500">{errors.host}</p>}
             </div>
           </div>
@@ -407,7 +416,7 @@ function LaunchDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (v:
           <div className="grid gap-2">
             <Label>GPU</Label>
             <Select value={gpu} onValueChange={setGpu}>
-              <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="w-full h-8"><SelectValue /></SelectTrigger>
               <SelectContent>
                 {gpuOptions.map((opt) => (
                   <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
@@ -448,17 +457,17 @@ function InstanceCard({ instance, onSelect }: { instance: LlamaInstance; onSelec
   };
 
   return (
-    <div
+    <Card
       role="button"
       tabIndex={0}
       onClick={() => onSelect(instance.id)}
       onKeyDown={handleKey}
       className={cn(
-        "group cursor-pointer overflow-hidden rounded-xl border border-border/60 bg-card transition-all duration-150 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40",
+        "cursor-pointer transition-all duration-150 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40 py-0",
         `card-${instance.color}`,
       )}
     >
-      <div className="flex flex-col gap-3 p-5">
+      <CardContent className="flex flex-col gap-3 p-5">
         <div className="flex items-start justify-between gap-2">
           <div className="flex min-w-0 items-center gap-3">
             <div className="grid size-10 shrink-0 place-items-center rounded-xl bg-card">
@@ -494,7 +503,7 @@ function InstanceCard({ instance, onSelect }: { instance: LlamaInstance; onSelec
           <Button
             size="sm"
             variant="secondary"
-            className="h-8 flex-1 text-xs"
+            className="flex-1 text-xs"
             onClick={() => setActiveConsole(instance.id)}
           >
             <TerminalSquare className="mr-1.5 size-3.5" />
@@ -504,7 +513,7 @@ function InstanceCard({ instance, onSelect }: { instance: LlamaInstance; onSelec
             <Button
               size="sm"
               variant="secondary"
-              className="h-8 flex-1 text-xs text-red-600 dark:text-red-300"
+              className="flex-1 text-xs text-red-600 dark:text-red-300"
               onClick={() => stopInstance(instance.id)}
             >
               <Square className="mr-1.5 size-3.5" />
@@ -513,7 +522,7 @@ function InstanceCard({ instance, onSelect }: { instance: LlamaInstance; onSelec
           ) : (
             <Button
               size="sm"
-              className="h-8 flex-1 text-xs"
+              className="flex-1 text-xs"
               disabled={instance.status === "stopping"}
               onClick={() =>
                 startInstance({
@@ -536,7 +545,7 @@ function InstanceCard({ instance, onSelect }: { instance: LlamaInstance; onSelec
                 <Button
                   size="sm"
                   variant="ghost"
-                  className="h-8 px-2 text-xs text-muted-foreground hover:text-destructive"
+                  className="px-2 text-xs text-muted-foreground hover:text-destructive"
                   onClick={() => removeInstance(instance.id)}
                 >
                   <Trash2 className="size-3.5" />
@@ -546,8 +555,8 @@ function InstanceCard({ instance, onSelect }: { instance: LlamaInstance; onSelec
             </Tooltip>
           )}
         </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }
 
@@ -565,8 +574,8 @@ function InstanceGrid({ instances, onSelect }: { instances: LlamaInstance[]; onS
 
 function InstanceTable({ instances, onSelect }: { instances: LlamaInstance[]; onSelect: (id: string) => void }) {
   return (
-    <div className="rounded-xl border border-border/60 bg-card">
-      <div className="p-0">
+    <Card className="py-0">
+      <CardContent className="p-0">
         <Table>
           <TableHeader>
             <TableRow className="border-border/60">
@@ -610,8 +619,8 @@ function InstanceTable({ instances, onSelect }: { instances: LlamaInstance[]; on
             ))}
           </TableBody>
         </Table>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }
 
@@ -627,7 +636,7 @@ function TableActions({ instance }: { instance: LlamaInstance }) {
     <div className="flex items-center justify-end gap-1">
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button size="icon" variant="ghost" className="size-7" onClick={() => setActiveConsole(instance.id)}>
+          <Button size="sm" variant="ghost" className="px-2" onClick={() => setActiveConsole(instance.id)}>
             <TerminalSquare className="size-3.5" />
           </Button>
         </TooltipTrigger>
@@ -636,7 +645,7 @@ function TableActions({ instance }: { instance: LlamaInstance }) {
       {isRunning ? (
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button size="icon" variant="ghost" className="size-7 text-red-600 hover:text-red-700" onClick={() => stopInstance(instance.id)}>
+            <Button size="sm" variant="ghost" className="h-8 px-2 text-red-600 hover:text-red-700" onClick={() => stopInstance(instance.id)}>
               <Square className="size-3.5" />
             </Button>
           </TooltipTrigger>
@@ -645,7 +654,7 @@ function TableActions({ instance }: { instance: LlamaInstance }) {
       ) : (
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button size="icon" variant="ghost" className="size-7" disabled={instance.status === "stopping"}
+            <Button size="sm" variant="ghost" className="px-2" disabled={instance.status === "stopping"}
               onClick={() => startInstance({
                 name: instance.name, model: instance.model, profile: instance.profile,
                 port: instance.port, host: instance.host, gpu: instance.gpu,
@@ -659,7 +668,7 @@ function TableActions({ instance }: { instance: LlamaInstance }) {
       {isStopped && (
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button size="icon" variant="ghost" className="size-7 text-muted-foreground hover:text-destructive" onClick={() => removeInstance(instance.id)}>
+            <Button size="sm" variant="ghost" className="h-8 px-2 text-muted-foreground hover:text-destructive" onClick={() => removeInstance(instance.id)}>
               <Trash2 className="size-3.5" />
             </Button>
           </TooltipTrigger>
@@ -674,8 +683,8 @@ function TableActions({ instance }: { instance: LlamaInstance }) {
 
 function EmptyState({ onLaunch }: { onLaunch: () => void }) {
   return (
-    <div className="rounded-xl border-2 border-dashed border-border/60 bg-card">
-      <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
+    <Card className="border-2 border-dashed">
+      <CardContent className="flex flex-col items-center justify-center gap-3 py-16 text-center">
         <div className="grid size-14 place-items-center rounded-2xl bg-muted">
           <Server className="size-7 text-muted-foreground" />
         </div>
@@ -689,8 +698,8 @@ function EmptyState({ onLaunch }: { onLaunch: () => void }) {
           <Plus className="mr-1.5 size-3.5" />
           Launch Instance
         </Button>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }
 
@@ -727,7 +736,7 @@ function InstanceDetailView({ instance, onBack }: { instance: LlamaInstance; onB
             { label: instance.name },
           ]}
         />
-        <Button variant="ghost" size="sm" className="text-xs" onClick={onBack}>
+        <Button variant="ghost" size="sm" onClick={onBack}>
           <ArrowLeft className="mr-1.5 size-3.5" />
           Back
         </Button>
@@ -737,8 +746,8 @@ function InstanceDetailView({ instance, onBack }: { instance: LlamaInstance; onB
         {/* ---------- main column ---------- */}
         <div className="space-y-5">
           {/* Header card */}
-          <div className={cn("rounded-xl border border-border/60 bg-card", `card-${instance.color}`)}>
-            <div className="p-5">
+          <Card className={cn("py-0", `card-${instance.color}`)}>
+            <CardContent className="p-5">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div className="flex items-center gap-3">
                   <div className="grid size-12 place-items-center rounded-xl bg-card">
@@ -760,8 +769,8 @@ function InstanceDetailView({ instance, onBack }: { instance: LlamaInstance; onB
                   <span className="flex items-center gap-1"><Clock className="size-3" /> {uptimeString(instance.startedAt)}</span>
                 </div>
               </div>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
 
           {/* Usage statistics */}
           <div className="space-y-3">
@@ -795,8 +804,8 @@ function InstanceDetailView({ instance, onBack }: { instance: LlamaInstance; onB
           </div>
 
           {/* Throughput chart */}
-          <div className="rounded-xl border border-border/60 bg-card">
-            <div className="p-5">
+          <Card className="py-0">
+            <CardContent className="p-5">
               <div className="mb-3 flex items-center justify-between">
                 <h3 className="text-[13px] font-semibold text-foreground">Request throughput</h3>
                 <span className="text-[11px] text-muted-foreground">last 20 samples · tok/s</span>
@@ -840,12 +849,12 @@ function InstanceDetailView({ instance, onBack }: { instance: LlamaInstance; onB
                   </LineChart>
                 </ResponsiveContainer>
               </div>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
 
           {/* Configuration */}
-          <div className="rounded-xl border border-border/60 bg-card">
-            <div className="p-5">
+          <Card className="py-0">
+            <CardContent className="p-5">
               <h3 className="mb-3 text-[13px] font-semibold text-foreground">Configuration</h3>
               <Separator className="mb-2" />
               <MetaItem label="Context size" value={<span className="font-mono">{instance.ctxSize}</span>} />
@@ -864,15 +873,15 @@ function InstanceDetailView({ instance, onBack }: { instance: LlamaInstance; onB
                 }
               />
               <MetaItem label="Started at" value={<span className="font-mono text-[11px]">{fmtStartedAt(instance.startedAt)}</span>} />
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         </div>
 
         {/* ---------- sidebar ---------- */}
         <div className="space-y-5">
           {/* Actions */}
-          <div className="rounded-xl border border-border/60 bg-card">
-            <div className="space-y-2 p-5">
+          <Card className="py-0">
+            <CardContent className="space-y-2 p-5">
               <h3 className="text-[13px] font-semibold text-foreground">Actions</h3>
               <Separator className="mb-1" />
               <Button className="w-full justify-start" onClick={() => setActiveConsole(instance.id)}>
@@ -927,12 +936,12 @@ function InstanceDetailView({ instance, onBack }: { instance: LlamaInstance; onB
                 <Trash2 className="mr-2 size-4" />
                 Remove instance
               </Button>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
 
           {/* Live status */}
-          <div className="rounded-xl border border-border/60 bg-card">
-            <div className="p-5">
+          <Card className="py-0">
+            <CardContent className="p-5">
               <div className="mb-3 flex items-center justify-between">
                 <h3 className="text-[13px] font-semibold text-foreground">Live status</h3>
                 <Badge variant="secondary" className={cn("text-[10px] uppercase", STATUS_STYLE[instance.status])}>
@@ -956,8 +965,8 @@ function InstanceDetailView({ instance, onBack }: { instance: LlamaInstance; onB
                 label="Uptime"
                 value={<span className="flex items-center gap-1 font-mono"><Clock className="size-3" /> {uptimeString(instance.startedAt)}</span>}
               />
-            </div>
-          </div>
+            </CardContent>
+          </Card>
 
           {isStopped && (
             <p className="px-1 text-[11px] text-muted-foreground">

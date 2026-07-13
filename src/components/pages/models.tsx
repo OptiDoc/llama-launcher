@@ -20,6 +20,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Card, CardContent } from "@/components/ui/card";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { ViewToggle } from "@/components/ui/view-toggle";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
@@ -187,7 +188,7 @@ function ModelCard({
   const interactive = !isDownloading;
 
   return (
-    <div
+    <Card
       role={interactive ? "button" : undefined}
       tabIndex={interactive ? 0 : undefined}
       onClick={interactive ? () => actions.onSelect(model) : undefined}
@@ -197,7 +198,7 @@ function ModelCard({
           : undefined
       }
       className={cn(
-        "group overflow-hidden rounded-xl border border-border/60 bg-card transition-all duration-200",
+        "group overflow-hidden p-0 shadow-none transition-all duration-200",
         interactive
           ? "cursor-pointer hover:-translate-y-0.5 hover:shadow-lifted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           : "cursor-default",
@@ -205,7 +206,7 @@ function ModelCard({
         isMissing && "grayscale opacity-60",
       )}
     >
-      <div className="flex flex-col gap-3 p-5">
+      <CardContent className="flex flex-col gap-3 p-5">
         <div className="flex items-start justify-between gap-2">
           <div className="flex min-w-0 items-center gap-3">
             <div className="grid size-10 shrink-0 place-items-center rounded-xl bg-white/60 dark:bg-black/20">
@@ -277,7 +278,7 @@ function ModelCard({
             {isReady ? (
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button size="sm" className="h-8 flex-1 text-xs" onClick={(e) => { e.stopPropagation(); actions.onLoad(model); }}>
+                  <Button size="sm" className="flex-1" onClick={(e) => { e.stopPropagation(); actions.onLoad(model); }}>
                     <Sparkles className="mr-1.5 size-3.5" /> Load
                   </Button>
                 </TooltipTrigger>
@@ -286,7 +287,7 @@ function ModelCard({
             ) : isMissing ? (
               <Button
                 size="sm" variant="secondary"
-                className="h-8 flex-1 bg-white/60 text-xs dark:bg-black/20"
+                className="flex-1 bg-white/60 dark:bg-black/20"
                 onClick={(e) => { e.stopPropagation(); actions.onEdit(model); }}
               >
                 <Pencil className="mr-1.5 size-3.5" /> Edit
@@ -294,7 +295,7 @@ function ModelCard({
             ) : (
               <Button
                 size="sm" variant="secondary"
-                className="h-8 flex-1 bg-white/60 text-xs dark:bg-black/20"
+                className="flex-1 bg-white/60 dark:bg-black/20"
                 onClick={(e) => { e.stopPropagation(); actions.onDownload(model); }}
               >
                 <Download className="mr-1.5 size-3.5" /> Download
@@ -302,8 +303,8 @@ function ModelCard({
             )}
           </div>
         )}
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }
 
@@ -341,8 +342,8 @@ function ModelTable({
   models, actions, gpuVramGb,
 }: { models: LlamaModel[]; actions: CardActions; gpuVramGb: number }) {
   return (
-    <div className="rounded-xl border border-border/60 bg-card">
-      <div className="p-0">
+    <Card className="shadow-none py-0">
+      <CardContent className="p-0">
         <Table>
           <TableHeader>
             <TableRow className="border-border/60">
@@ -459,8 +460,8 @@ function ModelTable({
             })}
           </TableBody>
         </Table>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }
 
@@ -523,14 +524,14 @@ function EditModelDialog({
           <div className="space-y-3 py-1">
             <div className="space-y-1.5">
               <Label htmlFor="ed-name" className="text-xs">Display name</Label>
-              <Input id="ed-name" value={name} onChange={(e) => setName(e.target.value)} />
+              <Input id="ed-name" value={name} onChange={(e) => setName(e.target.value)} className="h-8" />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="ed-path" className="text-xs">File path</Label>
               <Input
                 id="ed-path" ref={pathRef}
                 value={path} onChange={(e) => setPath(e.target.value)}
-                className="font-mono text-xs"
+                className="h-8 font-mono text-xs"
               />
               {model.missing && (
                 <p className="text-[11px] text-red-600 dark:text-red-400">
@@ -541,11 +542,11 @@ function EditModelDialog({
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
                 <Label htmlFor="ed-builder" className="text-xs">Builder</Label>
-                <Input id="ed-builder" value={builder} onChange={(e) => setBuilder(e.target.value)} />
+                <Input id="ed-builder" value={builder} onChange={(e) => setBuilder(e.target.value)} className="h-8" />
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="ed-quant" className="text-xs">Quant</Label>
-                <Input id="ed-quant" value={quant} onChange={(e) => setQuant(e.target.value)} className="font-mono text-xs" />
+                <Input id="ed-quant" value={quant} onChange={(e) => setQuant(e.target.value)} className="h-8 font-mono text-xs" />
               </div>
             </div>
             <div className="space-y-1.5">
@@ -568,7 +569,7 @@ function EditModelDialog({
             </div>
           </DialogFooter>
           <Separator />
-          <div className="flex items-center justify-between rounded-lg border border-red-200/60 bg-red-500/5 px-3 py-2">
+          <Card className="flex items-center justify-between border-red-200/60 bg-red-500/5 p-3 shadow-none">
             <div>
               <p className="text-xs font-medium text-red-700 dark:text-red-400">Delete this model</p>
               <p className="text-[11px] text-muted-foreground">Removes it from the list. File on disk is not touched.</p>
@@ -576,7 +577,7 @@ function EditModelDialog({
             <Button variant="destructive" size="sm" onClick={() => setConfirmDelete(true)}>
               <Trash2 className="mr-1.5 size-3.5" /> Delete
             </Button>
-          </div>
+          </Card>
         </DialogContent>
       </Dialog>
 
@@ -621,12 +622,12 @@ function LaunchConfirmDialog({ model, open, onOpenChange }: {
             Start a new llama-server instance using <span className="font-medium text-foreground">{model.name}</span>.
           </DialogDescription>
         </DialogHeader>
-        <div className="rounded-lg border border-border/70 bg-muted/40 p-3 text-xs">
+        <Card className="gap-2 bg-muted/40 p-3 shadow-none text-xs">
           <div className="flex items-center justify-between"><span className="text-muted-foreground">Model</span><span className="font-medium">{model.name}</span></div>
-          <div className="mt-1.5 flex items-center justify-between"><span className="text-muted-foreground">Quant</span><span className="font-mono">{model.quant}</span></div>
-          <div className="mt-1.5 flex items-center justify-between"><span className="text-muted-foreground">Size</span><span className="font-mono">{fmtBytes(model.sizeGb)}</span></div>
-          <div className="mt-1.5 flex items-center justify-between"><span className="text-muted-foreground">Context length</span><span className="font-mono">{fmtNum(model.contextLength)}</span></div>
-        </div>
+          <div className="flex items-center justify-between"><span className="text-muted-foreground">Quant</span><span className="font-mono">{model.quant}</span></div>
+          <div className="flex items-center justify-between"><span className="text-muted-foreground">Size</span><span className="font-mono">{fmtBytes(model.sizeGb)}</span></div>
+          <div className="flex items-center justify-between"><span className="text-muted-foreground">Context length</span><span className="font-mono">{fmtNum(model.contextLength)}</span></div>
+        </Card>
         <p className="text-[11px] text-muted-foreground">
           Switch to the Instances page and click <span className="font-medium">Launch instance</span> to start serving this model.
         </p>
@@ -784,16 +785,16 @@ function HFDownloadDialog({ open, onOpenChange, prefillRepo, prefillModelName }:
               </div>
             ) : (
               <div className="flex min-h-0 flex-1 flex-col overflow-y-auto p-3">
-                <div className="mb-3 rounded-md border border-border/60 bg-muted/30 p-2.5">
+                <Card className="mb-3 gap-1.5 bg-muted/30 p-2.5 shadow-none">
                   <p className="truncate font-mono text-[11px] font-semibold">{selectedRepo.repo}</p>
-                  <p className="mt-0.5 text-[11px] text-muted-foreground">{selectedRepo.description}</p>
-                  <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+                  <p className="text-[11px] text-muted-foreground">{selectedRepo.description}</p>
+                  <div className="flex flex-wrap items-center gap-1.5">
                     <Badge variant="secondary" className="h-4 px-1.5 text-[9px] font-semibold">{selectedRepo.builder}</Badge>
                     <Badge variant="secondary" className="h-4 px-1.5 text-[9px] font-semibold">{selectedRepo.parameterCount}</Badge>
                     <Badge variant="secondary" className="h-4 px-1.5 text-[9px] font-semibold">{selectedRepo.license}</Badge>
                     <span className="text-[10px] text-muted-foreground">{fmtNum(selectedRepo.downloads)} dl</span>
                   </div>
-                </div>
+                </Card>
 
                 <Label className="mb-1.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
                   Quantization
@@ -875,11 +876,13 @@ function MetaItem({ label, value, mono }: { label: string; value: React.ReactNod
 
 function StatTile({ label, value, sub }: { label: string; value: string; sub?: string }) {
   return (
-    <div className="rounded-lg border border-border/60 bg-card p-3">
-      <p className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">{label}</p>
-      <p className="mt-1 text-lg font-semibold">{value}</p>
-      {sub && <p className="text-[10px] text-muted-foreground">{sub}</p>}
-    </div>
+    <Card className="p-3 shadow-none">
+      <CardContent className="p-0">
+        <p className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">{label}</p>
+        <p className="mt-1 text-lg font-semibold">{value}</p>
+        {sub && <p className="text-[10px] text-muted-foreground">{sub}</p>}
+      </CardContent>
+    </Card>
   );
 }
 
@@ -905,7 +908,7 @@ function ModelDetailView({
           <AlertTitle>Model file not found at <span className="font-mono text-xs">{model.path}</span></AlertTitle>
           <AlertDescription className="text-xs">
             The file may have been moved or deleted. Update the path to continue using this model.
-            <Button variant="outline" size="sm" className="ml-3 h-7"
+            <Button variant="outline" size="sm" className="ml-3"
               onClick={() => onEdit(model)}>
               <Pencil className="mr-1.5 size-3" /> Update path
             </Button>
@@ -917,8 +920,8 @@ function ModelDetailView({
         {/* MAIN column */}
         <div className="space-y-5">
           {/* Header card */}
-          <div className="rounded-xl border border-border/60 bg-card">
-            <div className="p-5">
+          <Card className="shadow-none">
+            <CardContent className="p-5">
               <div className="flex items-start justify-between gap-3">
                 <div className="flex min-w-0 items-center gap-3">
                   <div className="grid size-12 shrink-0 place-items-center rounded-xl bg-muted">
@@ -943,12 +946,12 @@ function ModelDetailView({
               {model.description && (
                 <p className="mt-3 text-sm text-muted-foreground">{model.description}</p>
               )}
-            </div>
-          </div>
+            </CardContent>
+          </Card>
 
           {/* Metadata */}
-          <div className="rounded-xl border border-border/60 bg-card">
-            <div className="p-5">
+          <Card className="shadow-none">
+            <CardContent className="p-5">
               <h3 className="mb-2 flex items-center gap-2 text-[13px] font-semibold text-foreground">
                 <FileText className="size-4 text-foreground/60" /> Metadata
               </h3>
@@ -984,12 +987,12 @@ function ModelDetailView({
                   }
                 />
               )}
-            </div>
-          </div>
+            </CardContent>
+          </Card>
 
           {/* Usage statistics */}
-          <div className="rounded-xl border border-border/60 bg-card">
-            <div className="p-5">
+          <Card className="shadow-none">
+            <CardContent className="p-5">
               <h3 className="mb-3 flex items-center gap-2 text-[13px] font-semibold text-foreground">
                 <Sparkles className="size-4 text-foreground/60" /> Usage statistics on this device
               </h3>
@@ -1016,14 +1019,14 @@ function ModelDetailView({
                   </ResponsiveContainer>
                 </div>
               </div>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         </div>
 
         {/* SIDEBAR */}
         <div className="space-y-5">
-          <div className="rounded-xl border border-border/60 bg-card">
-            <div className="p-4">
+          <Card className="shadow-none">
+            <CardContent className="p-4">
               <h3 className="mb-3 text-[13px] font-semibold text-foreground">Actions</h3>
               <div className="space-y-2">
                 <Button className="w-full justify-start" disabled={model.missing || !model.downloaded} onClick={() => onLoad(model)}>
@@ -1045,11 +1048,11 @@ function ModelDetailView({
                   <Copy className="mr-2 size-4" /> Copy path
                 </Button>
               </div>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
 
-          <div className="rounded-xl border border-border/60 bg-card">
-            <div className="p-4">
+          <Card className="shadow-none">
+            <CardContent className="p-4">
               <h3 className="mb-2 flex items-center gap-2 text-[13px] font-semibold text-foreground">
                 <Tag className="size-4 text-foreground/60" /> Builder info
               </h3>
@@ -1065,8 +1068,8 @@ function ModelDetailView({
               <p className="text-[11px] leading-relaxed text-muted-foreground">
                 Models by <span className="font-medium text-foreground">{model.builder}</span> are community quantizations. Verify integrity before use.
               </p>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>
@@ -1183,8 +1186,8 @@ export function ModelsPage() {
       </div>
 
       {workspaceModels.length === 0 ? (
-        <div className="rounded-xl border-dashed border-2 border-border bg-transparent">
-          <div className="flex flex-col items-center justify-center gap-3 py-14 text-center">
+        <Card className="border-2 border-dashed shadow-none">
+          <CardContent className="flex flex-col items-center justify-center gap-3 py-14 text-center">
             <div className="grid size-12 place-items-center rounded-full bg-muted text-muted-foreground">
               <Boxes className="size-6" />
             </div>
@@ -1195,8 +1198,8 @@ export function ModelsPage() {
             <Button size="sm" onClick={openHF}>
               <Download className="mr-1.5 size-3.5" /> Download from HF
             </Button>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       ) : view === "grid" ? (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {workspaceModels.map((m, i) => (

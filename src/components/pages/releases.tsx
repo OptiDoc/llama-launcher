@@ -4,6 +4,7 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
   Table,
@@ -284,7 +285,7 @@ const VariantTableRow = React.memo(function VariantTableRow({
 }) {
   return (
     <TableRow className="hover:bg-muted/40">
-      <TableCell className="w-[40px] pl-4 text-muted-foreground/40">
+      <TableCell className="w-10 pl-4 text-muted-foreground/40">
         <span className="font-mono text-xs">↳</span>
       </TableCell>
       <TableCell>
@@ -347,7 +348,7 @@ function TagGroupBlock({
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-7 shrink-0 px-2 text-xs text-muted-foreground"
+                className="shrink-0 px-2 text-xs text-muted-foreground"
                 onClick={onToggleExpand}
               >
                 {expanded ? (
@@ -378,16 +379,16 @@ function TableView({
   onToggleExpand: (tag: string) => void;
 }) {
   return (
-    <div className="overflow-hidden rounded-lg border bg-card">
+    <Card className="overflow-hidden">
       <Table>
         <TableHeader>
           <TableRow className="bg-muted/40 hover:bg-muted/40">
             <TableHead className="pl-4">Tag</TableHead>
             <TableHead>Variant</TableHead>
-            <TableHead className="w-[110px]">Published</TableHead>
-            <TableHead className="w-[80px]">Size</TableHead>
-            <TableHead className="w-[160px]">Status</TableHead>
-            <TableHead className="w-[210px] pr-4 text-right">Actions</TableHead>
+            <TableHead className="w-27.5">Published</TableHead>
+            <TableHead className="w-20">Size</TableHead>
+            <TableHead className="w-40">Status</TableHead>
+            <TableHead className="w-52.5 pr-4 text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -401,7 +402,7 @@ function TableView({
           ))}
         </TableBody>
       </Table>
-    </div>
+    </Card>
   );
 }
 
@@ -413,8 +414,8 @@ const ReleaseCard = React.memo(function ReleaseCard({
   release: LlamaRelease;
 }) {
   return (
-    <div className="rounded-xl border border-border/60 bg-card overflow-hidden transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lifted">
-      <div className="flex flex-col gap-3 p-4">
+    <Card className="overflow-hidden transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lifted">
+      <CardContent className="flex flex-col gap-3 p-4">
         <div className="flex items-start justify-between gap-2">
           <div className="flex min-w-0 flex-col gap-1.5">
             <div className="flex items-center gap-2">
@@ -473,8 +474,8 @@ const ReleaseCard = React.memo(function ReleaseCard({
           <StatusCell release={release} />
           <ActionControl release={release} compact />
         </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 });
 
@@ -492,8 +493,8 @@ function GridView({ releases }: { releases: LlamaRelease[] }) {
 
 function EmptyState({ hasQuery }: { hasQuery: boolean }) {
   return (
-    <div className="rounded-xl border border-border/60 bg-card border-dashed">
-      <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
+    <Card className="border-2 border-dashed">
+      <CardContent className="flex flex-col items-center justify-center gap-3 py-16 text-center">
         <div className="grid size-12 place-items-center rounded-full bg-muted text-muted-foreground">
           <Rocket className="size-6" />
         </div>
@@ -507,8 +508,8 @@ function EmptyState({ hasQuery }: { hasQuery: boolean }) {
               : "Releases will appear here once published."}
           </p>
         </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }
 
@@ -621,25 +622,27 @@ export function ReleasesPage() {
             .
           </p>
         </div>
-        {mounted ? (
-          <ViewToggle value={view} onChange={handleViewChange} />
-        ) : (
-          <div className="h-8 w-[148px]" />
-        )}
+
       </div>
 
       {/* Search */}
-      <div className="relative max-w-md">
+      <div className="flex w-full justify-between">
+      <div className="relative w-md bg-card rounded-md">
         <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
         <Input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search releases by tag, commit, variant…"
-          className="pl-9"
+          className="h-9 pl-9"
           aria-label="Search releases"
         />
       </div>
-
+      {mounted ? (
+          <ViewToggle value={view} onChange={handleViewChange} />
+      ) : (
+          <div className="h-8 w-37" />
+      )}
+      </div>
       {/* Content */}
       {filtered.length === 0 ? (
         <EmptyState hasQuery={query.trim().length > 0} />
