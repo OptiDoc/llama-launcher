@@ -365,10 +365,7 @@ impl SystemMonitor {
     }
 
     fn get_disk_stats() -> (u64, u64) {
-        let home = std::env::var("HOME")
-            .or_else(|_| std::env::var("USERPROFILE"))
-            .unwrap_or_else(|_| ".".to_string());
-        let disk = sysinfo::Disks::new_with_specific_list(&[Path::new(&home)]);
+        let disk = sysinfo::Disks::new_with_refreshed_list();
         if let Some(d) = disk.iter().next() {
             (d.total_space(), d.total_space() - d.available_space())
         } else {

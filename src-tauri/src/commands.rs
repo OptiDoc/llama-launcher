@@ -505,6 +505,7 @@ pub async fn start_model(
     };
 
     let pc = config.unwrap_or_default();
+    let port = pc.port;
 
     let llama_binary = get_llama_binary().await?;
     let mut args = vec![
@@ -593,7 +594,7 @@ pub async fn start_model(
         model_id: model.id.clone(),
         model_path: model.path.clone(),
         pid: Some(pid),
-        port: pc.port,
+        port: port,
         status: ProcessStatus::Running,
         started_at: now,
         config: pc,
@@ -619,7 +620,7 @@ pub async fn start_model(
         id: process_id,
         model_id: model.id,
         pid: Some(pid),
-        port: pc.port,
+        port: port,
         status: ProcessStatus::Running,
         started_at: now
             .duration_since(SystemTime::UNIX_EPOCH)
@@ -633,9 +634,12 @@ pub async fn start_model(
 }
 
 async fn get_llama_binary() -> Result<String, String> {
-    let config = GLOBAL_STATE.config.read();
+    let binary_path = {
+        let config = GLOBAL_STATE.config.read();
+        config.llama_binary_path.clone()
+    };
 
-    if let Some(path) = &config.llama_binary_path {
+    if let Some(path) = &binary_path {
         if Path::new(path).exists() {
             return Ok(path.clone());
         }

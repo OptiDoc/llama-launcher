@@ -146,10 +146,7 @@ pub async fn get_system_capabilities() -> Result<SystemCapabilities, String> {
     let os_name = sysinfo::System::name().unwrap_or_default();
 
     // Disk free space
-    let home = std::env::var("HOME")
-        .or_else(|_| std::env::var("USERPROFILE"))
-        .unwrap_or_else(|_| ".".to_string());
-    let disks = sysinfo::Disks::new_with_specific_list(&[std::path::Path::new(&home)]);
+    let disks = sysinfo::Disks::new_with_refreshed_list();
     let disk_free_gb = disks.iter()
         .next()
         .map(|d| d.available_space() as f64 / (1024.0 * 1024.0 * 1024.0))
