@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { cn, hashStr } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -12,6 +12,7 @@ import {
   Dialog, DialogContent, DialogDescription, DialogFooter,
   DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
+import { Switch } from "@/components/ui/switch";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
@@ -30,13 +31,16 @@ import {
 import {
   AlertCircle, AlertTriangle, ArrowLeft, Boxes, CheckCircle2, Copy, Cpu,
   Download, Edit3, ExternalLink, FileText, FolderOpen, HardDrive,
-  Loader2, Pencil, Play, Search, Sparkles, Tag, Trash2, XCircle,
+  Loader2, Pencil, Play, Search, Sparkles, Tag, Trash2, X, XCircle, XSquare,
+  Move, Copy as CopyIcon, CheckSquare, Square,
 } from "lucide-react";
 import {
   useLlamaStore, searchHFModels, HF_QUANTS,
   fmtBytes, fmtNum,
   type HFSearchResult, type LlamaModel, type ViewMode,
 } from "@/lib/llama-store";
+import { tauri, isTauri } from "@/lib/tauri-api";
+import { useToast, toast } from "@/hooks/use-toast";
 
 const CARD_COLORS = ["green", "orange", "blue", "pink", "purple"] as const;
 const VIEW_STORAGE_KEY = "ll-models-view";
@@ -134,7 +138,7 @@ function deriveModelName(repo: string): string {
 
 /** Per-model usage stats. Until the backend tracks per-model history, these
  *  are all zero/empty — no fake data. */
-function deriveModelStats(_modelId: string) {
+function deriveModelStats() {
   return {
     timesLoaded: 0,
     totalTokens: 0,
@@ -156,6 +160,10 @@ function CopyButton({ text, className }: { text: string; className?: string }) {
           await navigator.clipboard.writeText(text);
           setCopied(true);
           setTimeout(() => setCopied(false), 1200);
+          toast({
+            title: "Copied",
+            description: text.slice(0, 50) + (text.length > 50 ? "…" : ""),
+          });
         } catch { /* clipboard unavailable */ }
       }}
       aria-label="Copy"
@@ -257,13 +265,18 @@ function ModelCard({
               </span>
               <span className="font-mono font-semibold text-emerald-700 dark:text-emerald-300">{progress}%</span>
             </div>
-            {/* Horizontal fill bar — emerald grows left→right with a smooth 200ms transition. */}
             <div className="h-2 w-full overflow-hidden rounded-full bg-muted/60">
               <div
                 className="h-full rounded-full bg-emerald-500 transition-[width] duration-200 ease-linear"
                 style={{ width: `${progress}%` }}
               />
             </div>
+            <button
+              onClick={() => useLlamaStore.getState().cancelDownload(model.downloadId ?? "")}
+              className="flex items-center gap-1 text-[10px] text-red-500 hover:text-red-600 transition-colors"
+            >
+              <XSquare className="size-3" /> Cancel download
+            </button>
           </div>
         ) : isMissing ? (
           <div className="rounded-md border border-red-300/50 bg-red-500/5 px-2.5 py-1.5 text-[11px] text-red-700 dark:text-red-300">
@@ -409,6 +422,12 @@ function ModelTable({
                           />
                         </div>
                         <span className="font-mono text-[10px] text-muted-foreground">{progress}%</span>
+                        <Button
+                          variant="ghost" size="icon" className="size-7 text-destructive hover:text-destructive hover:bg-destructive/10"
+                          onClick={(e) => { e.stopPropagation(); useLlamaStore.getState().cancelDownload(m.downloadId ?? ""); }}
+                        >
+                          <XSquare className="size-3.5" />
+                        </Button>
                       </div>
                     ) : (
                       <div className="flex items-center justify-end gap-1">
@@ -891,7 +910,7 @@ function ModelDetailView({
 }: {
   model: LlamaModel; onBack: () => void; onEdit: (m: LlamaModel) => void; onLoad: (m: LlamaModel) => void;
 }) {
-  const stats = React.useMemo(() => deriveModelStats(model.id), [model.id]);
+  const stats = React.useMemo(() => deriveModelStats(), []);
 
   return (
     <div className="space-y-5">
@@ -1080,6 +1099,7 @@ function ModelDetailView({
 
 export function ModelsPage() {
   const models = useLlamaStore((s) => s.models);
+  const externalModels = useLlamaStore((s) => s.externalModels);
   const systemCapabilities = useLlamaStore((s) => s.systemCapabilities);
   const activeWorkspaceId = useLlamaStore((s) => s.activeWorkspaceId);
 
@@ -1100,6 +1120,17 @@ export function ModelsPage() {
   const [hfPrefillName, setHfPrefillName] = React.useState<string | undefined>(undefined);
   const [launchModel, setLaunchModel] = React.useState<LlamaModel | null>(null);
   const [launchOpen, setLaunchOpen] = React.useState(false);
+  const [scanningExternal, setScanningExternal] = React.useState(false);
+
+  const handleScanExternalModels = React.useCallback(async () => {
+    if (!isTauri()) return;
+    setScanningExternal(true);
+    try {
+      await useLlamaStore.getState().refreshExternalModels();
+    } finally {
+      setScanningExternal(false);
+    }
+  }, []);
 
   // Hydrate view from localStorage after mount (avoids SSR mismatch).
   React.useEffect(() => {
@@ -1128,6 +1159,124 @@ export function ModelsPage() {
     setHfPrefillName(m.name);
     setHfOpen(true);
   }, []);
+
+  // Local model import dialog state
+  const [importDialogOpen, setImportDialogOpen] = React.useState(false);
+  const [selectedImportFiles, setSelectedImportFiles] = React.useState<string[]>([]);
+  const [importMoveMode, setImportMoveMode] = React.useState(false);
+  const [importStatus, setImportStatus] = React.useState<"idle" | "selecting" | "importing" | "done">("idle");
+
+  const handleOpenImportDialog = React.useCallback(async () => {
+    setImportStatus("selecting");
+    const paths = await tauri.selectModelFiles();
+    setImportStatus("idle");
+    if (paths && paths.length > 0) {
+      setSelectedImportFiles(paths);
+      setImportDialogOpen(true);
+    }
+  }, []);
+
+const handleImportSelected = React.useCallback(async () => {
+    if (selectedImportFiles.length === 0) return;
+    
+    setImportStatus("importing");
+    const { importLocalModel } = useLlamaStore.getState();
+    
+    try {
+      await importLocalModel({ move: importMoveMode, paths: selectedImportFiles });
+      setImportStatus("done");
+      setTimeout(() => {
+        setImportDialogOpen(false);
+        setSelectedImportFiles([]);
+        setImportStatus("idle");
+      }, 1500);
+      toast({
+        title: "Import complete",
+        description: `${selectedImportFiles.length} model${selectedImportFiles.length !== 1 ? 's' : ''} imported`,
+      });
+    } catch (err) {
+      setImportStatus("idle");
+      toast({
+        title: "Import failed",
+        description: err instanceof Error ? err.message : "Unknown error",
+        variant: "destructive",
+      });
+    }
+  }, [selectedImportFiles, importMoveMode]);
+
+  const handleFilesDrop = React.useCallback(async (files: FileList) => {
+    const ggufFiles = Array.from(files).filter((f) => f.name.toLowerCase().endsWith(".gguf"));
+    if (ggufFiles.length === 0) return;
+    // For now, just trigger the import dialog which will let user pick files
+    // In a full implementation, we'd upload these files to the models directory
+    handleOpenImportDialog();
+  }, [handleOpenImportDialog]);
+
+  // Simple drag-and-drop zone component
+  function DropZone({ onFilesSelected }: { onFilesSelected: (files: FileList) => void }) {
+    const [dragActive, setDragActive] = React.useState(false);
+    const inputRef = React.useRef<HTMLInputElement>(null);
+
+    const handleDrag = (e: React.DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (e.type === "dragenter" || e.type === "dragover") setDragActive(true);
+      else if (e.type === "dragleave") setDragActive(false);
+    };
+
+    const handleDrop = (e: React.DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setDragActive(false);
+      if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+        onFilesSelected(e.dataTransfer.files);
+      }
+    };
+
+    const handleClick = () => inputRef.current?.click();
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (e.target.files && e.target.files.length > 0) {
+        onFilesSelected(e.target.files);
+      }
+    };
+
+    return (
+      <div
+        className={cn(
+          "relative rounded-lg border-2 border-dashed p-6 text-center transition-colors",
+          dragActive ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"
+        )}
+        onDragEnter={handleDrag}
+        onDragLeave={handleDrag}
+        onDragOver={handleDrag}
+        onDrop={handleDrop}
+        onClick={handleClick}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); handleClick(); } }}
+      >
+        <input
+          ref={inputRef}
+          type="file"
+          accept=".gguf"
+          multiple
+          onChange={handleFileChange}
+          className="sr-only"
+          aria-label="Select GGUF model files"
+        />
+        <div className="flex flex-col items-center gap-2">
+          <div className="grid size-10 place-items-center rounded-full bg-muted">
+            <FolderOpen className="size-5 text-muted-foreground" />
+          </div>
+          <p className="text-sm font-medium text-foreground">
+            {dragActive ? "Drop GGUF files here" : "Drag & drop .gguf files or click to browse"}
+          </p>
+          <p className="text-xs text-muted-foreground">Files will be imported to your models directory</p>
+        </div>
+      </div>
+    );
+  }
 
   const openEdit = React.useCallback((m: LlamaModel, focusPath = false) => {
     setEditModel(m);
@@ -1177,15 +1326,23 @@ export function ModelsPage() {
           {mounted ? (
             <ViewToggle value={view} onChange={handleViewChange} />
           ) : (
-            <div className="h-8 w-32" />
+            <div className="h-9 w-32" />
           )}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button size="sm" variant="outline" onClick={handleOpenImportDialog}>
+                <FolderOpen className="mr-1.5 size-3.5" /> Import Local
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Import a GGUF file from disk</TooltipContent>
+          </Tooltip>
           <Button size="sm" onClick={openHF}>
             <Download className="mr-1.5 size-3.5" /> Download from HF
           </Button>
         </div>
       </div>
 
-      {workspaceModels.length === 0 ? (
+{workspaceModels.length === 0 ? (
         <Card className="border-2 border-dashed shadow-none">
           <CardContent className="flex flex-col items-center justify-center gap-3 py-14 text-center">
             <div className="grid size-12 place-items-center rounded-full bg-muted text-muted-foreground">
@@ -1193,7 +1350,10 @@ export function ModelsPage() {
             </div>
             <div>
               <p className="text-sm font-medium">No models in this workspace.</p>
-              <p className="text-xs text-muted-foreground">Download from HuggingFace to get started.</p>
+              <p className="text-xs text-muted-foreground">Download from HuggingFace or drop a GGUF file here.</p>
+            </div>
+            <div className="w-full max-w-md">
+              <DropZone onFilesSelected={handleFilesDrop} />
             </div>
             <Button size="sm" onClick={openHF}>
               <Download className="mr-1.5 size-3.5" /> Download from HF
@@ -1210,9 +1370,222 @@ export function ModelsPage() {
         <ModelTable models={workspaceModels} actions={actions} gpuVramGb={systemCapabilities.gpuVramGb} />
       )}
 
+      {/* External models section */}
+      {externalModels.length > 0 && (
+        <div className="space-y-4">
+          <div className="flex items-center gap-2">
+            <div className="flex-1 h-px bg-border" />
+            <span className="text-xs text-muted-foreground">External Models</span>
+            <div className="flex-1 h-px bg-border" />
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <Button 
+              size="sm" 
+              variant="outline" 
+              onClick={handleScanExternalModels}
+              disabled={scanningExternal}
+            >
+              {scanningExternal ? (
+                <>
+                  <Loader2 className="mr-1.5 size-3.5 animate-spin" />
+                  Scanning...
+                </>
+              ) : (
+                <>
+                  <FolderOpen className="mr-1.5 size-3.5" />
+                  Scan External Directories
+                </>
+              )}
+            </Button>
+            <p className="text-xs text-muted-foreground">
+              Found {externalModels.length} external model directory{externalModels.length !== 1 && 's'}
+            </p>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {externalModels.map((dir, i) => (
+              <ExternalModelCard key={dir.id} dir={dir} index={i} />
+            ))}
+          </div>
+        </div>
+      )}
+
       <EditModelDialog model={editModel} open={editOpen} onOpenChange={setEditOpen} focusPath={editFocusPath} />
       <LaunchConfirmDialog model={launchModel} open={launchOpen} onOpenChange={setLaunchOpen} />
       <HFDownloadDialog open={hfOpen} onOpenChange={setHfOpen} prefillRepo={hfPrefillRepo} prefillModelName={hfPrefillName} />
+      <LocalModelImportDialog
+        open={importDialogOpen}
+        onOpenChange={setImportDialogOpen}
+        selectedFiles={selectedImportFiles}
+        onImport={handleImportSelected}
+        moveMode={importMoveMode}
+        onMoveModeChange={setImportMoveMode}
+        status={importStatus}
+      />
     </div>
+  );
+}
+
+// ---------- External model card ----------
+function ExternalModelCard({ dir, index }: { dir: any; index: number }) {
+  const color = CARD_COLORS[index % CARD_COLORS.length];
+  
+  return (
+    <Card className={cn("overflow-hidden p-0 shadow-none", `card-${color}`)}>
+      <CardContent className="flex flex-col gap-3 p-5">
+        <div className="flex items-start justify-between gap-2">
+          <div className="flex min-w-0 items-center gap-3">
+            <div className="grid size-10 shrink-0 place-items-center rounded-xl bg-white/60 dark:bg-black/20">
+              <FolderOpen className="size-5" />
+            </div>
+            <div className="min-w-0">
+              <h3 className="truncate text-sm font-semibold">{dir.display_name}</h3>
+              <p className="text-xs text-foreground/70">
+                {dir.model_count} model{dir.model_count !== 1 && 's'} • {fmtBytes(dir.total_size_mb * 1024 * 1024)}
+              </p>
+            </div>
+          </div>
+          <Badge variant="secondary" className="shrink-0 bg-white/60 text-[10px] font-semibold dark:bg-black/20">
+            {dir.source}
+          </Badge>
+        </div>
+
+        <div className="space-y-1.5">
+          <p className="text-xs text-muted-foreground truncate font-mono">{dir.path}</p>
+          
+          {dir.files.length > 0 && (
+            <div className="space-y-1">
+              {dir.files.slice(0, 3).map((file: any) => (
+                <div key={file.id} className="flex items-center justify-between text-[10px]">
+                  <span className="truncate text-muted-foreground font-mono">{file.filename}</span>
+                  <span className="text-muted-foreground">{fmtBytes(file.size_mb * 1024 * 1024)}</span>
+                </div>
+              ))}
+              {dir.files.length > 3 && (
+                <div className="text-[10px] text-muted-foreground">
+                  +{dir.files.length - 3} more file{dir.files.length > 4 && 's'}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// ---------- Local Model Import Dialog ----------
+interface LocalModelImportDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  selectedFiles: string[];
+  onImport: () => void;
+  moveMode: boolean;
+  onMoveModeChange: (move: boolean) => void;
+  status: "idle" | "selecting" | "importing" | "done";
+}
+
+function LocalModelImportDialog({
+  open,
+  onOpenChange,
+  selectedFiles,
+  onImport,
+  moveMode,
+  onMoveModeChange,
+  status,
+}: LocalModelImportDialogProps) {
+  const modelsDir = useLlamaStore((s) => s.globalSettings.modelsDir);
+
+  if (!open) return null;
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-2xl max-h-[80vh]">
+        <DialogHeader>
+          <DialogTitle className="flex items-center justify-between">
+            <span>Import Local Models</span>
+            <Badge variant="outline" className="text-[10px]">{selectedFiles.length} file{selectedFiles.length !== 1 ? 's' : ''} selected</Badge>
+          </DialogTitle>
+          <DialogDescription>
+            Select models to import from your filesystem.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="space-y-4">
+          {/* Move/Copy toggle */}
+          <div className="flex items-center justify-between rounded-lg border border-border/60 bg-muted/30 px-3 py-2">
+            <div className="flex items-center gap-2">
+              {moveMode ? <Move className="size-4" /> : <Copy className="size-4" />}
+              <Label className="text-sm font-medium cursor-pointer">
+                {moveMode ? 'Move files' : 'Copy files'}
+              </Label>
+            </div>
+            <Switch 
+              checked={moveMode} 
+              onCheckedChange={onMoveModeChange}
+              aria-label={moveMode ? "Move files (remove from source)" : "Copy files (keep in source)"}
+            />
+          </div>
+          <p className="text-xs text-muted-foreground">
+            {moveMode 
+              ? "Files will be moved from their current location to the models directory." 
+              : "Files will be copied to the models directory, originals will be kept."
+            }
+          </p>
+
+          {/* Destination directory */}
+          <div className="rounded-lg border border-border/60 bg-muted/30 px-3 py-2">
+            <p className="text-xs font-medium text-muted-foreground">Destination:</p>
+            <p className="text-sm font-mono truncate">{modelsDir}</p>
+          </div>
+
+          {/* File list with checkboxes */}
+          <div className="max-h-64 overflow-y-auto space-y-1 border border-border/60 rounded-lg p-2">
+            {selectedFiles.map((filePath, index) => {
+              const filename = filePath.split(/[\\/]/).pop() || filePath;
+              return (
+                <label 
+                  key={`${filePath}-${index}`}
+                  className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-accent/50 cursor-pointer transition-colors"
+                >
+                  <input
+                    type="checkbox"
+                    checked
+                    disabled
+                    className="size-4"
+                  />
+                  <FileText className="size-4 text-muted-foreground shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-mono truncate">{filename}</p>
+                    <p className="text-[10px] text-muted-foreground">{filePath}</p>
+                  </div>
+                </label>
+              );
+            })}
+          </div>
+
+          {/* Summary */}
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-muted-foreground">
+              {selectedFiles.length} file{selectedFiles.length !== 1 ? 's' : ''} selected
+            </span>
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={status === "importing"}>
+            Cancel
+          </Button>
+          <Button 
+            onClick={onImport}
+            disabled={status === "importing" || selectedFiles.length === 0}
+          >
+            {status === "importing" && <Loader2 className="mr-1.5 size-3.5 animate-spin" />}
+            {status === "importing" 
+              ? "Importing..." 
+              : `Import ${selectedFiles.length} Model${selectedFiles.length !== 1 ? 's' : ''}`}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

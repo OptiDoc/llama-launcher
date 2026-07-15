@@ -380,10 +380,20 @@ export const tauri = {
   listReleaseVariants: () => invoke<ReleaseVariant[]>("list_release_variants"),
   listGithubReleases: () => invoke<GitHubRelease[]>("list_github_releases"),
 
-  // File / dialog
+// File / dialog
   openModelFolder: () => invoke<null>("open_model_folder"),
   selectModelFile: () => invoke<string | null>("select_model_file"),
-  importModelFile: async (): Promise<ModelInfo | null> => {
+  selectModelFiles: async (): Promise<string[]> => {
+    if (!isTauri()) return [];
+    try {
+      const fn = window.__TAURI__?.core?.invoke;
+      if (!fn) return [];
+      return (await fn("select_model_files", {})) as string[];
+    } catch {
+      return [];
+    }
+  },
+importModelFile: async (): Promise<ModelInfo | null> => {
     if (!isTauri()) return null;
     try {
       const path = await invoke<string | null>("select_model_file");
@@ -395,6 +405,18 @@ export const tauri = {
       return null;
     }
   },
+
+  importModelFiles: async (filePaths: string[], destDir: string, moveFiles: boolean): Promise<string[]> => {
+    if (!isTauri()) return [];
+    try {
+      const fn = window.__TAURI__?.core?.invoke;
+      if (!fn) return [];
+      return (await fn("import_model_files", { filePaths, destDir, moveFiles })) as string[];
+    } catch {
+      return [];
+    }
+  },
+
   selectDirectory: () => invoke<string | null>("select_directory"),
 
   // Release management
@@ -497,6 +519,17 @@ export const tauri = {
       return (await fn("sync_external_models", { dirs })) as number;
     } catch {
       return 0;
+    }
+  },
+
+  importExternalModel: async (filePath: string, destDir: string): Promise<string | null> => {
+    if (!isTauri()) return null;
+    try {
+      const fn = window.__TAURI__?.core?.invoke;
+      if (!fn) return null;
+      return (await fn("import_external_model", { filePath, destDir })) as string;
+    } catch {
+      return null;
     }
   },
 

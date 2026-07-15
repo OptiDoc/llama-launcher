@@ -689,7 +689,7 @@ tauriReady: boolean;
 
   // models
   startHFDownload: (config: { repo: string; quant: string; modelName: string; builder: string }) => string;
-  importLocalModel: () => Promise<void>;
+  importLocalModel: (options?: { move?: boolean; paths?: string[] }) => Promise<void>;
   updateModel: (id: string, patch: Partial<LlamaModel>) => void;
   deleteModel: (id: string) => void;
   markModelMissing: (id: string, missing: boolean) => void;
@@ -1641,23 +1641,46 @@ export const useLlamaStore = create<LlamaStore>((set, get) => {
       return dlId;
     },
 
-    importLocalModel: async () => {
-      log.info("[STORE] importLocalModel called", { category: "store" });
+    importLocalModel: async (options?: { move?: boolean; paths?: string[] }) => {
+      log.info("[STORE] importLocalModel called", { category: "store", context: options });
       if (!isTauri()) {
         emitLog(SYSTEM_CONSOLE_ID, "error", `[${fmtTime(new Date())}] [import] requires Tauri desktop app`);
         log.warn("[STORE] importLocalModel: not in Tauri mode", { category: "store" });
         return;
       }
-      const model = await tauri.importModelFile();
-      if (model) {
-        // The model was already added by the backend scan, just refresh the list
+      
+      // Use provided paths or open file dialog
+      const paths = options?.paths ?? (await tauri.selectModelFiles());
+      if (!paths || paths.length === 0) {
+        log.info("[STORE] importLocalModel: no files selected", { category: "store" });
+        return;
+      }
+
+      const modelsDir = get().globalSettings.modelsDir;
+      let imported = 0;
+
+      for (const srcPath of paths) {
+        try {
+          const src = srcPath;
+          const filename = src.split(/[\\/]/).pop() || "unknown";
+          const dest = `${modelsDir}/${filename}`;
+
+          // Use the new importModelFiles command for proper copy/move
+          await tauri.importModelFiles?.([src], modelsDir, options?.move ?? false);
+          imported++;
+        } catch (e) {
+          log.error("[STORE] importLocalModel: failed to import", { category: "store", context: { path: srcPath, error: String(e) } });
+        }
+      }
+
+      if (imported > 0) {
         await get().refreshModels();
-        emitLog(SYSTEM_CONSOLE_ID, "success", `[${fmtTime(new Date())}] [import] imported ${model.name}`);
-        const msg = NOTIF_MESSAGES.modelImported(model.name);
+        emitLog(SYSTEM_CONSOLE_ID, "success", `[${fmtTime(new Date())}] [import] imported ${imported} model${imported !== 1 ? 's' : ''}`);
+        const msg = NOTIF_MESSAGES.modelImported(`${imported} model${imported !== 1 ? 's' : ''}`);
         get().addNotification({ kind: "success", ...msg });
-        log.success("[STORE] Model imported successfully", { category: "store", context: { model: model.name } });
+        log.success("[STORE] Models imported successfully", { category: "store", context: { count: imported } });
       } else {
-        log.warn("[STORE] importLocalModel: no model imported", { category: "store" });
+        log.warn("[STORE] importLocalModel: no models imported", { category: "store" });
       }
     },
 

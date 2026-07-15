@@ -3,7 +3,9 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 use std::time::{Duration, SystemTime};
 
+use dirs;
 use futures_util::StreamExt;
+use md5;
 use serde::{Deserialize, Serialize};
 use tauri::AppHandle;
 use tauri_plugin_dialog::DialogExt;
@@ -1228,6 +1230,20 @@ pub async fn select_model_file(app: AppHandle) -> Result<Option<String>, String>
 }
 
 #[tauri::command]
+pub async fn select_model_files(app: AppHandle) -> Result<Vec<String>, String> {
+    let result = app
+        .dialog()
+        .file()
+        .add_filter("Model Files", &["gguf", "ggml", "bin", "safetensors", "pt", "onnx"])
+        .blocking_pick_files();
+
+    Ok(result.unwrap_or_default().into_iter().map(|p| match p {
+        tauri_plugin_dialog::FilePath::Path(path) => path.to_string_lossy().to_string(),
+        tauri_plugin_dialog::FilePath::Url(url) => url.to_string(),
+    }).collect())
+}
+
+#[tauri::command]
 pub async fn serve_model_file(path: String) -> Result<String, String> {
     Ok(format!(
         "llama-launcher://model/{}",
@@ -1466,16 +1482,35 @@ pub async fn download_cuda_libs(
     dl_id: String,
     progress_tx: tauri::ipc::Channel<DownloadProgress>,
 ) -> Result<(), String> {
+    // CUDA DLLs live in a separate cudart asset, not bundled in the main zip.
+    // Asset name pattern: cudart-llama-bin-win-cuda-{VERSION}-x64.zip
+    let cuda_version = match variant.as_str() {
+        "cuda12" => "12.4",
+        "cuda13" => "13.3",
+        _ => return Ok(()), // Only CUDA variants need extra libs
+    };
+    let cudart_asset = format!("cudart-llama-bin-win-cuda-{}-x64.zip", cuda_version);
     let cuda_url = format!(
-        "https://github.com/ggml-org/llama.cpp/releases/download/{}/cublas-{}-{}-archive.zip",
-        tag, tag, variant
+        "https://github.com/ggml-org/llama.cpp/releases/download/{}/{}",
+        tag, cudart_asset
     );
+    log_info!("[download_cuda_libs] downloading", "download", serde_json::json!({ "url": &cuda_url }));
+
     let zip_path = std::path::Path::new(&dest_dir).join("cublas.zip");
     let zip_str = zip_path.to_string_lossy().to_string();
 
-    download_file(cuda_url, zip_str.clone(), dl_id.clone(), progress_tx.clone()).await?;
-    extract_zip(zip_str, dest_dir, dl_id.clone(), progress_tx.clone()).await?;
-    let _ = tokio::fs::remove_file(&zip_path).await;
+    let result = download_file(cuda_url, zip_str.clone(), dl_id.clone(), progress_tx.clone()).await;
+    match result {
+        Ok(_) => {
+            extract_zip(zip_str, dest_dir, dl_id.clone(), progress_tx.clone()).await?;
+            let _ = tokio::fs::remove_file(&zip_path).await;
+        }
+        Err(e) => {
+            // Non-fatal: older releases may not have a separate cudart asset.
+            log_warn!("[download_cuda_libs] cudart download failed (may not exist for this release)", "download", serde_json::json!({ "error": e }));
+            let _ = tokio::fs::remove_file(&zip_path).await.ok();
+        }
+    }
 
     Ok(())
 }
@@ -1489,10 +1524,13 @@ pub async fn install_release(
 ) -> Result<String, String> {
     log_info!("[install_release] starting", "download", serde_json::json!({ "tag": &tag, "variant": &variant, "dl_id": &dl_id }));
 
+    // Map variant ID to the actual GitHub asset name (same logic as the frontend).
+    let asset_name = crate::releases::variant_to_asset_name(&tag, &variant);
     let zip_url = format!(
-        "https://github.com/ggml-org/llama.cpp/releases/download/{}/llama-{}-{}-archive.zip",
-        tag, tag, variant
+        "https://github.com/ggml-org/llama.cpp/releases/download/{}/{}",
+        tag, asset_name
     );
+    log_info!("[install_release] downloading asset", "download", serde_json::json!({ "url": &zip_url }));
 
     let install_dir = {
         let config = crate::GLOBAL_STATE.config.read();
@@ -1548,17 +1586,275 @@ pub async fn ensure_app_dir() -> Result<String, String> {
 // ---------- External Models ----------
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct ExternalModelDir {
+pub struct ExternalModelFile {
+    pub id: String,
+    pub filename: String,
     pub path: String,
-    pub recursive: bool,
+    pub size_mb: f64,
+    pub format: String,
+    pub estimated_parameters: Option<String>,
+    pub quantization: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ExternalModelDir {
+    pub id: String,
+    pub source: String,
+    pub display_name: String,
+    pub path: String,
+    pub model_count: usize,
+    pub total_size_mb: f64,
+    pub enabled: bool,
+    pub files: Vec<ExternalModelFile>,
 }
 
 #[tauri::command]
 pub async fn scan_external_models() -> Result<Vec<ExternalModelDir>, String> {
-    Ok(Vec::new())
+    use std::collections::HashMap;
+    
+    let mut sources: Vec<(String, String, Vec<std::path::PathBuf>)> = Vec::new();
+    
+    // Ollama
+    if let Some(home) = dirs::home_dir() {
+        let ollama_path = home.join(".ollama").join("models");
+        if ollama_path.exists() {
+            sources.push(("ollama".to_string(), "Ollama".to_string(), vec![ollama_path]));
+        }
+    }
+    
+    // LM Studio - multiple possible locations
+    if let Some(home) = dirs::home_dir() {
+        let lmstudio_paths = vec![
+            home.join(".lmstudio").join("models"),
+            home.join("LMStudio").join("models"),
+            home.join(".cache").join("lm-studio").join("models"),
+        ];
+        let existing: Vec<_> = lmstudio_paths.into_iter().filter(|p| p.exists()).collect();
+        if !existing.is_empty() {
+            sources.push(("lmstudio".to_string(), "LM Studio".to_string(), existing));
+        }
+    }
+    
+    // HuggingFace CLI cache
+    if let Some(home) = dirs::home_dir() {
+        let hf_paths = vec![
+            home.join(".cache").join("huggingface").join("hub"),
+            home.join(".cache").join("huggingface"),
+        ];
+        let existing: Vec<_> = hf_paths.into_iter().filter(|p| p.exists()).collect();
+        if !existing.is_empty() {
+            sources.push(("huggingfacecli".to_string(), "HuggingFace CLI".to_string(), existing));
+        }
+    }
+    
+    // Custom directories from config (TODO: read from config)
+    // For now, we'll just return the standard sources
+    
+    let mut result = Vec::new();
+    
+    for (source_id, display_name, paths) in sources {
+        let first_path = paths.first().cloned();
+        let mut all_files = Vec::new();
+        let mut total_size_mb = 0.0;
+        
+        for base_path in paths {
+            if let Ok(files) = scan_model_files(&base_path).await {
+                for file in files {
+                    total_size_mb += file.size_mb;
+                    all_files.push(file);
+                }
+            }
+        }
+        
+        let model_count = all_files.len();
+        
+        let hash = md5::compute(display_name.as_bytes());
+        let dir_id = format!("{}_{:x}", source_id, hash);
+        
+        result.push(ExternalModelDir {
+            id: dir_id,
+            source: source_id,
+            display_name,
+            path: first_path.map(|p| p.to_string_lossy().to_string()).unwrap_or_default(),
+            model_count,
+            total_size_mb,
+            enabled: true,
+            files: all_files,
+        });
+    }
+    
+    Ok(result)
+}
+
+async fn scan_model_files(base_path: &std::path::Path) -> Result<Vec<ExternalModelFile>, String> {
+    use std::path::Path;
+    use tokio::fs;
+    
+    let mut files = Vec::new();
+    
+    // Supported model file extensions
+    let extensions = ["gguf", "ggml", "bin", "safetensors", "pt", "pth", "onnx", "trt", "engine"];
+    
+    let mut stack = vec![base_path.to_path_buf()];
+    
+    while let Some(current) = stack.pop() {
+        if let Ok(entries) = fs::read_dir(&current).await {
+            let mut entries = entries;
+            while let Ok(Some(entry)) = entries.next_entry().await {
+                let path = entry.path();
+                
+                if path.is_dir() {
+                    // Skip hidden directories and common non-model dirs
+                    if let Some(name) = path.file_name().and_then(|n| n.to_str()) {
+                        if !name.starts_with('.') && !matches!(name, "blobs" | "refs" | "snapshots" | "objects" | "pack" | ".git") {
+                            stack.push(path);
+                        }
+                    }
+                } else if let Some(ext) = path.extension().and_then(|e| e.to_str()) {
+                    if extensions.iter().any(|&e| e.eq_ignore_ascii_case(ext)) {
+                        // Try to get file info
+                        if let Ok(metadata) = fs::metadata(&path).await {
+                            let size_mb = metadata.len() as f64 / (1024.0 * 1024.0);
+                            
+                            // Try to detect format and extract metadata
+                            let (format, params, quant) = detect_model_info(&path).await.unwrap_or((
+                                ext.to_uppercase(),
+                                None,
+                                None,
+                            ));
+                            
+                            let file_id = format!("{:x}", md5::compute(format!("{}{}", path.display(), size_mb)));
+                            
+                            files.push(ExternalModelFile {
+                                id: file_id,
+                                filename: path.file_name().and_then(|n| n.to_str()).unwrap_or("unknown").to_string(),
+                                path: path.to_string_lossy().to_string(),
+                                size_mb,
+                                format,
+                                estimated_parameters: params,
+                                quantization: quant,
+                            });
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    Ok(files)
+}
+
+async fn detect_model_info(path: &std::path::Path) -> Result<(String, Option<String>, Option<String>), String> {
+    use tokio::fs::File;
+    use tokio::io::AsyncReadExt;
+    
+    let mut file = File::open(path).await.map_err(|e| e.to_string())?;
+    let mut header = vec![0u8; 65536];
+    let _ = file.read(&mut header).await;
+    
+    if header.starts_with(b"GGUF") {
+        let (format, arch, quant, ctx, params) = parse_gguf_header(&header);
+        Ok((format!("{:?}", format), params, quant.map(|q| q.to_string())))
+    } else if header.starts_with(b"GGML") {
+        let (format, arch, quant, ctx, params) = parse_ggml_header(&header);
+        Ok((format!("{:?}", format), params, quant.map(|q| q.to_string())))
+    } else if header.starts_with(&[0x50, 0x4B, 0x03, 0x04])
+        || header.starts_with(&[0x50, 0x4B, 0x05, 0x06])
+        || header.starts_with(&[0x50, 0x4B, 0x07, 0x08])
+    {
+        Ok(("SafeTensors".to_string(), None, None))
+    } else if header.starts_with(b"\x80\x02") || header.starts_with(b"\x80\x01") {
+        // PyTorch pickle format
+        Ok(("PyTorch".to_string(), None, None))
+    } else if header.starts_with("ONNX".as_bytes()) {
+        Ok(("ONNX".to_string(), None, None))
+    } else {
+        let ext = path.extension().and_then(|e| e.to_str()).unwrap_or("Unknown");
+        Ok((ext.to_uppercase(), None, None))
+    }
 }
 
 #[tauri::command]
 pub async fn sync_external_models(dirs: Vec<ExternalModelDir>) -> Result<usize, String> {
-    Ok(0)
+    let models_dir = {
+        let config = crate::GLOBAL_STATE.config.read();
+        std::path::PathBuf::from(&config.models_directory)
+    };
+    tokio::fs::create_dir_all(&models_dir).await.map_err(|e| format!("Failed to create models dir: {}", e))?;
+    
+    let mut imported = 0;
+    
+    for dir in dirs {
+        if !dir.enabled {
+            continue;
+        }
+        
+        for file in dir.files {
+            let src = std::path::Path::new(&file.path);
+            let dest = models_dir.join(&file.filename);
+            
+            // Check if already exists
+            if dest.exists() {
+                // Could add logic to skip or overwrite
+                continue;
+            }
+            
+            // Copy the file
+            if let Err(e) = tokio::fs::copy(src, &dest).await {
+                log_error!("[sync_external_models] Failed to copy", "sync", serde_json::json!({ "filename": &file.filename, "error": e.to_string() }));
+                continue;
+            }
+            
+            imported += 1;
+            log_info!("[sync_external_models] Imported", "sync", serde_json::json!({ "filename": &file.filename }));
+        }
+    }
+    
+    Ok(imported)
+}
+
+#[tauri::command]
+pub async fn import_external_model(file_path: String, dest_dir: String) -> Result<String, String> {
+    let src = std::path::Path::new(&file_path);
+    let dest_dir = std::path::Path::new(&dest_dir);
+    
+    tokio::fs::create_dir_all(dest_dir).await.map_err(|e| format!("Failed to create dest dir: {}", e))?;
+    
+    let filename = src.file_name()
+        .and_then(|n| n.to_str())
+        .ok_or("Invalid filename")?;
+    
+    let dest = dest_dir.join(filename);
+    
+    tokio::fs::copy(src, &dest).await.map_err(|e| format!("Failed to copy: {}", e))?;
+    
+    Ok(dest.to_string_lossy().to_string())
+}
+
+#[tauri::command]
+pub async fn import_model_files(file_paths: Vec<String>, dest_dir: String, move_files: bool) -> Result<Vec<String>, String> {
+    let dest_dir = std::path::Path::new(&dest_dir);
+    tokio::fs::create_dir_all(dest_dir).await.map_err(|e| format!("Failed to create dest dir: {}", e))?;
+    
+    let mut imported = Vec::new();
+    
+    for file_path in file_paths {
+        let src = std::path::Path::new(&file_path);
+        let filename = src.file_name()
+            .and_then(|n| n.to_str())
+            .ok_or("Invalid filename")?;
+        
+        let dest = dest_dir.join(filename);
+        
+        if move_files {
+            tokio::fs::rename(src, &dest).await.map_err(|e| format!("Failed to move {}: {}", filename, e))?;
+        } else {
+            tokio::fs::copy(src, &dest).await.map_err(|e| format!("Failed to copy {}: {}", filename, e))?;
+        }
+        
+        imported.push(dest.to_string_lossy().to_string());
+        log_info!("[import_model_files] Imported {}", filename);
+    }
+    
+    Ok(imported)
 }
