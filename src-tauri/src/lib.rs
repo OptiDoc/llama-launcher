@@ -12,10 +12,12 @@ pub mod system;
 pub mod updater;
 pub mod workspaces;
 pub mod releases;
+pub mod logger;
 
 pub use core::*;
 use log::LevelFilter;
 use tauri::Manager;
+use tauri_plugin_store::StoreExt;
 
 pub fn run() {
     tracing::info!("Starting llama-launcher v{}", env!("CARGO_PKG_VERSION"));
@@ -74,6 +76,7 @@ pub fn run() {
             commands::select_model_file,
             commands::serve_model_file,
             commands::serve_asset_file,
+            commands::select_directory,
             // Workspace management
             workspaces::list_workspaces,
             workspaces::create_workspace,
@@ -89,8 +92,36 @@ pub fn run() {
             releases::get_system_capabilities,
             // Process console output
             commands::get_process_stdout,
+            // App directory
+            commands::ensure_app_dir,
+            // File download
+            commands::download_file,
+            commands::cancel_download,
+            // Release install (download + extract + CUDA libs)
+            commands::install_release,
+            commands::extract_zip,
+            commands::download_cuda_libs,
+            // External models discovery
+            commands::scan_external_models,
+            commands::sync_external_models,
+            // Logs
+            logger::clear_logs,
+            logger::clear_logs_by_level,
+            logger::export_logs_by_level,
         ])
         .setup(|app| {
+            // Initialize logger
+            logger::init_logger();
+            
+            // Load saved config from store on startup
+            if let Ok(store) = app.store("config.json") {
+                if let Some(val) = store.get("config") {
+                    if let Ok(saved_config) = serde_json::from_value::<crate::AppConfig>(val.clone()) {
+                        *core::GLOBAL_STATE.config.write() = saved_config;
+                    }
+                }
+            }
+
             if let Some(window) = app.get_webview_window("main") {
                 let handle = window.clone();
                 window.on_window_event(move |event| {

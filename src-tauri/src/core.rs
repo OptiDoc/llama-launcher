@@ -1,5 +1,6 @@
 use std::collections::HashMap;
-use std::path::Path;
+use std::sync::atomic::AtomicBool;
+use std::sync::Arc;
 use std::sync::Mutex as StdMutex;
 use std::time::{Duration, Instant, SystemTime};
 
@@ -7,8 +8,12 @@ use once_cell::sync::Lazy;
 use parking_lot::RwLock;
 use serde::{Deserialize, Serialize};
 use sysinfo::System;
+use tracing::info;
 
-pub static GLOBAL_STATE: Lazy<GlobalState> = Lazy::new(GlobalState::new);
+pub static GLOBAL_STATE: Lazy<GlobalState> = Lazy::new(|| {
+    info!("[core] Initializing GLOBAL_STATE");
+    GlobalState::new()
+});
 
 pub struct GlobalState {
     pub process_registry: StdMutex<ProcessRegistry>,
@@ -16,16 +21,19 @@ pub struct GlobalState {
     pub config: RwLock<AppConfig>,
     pub model_cache: StdMutex<HashMap<String, ModelInfo>>,
     pub benchmark_results: StdMutex<Vec<BenchmarkResult>>,
+    pub cancel_tokens: StdMutex<HashMap<String, Arc<AtomicBool>>>,
 }
 
 impl GlobalState {
     pub fn new() -> Self {
+        info!("[core] Creating GlobalState");
         Self {
             process_registry: StdMutex::new(ProcessRegistry::new()),
             system_monitor: StdMutex::new(SystemMonitor::new()),
             config: RwLock::new(AppConfig::default()),
             model_cache: StdMutex::new(HashMap::new()),
             benchmark_results: StdMutex::new(Vec::new()),
+            cancel_tokens: StdMutex::new(HashMap::new()),
         }
     }
 }
@@ -34,6 +42,7 @@ impl GlobalState {
 pub struct AppConfig {
     pub llama_binary_path: Option<String>,
     pub models_directory: String,
+    pub cuda_libs_dir: String,
     pub default_context_size: usize,
     pub default_gpu_layers: i32,
     pub default_threads: usize,
@@ -64,14 +73,15 @@ impl Default for AppConfig {
     fn default() -> Self {
         let models_dir = std::env::var("HOME")
             .or_else(|_| std::env::var("USERPROFILE"))
-            .map(|p| std::path::PathBuf::from(p).join(".cache").join("llama-launcher").join("models"))
+            .map(|p| std::path::PathBuf::from(p).join(".llama-launcher").join("models"))
             .unwrap_or_else(|_| std::path::PathBuf::from("./models"))
             .to_string_lossy()
             .to_string();
 
         Self {
             llama_binary_path: None,
-            models_directory: models_dir,
+            models_directory: models_dir.clone(),
+            cuda_libs_dir: models_dir.replace("/models", "/cuda").replace("\\models", "\\cuda"),
             default_context_size: 8192,
             default_gpu_layers: -1,
             default_threads: num_cpus::get(),

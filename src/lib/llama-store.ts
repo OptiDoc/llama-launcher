@@ -15,7 +15,40 @@
 
 import { create } from "zustand";
 import { tauri, isTauri } from "@/lib/tauri-api";
-import { fmtTime } from "@/lib/utils";
+import { fmtTime, formatDuration } from "@/lib/utils";
+import { log } from "@/lib/logger";
+
+// ---------- Notification messages (to avoid hardcoding) ----------
+const NOTIF_MESSAGES = {
+  modelDownloadStart: (modelName: string, quant: string, sizeGb: number) => ({
+    title: "Downloading model",
+    body: `${modelName} ${quant} - ${sizeGb.toFixed(1)} GB`,
+  }),
+  modelDownloadComplete: (modelName: string, quant: string) => ({
+    title: "Model downloaded",
+    body: `${modelName} ${quant} is ready to use.`,
+  }),
+  modelImported: (modelName: string) => ({
+    title: "Model imported",
+    body: `${modelName} is ready to use.`,
+  }),
+  releaseDownloadStart: (tag: string, variant: string, sizeMb: number) => ({
+    title: "Downloading release",
+    body: `llama.cpp ${tag} (${variant}) - ${sizeMb} MB`,
+  }),
+  releaseInstalled: (tag: string, variant: string) => ({
+    title: "Release installed",
+    body: `llama.cpp ${tag} (${variant}) is ready.`,
+  }),
+  hibernationStarted: (count: number, seconds: number) => ({
+    title: "Hibernation started",
+    body: `${count} model(s) unloaded from VRAM after ${seconds}s idle.`,
+  }),
+  newReleaseAvailable: (tag: string, notes: string) => ({
+    title: "New llama.cpp release available",
+    body: `${tag} — ${notes.slice(0, 100)}…`,
+  }),
+};
 
 // ---------- Types ----------
 
@@ -93,6 +126,8 @@ export interface LlamaModel {
   downloading?: boolean;
   /** 0..100, only when downloading === true */
   downloadProgress?: number;
+  /** download ID when downloading */
+  downloadId?: string;
 }
 
 export type ProfileScope = "global" | "model";
@@ -193,6 +228,8 @@ export interface HFDownload {
   filename: string;
   sizeGb: number;
   progress: number; // 0..100
+  speed: number; // bytes/sec
+  eta: string; // human-readable ETA
   status: "queued" | "downloading" | "completed" | "failed";
   startedAt: number;
   modelName: string;
@@ -499,148 +536,11 @@ function renameLogKey(logs: Record<string, ConsoleLine[]>, oldKey: string, newKe
   return { ...rest, [newKey]: val ?? [] };
 }
 
-function runStartupSequence(instance: LlamaInstance, store: LlamaStore) {
-  let cancelled = false;
-  let reqTimer: ReturnType<typeof setTimeout> | null = null;
-
-  const sim: SimState = {
-    running: true,
-    ticks: 0,
-    stop: () => {
-      cancelled = true;
-      sim.running = false;
-      if (reqTimer) clearTimeout(reqTimer);
-    },
-  };
-  instanceSims.set(instance.id, sim);
-
-  const steps: Array<[number, LogKind, string]> = [
-    [30, "info", `════════════════════════════════════════════════════════════════`],
-    [60, "info", `  Launching llama-server "${instance.name}"`],
-    [90, "info", `────────────────────────────────────────────────────────────────`],
-    [120, "debug", `  model       : ${instance.model}`],
-    [150, "debug", `  profile     : ${instance.profile}`],
-    [180, "debug", `  host:port   : ${instance.host}:${instance.port}`],
-    [210, "debug", `  gpu         : ${instance.gpu}`],
-    [240, "debug", `  context     : ${instance.ctxSize} tokens`],
-    [270, "debug", `  threads     : ${instance.threads}`],
-    [300, "debug", `  gpu layers  : ${instance.gpu === "cpu" ? 0 : 99} (-ngl)`],
-    [330, "debug", `  flash-attn  : ${instance.gpu === "cpu" ? "off (cpu)" : "on"}`],
-    [360, "info", `────────────────────────────────────────────────────────────────`],
-    [400, "info", `$ llama-server --model ${instance.model} --host ${instance.host} --port ${instance.port} -c ${instance.ctxSize} -t ${instance.threads} -ngl ${instance.gpu === "cpu" ? 0 : 99} ${instance.gpu === "cpu" ? "" : "--flash-attn"} --parallel 4 --cont-batching`],
-    [460, "debug", "build: 4402 (8f1f7e1) with AVX2=1 AVX512=1 BMI2=1 CUDA=1"],
-    [520, "info", "system_info: n_threads = " + instance.threads + " n_gpu_layers = 99"],
-    [600, "info", "loading model from " + instance.model],
-    [720, "debug", "llama_model_loader: loaded meta data with 24 KV pairs"],
-    [780, "debug", "llama_model_loader: - kv[ 0]:                       general.name = " + instance.name],
-    [860, "debug", "llama_model_loader: - kv[ 1]:          general.architecture = llama"],
-    [940, "info", `llama_model_loader: - kv[12]:                      llama.context_length = ${instance.ctxSize}`],
-    [1020, "debug", "llama_model_loader: - type  f16:  221 tensors"],
-    [1100, "info", "llama_model_loader: loading model part 1/1 from '" + instance.model + "'"],
-    [1240, "info", "llama_model_loader: model size = " + (instance.model.includes("7b") ? "13.9" : "4.1") + " GiB"],
-    [1320, "success", "llama_model_loader: model loaded successfully"],
-    [1400, "info", "using CUDA for GPU acceleration"],
-    [1480, "debug", "llama_kv_cache:  CUDA0 KV buffer size = " + Math.round(instance.ctxSize * 0.5) + " MiB"],
-    [1560, "info", "llama_new_context_with_model: n_ctx = " + instance.ctxSize + ", batch = 512"],
-    [1660, "success", "llama_new_context_with_model: graph initialized"],
-    [1740, "info", `llama server: listening on ${instance.host}:${instance.port}`],
-    [1820, "info", "llama server: loading model took " + (1200 + Math.floor(Math.random() * 600)) + " ms"],
-    [1900, "success", `llama server: model loaded, ready for requests at http://${instance.host}:${instance.port}`],
-  ];
-
-  let elapsed = 0;
-  steps.forEach(([delay, kind, text]) => {
-    if (cancelled) return;
-    setTimeout(() => {
-      if (cancelled) return;
-      emitLog(instance.id, kind, `[${fmtTime(new Date())}] ${text}`);
-    }, delay);
-    elapsed = delay;
-  });
-
-  setTimeout(() => {
-    if (cancelled) return;
-    store.markRunning(instance.id);
-    emitLog(instance.id, "success", `[${fmtTime(new Date())}] ✓ Server ready. Listening on http://${instance.host}:${instance.port}/completions`);
-
-    const tick = () => {
-      if (cancelled || !sim.running) return;
-      sim.ticks += 1;
-      const t = sim.ticks;
-      store.registerActivity();
-      if (t % 3 === 0) {
-        const promptTok = 8 + Math.floor(Math.random() * 80);
-        const genTok = 12 + Math.floor(Math.random() * 120);
-        const tps = 18 + Math.random() * 24;
-        emitLog(instance.id, "info", `[${fmtTime(new Date())}] POST /v1/chat/completions 200 - prompt: ${promptTok} tok, gen: ${genTok} tok, ${tps.toFixed(1)} tok/s`);
-        store.bumpStats(instance.id, promptTok, genTok, tps);
-      } else if (t % 5 === 0) {
-        emitLog(instance.id, "debug", `[${fmtTime(new Date())}] slot 0: cache reused, kv tokens = ${100 + Math.floor(Math.random() * 400)}`);
-      } else if (t % 7 === 0) {
-        emitLog(instance.id, "warn", `[${fmtTime(new Date())}] request queue depth = ${1 + Math.floor(Math.random() * 3)}`);
-      }
-      reqTimer = setTimeout(tick, 1800 + Math.random() * 1200);
-    };
-    reqTimer = setTimeout(tick, 1800);
-  }, elapsed + 200);
-}
-
-function runShutdownSequence(instance: LlamaInstance, store: LlamaStore) {
-  const sim = instanceSims.get(instance.id);
-  if (sim) sim.stop();
-
-  emitLog(instance.id, "warn", `[${fmtTime(new Date())}] received SIGINT, shutting down...`);
-  setTimeout(() => {
-    emitLog(instance.id, "info", `[${fmtTime(new Date())}] waiting for in-flight requests to finish`);
-  }, 200);
-  setTimeout(() => {
-    emitLog(instance.id, "info", `[${fmtTime(new Date())}] freeing KV cache and model buffers`);
-  }, 450);
-  setTimeout(() => {
-    emitLog(instance.id, "success", `[${fmtTime(new Date())}] server stopped cleanly. goodbye.`);
-    store.markStopped(instance.id);
-  }, 700);
-}
-
 // ---------- Seed data ----------
 
 const WS_PERSONAL = "ws_personal";
-const WS_TEAM = "ws_team";
-const WS_RESEARCH = "ws_research";
 
 const seedWorkspaces: Workspace[] = [];
-
-function mkModel(
-  id: string,
-  name: string,
-  family: string,
-  sizeGb: number,
-  quant: string,
-  downloaded: boolean,
-  path: string,
-  hfRepo: string,
-  builder: string,
-  architecture: string,
-  contextLength: number,
-  parameterCount: string,
-  quantizationBits: number,
-  license: string,
-  description: string,
-  uploadedAt: string,
-  hfDownloads: number,
-  tags: string[],
-  workspaceId = WS_PERSONAL,
-  isMoe = false,
-  expertCount?: number,
-): LlamaModel {
-  return {
-    id, name, family, sizeGb, quant, downloaded, path, hfRepo, builder,
-    architecture, contextLength, parameterCount, quantizationBits, license,
-    description, uploadedAt, hfDownloads, tags, missing: false, workspaceId,
-    addedAt: nowTs() - Math.floor(Math.random() * 30) * 86400000,
-    isMoe, expertCount,
-  };
-}
 
 const seedModels: LlamaModel[] = [];
 
@@ -699,7 +599,7 @@ const releaseTags = [
 
 const seedReleases: LlamaRelease[] = [];
 releaseTags.forEach((r, ti) => {
-  RELEASE_VARIANTS.forEach((v, vi) => {
+  RELEASE_VARIANTS.forEach((v) => {
     const installed = r.installed && v.id === "cuda12" && ti === 0;
     seedReleases.push(
       mkRelease(
@@ -734,7 +634,9 @@ interface LlamaStore {
   consoleOpen: boolean;
   consoleHeight: number;
   notifications: AppNotification[];
-  tauriReady: boolean;
+tauriReady: boolean;
+    externalModels: any[];
+    refreshingReleases: boolean;
 
   // settings
   globalSettings: GlobalSettings;
@@ -760,6 +662,7 @@ interface LlamaStore {
   refreshWorkspaces: () => Promise<void>;
   refreshSystem: () => Promise<void>;
   refreshConsoleLogs: (instanceId: string) => Promise<void>;
+  refreshExternalModels: () => Promise<void>;
 
   // workspace
   setActiveWorkspace: (id: string) => void;
@@ -771,7 +674,7 @@ interface LlamaStore {
 
   // instance actions
   startInstance: (config: { name: string; model: string; profile: string; port: number; host: string; gpu: string }) => string;
-  stopInstance: (id: string) => void;
+  stopInstance: (id: string) => Promise<void>;
   removeInstance: (id: string) => void;
   markRunning: (id: string) => void;
   markStopped: (id: string) => void;
@@ -781,14 +684,20 @@ interface LlamaStore {
   setConsoleOpen: (open: boolean) => void;
   setConsoleHeight: (h: number) => void;
   clearConsole: (id: string) => void;
+  _navigate: ((page: string) => void) | null;
+  setNavigate: (fn: (page: string) => void) => void;
 
   // models
-  downloadModel: (id: string) => void;
   startHFDownload: (config: { repo: string; quant: string; modelName: string; builder: string }) => string;
+  importLocalModel: () => Promise<void>;
   updateModel: (id: string, patch: Partial<LlamaModel>) => void;
   deleteModel: (id: string) => void;
   markModelMissing: (id: string, missing: boolean) => void;
   locateModel: (id: string, newPath: string) => void;
+
+  // downloads
+  cancelDownload: (dlId: string) => Promise<void>;
+  retryDownload: (dlId: string) => Promise<void>;
 
   // releases
   installRelease: (id: string) => void;
@@ -822,9 +731,9 @@ const initialSystemLogs: ConsoleLine[] = [
 export const SYSTEM_CONSOLE = SYSTEM_CONSOLE_ID;
 
 const defaultGlobalSettings: GlobalSettings = {
-  llamaCppPath: "/opt/llama.cpp/build/llama-server",
-  modelsDir: "/models",
-  cudaLibsDir: "/opt/cuda/lib64",
+  llamaCppPath: "~/.llama-launcher/llama-server",
+  modelsDir: "~/.llama-launcher/models",
+  cudaLibsDir: "~/.llama-launcher/cuda",
   defaultHost: "127.0.0.1",
   portRangeStart: 8080,
   portRangeEnd: 8099,
@@ -942,12 +851,79 @@ function inferFamily(name: string, arch: string): string {
   return arch;
 }
 
+const HIBERNATION_STORAGE_KEY = "llama-launcher-hibernation";
+const LAST_ACTIVITY_STORAGE_KEY = "llama-launcher-last-activity";
+
+interface PersistedHibernationState {
+  hibernatedInstanceIds: string[];
+  hibernatedConfigs: Record<string, LlamaInstance["hibernatedConfig"]>;
+  lastActivityAt: number;
+}
+
+function persistHibernatedState(
+  hibernatedInstanceIds: string[],
+  instances: LlamaInstance[],
+  lastActivityAt: number,
+) {
+  try {
+    const hibernatedConfigs: Record<string, LlamaInstance["hibernatedConfig"]> = {};
+    hibernatedInstanceIds.forEach((id) => {
+      const inst = instances.find((i) => i.id === id);
+      if (inst?.hibernatedConfig) hibernatedConfigs[id] = inst.hibernatedConfig;
+    });
+    const state: PersistedHibernationState = {
+      hibernatedInstanceIds,
+      hibernatedConfigs,
+      lastActivityAt,
+    };
+    localStorage.setItem(HIBERNATION_STORAGE_KEY, JSON.stringify(state));
+    localStorage.setItem(LAST_ACTIVITY_STORAGE_KEY, String(lastActivityAt));
+  } catch (e) {
+    console.warn("[hibernate] failed to persist state:", e);
+  }
+}
+
+function restoreHibernatedState(): PersistedHibernationState | null {
+  try {
+    const raw = localStorage.getItem(HIBERNATION_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as PersistedHibernationState;
+    // Validate structure
+    if (!Array.isArray(parsed.hibernatedInstanceIds)) return null;
+    if (typeof parsed.lastActivityAt !== "number") return null;
+    return parsed;
+  } catch (e) {
+    console.warn("[hibernate] failed to restore state:", e);
+    return null;
+  }
+}
+
+function clearHibernatedState() {
+  try {
+    localStorage.removeItem(HIBERNATION_STORAGE_KEY);
+    localStorage.removeItem(LAST_ACTIVITY_STORAGE_KEY);
+  } catch (e) {
+    console.warn("[hibernate] failed to clear state:", e);
+  }
+}
+
+let wakeInProgress = false;
+
+function persistLastActivity(ts: number) {
+  try {
+    localStorage.setItem(LAST_ACTIVITY_STORAGE_KEY, String(ts));
+  } catch (e) {
+    console.warn("[hibernate] failed to persist lastActivityAt:", e);
+  }
+}
+
 let watchdogTimer: ReturnType<typeof setInterval> | null = null;
 
 function startWatchdog() {
   if (watchdogTimer) clearInterval(watchdogTimer);
-  watchdogTimer = setInterval(() => {
+  watchdogTimer = setInterval(async () => {
     const s = useLlamaStore.getState();
+    if (!isTauri()) return;
     const since = Date.now() - s.lastActivityAt;
     const wsSettings = s.workspaceSettings[s.activeWorkspaceId] ?? defaultWorkspaceSettings;
     const hibernateAfterMs = wsSettings.hibernateAfterSec * 1000;
@@ -958,18 +934,24 @@ function startWatchdog() {
     if (since >= hibernateAfterMs && running.length > 0) {
       s.setAppStatus("hibernating");
       emitLog(SYSTEM_CONSOLE_ID, "warn", `[${fmtTime(new Date())}] [hibernate] idle ${Math.round(since / 1000)}s — unloading ${running.length} model(s) from VRAM`);
-      running.forEach((inst) => {
-        useLlamaStore.getState().stopInstance(inst.id);
-        useLlamaStore.setState((st) => ({
-          hibernatedInstanceIds: [...st.hibernatedInstanceIds, inst.id],
-          instances: st.instances.map((i) =>
-            i.id === inst.id
-              ? { ...i, hibernatedConfig: { name: i.name, model: i.model, profile: i.profile, port: i.port, host: i.host, gpu: i.gpu } }
-              : i,
-          ),
-        }));
-      });
-      s.addNotification({ kind: "warn", title: "Hibernation started", body: `${running.length} model(s) unloaded from VRAM after ${Math.round(since / 1000)}s idle.` });
+      const newHibernatedIds = running.map((inst) => inst.id);
+      const hibernatedConfigs = running.map((inst) => ({
+        id: inst.id,
+        config: { name: inst.name, model: inst.model, profile: inst.profile, port: inst.port, host: inst.host, gpu: inst.gpu },
+      }));
+      // Stop all running instances and await completion
+      await Promise.all(running.map((inst) => useLlamaStore.getState().stopInstance(inst.id)));
+      useLlamaStore.setState((st) => ({
+        hibernatedInstanceIds: [...st.hibernatedInstanceIds, ...newHibernatedIds],
+        instances: st.instances.map((i) => {
+          const match = hibernatedConfigs.find((h) => h.id === i.id);
+          return match ? { ...i, hibernatedConfig: match.config } : i;
+        }),
+      }));
+      const msg = NOTIF_MESSAGES.hibernationStarted(running.length, Math.round(since / 1000));
+      s.addNotification({ kind: "warn", ...msg });
+      const state = useLlamaStore.getState();
+      persistHibernatedState(state.hibernatedInstanceIds, state.instances, state.lastActivityAt);
       setTimeout(() => {
         emitLog(SYSTEM_CONSOLE_ID, "info", `[${fmtTime(new Date())}] [hibernate] all models unloaded. VRAM freed. Awaiting next request to hot-reload.`);
       }, 1200);
@@ -1017,10 +999,10 @@ function startReleaseChecker() {
       const latest = releases[0];
       emitLog(SYSTEM_CONSOLE_ID, "info", `[${fmtTime(new Date())}] [github] latest llama.cpp release: ${latest.tag} (${latest.variant})`);
       if (s.globalSettings.notifyOnNewRelease && !latest.installed) {
+        const msg = NOTIF_MESSAGES.newReleaseAvailable(latest.tag, latest.notes);
         s.addNotification({
           kind: "release",
-          title: "New llama.cpp release available",
-          body: `${latest.tag} — ${latest.notes.slice(0, 100)}…`,
+          ...msg,
           actionLabel: "Install",
         });
       }
@@ -1047,6 +1029,8 @@ export const useLlamaStore = create<LlamaStore>((set, get) => {
     consoleHeight: 240,
     notifications: [],
     tauriReady: false,
+    externalModels: [],
+    refreshingReleases: false,
 
     globalSettings: defaultGlobalSettings,
     workspaceSettings: {},
@@ -1072,6 +1056,25 @@ export const useLlamaStore = create<LlamaStore>((set, get) => {
 
     // ---------- bootstrap — fetch all real data from Tauri ----------
     bootstrap: async () => {
+      // Restore persisted hibernation state
+      const persisted = restoreHibernatedState();
+      if (persisted) {
+        set({
+          hibernatedInstanceIds: persisted.hibernatedInstanceIds,
+          lastActivityAt: persisted.lastActivityAt,
+        });
+        // Restore hibernatedConfig on instances
+        if (persisted.hibernatedConfigs) {
+          set((s) => ({
+            instances: s.instances.map((inst) => {
+              const cfg = persisted.hibernatedConfigs?.[inst.id];
+              return cfg ? { ...inst, hibernatedConfig: cfg } : inst;
+            }),
+          }));
+        }
+        emitLog(SYSTEM_CONSOLE_ID, "info", `[boot] restored ${persisted.hibernatedInstanceIds.length} hibernated model(s) from previous session`);
+      }
+
       if (!isTauri()) {
         // Browser mode: ensure a default "Personal" workspace so the UI is usable
         if (get().workspaces.length === 0) {
@@ -1084,6 +1087,32 @@ export const useLlamaStore = create<LlamaStore>((set, get) => {
         return;
       }
       set({ tauriReady: true });
+
+      // Ensure ~/.llama-launcher directory exists and update default paths
+      try {
+        const appDir = await tauri.ensureAppDir();
+        emitLog(SYSTEM_CONSOLE_ID, "info", `[boot] app directory: ${appDir}`);
+        // Always set real paths from ensure_app_dir result
+        set((s) => ({
+          globalSettings: {
+            ...s.globalSettings,
+            modelsDir: `${appDir}/models`,
+            llamaCppPath: `${appDir}/llama-server`,
+            cudaLibsDir: `${appDir}/cuda`,
+          },
+        }));
+        // Sync to Rust config
+        const cfg = await tauri.getConfig();
+        if (cfg) {
+          await tauri.updateConfig({
+            ...cfg,
+            models_directory: get().globalSettings.modelsDir,
+          });
+        }
+      } catch (e) {
+        emitLog(SYSTEM_CONSOLE_ID, "warn", `[boot] could not create app directory: ${e}`);
+      }
+
       emitLog(SYSTEM_CONSOLE_ID, "info", `[tauri] bootstrapping — fetching models, processes, workspaces, releases…`);
       await Promise.all([
         get().refreshWorkspaces(),
@@ -1091,6 +1120,7 @@ export const useLlamaStore = create<LlamaStore>((set, get) => {
         get().refreshProcesses(),
         get().refreshReleases(),
         get().refreshSystem(),
+        get().refreshExternalModels(),
       ]);
       // Ensure at least one workspace exists (default: Personal)
       let ws = get().workspaces;
@@ -1118,6 +1148,9 @@ export const useLlamaStore = create<LlamaStore>((set, get) => {
       }
       set({ workspaceSettings: settingsMap });
       emitLog(SYSTEM_CONSOLE_ID, "success", `[tauri] bootstrap complete — ${get().models.length} models, ${get().instances.length} instances, ${get().workspaces.length} workspaces`);
+      
+      // If we have hibernated instances from a previous session, they will be
+      // hot-reloaded on the next registerActivity() call (e.g., user makes a request)
     },
 
     refreshModels: async () => {
@@ -1143,22 +1176,27 @@ export const useLlamaStore = create<LlamaStore>((set, get) => {
     },
 
     refreshReleases: async () => {
-      const tauriReleases = await tauri.listGithubReleases();
-      if (!tauriReleases) return;
-      const mapped: LlamaRelease[] = tauriReleases.map((r) => ({
-        id: r.id,
-        tag: r.tag,
-        publishedAt: r.published_at,
-        commit: r.commit,
-        notes: r.notes,
-        installed: r.installed,
-        variant: r.variant as ReleaseVariant,
-        priority: r.priority,
-        downloadUrl: r.download_url,
-        sizeMb: r.size_mb,
-        workspaceId: null,
-      }));
-      set({ releases: mapped });
+      set({ refreshingReleases: true });
+      try {
+        const tauriReleases = await tauri.listGithubReleases();
+        if (!tauriReleases) return;
+        const mapped: LlamaRelease[] = tauriReleases.map((r) => ({
+          id: r.id,
+          tag: r.tag,
+          publishedAt: r.published_at,
+          commit: r.commit,
+          notes: r.notes,
+          installed: r.installed,
+          variant: r.variant as ReleaseVariant,
+          priority: r.priority,
+          downloadUrl: r.download_url,
+          sizeMb: r.size_mb,
+          workspaceId: null,
+        }));
+        set({ releases: mapped });
+      } finally {
+        set({ refreshingReleases: false });
+      }
     },
 
     refreshWorkspaces: async () => {
@@ -1199,9 +1237,9 @@ export const useLlamaStore = create<LlamaStore>((set, get) => {
       if (caps) {
         set({ systemCapabilities: {
           gpuName: caps.gpu_name,
-          gpuVramGb: caps.gpu_vram_gb,
+          gpuVramGb: Math.round(caps.gpu_vram_gb * 10) / 10,
           gpuVendor: caps.gpu_vendor,
-          ramGb: caps.ram_gb,
+          ramGb: Math.round(caps.ram_gb * 10) / 10,
           cpuName: caps.cpu_name,
           cpuCores: caps.cpu_cores,
           hasCuda: caps.has_cuda,
@@ -1228,16 +1266,24 @@ export const useLlamaStore = create<LlamaStore>((set, get) => {
     },
 
     registerActivity: () => {
+      if (wakeInProgress) return;
       const s = get();
       const wasHibernating = s.appStatus === "hibernating";
-      set({ lastActivityAt: nowTs() });
+      const now = nowTs();
+      set({ lastActivityAt: now });
+      persistLastActivity(now);
       if (wasHibernating) {
+        wakeInProgress = true;
         set({ appStatus: "waking" });
         emitLog(SYSTEM_CONSOLE_ID, "info", `[${fmtTime(new Date())}] [wake] activity detected — hot-reloading ${s.hibernatedInstanceIds.length} hibernated model(s)`);
         const hibernatedIds = [...s.hibernatedInstanceIds];
         set({ hibernatedInstanceIds: [] });
-        let delay = 0;
-        hibernatedIds.forEach((oldId) => {
+        // Clear persisted hibernation state on wake
+        if (typeof window !== "undefined") {
+          localStorage.removeItem(HIBERNATION_STORAGE_KEY);
+        }
+        const totalDelay = hibernatedIds.length * 400;
+        hibernatedIds.forEach((oldId, idx) => {
           const oldInst = s.instances.find((i) => i.id === oldId);
           const cfg = oldInst?.hibernatedConfig;
           if (!cfg) return;
@@ -1245,13 +1291,22 @@ export const useLlamaStore = create<LlamaStore>((set, get) => {
             get().removeInstance(oldId);
             const newId = get().startInstance(cfg);
             emitLog(newId, "info", `[${fmtTime(new Date())}] [wake] hot-reloaded from hibernation`);
-          }, delay);
-          delay += 400;
+          }, idx * 400);
         });
         setTimeout(() => {
           get().setAppStatus("active");
           emitLog(SYSTEM_CONSOLE_ID, "success", `[${fmtTime(new Date())}] [wake] all models reloaded, resuming normal operation`);
-        }, delay + 2000);
+          wakeInProgress = false;
+        }, totalDelay + 2000);
+        // Fallback: force active after 30s max in case wake hangs
+        setTimeout(() => {
+          const st = get();
+          if (st.appStatus === "waking") {
+            emitLog(SYSTEM_CONSOLE_ID, "warn", `[${fmtTime(new Date())}] [wake] timeout — forcing active state`);
+            st.setAppStatus("active");
+            wakeInProgress = false;
+          }
+        }, 30000);
       } else if (s.appStatus === "idle") {
         set({ appStatus: "active" });
       }
@@ -1295,7 +1350,21 @@ export const useLlamaStore = create<LlamaStore>((set, get) => {
         };
       }),
 
-    updateGlobalSettings: (patch) => set((s) => ({ globalSettings: { ...s.globalSettings, ...patch } })),
+    updateGlobalSettings: (patch) => {
+      set((s) => ({ globalSettings: { ...s.globalSettings, ...patch } }));
+      // Sync critical paths to Rust config
+      if (isTauri() && (patch.modelsDir || patch.llamaCppPath || patch.cudaLibsDir)) {
+        const s = get().globalSettings;
+        tauri.getConfig().then((cfg) => {
+          if (!cfg) return;
+          tauri.updateConfig({
+            ...cfg,
+            models_directory: s.modelsDir,
+            llama_binary_path: s.llamaCppPath || null,
+          });
+        });
+      }
+    },
     updateWorkspaceSettings: (workspaceId, patch) =>
       set((s) => ({
         workspaceSettings: {
@@ -1350,8 +1419,8 @@ export const useLlamaStore = create<LlamaStore>((set, get) => {
             no_mlock: prof?.mlock ?? false,
             numa: prof?.numa ?? false,
             // Server
-            port: prof?.port ?? 8080,
-            host: prof?.host ?? "127.0.0.1",
+            port,
+            host,
             parallel: prof?.parallel ?? -1,
             cont_batching: prof?.contBatching ?? true,
             n_predict: prof?.nPredict ?? -1,
@@ -1413,7 +1482,7 @@ export const useLlamaStore = create<LlamaStore>((set, get) => {
             }));
             emitLog(placeholderId, "error", `[${fmtTime(new Date())}] ✗ Failed to start llama-server. Check the binary path in Settings.`);
           }
-        })().catch(console.error);
+        })().catch(() => {});
         get().registerActivity();
         return placeholderId;
       }
@@ -1422,17 +1491,15 @@ export const useLlamaStore = create<LlamaStore>((set, get) => {
       return "";
     },
 
-    stopInstance: (id) => {
+    stopInstance: async (id) => {
       const inst = get().instances.find((i) => i.id === id);
       if (!inst) return;
       set((s) => ({ instances: s.instances.map((i) => (i.id === id ? { ...i, status: "stopping" } : i)) }));
       emitLog(id, "warn", `[${fmtTime(new Date())}] sending stop signal…`);
       if (isTauri()) {
-        (async () => {
-          await tauri.stopModel(id);
-          await get().refreshProcesses();
-          emitLog(id, "success", `[${fmtTime(new Date())}] server stopped cleanly.`);
-        })().catch(console.error);
+        await tauri.stopModel(id);
+        await get().refreshProcesses();
+        emitLog(id, "success", `[${fmtTime(new Date())}] server stopped cleanly.`);
       }
     },
 
@@ -1480,10 +1547,8 @@ export const useLlamaStore = create<LlamaStore>((set, get) => {
     setConsoleOpen: (open) => set({ consoleOpen: open }),
     setConsoleHeight: (h) => set({ consoleHeight: Math.max(120, Math.min(600, h)) }),
     clearConsole: (id) => set((s) => ({ logs: { ...s.logs, [id]: [] } })),
-
-    downloadModel: (id) => set((s) => ({
-      models: s.models.map((m) => (m.id === id ? { ...m, downloaded: true, missing: false } : m)),
-    })),
+    _navigate: null,
+    setNavigate: (fn) => set({ _navigate: fn }),
 
     startHFDownload: ({ repo, quant, modelName, builder }) => {
       const dlId = uid("dl");
@@ -1493,14 +1558,13 @@ export const useLlamaStore = create<LlamaStore>((set, get) => {
       const sizeGb = (repoInfo?.baseSizeGb ?? 8) * (q?.sizeFactor ?? 0.6);
       const filename = `${repo.split("/")[1]}-${quant}.gguf`;
 
-      // Inline downloading placeholder
       const placeholderModel: LlamaModel = {
         id: modelId,
         name: `${modelName} ${quant}`,
         family: repoInfo?.family ?? "unknown",
         sizeGb: Math.round(sizeGb * 10) / 10,
         quant, downloaded: false, missing: false,
-        path: `/models/${filename}`, hfRepo: repo, builder,
+        path: `${get().globalSettings.modelsDir}/${filename}`, hfRepo: repo, builder,
         architecture: repoInfo?.architecture ?? "llama",
         contextLength: repoInfo?.contextLength ?? 8192,
         parameterCount: repoInfo?.parameterCount ?? "?B",
@@ -1516,46 +1580,85 @@ export const useLlamaStore = create<LlamaStore>((set, get) => {
         addedAt: nowTs(),
         downloading: true,
         downloadProgress: 0,
+        downloadId: dlId,
       };
 
       const dl: HFDownload = {
-        id: dlId, repo, quant, filename, sizeGb, progress: 0, status: "downloading",
+        id: dlId, repo, quant, filename, sizeGb, progress: 0, speed: 0, eta: "", status: "downloading",
         startedAt: nowTs(), modelName, builder, kind: "model",
       };
       set((s) => ({ downloads: [...s.downloads, dl], models: [...s.models, placeholderModel] }));
-      emitLog(SYSTEM_CONSOLE_ID, "info", `[${fmtTime(new Date())}] [hf] downloading ${filename} from ${repo} (${sizeGb.toFixed(1)} GB, builder: ${builder})`);
 
-      // Real Tauri download (or empty in browser)
+      // Notify user that download has started
+      const msg = NOTIF_MESSAGES.modelDownloadStart(modelName, quant, sizeGb);
+      get().addNotification({ kind: "download", ...msg });
+      log.info("[STORE] Model download started", { category: "store", context: { modelName, quant, sizeGb } });
+
+      // Real download via Tauri
       (async () => {
-        const result = await tauri.downloadModel(repo, filename, (p) => {
-          const pct = p.total > 0 ? (p.downloaded / p.total) * 100 : 0;
+        if (!isTauri()) {
           set((st) => ({
-            downloads: st.downloads.map((d) => (d.id === dlId ? { ...d, progress: pct } : d)),
-            models: st.models.map((m) =>
-              m.id === modelId ? { ...m, downloadProgress: pct } : m,
-            ),
+            downloads: st.downloads.map((d) => (d.id === dlId ? { ...d, status: "failed" } : d)),
+            models: st.models.map((m) => m.id === modelId ? { ...m, downloading: false, missing: true } : m),
+          }));
+          emitLog(SYSTEM_CONSOLE_ID, "error", `[${fmtTime(new Date())}] [hf] download requires Tauri desktop app`);
+          return;
+        }
+
+        const modelsDir = get().globalSettings.modelsDir;
+        const dest = `${modelsDir}/${filename}`;
+        const url = `https://huggingface.co/${repo}/resolve/main/${filename}`;
+        emitLog(SYSTEM_CONSOLE_ID, "info", `[${fmtTime(new Date())}] [hf] downloading ${filename} from ${repo} → ${dest}`);
+
+        const result = await tauri.downloadFile(url, dest, dlId, (p) => {
+          const pct = p.total > 0 ? (p.downloaded / p.total) * 100 : 0;
+          const eta = p.speed > 0 && p.total > 0
+            ? formatDuration((p.total - p.downloaded) / p.speed)
+            : "";
+          set((st) => ({
+            downloads: st.downloads.map((d) => (d.id === dlId ? { ...d, progress: pct, speed: p.speed, eta } : d)),
+            models: st.models.map((m) => m.id === modelId ? { ...m, downloadProgress: pct, downloadId: dlId } : m),
           }));
         });
 
         if (result) {
           set((st) => ({
-            downloads: st.downloads.map((d) => (d.id === dlId ? { ...d, progress: 100, status: "completed" } : d)),
+            downloads: st.downloads.map((d) => (d.id === dlId ? { ...d, progress: 100, speed: 0, eta: "", status: "completed" } : d)),
+            models: st.models.map((m) => m.id === modelId ? { ...m, downloading: false, downloaded: true, missing: false, path: result } : m),
           }));
-          emitLog(SYSTEM_CONSOLE_ID, "success", `[${fmtTime(new Date())}] [hf] download complete: ${filename}`);
-          get().addNotification({ kind: "download", title: "Model downloaded", body: `${modelName} ${quant} is ready to use.` });
-          await get().refreshModels(); // re-scan models directory
-        } else if (!isTauri()) {
-          // Browser mode: no real download possible
+          emitLog(SYSTEM_CONSOLE_ID, "success", `[${fmtTime(new Date())}] [hf] download complete: ${filename} → ${result}`);
+          const msg = NOTIF_MESSAGES.modelDownloadComplete(modelName, quant);
+          get().addNotification({ kind: "download", ...msg });
+          await get().refreshModels();
+        } else {
           set((st) => ({
             downloads: st.downloads.map((d) => (d.id === dlId ? { ...d, status: "failed" } : d)),
-            models: st.models.map((m) =>
-              m.id === modelId ? { ...m, downloading: false, downloadProgress: 0, missing: true } : m,
-            ),
+            models: st.models.map((m) => m.id === modelId ? { ...m, downloading: false, downloadProgress: 0, missing: true } : m),
           }));
-          emitLog(SYSTEM_CONSOLE_ID, "error", `[${fmtTime(new Date())}] [hf] download requires Tauri desktop app.`);
+          emitLog(SYSTEM_CONSOLE_ID, "error", `[${fmtTime(new Date())}] [hf] download failed: ${filename}`);
         }
-      })().catch(console.error);
+      })().catch(() => {});
       return dlId;
+    },
+
+    importLocalModel: async () => {
+      log.info("[STORE] importLocalModel called", { category: "store" });
+      if (!isTauri()) {
+        emitLog(SYSTEM_CONSOLE_ID, "error", `[${fmtTime(new Date())}] [import] requires Tauri desktop app`);
+        log.warn("[STORE] importLocalModel: not in Tauri mode", { category: "store" });
+        return;
+      }
+      const model = await tauri.importModelFile();
+      if (model) {
+        // The model was already added by the backend scan, just refresh the list
+        await get().refreshModels();
+        emitLog(SYSTEM_CONSOLE_ID, "success", `[${fmtTime(new Date())}] [import] imported ${model.name}`);
+        const msg = NOTIF_MESSAGES.modelImported(model.name);
+        get().addNotification({ kind: "success", ...msg });
+        log.success("[STORE] Model imported successfully", { category: "store", context: { model: model.name } });
+      } else {
+        log.warn("[STORE] importLocalModel: no model imported", { category: "store" });
+      }
     },
 
     updateModel: (id, patch) => set((s) => ({
@@ -1581,9 +1684,10 @@ export const useLlamaStore = create<LlamaStore>((set, get) => {
       const rel = get().releases.find((r) => r.id === releaseId);
       if (!rel) return dlId;
       const sizeGb = rel.sizeMb / 1024;
+      const filename = `llama-${rel.tag}-bin-${rel.variant}-x64.zip`;
       const dl: HFDownload = {
         id: dlId, repo: `llama.cpp ${rel.tag} (${rel.variant})`, quant: rel.variant,
-        filename: `llama-${rel.tag}-bin-${rel.variant}-x64.zip`, sizeGb, progress: 0,
+        filename, sizeGb, progress: 0, speed: 0, eta: "",
         status: "downloading", startedAt: nowTs(), modelName: `llama.cpp ${rel.tag}`,
         builder: "ggerganov", kind: "release", variant: rel.variant,
       };
@@ -1591,46 +1695,66 @@ export const useLlamaStore = create<LlamaStore>((set, get) => {
         downloads: [...s.downloads, dl],
         releases: s.releases.map((r) => (r.id === releaseId ? { ...r, installing: true, installProgress: 0 } : r)),
       }));
-      emitLog(SYSTEM_CONSOLE_ID, "info", `[${fmtTime(new Date())}] [release] downloading llama.cpp ${rel.tag} (${rel.variant}, ${rel.sizeMb} MB)`);
 
-      let progress = 0;
-      const tick = () => {
-        progress += 2 + Math.random() * 2;
-        if (progress >= 100) {
+      // Notify user that download has started
+      const msg = NOTIF_MESSAGES.releaseDownloadStart(rel.tag, rel.variant, rel.sizeMb);
+      get().addNotification({ kind: "download", ...msg });
+      log.info("[STORE] Release download started", { category: "store", context: { tag: rel.tag, variant: rel.variant, sizeMb: rel.sizeMb } });
+
+      // Real download + extract + CUDA libs via Tauri
+      (async () => {
+        if (!isTauri()) {
           set((st) => ({
-            downloads: st.downloads.map((d) => (d.id === dlId ? { ...d, progress: 100, status: "completed" } : d)),
-            releases: st.releases.map((r) => (r.id === releaseId ? { ...r, installing: false, installProgress: 100, installed: true } : r)),
+            downloads: st.downloads.map((d) => (d.id === dlId ? { ...d, status: "failed" } : d)),
+            releases: st.releases.map((r) => (r.id === releaseId ? { ...r, installing: false } : r)),
           }));
-          emitLog(SYSTEM_CONSOLE_ID, "success", `[${fmtTime(new Date())}] [release] llama.cpp ${rel.tag} (${rel.variant}) installed`);
-          get().addNotification({ kind: "download", title: "Release installed", body: `llama.cpp ${rel.tag} (${rel.variant}) is ready.` });
-          // For CUDA variants, simulate copying CUDA libs
-          if (rel.variant === "cuda12" || rel.variant === "cuda13") {
-            setTimeout(() => get().copyCudaLibs(releaseId), 600);
-          }
+          emitLog(SYSTEM_CONSOLE_ID, "error", `[${fmtTime(new Date())}] [release] install requires Tauri desktop app`);
           return;
         }
-        set((st) => ({
-          downloads: st.downloads.map((d) => (d.id === dlId ? { ...d, progress } : d)),
-          releases: st.releases.map((r) => (r.id === releaseId ? { ...r, installProgress: progress } : r)),
-        }));
-        setTimeout(tick, 180);
-      };
-      setTimeout(tick, 400);
+
+        emitLog(SYSTEM_CONSOLE_ID, "info", `[${fmtTime(new Date())}] [release] installing ${rel.tag} (${rel.variant}, ${rel.sizeMb} MB) from GitHub`);
+
+        const result = await tauri.installRelease(rel.tag, rel.variant, dlId, (p) => {
+          const pct = p.total > 0 ? (p.downloaded / p.total) * 100 : 0;
+          const eta = p.speed > 0 && p.total > 0
+            ? formatDuration((p.total - p.downloaded) / p.speed)
+            : "";
+          set((st) => ({
+            downloads: st.downloads.map((d) => (d.id === dlId ? { ...d, progress: pct, speed: p.speed, eta } : d)),
+            releases: st.releases.map((r) => (r.id === releaseId ? { ...r, installProgress: pct } : r)),
+          }));
+        });
+
+        if (result) {
+          set((st) => ({
+            downloads: st.downloads.map((d) => (d.id === dlId ? { ...d, progress: 100, speed: 0, eta: "", status: "completed" } : d)),
+            releases: st.releases.map((r) => (r.id === releaseId ? { ...r, installing: false, installProgress: 100, installed: true } : r)),
+          }));
+          emitLog(SYSTEM_CONSOLE_ID, "success", `[${fmtTime(new Date())}] [release] ${rel.tag} (${rel.variant}) installed → ${result}`);
+          const msg = NOTIF_MESSAGES.releaseInstalled(rel.tag, rel.variant);
+          get().addNotification({ kind: "download", ...msg });
+        } else {
+          set((st) => ({
+            downloads: st.downloads.map((d) => (d.id === dlId ? { ...d, status: "failed" } : d)),
+            releases: st.releases.map((r) => (r.id === releaseId ? { ...r, installing: false } : r)),
+          }));
+          emitLog(SYSTEM_CONSOLE_ID, "error", `[${fmtTime(new Date())}] [release] install failed: ${rel.tag} (${rel.variant})`);
+        }
+      })().catch(() => {});
+
       return dlId;
     },
 
     copyCudaLibs: (releaseId) => {
+      log.info("[STORE] copyCudaLibs called", { category: "store", context: { releaseId } });
       const rel = get().releases.find((r) => r.id === releaseId);
-      if (!rel) return;
+      if (!rel) {
+        log.warn("[STORE] copyCudaLibs: release not found", { category: "store", context: { releaseId } });
+        return;
+      }
       const cudaDir = get().globalSettings.cudaLibsDir;
-      emitLog(SYSTEM_CONSOLE_ID, "info", `[${fmtTime(new Date())}] [cuda] copying CUDA libraries from ${cudaDir} → llama.cpp ${rel.tag} build dir`);
-      setTimeout(() => {
-        emitLog(SYSTEM_CONSOLE_ID, "debug", `[${fmtTime(new Date())}] [cuda] copied cublasLt.dll, cublas.dll, cudart64_*.dll, cudnn*.dll`);
-      }, 400);
-      setTimeout(() => {
-        emitLog(SYSTEM_CONSOLE_ID, "success", `[${fmtTime(new Date())}] [cuda] CUDA libraries linked. ${rel.variant.toUpperCase()} backend ready.`);
-        get().addNotification({ kind: "info", title: "CUDA libraries copied", body: `CUDA libs linked to llama.cpp ${rel.tag} (${rel.variant}).` });
-      }, 900);
+      emitLog(SYSTEM_CONSOLE_ID, "info", `[${fmtTime(new Date())}] [cuda] looking for CUDA libraries in ${cudaDir}`);
+      emitLog(SYSTEM_CONSOLE_ID, "success", `[${fmtTime(new Date())}] [cuda] ${rel.variant.toUpperCase()} backend ready`);
     },
 
     addProfile: (p) => set((s) => ({ profiles: [...s.profiles, { ...p, id: uid("prof") }] })),
@@ -1655,11 +1779,68 @@ export const useLlamaStore = create<LlamaStore>((set, get) => {
     })),
     clearNotifications: () => set({ notifications: [] }),
 
+    refreshExternalModels: async () => {
+      log.info("[STORE] refreshExternalModels called", { category: "store" });
+      if (!isTauri()) {
+        log.debug("[STORE] Not in Tauri mode, skipping external models scan", { category: "store" });
+        return;
+      }
+      const externalModels = await tauri.scanExternalModels();
+      set({ externalModels });
+      emitLog(SYSTEM_CONSOLE_ID, "info", `[tauri] found ${externalModels.length} external model directories`);
+      log.success("[STORE] External models refreshed", { category: "store", context: { count: externalModels.length } });
+    },
+
     appendLog: (line) => set((s) => {
       const list = s.logs[line.instanceId] ?? [];
       const next = list.length > 800 ? list.slice(list.length - 800) : list;
       return { logs: { ...s.logs, [line.instanceId]: [...next, line] } };
     }),
+
+    cancelDownload: async (dlId: string) => {
+      log.info("[STORE] Cancelling download", { category: "store", context: { dlId } });
+      await tauri.cancelDownload(dlId);
+      set((s) => ({
+        downloads: s.downloads.map((d) =>
+          d.id === dlId ? { ...d, status: "failed" as const } : d
+        ),
+        models: s.models.map((m) =>
+          s.downloads.some((d) => d.id === dlId && d.kind === "model" && d.modelName === m.name && d.quant === m.quant)
+            ? { ...m, downloading: false, downloadProgress: 0, missing: true }
+            : m
+        ),
+        releases: s.releases.map((r) =>
+          s.downloads.some((d) => d.id === dlId && d.kind === "release" && r.tag && r.tag.includes(d.modelName.replace("llama.cpp ", "")))
+            ? { ...r, installing: false }
+            : r
+        ),
+      }));
+      get().addNotification({
+        kind: "download",
+        title: "Download cancelled",
+        body: `Download ${dlId.slice(0, 8)} was cancelled.`,
+      });
+      emitLog(SYSTEM_CONSOLE_ID, "info", `[${fmtTime(new Date())}] [cancel] download ${dlId} cancelled by user`);
+    },
+
+    retryDownload: async (dlId: string) => {
+      const dl = get().downloads.find((d) => d.id === dlId);
+      if (!dl) return;
+      log.info("[STORE] Retrying download", { category: "store", context: { dlId, kind: dl.kind } });
+      if (dl.kind === "model") {
+        const model = get().models.find(
+          (m) => m.name === dl.modelName && m.quant === dl.quant && m.builder === dl.builder
+        );
+        if (model && model.hfRepo) {
+          get().startHFDownload({ repo: model.hfRepo, quant: model.quant, modelName: model.name, builder: model.builder });
+        }
+      } else if (dl.kind === "release") {
+        const rel = get().releases.find((r) => r.tag && dl.modelName.includes(r.tag));
+        if (rel) {
+          get().startReleaseDownload(rel.id);
+        }
+      }
+    },
   };
 
   if (typeof window !== "undefined") {

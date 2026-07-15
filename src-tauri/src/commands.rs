@@ -1,4 +1,6 @@
 use std::path::{Path, PathBuf};
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::Arc;
 use std::time::{Duration, SystemTime};
 
 use futures_util::StreamExt;
@@ -7,14 +9,15 @@ use tauri::AppHandle;
 use tauri_plugin_dialog::DialogExt;
 use tauri_plugin_opener::OpenerExt;
 use tauri_plugin_store::StoreExt;
-use tokio::io::AsyncReadExt;
-use tracing::info;
+use tokio::io::{AsyncReadExt, AsyncWriteExt};
+use tracing::{debug, info};
 
 use crate::{
     GLOBAL_STATE, AppConfig, BenchmarkConfig, BenchmarkMetrics, BenchmarkResult, ModelFormat,
     ModelInfo, ModelMetadata, ProcessConfig, ProcessInfo, ProcessMetrics, ProcessStatus,
     RunningProcess, SystemSnapshot,
 };
+use crate::{log_debug, log_error, log_info, log_warn};
 
 #[tauri::command]
 pub async fn scan_models() -> Result<Vec<ModelInfo>, String> {
@@ -379,12 +382,39 @@ pub struct DownloadProgress {
     pub speed: f64,
 }
 
+fn register_cancel_token(dl_id: &str) -> Arc<AtomicBool> {
+    let flag = Arc::new(AtomicBool::new(false));
+    let mut tokens = crate::GLOBAL_STATE.cancel_tokens.lock().unwrap();
+    tokens.insert(dl_id.to_string(), flag.clone());
+    flag
+}
+
+fn unregister_cancel_token(dl_id: &str) {
+    let mut tokens = crate::GLOBAL_STATE.cancel_tokens.lock().unwrap();
+    tokens.remove(dl_id);
+}
+
+#[tauri::command]
+pub async fn cancel_download(dl_id: String) -> Result<(), String> {
+    let mut tokens = crate::GLOBAL_STATE.cancel_tokens.lock().unwrap();
+    if let Some(flag) = tokens.remove(&dl_id) {
+        flag.store(true, Ordering::Relaxed);
+        log_info!("[cancel_download] cancelled", "download", serde_json::json!({ "dl_id": &dl_id }));
+        Ok(())
+    } else {
+        log_warn!("[cancel_download] no active download found", "download", serde_json::json!({ "dl_id": &dl_id }));
+        Err("No active download found for this ID".to_string())
+    }
+}
+
 #[tauri::command]
 pub async fn download_model(
     repo: String,
     file: String,
+    dl_id: String,
     progress_tx: tauri::ipc::Channel<DownloadProgress>,
 ) -> Result<ModelInfo, String> {
+    let _cancel = register_cancel_token(&dl_id);
     let models_dir = {
         let config = GLOBAL_STATE.config.read();
         PathBuf::from(&config.models_directory)
@@ -409,9 +439,13 @@ pub async fn download_model(
         .await
         .map_err(|e| format!("Failed to create file: {}", e))?;
 
-    use tokio::io::AsyncWriteExt;
     let mut stream = response.bytes_stream();
     while let Some(chunk) = stream.next().await {
+        if _cancel.load(Ordering::Relaxed) {
+            let _ = tokio::fs::remove_file(&dest).await;
+            return Err("Download cancelled".to_string());
+        }
+
         let chunk = chunk.map_err(|e| format!("Download error: {}", e))?;
         file.write_all(&chunk)
             .await
@@ -419,14 +453,18 @@ pub async fn download_model(
 
         downloaded += chunk.len() as u64;
 
-        let _ = progress_tx.send(DownloadProgress {
+        if progress_tx.send(DownloadProgress {
             total: total_size,
             downloaded,
             speed: 0.0,
-        });
+        }).is_err() {
+            debug!("Download progress channel closed");
+            break;
+        }
     }
 
     file.flush().await.ok();
+    unregister_cancel_token(&dl_id);
 
     detect_model(&dest).await
 }
@@ -1210,4 +1248,317 @@ pub async fn serve_asset_file(path: String) -> Result<String, String> {
 pub async fn get_process_stdout(id: String, lines: Option<usize>) -> Result<Vec<String>, String> {
     let n = lines.unwrap_or(200);
     Ok(crate::processes::process_manager().get_stdout(&id, n))
+}
+
+// ---------- Download / File helpers ----------
+
+#[tauri::command]
+pub async fn download_file(
+    url: String,
+    dest: String,
+    dl_id: String,
+    progress_tx: tauri::ipc::Channel<DownloadProgress>,
+) -> Result<String, String> {
+    let cancel = register_cancel_token(&dl_id);
+
+    log_info!("[download_file] starting", "download", serde_json::json!({ "url": &url, "dest": &dest, "dl_id": &dl_id }));
+
+    let expanded_dest = if dest.starts_with("~/") || dest.starts_with("~\\") {
+        let home = if cfg!(windows) {
+            std::env::var("USERPROFILE").ok()
+        } else {
+            std::env::var("HOME").ok()
+        };
+        let home = home.ok_or_else(|| {
+            unregister_cancel_token(&dl_id);
+            log_error!("[download_file] cannot determine home directory", "download", serde_json::json!({ "dl_id": &dl_id }));
+            "Could not determine home directory".to_string()
+        })?;
+        let rest = &dest[2..];
+        std::path::PathBuf::from(&home).join(rest).to_string_lossy().to_string()
+    } else {
+        dest.clone()
+    };
+
+    let dest_path = std::path::PathBuf::from(&expanded_dest);
+    if let Some(parent) = dest_path.parent() {
+        tokio::fs::create_dir_all(parent).await.map_err(|e| {
+            unregister_cancel_token(&dl_id);
+            log_error!("[download_file] failed to create directory", "download", serde_json::json!({ "path": parent.to_string_lossy().to_string(), "error": e.to_string() }));
+            format!("Failed to create directory: {}", e)
+        })?;
+    }
+
+    let client = reqwest::Client::builder()
+        .user_agent("llama-launcher")
+        .build()
+        .map_err(|e| {
+            unregister_cancel_token(&dl_id);
+            log_error!("[download_file] failed to create HTTP client", "download", serde_json::json!({ "error": e.to_string() }));
+            format!("Failed to create HTTP client: {}", e)
+        })?;
+
+    let response = client.get(&url).send().await.map_err(|e| {
+        unregister_cancel_token(&dl_id);
+        log_error!("[download_file] failed to start download", "download", serde_json::json!({ "url": &url, "error": e.to_string() }));
+        format!("Failed to start download: {}", e)
+    })?;
+
+    let status = response.status();
+    if !status.is_success() {
+        unregister_cancel_token(&dl_id);
+        let msg = format!("HTTP {}: {}", status.as_u16(), status.canonical_reason().unwrap_or("Unknown"));
+        log_error!("[download_file] non-success HTTP status", "download", serde_json::json!({ "url": &url, "status": status.as_u16(), "error": &msg }));
+        return Err(msg);
+    }
+
+    let content_type = response.headers()
+        .get(reqwest::header::CONTENT_TYPE)
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("");
+    if content_type.contains("text/html") {
+        unregister_cancel_token(&dl_id);
+        log_error!("[download_file] server returned HTML instead of binary", "download", serde_json::json!({ "url": &url, "content_type": &content_type }));
+        return Err("Server returned HTML (likely an error page) instead of a binary file".to_string());
+    }
+
+    let total_size = response.content_length().unwrap_or(0);
+
+    if total_size > 0 && total_size < 1_000_000 {
+        unregister_cancel_token(&dl_id);
+        log_error!("[download_file] file too small", "download", serde_json::json!({ "url": &url, "total_size": total_size }));
+        return Err(format!("File too small ({} bytes) - likely an error page", total_size));
+    }
+
+    log_info!("[download_file] accepted", "download", serde_json::json!({ "total_size": total_size, "dest": &expanded_dest }));
+
+    let mut downloaded = 0u64;
+    let mut file = tokio::fs::File::create(&dest_path).await.map_err(|e| {
+        unregister_cancel_token(&dl_id);
+        log_error!("[download_file] failed to create file", "download", serde_json::json!({ "path": &expanded_dest, "error": e.to_string() }));
+        format!("Failed to create file {}: {}", expanded_dest, e)
+    })?;
+
+    let mut stream = response.bytes_stream();
+    let mut last_update = tokio::time::Instant::now();
+    let mut last_bytes = 0u64;
+
+    while let Some(chunk) = stream.next().await {
+        if cancel.load(Ordering::Relaxed) {
+            let _ = tokio::fs::remove_file(&dest_path).await;
+            unregister_cancel_token(&dl_id);
+            log_warn!("[download_file] cancelled by user", "download", serde_json::json!({ "dl_id": &dl_id, "downloaded": downloaded }));
+            return Err("Download cancelled".to_string());
+        }
+
+        let chunk = chunk.map_err(|e| {
+            log_error!("[download_file] stream error", "download", serde_json::json!({ "error": e.to_string(), "downloaded": downloaded }));
+            format!("Download error: {}", e)
+        })?;
+
+        file.write_all(&chunk).await.map_err(|e| {
+            log_error!("[download_file] write error", "download", serde_json::json!({ "error": e.to_string(), "downloaded": downloaded }));
+            format!("Failed to write chunk: {}", e)
+        })?;
+
+        downloaded += chunk.len() as u64;
+
+        if last_update.elapsed() >= std::time::Duration::from_millis(500) {
+            let speed = (downloaded - last_bytes) as f64 / last_update.elapsed().as_secs_f64();
+            last_update = tokio::time::Instant::now();
+            last_bytes = downloaded;
+
+            if progress_tx.send(DownloadProgress {
+                total: total_size,
+                downloaded,
+                speed,
+            }).is_err() {
+                log_debug!("[download_file] progress channel closed", "download");
+                break;
+            }
+        }
+    }
+
+    file.flush().await.ok();
+    unregister_cancel_token(&dl_id);
+
+    if total_size > 0 {
+        let metadata = tokio::fs::metadata(&dest_path).await.map_err(|e| {
+            log_error!("[download_file] failed to stat downloaded file", "download", serde_json::json!({ "path": &expanded_dest, "error": e.to_string() }));
+            format!("Failed to stat downloaded file: {}", e)
+        })?;
+        if metadata.len() < 1_000_000 {
+            let _ = tokio::fs::remove_file(&dest_path).await;
+            log_error!("[download_file] downloaded file too small", "download", serde_json::json!({ "path": &expanded_dest, "size": metadata.len() }));
+            return Err(format!("Downloaded file too small ({} bytes) - likely an error page", metadata.len()));
+        }
+    }
+
+    log_info!("[download_file] completed", "download", serde_json::json!({ "path": &expanded_dest, "size": downloaded }));
+    Ok(expanded_dest)
+}
+
+#[tauri::command]
+pub async fn extract_zip(
+    zip_path: String,
+    dest_dir: String,
+    dl_id: String,
+    progress_tx: tauri::ipc::Channel<DownloadProgress>,
+) -> Result<String, String> {
+    let _cancel = register_cancel_token(&dl_id);
+    tokio::fs::create_dir_all(&dest_dir).await.map_err(|e| {
+        unregister_cancel_token(&dl_id);
+        format!("Failed to create extract directory: {}", e)
+    })?;
+
+    let file = std::fs::File::open(&zip_path).map_err(|e| {
+        unregister_cancel_token(&dl_id);
+        format!("Failed to open zip file: {}", e)
+    })?;
+
+    let mut archive = zip::ZipArchive::new(file).map_err(|e| {
+        unregister_cancel_token(&dl_id);
+        format!("Failed to read zip archive: {}", e)
+    })?;
+
+    let total = archive.len() as u64;
+    for i in 0..archive.len() {
+        if _cancel.load(Ordering::Relaxed) {
+            unregister_cancel_token(&dl_id);
+            return Err("Extraction cancelled".to_string());
+        }
+
+        let mut entry = archive.by_index(i).map_err(|e| {
+            format!("Failed to read zip entry {}: {}", i, e)
+        })?;
+
+        let out_path = std::path::Path::new(&dest_dir).join(entry.name());
+        if entry.is_dir() {
+            std::fs::create_dir_all(&out_path).ok();
+        } else {
+            if let Some(parent) = out_path.parent() {
+                std::fs::create_dir_all(parent).ok();
+            }
+            let mut outfile = std::fs::File::create(&out_path).map_err(|e| {
+                format!("Failed to create file {:?}: {}", out_path, e)
+            })?;
+            std::io::copy(&mut entry, &mut outfile).map_err(|e| {
+                format!("Failed to extract {:?}: {}", out_path, e)
+            })?;
+        }
+
+        let _ = progress_tx.send(DownloadProgress {
+            total,
+            downloaded: i as u64 + 1,
+            speed: 0.0,
+        });
+    }
+
+    unregister_cancel_token(&dl_id);
+    Ok(dest_dir)
+}
+
+#[tauri::command]
+pub async fn download_cuda_libs(
+    tag: String,
+    variant: String,
+    dest_dir: String,
+    dl_id: String,
+    progress_tx: tauri::ipc::Channel<DownloadProgress>,
+) -> Result<(), String> {
+    let cuda_url = format!(
+        "https://github.com/ggml-org/llama.cpp/releases/download/{}/cublas-{}-{}-archive.zip",
+        tag, tag, variant
+    );
+    let zip_path = std::path::Path::new(&dest_dir).join("cublas.zip");
+    let zip_str = zip_path.to_string_lossy().to_string();
+
+    download_file(cuda_url, zip_str.clone(), dl_id.clone(), progress_tx.clone()).await?;
+    extract_zip(zip_str, dest_dir, dl_id.clone(), progress_tx.clone()).await?;
+    let _ = tokio::fs::remove_file(&zip_path).await;
+
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn install_release(
+    tag: String,
+    variant: String,
+    dl_id: String,
+    progress_tx: tauri::ipc::Channel<DownloadProgress>,
+) -> Result<String, String> {
+    log_info!("[install_release] starting", "download", serde_json::json!({ "tag": &tag, "variant": &variant, "dl_id": &dl_id }));
+
+    let zip_url = format!(
+        "https://github.com/ggml-org/llama.cpp/releases/download/{}/llama-{}-{}-archive.zip",
+        tag, tag, variant
+    );
+
+    let install_dir = {
+        let config = crate::GLOBAL_STATE.config.read();
+        let dir = std::path::Path::new(&config.models_directory).parent().unwrap_or(std::path::Path::new("."));
+        dir.join("releases").join(&tag).join(&variant)
+    };
+    tokio::fs::create_dir_all(&install_dir).await.map_err(|e| format!("Failed to create install dir: {}", e))?;
+
+    let zip_path = install_dir.join("release.zip");
+    let zip_str = zip_path.to_string_lossy().to_string();
+    let install_str = install_dir.to_string_lossy().to_string();
+
+    download_file(zip_url, zip_str.clone(), dl_id.clone(), progress_tx.clone()).await?;
+    extract_zip(zip_str, install_str.clone(), dl_id.clone(), progress_tx.clone()).await?;
+    let _ = tokio::fs::remove_file(&zip_path).await;
+
+    // Optionally download CUDA libs
+    let cuda_dir = install_dir.join("cublas");
+    let cuda_str = cuda_dir.to_string_lossy().to_string();
+    let _ = download_cuda_libs(tag.clone(), variant.clone(), cuda_str, dl_id.clone(), progress_tx.clone()).await;
+
+    log_info!("[install_release] completed", "download", serde_json::json!({ "tag": &tag, "variant": &variant, "path": &install_str }));
+    Ok(install_str)
+}
+
+// ---------- Directory / App helpers ----------
+
+#[tauri::command]
+pub async fn select_directory(app: tauri::AppHandle) -> Result<Option<String>, String> {
+    use tauri_plugin_dialog::DialogExt;
+    let path = app.dialog()
+        .file()
+        .blocking_pick_folder();
+    Ok(path.map(|p| match p {
+        tauri_plugin_dialog::FilePath::Path(path) => path.as_path().to_string_lossy().to_string(),
+        tauri_plugin_dialog::FilePath::Url(url) => url.to_string(),
+    }))
+}
+
+#[tauri::command]
+pub async fn ensure_app_dir() -> Result<String, String> {
+    let dir = if cfg!(windows) {
+        let profile = std::env::var("USERPROFILE").map_err(|_| "USERPROFILE not set".to_string())?;
+        std::path::PathBuf::from(profile).join(".llama-launcher")
+    } else {
+        let home = std::env::var("HOME").map_err(|_| "HOME not set".to_string())?;
+        std::path::PathBuf::from(home).join(".llama-launcher")
+    };
+    tokio::fs::create_dir_all(&dir).await.map_err(|e| format!("Failed to create app dir: {}", e))?;
+    Ok(dir.to_string_lossy().to_string())
+}
+
+// ---------- External Models ----------
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ExternalModelDir {
+    pub path: String,
+    pub recursive: bool,
+}
+
+#[tauri::command]
+pub async fn scan_external_models() -> Result<Vec<ExternalModelDir>, String> {
+    Ok(Vec::new())
+}
+
+#[tauri::command]
+pub async fn sync_external_models(dirs: Vec<ExternalModelDir>) -> Result<usize, String> {
+    Ok(0)
 }

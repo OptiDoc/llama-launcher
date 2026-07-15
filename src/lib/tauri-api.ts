@@ -5,6 +5,8 @@
  * so the UI can render honest empty states. No fake data is ever injected.
  */
 
+import { log } from "./logger";
+
 // ---------- Backend type mirrors ----------
 
 export type ModelFormat = "gguf" | "ggml" | "pytorch" | "safetensors" | "onnx" | "tensorrt" | "other";
@@ -241,6 +243,29 @@ export interface GitHubRelease {
   size_mb: number;
 }
 
+export type ExternalModelSource = "ollama" | "lmstudio" | "huggingfacecli" | "custom";
+
+export interface ExternalModelFile {
+  id: string;
+  filename: string;
+  path: string;
+  size_mb: number;
+  format: string;
+  estimated_parameters: string | null;
+  quantization: string | null;
+}
+
+export interface ExternalModelDir {
+  id: string;
+  source: ExternalModelSource;
+  display_name: string;
+  path: string;
+  model_count: number;
+  total_size_mb: number;
+  enabled: boolean;
+  files: ExternalModelFile[];
+}
+
 // ---------- Tauri detection ----------
 
 declare global {
@@ -260,13 +285,24 @@ export function isTauri(): boolean {
 }
 
 async function invoke<T>(cmd: string, args?: Record<string, unknown>): Promise<T | null> {
-  if (!isTauri()) return null;
+  log.debug(`[TAURI] Calling command: ${cmd}`, { category: "tauri", context: { args } });
+  
+  if (!isTauri()) {
+    log.debug(`[TAURI] Not in Tauri environment, returning null for ${cmd}`, { category: "tauri" });
+    return null;
+  }
+  
   try {
     const fn = window.__TAURI__?.core?.invoke;
-    if (!fn) return null;
-    return (await fn(cmd, args)) as T;
-  } catch (err) {
-    console.error(`[tauri] ${cmd} failed:`, err);
+    if (!fn) {
+      log.warn(`[TAURI] No invoke function found for ${cmd}`, { category: "tauri" });
+      return null;
+    }
+    const result = (await fn(cmd, args)) as T;
+    log.debug(`[TAURI] Command ${cmd} completed successfully`, { category: "tauri", context: { result } });
+    return result;
+  } catch (error) {
+    log.error(`[TAURI] Command ${cmd} failed`, { category: "tauri", context: { error } });
     return null;
   }
 }
@@ -281,9 +317,11 @@ export const tauri = {
   getModelInfo: (id: string) => invoke<ModelInfo | null>("get_model_info", { id }),
   deleteModel: (id: string) => invoke<null>("delete_model", { id }),
   verifyModel: (id: string) => invoke<VerificationResult>("verify_model", { id }),
+
   downloadModel: async (
     repo: string,
     file: string,
+    dlId: string,
     onProgress?: (p: DownloadProgress) => void,
   ): Promise<ModelInfo | null> => {
     if (!isTauri()) return null;
@@ -293,9 +331,8 @@ export const tauri = {
       const { Channel } = await import("@tauri-apps/api/core");
       const channel = new Channel<DownloadProgress>();
       if (onProgress) channel.onmessage = onProgress;
-      return (await fn("download_model", { repo, file, progressTx: channel })) as ModelInfo;
-    } catch (err) {
-      console.error("[tauri] download_model failed:", err);
+      return (await fn("download_model", { repo, file, dlId, progressTx: channel })) as ModelInfo;
+    } catch {
       return null;
     }
   },
@@ -346,6 +383,135 @@ export const tauri = {
   // File / dialog
   openModelFolder: () => invoke<null>("open_model_folder"),
   selectModelFile: () => invoke<string | null>("select_model_file"),
+  importModelFile: async (): Promise<ModelInfo | null> => {
+    if (!isTauri()) return null;
+    try {
+      const path = await invoke<string | null>("select_model_file");
+      if (!path) return null;
+      // Re-scan to pick up the new file
+      const models = await invoke<ModelInfo[]>("scan_models");
+      return models?.find((m) => m.path === path) ?? null;
+    } catch {
+      return null;
+    }
+  },
+  selectDirectory: () => invoke<string | null>("select_directory"),
+
+  // Release management
+  installRelease: async (
+    tag: string,
+    variant: string,
+    dlId: string,
+    onProgress?: (p: DownloadProgress) => void,
+  ): Promise<string | null> => {
+    if (!isTauri()) return null;
+    try {
+      const fn = window.__TAURI__?.core?.invoke;
+      if (!fn) return null;
+      const { Channel } = await import("@tauri-apps/api/core");
+      const channel = new Channel<DownloadProgress>();
+      if (onProgress) channel.onmessage = onProgress;
+      return (await fn("install_release", { tag, variant, dlId, progressTx: channel })) as string;
+    } catch {
+      return null;
+    }
+  },
+  extractZip: async (
+    zipPath: string,
+    destDir: string,
+    onProgress?: (p: DownloadProgress) => void,
+  ): Promise<string | null> => {
+    if (!isTauri()) return null;
+    try {
+      const fn = window.__TAURI__?.core?.invoke;
+      if (!fn) return null;
+      const { Channel } = await import("@tauri-apps/api/core");
+      const channel = new Channel<DownloadProgress>();
+      if (onProgress) channel.onmessage = onProgress;
+      return (await fn("extract_zip", { zipPath, destDir, progressTx: channel })) as string;
+    } catch {
+      return null;
+    }
+  },
+  downloadCudaLibs: async (
+    tag: string,
+    variant: string,
+    destDir: string,
+    dlId: string,
+    onProgress?: (p: DownloadProgress) => void,
+  ): Promise<string | null> => {
+    if (!isTauri()) return null;
+    try {
+      const fn = window.__TAURI__?.core?.invoke;
+      if (!fn) return null;
+      const { Channel } = await import("@tauri-apps/api/core");
+      const channel = new Channel<DownloadProgress>();
+      if (onProgress) channel.onmessage = onProgress;
+      return (await fn("download_cuda_libs", { tag, variant, destDir, dlId, progressTx: channel })) as string;
+    } catch {
+      return null;
+    }
+  },
+
+  // App directory
+  ensureAppDir: () => invoke<string>("ensure_app_dir"),
+
+  // Generic file download
+  downloadFile: async (
+    url: string,
+    dest: string,
+    dlId: string,
+    onProgress?: (p: DownloadProgress) => void,
+  ): Promise<string | null> => {
+    if (!isTauri()) return null;
+    try {
+      const fn = window.__TAURI__?.core?.invoke;
+      if (!fn) return null;
+      const { Channel } = await import("@tauri-apps/api/core");
+      const channel = new Channel<DownloadProgress>();
+      if (onProgress) channel.onmessage = onProgress;
+      return (await fn("download_file", { url, dest, dlId, progressTx: channel })) as string;
+    } catch (e) {
+      log.error(`[TAURI] downloadFile failed`, { category: "tauri", context: { error: e } });
+      return null;
+    }
+  },
+
+  // External models
+  scanExternalModels: async (): Promise<ExternalModelDir[]> => {
+    if (!isTauri()) return [];
+    try {
+      const fn = window.__TAURI__?.core?.invoke;
+      if (!fn) return [];
+      return (await fn("scan_external_models", {})) as ExternalModelDir[];
+    } catch {
+      return [];
+    }
+  },
+
+  syncExternalModels: async (dirs: ExternalModelDir[]): Promise<number> => {
+    if (!isTauri()) return 0;
+    try {
+      const fn = window.__TAURI__?.core?.invoke;
+      if (!fn) return 0;
+      return (await fn("sync_external_models", { dirs })) as number;
+    } catch {
+      return 0;
+    }
+  },
+
+  // Cancel downloads
+  cancelDownload: async (dlId: string): Promise<boolean> => {
+    if (!isTauri()) return false;
+    try {
+      const fn = window.__TAURI__?.core?.invoke;
+      if (!fn) return false;
+      await fn("cancel_download", { dlId });
+      return true;
+    } catch {
+      return false;
+    }
+  },
 };
 
 // ---------- Formatting helpers ----------
