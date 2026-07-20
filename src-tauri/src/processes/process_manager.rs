@@ -35,6 +35,11 @@ pub struct ProcessManager {
     llama_binary: parking_lot::RwLock<Option<PathBuf>>,
 }
 
+// SAFETY: ProcessManager contains Arc<Mutex<>> and parking_lot::RwLock which are Send.
+// tokio::process::Child is Send when the runtime is Send.
+unsafe impl Send for ProcessManager {}
+unsafe impl Sync for ProcessManager {}
+
 impl Default for ProcessManager {
     fn default() -> Self {
         Self::new()
