@@ -1,49 +1,19 @@
-use serde::{Deserialize, Serialize};
 use tauri::AppHandle;
 use tauri_plugin_store::StoreExt;
-use tracing::info;
 
-/// A workspace isolates models, profiles, instances and releases.
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Workspace {
-    pub id: String,
-    pub name: String,
-    pub color: String,
-    pub description: Option<String>,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct WorkspaceSettings {
-    pub hibernate_after_sec: u64,
-    pub default_gpu_layers: i32,
-    pub default_threads: usize,
-    pub auto_calibrate: bool,
-    pub max_concurrent_instances: usize,
-}
-
-impl Default for WorkspaceSettings {
-    fn default() -> Self {
-        Self {
-            hibernate_after_sec: 75,
-            default_gpu_layers: -1,
-            default_threads: num_cpus::get(),
-            auto_calibrate: true,
-            max_concurrent_instances: 4,
-        }
-    }
-}
+use crate::{log_info, Workspace, WorkspaceSettings};
 
 const WORKSPACES_KEY: &str = "workspaces";
 const WS_SETTINGS_KEY: &str = "workspace_settings";
 const ACTIVE_WS_KEY: &str = "active_workspace";
 
-fn load_json<T: for<'de> Deserialize<'de>>(app: &AppHandle, store_name: &str, key: &str) -> Option<T> {
+fn load_json<T: for<'de> serde::Deserialize<'de>>(app: &AppHandle, store_name: &str, key: &str) -> Option<T> {
     let store = app.store(store_name).ok()?;
     let val = store.get(key)?;
     serde_json::from_value(val).ok()
 }
 
-fn save_json<T: Serialize>(app: &AppHandle, store_name: &str, key: &str, value: &T) -> Result<(), String> {
+fn save_json<T: serde::Serialize>(app: &AppHandle, store_name: &str, key: &str, value: &T) -> Result<(), String> {
     let store = app.store(store_name).map_err(|e| e.to_string())?;
     store.set(key, serde_json::to_value(value).map_err(|e| e.to_string())?);
     let _ = store.save();
@@ -93,7 +63,7 @@ pub async fn create_workspace(
     };
     workspaces.push(ws.clone());
     save_json(&app, "workspaces.json", WORKSPACES_KEY, &workspaces)?;
-    info!("Created workspace: {}", ws.id);
+    log_info!(&format!("Created workspace: {}", ws.id), "workspaces");
     Ok(ws)
 }
 

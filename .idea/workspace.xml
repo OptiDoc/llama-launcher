@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="184927f2-a4d4-4ebe-b6f4-b0daa926b3ea" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.env" beforeDir="false" afterPath="$PROJECT_DIR$/.env" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-tauri/Cargo.lock" beforeDir="false" afterPath="$PROJECT_DIR$/src-tauri/Cargo.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-tauri/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/src-tauri/Cargo.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-tauri/capabilities/default.json" beforeDir="false" afterPath="$PROJECT_DIR$/src-tauri/capabilities/default.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-tauri/gen/schemas/capabilities.json" beforeDir="false" afterPath="$PROJECT_DIR$/src-tauri/gen/schemas/capabilities.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-tauri/gen/schemas/desktop-schema.json" beforeDir="false" afterPath="$PROJECT_DIR$/src-tauri/gen/schemas/desktop-schema.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-tauri/gen/schemas/windows-schema.json" beforeDir="false" afterPath="$PROJECT_DIR$/src-tauri/gen/schemas/windows-schema.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-tauri/src/commands.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src-tauri/src/commands.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-tauri/src/core.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src-tauri/src/core.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-tauri/src/lib.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src-tauri/src/lib.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-tauri/tauri.conf.json" beforeDir="false" afterPath="$PROJECT_DIR$/src-tauri/tauri.conf.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/console/bottom-console.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/console/bottom-console.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/layout/top-bar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/layout/top-bar.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/pages/dashboard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/pages/dashboard.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/pages/instances.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/pages/instances.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/pages/logs.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/pages/logs.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/pages/models.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/pages/models.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/pages/profiles.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/pages/profiles.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/pages/releases.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/pages/releases.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/pages/settings.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/pages/settings.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/ui/chart.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ui/chart.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/ui/tabs.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ui/tabs.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/hooks/use-toast.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/hooks/use-toast.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/llama-store.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/llama-store.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/tauri-api.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/tauri-api.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tsconfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/tsconfig.json" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="EmbeddingIndexingInfo">
+    <option name="cachedIndexableFilesCount" value="13706" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;OptiDoc&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/OptiDoc/llama-launcher.git&quot;,
+    &quot;accountId&quot;: &quot;9efdd92d-c9b0-445f-8de5-8bcab32e9f7a&quot;
+  }
+}</component>
+  <component name="McpProjectServerCommands">
+    <commands />
+    <urls />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 7,
+  &quot;fromUser&quot;: false
+}</component>
+  <component name="ProjectId" id="3GPcp09og2AHeoqiMs8VswikXZq" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;js.debugger.nextJs.config.created.client&quot;: &quot;true&quot;,
+    &quot;js.debugger.nextJs.config.created.server&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;E:/Projects/llama-launcher&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;bun&quot;,
+    &quot;npm.Next.js: server-side.executor&quot;: &quot;Run&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;E:\\Projects\\llama-launcher\\node_modules\\typescript\\lib&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="RunManager" selected="npm.Next.js: server-side">
+    <configuration name="Next.js: debug client-side" type="JavascriptDebugType" uri="http://localhost:3000/">
+      <method v="2" />
+    </configuration>
+    <configuration name="Next.js: server-side" type="js.build_tools.npm">
+      <package-json value="$PROJECT_DIR$/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="dev" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-d6986cc7102b-3bd3a6803838-JavaScript-WS-261.22158.274" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="184927f2-a4d4-4ebe-b6f4-b0daa926b3ea" name="Changes" comment="" />
+      <created>1783876824567</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1783876824567</updated>
+      <workItem from="1783876826883" duration="3257000" />
+      <workItem from="1783922467467" duration="7927000" />
+      <workItem from="1783964152429" duration="1422000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>
