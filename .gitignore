@@ -55,3 +55,10 @@ server.log
 
 # Rust build artifacts
 src-tauri/target/
+
+# Prettier
+.prettierrc
+.prettierignore
+
+# ESLint
+.eslintcache
