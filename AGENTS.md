@@ -54,6 +54,7 @@ src-tauri/src/
 ```
 
 **Запреты:**
+
 - `core.rs` не должен содержать глобальное состояние (`GLOBAL_STATE`). Использовать `tauri::State<AppState>`.
 - `commands.rs` не должен превышать 200 строк. Разделять по доменам.
 - Доменные типы не импортируют `tauri`, `serde` (только если не для сериализации).
@@ -87,6 +88,7 @@ src/
 ```
 
 **Запреты:**
+
 - `llama-store.ts` (или любой другой файл) не должен превышать 200 строк.
 - Сторы НЕ могут вызывать друг друга напрямую. Использовать `subscribe` или события.
 - Компоненты НЕ могут обращаться к `window.__TAURI__` напрямую — только через `tauri-api.ts`.
@@ -96,6 +98,7 @@ src/
 ## 2. Принципы проектирования (из Refactoring.Guru)
 
 ### 2.1 Отсутствие дублирования (DRY)
+
 Любой фрагмент кода существует в единственном экземпляре. Дублирование считается критическим дефектом.
 
 **Исключение:** Дублирование в тестах допускается, если оно улучшает читаемость сценария.
@@ -103,20 +106,24 @@ src/
 **Техники:** [Extract Method](https://refactoring.guru/ru/extract-method), [Pull Up Method](https://refactoring.guru/ru/pull-up-method), [Form Template Method](https://refactoring.guru/ru/form-template-method)
 
 ### 2.2 Маленькие методы (Composing Methods)
+
 Метод не должен превышать 15 строк. Если длиннее — [Extract Method](https://refactoring.guru/ru/extract-method).
 
 Допустимые исключения:
+
 - Методы с одним switch/match на 10+ веток (но не более 30 строк)
 - Сложные алгоритмы с пошаговыми комментариями (но не более 50 строк)
 
 **Техники:** [Extract Variable](https://refactoring.guru/ru/extract-variable), [Replace Temp with Query](https://refactoring.guru/ru/replace-temp-with-query), [Replace Method with Method Object](https://refactoring.guru/ru/replace-method-with-method-object), [Substitute Algorithm](https://refactoring.guru/ru/substitute-algorithm)
 
 ### 2.3 Маленькие файлы (SRP)
+
 Файл не должен превышать 200 строк. Каждый файл — одна ответственность.
 
 Если класс/файл превышает 200 строк — [Extract Class](https://refactoring.guru/ru/extract-class), [Extract Interface](https://refactoring.guru/ru/extract-interface).
 
 ### 2.4 Простые условные выражения
+
 ```typescript
 // ПЛОХО: вложенный if
 if (condition) {
@@ -134,6 +141,7 @@ if (!otherCondition) return;
 **Техники:** [Replace Nested Conditional with Guard Clauses](https://refactoring.guru/ru/replace-nested-conditional-with-guard-clauses), [Decompose Conditional](https://refactoring.guru/ru/decompose-conditional), [Consolidate Conditional Expression](https://refactoring.guru/ru/consolidate-conditional-expression), [Replace Conditional with Polymorphism](https://refactoring.guru/ru/replace-conditional-with-polymorphism), [Introduce Null Object](https://refactoring.guru/ru/introduce-null-object)
 
 ### 2.5 Коммуникация через объекты
+
 Группы данных, которые постоянно передаются вместе — `Data Clumps`. Заменить их на объект.
 
 ```typescript
@@ -147,43 +155,47 @@ function download(config: DownloadConfig) {}
 **Техники:** [Introduce Parameter Object](https://refactoring.guru/ru/introduce-parameter-object), [Preserve Whole Object](https://refactoring.guru/ru/preserve-whole-object)
 
 ### 2.6 Инкапсуляция
+
 Поля классов/структур — `private`. Доступ только через методы. Коллекции возвращаются read-only.
 
 **Техники:** [Encapsulate Field](https://refactoring.guru/ru/encapsulate-field), [Encapsulate Collection](https://refactoring.guru/ru/encapsulate-collection), [Self-Encapsulate Field](https://refactoring.guru/ru/self-encapsulate-field), [Hide Delegate](https://refactoring.guru/ru/hide-delegate)
 
 ### 2.7 Устранение посредников
+
 Класс не должен быть "пустышкой", которая просто делегирует всё другому классу. Если класс только делегирует — [Remove Middle Man](https://refactoring.guru/ru/remove-middle-man).
 
 ### 2.8 Feature Envy
+
 Метод не должен "завидовать" чужому классу — не должен обращаться к полям/методам другого класса больше, чем к своим. [Move Method](https://refactoring.guru/ru/move-method) в нужный класс.
 
 ---
 
 ## 3. Запахи кода — немедленное исправление
 
-| Запах | Симптом | Исправление |
-|-------|---------|-------------|
-| [Long Method](https://refactoring.guru/ru/smells/long-method) | > 15 строк | Extract Method |
-| [Large Class](https://refactoring.guru/ru/smells/large-class) | > 200 строк / > 10 методов | Extract Class |
-| [Long Parameter List](https://refactoring.guru/ru/smells/long-parameter-list) | > 3 параметра | Introduce Parameter Object |
-| [Primitive Obsession](https://refactoring.guru/ru/smells/primitive-obsession) | Строки/числа вместо объектов | Replace Data Value with Object |
-| [Switch Statements](https://refactoring.guru/ru/smells/switch-statements) | switch/match по типу | Replace Conditional with Polymorphism |
-| [Temporary Field](https://refactoring.guru/ru/smells/temporary-field) | Поле используется не всегда | Extract Class |
-| [Data Clumps](https://refactoring.guru/ru/smells/data-clumps) | Повторяющиеся группы данных | Introduce Parameter Object |
-| [Message Chains](https://refactoring.guru/ru/smells/message-chains) | `a.b().c().d()` | Hide Delegate |
-| [Middle Man](https://refactoring.guru/ru/smells/middle-man) | Класс-пустышка | Remove Middle Man / Inline Class |
-| [Speculative Generality](https://refactoring.guru/ru/smells/speculative-generality) | Код "на всякий случай" | Удалить |
-| [Dead Code](https://refactoring.guru/ru/smells/dead-code) | Неиспользуемые функции/переменные | Удалить |
-| [Shotgun Surgery](https://refactoring.guru/ru/smells/shotgun-surgery) | Одно изменение — много файлов | Move Method, Move Field |
-| [Divergent Change](https://refactoring.guru/ru/smells/divergent-change) | Один файл меняется по разным причинам | Extract Class |
-| [Lazy Class](https://refactoring.guru/ru/smells/lazy-class) | Класс почти ничего не делает | Inline Class / Collapse Hierarchy |
-| [Comments](https://refactoring.guru/ru/smells/comments) | Комментарий объясняет "как", а не "почему" | Extract Method (комментарий → имя метода) |
+| Запах                                                                               | Симптом                                    | Исправление                               |
+| ----------------------------------------------------------------------------------- | ------------------------------------------ | ----------------------------------------- |
+| [Long Method](https://refactoring.guru/ru/smells/long-method)                       | > 15 строк                                 | Extract Method                            |
+| [Large Class](https://refactoring.guru/ru/smells/large-class)                       | > 200 строк / > 10 методов                 | Extract Class                             |
+| [Long Parameter List](https://refactoring.guru/ru/smells/long-parameter-list)       | > 3 параметра                              | Introduce Parameter Object                |
+| [Primitive Obsession](https://refactoring.guru/ru/smells/primitive-obsession)       | Строки/числа вместо объектов               | Replace Data Value with Object            |
+| [Switch Statements](https://refactoring.guru/ru/smells/switch-statements)           | switch/match по типу                       | Replace Conditional with Polymorphism     |
+| [Temporary Field](https://refactoring.guru/ru/smells/temporary-field)               | Поле используется не всегда                | Extract Class                             |
+| [Data Clumps](https://refactoring.guru/ru/smells/data-clumps)                       | Повторяющиеся группы данных                | Introduce Parameter Object                |
+| [Message Chains](https://refactoring.guru/ru/smells/message-chains)                 | `a.b().c().d()`                            | Hide Delegate                             |
+| [Middle Man](https://refactoring.guru/ru/smells/middle-man)                         | Класс-пустышка                             | Remove Middle Man / Inline Class          |
+| [Speculative Generality](https://refactoring.guru/ru/smells/speculative-generality) | Код "на всякий случай"                     | Удалить                                   |
+| [Dead Code](https://refactoring.guru/ru/smells/dead-code)                           | Неиспользуемые функции/переменные          | Удалить                                   |
+| [Shotgun Surgery](https://refactoring.guru/ru/smells/shotgun-surgery)               | Одно изменение — много файлов              | Move Method, Move Field                   |
+| [Divergent Change](https://refactoring.guru/ru/smells/divergent-change)             | Один файл меняется по разным причинам      | Extract Class                             |
+| [Lazy Class](https://refactoring.guru/ru/smells/lazy-class)                         | Класс почти ничего не делает               | Inline Class / Collapse Hierarchy         |
+| [Comments](https://refactoring.guru/ru/smells/comments)                             | Комментарий объясняет "как", а не "почему" | Extract Method (комментарий → имя метода) |
 
 ---
 
 ## 4. Code Style & Convention
 
 ### 4.1 Общие правила
+
 - **Пробелы:** 2 пробела (TypeScript), 4 пробела (Rust)
 - **Кавычки:** двойные ("") для строк
 - **Точка с запятой:** обязательна
@@ -193,6 +205,7 @@ function download(config: DownloadConfig) {}
 - **Имя класса/типа:** существительное (`ModelService`, `ProcessManager`, `DownloadConfig`)
 
 ### 4.2 Rust
+
 ```rust
 // Типы — PascalCase с полными именами (НЕ: Cfg, а: ModelConfig)
 pub struct ModelConfig {
@@ -215,6 +228,7 @@ pub fn download_model(repo: &str, dest: &Path) -> Result<String> {
 ```
 
 **Правила:**
+
 - `unwrap()` — ТОЛЬКО в тестах или в `main()`. В production — `?`, `match`, `map_err`.
 - `expect()` — только с объяснением, почему паника невозможна.
 - Параметры-ссылки: `&str` предпочтительнее `&String`, `&[T]` предпочтительнее `&Vec<T>`.
@@ -224,6 +238,7 @@ pub fn download_model(repo: &str, dest: &Path) -> Result<String> {
 - `Default` impl — обязателен для всех конфигов.
 
 ### 4.3 TypeScript / React
+
 ```typescript
 // Типы — PascalCase, рядом с использованием
 interface DownloadConfig {
@@ -252,6 +267,7 @@ export function ModelCard({ model, onSelect }: ModelCardProps) {
 ```
 
 **Правила:**
+
 - `import type { ... }` — для импорта типов.
 - `as` — только в `as const`, кастах типов.
 - Zustand store — только через `get()` и `set()`, никаких внешних вызовов.
@@ -260,6 +276,7 @@ export function ModelCard({ model, onSelect }: ModelCardProps) {
 - `useState` — минимально, предпочитать Zustand.
 
 ### 4.4 Импорты (TypeScript)
+
 Строгий порядок, разделённый пустой строкой:
 
 ```typescript
@@ -278,6 +295,7 @@ import { formatBytes } from "./utils";
 ```
 
 ### 4.5 Работа с ошибками
+
 ```typescript
 // TypeScript: typed catch
 try {
@@ -306,6 +324,7 @@ pub async fn download_file(url: String, dest: String) -> Result<String, String> 
 ## 5. Паттерны взаимодействия
 
 ### 5.1 Frontend ↔ Backend (Tauri)
+
 ```
 React Component
       │
@@ -326,6 +345,7 @@ Domain Service (processes.rs, etc.)
 ```
 
 **Правила:**
+
 1. Компоненты НЕ вызывают `invoke()` напрямую.
 2. Сторы — единственное место, где вызывается `tauri-api.ts`.
 3. `tauri-api.ts` — единственное место, где есть `window.__TAURI__?.core?.invoke`.
@@ -333,6 +353,7 @@ Domain Service (processes.rs, etc.)
 5. При ошибке: стоп-процесс → уведомление → лог → очистка состояния.
 
 ### 5.2 Rust singleton → DI
+
 ```rust
 // ЗАПРЕЩЕНО:
 pub static GLOBAL_STATE: Lazy<GlobalState> = ...;
@@ -356,6 +377,7 @@ pub fn run() {
 ```
 
 ### 5.3 Логирование
+
 ```
 ┌──────────────┐     ┌──────────────┐
 │  frontend.ts │────▶│ persistToBack│────▶┌──────────────┐
@@ -374,6 +396,7 @@ pub fn run() {
 ```
 
 ### 5.4 Хранилище данных
+
 ```
 ┌─────────────────────────────────────┐
 │  SQLite (tauri-plugin-sql)          │◀── Rust (models, processes, workspaces)
@@ -385,6 +408,7 @@ pub fn run() {
 ```
 
 **Правила:**
+
 - Rust — единственный источник истины для моделей, процессов, релизов.
 - Frontend кэширует данные из Rust в Zustand.
 - localStorage — только для frontend-only фич (hibernation, UI preferences).
@@ -395,14 +419,16 @@ pub fn run() {
 ## 6. Тестирование
 
 ### 6.1 Типы тестов
-| Тип | Инструмент | Покрытие |
-|-----|-----------|----------|
-| Unit (Rust) | `#[test]` | ≥ 80% domain layer |
-| Unit (TS) | vitest | ≥ 80% stores, utils |
-| Integration | cargo test | Core flows |
-| E2E | Playwright | Критические пути |
+
+| Тип         | Инструмент | Покрытие            |
+| ----------- | ---------- | ------------------- |
+| Unit (Rust) | `#[test]`  | ≥ 80% domain layer  |
+| Unit (TS)   | vitest     | ≥ 80% stores, utils |
+| Integration | cargo test | Core flows          |
+| E2E         | Playwright | Критические пути    |
 
 ### 6.2 Правила
+
 - Каждый публичный метод стора имеет unit-тест.
 - Каждый Tauri command имеет mock-тест (mock Tauri API).
 - Для компонентов — Storybook или snapshot-тесты.
@@ -417,6 +443,7 @@ pub fn run() {
 3. **Рефакторинг** — улучшить код, тест всё ещё проходит
 
 **Категорически запрещено:**
+
 - Рефакторить и добавлять функциональность в одном коммите.
 - Делать рефакторинг без тестов.
 - Менять API публичных методов без обновления всех потребителей.

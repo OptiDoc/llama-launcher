@@ -31,11 +31,13 @@ description: 从零生成或全面优化一份中文简历，并导出 docx / pd
 ### Step 1: 摸清简历当前状态
 
 如果用户**有简历文件**（.pdf / .docx / .md / .txt）：
+
 - pdf 走 pdf skill 解析
 - docx 走 docx skill 解析
 - 提取出：基本信息、教育、工作经历、项目经历、技能、其他
 
 如果用户**没有简历**：
+
 - 用 AskUserQuestion 收集信息（参考 `references/intake_questions.md` 里的问题清单）
 - 一次问 3~4 个问题，分轮收集，避免劝退
 
@@ -55,6 +57,7 @@ description: 从零生成或全面优化一份中文简历，并导出 docx / pd
 读取 `references/star_rewrite_guide.md`，对每条工作 / 项目经历做 STAR 改写。
 
 **STAR 不是死板的四段式**，而是确保每条 bullet 都有：
+
 - **背景信号**（一句话点出问题大小或情境）
 - **动作**（你具体做了什么，要有动词）
 - **结果**（数字 / 百分比 / 排名 / 规模）
@@ -72,12 +75,14 @@ python scripts/ats_check.py --resume <resume.md> \
 ```
 
 脚本会：
+
 1. 抽取简历里的关键词
 2. 对照行业关键词库（来自 job-intent-tracker 或本 skill 的 `references/keywords/`）
 3. 输出"已覆盖 / 建议补充"两个清单
 4. 给出 ATS 友好度评分（字体单一性、表格使用、特殊符号、图片等）
 
 **ATS 友好的硬规则**：
+
 - 不要用 word 表格放经历（很多 ATS 解析不了）
 - 不要把日期放在装饰性图片里
 - 不要写两栏布局（有些 ATS 会按列读，导致顺序混乱）
@@ -89,15 +94,18 @@ python scripts/ats_check.py --resume <resume.md> \
 读取 `references/export_guide.md`，按用户需求选择：
 
 **docx 导出**（最通用，国内 HR 优先要 docx）：
+
 - 调用 docx skill
 - 用 `assets/resume_template.docx` 作为模板（如果存在）
 
 **pdf 导出**（最终投递版）：
+
 - 推荐流程：先 docx → 再用 word/libreoffice 转 pdf
 - 直接生成 pdf 用 reportlab 比较丑，不推荐
 - 调用 pdf skill 做后处理（加密 / 元数据清理）
 
 **markdown 导出**（备份 + GitHub）：
+
 - 直接写 .md 文件即可
 
 **默认行为**：除非用户指定，同时输出 docx + md 两个版本。

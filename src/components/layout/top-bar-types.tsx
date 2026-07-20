@@ -2,17 +2,7 @@
  * Top bar types and configurations.
  */
 
-import {
-  Activity,
-  Zap,
-  Snowflake,
-  Moon,
-  Download,
-  Rocket,
-  Info,
-  AlertTriangle,
-  CheckCheck,
-} from "lucide-react";
+import { Activity, Zap, Snowflake, Moon, Download, Rocket, Info, AlertTriangle, CheckCheck } from "lucide-react";
 import type { AppStatus, NotificationKind, Workspace } from "@/lib/llama-store";
 
 export interface TopBarProps {

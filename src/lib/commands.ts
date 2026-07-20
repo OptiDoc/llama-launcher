@@ -4,9 +4,21 @@
 
 import { invoke, invokeWithChannel, isTauri } from "./invoke";
 import type {
-  ModelInfo, ProcessConfig, ProcessInfo, ProcessMetrics, SystemSnapshot, GpuInfo, SystemCapabilities,
-  AppConfig, VerificationResult, DownloadProgress, Workspace, WorkspaceSettings,
-  ReleaseVariant, GitHubRelease, ExternalModelDir,
+  ModelInfo,
+  ProcessConfig,
+  ProcessInfo,
+  ProcessMetrics,
+  SystemSnapshot,
+  GpuInfo,
+  SystemCapabilities,
+  AppConfig,
+  VerificationResult,
+  DownloadProgress,
+  Workspace,
+  WorkspaceSettings,
+  ReleaseVariant,
+  GitHubRelease,
+  ExternalModelDir,
 } from "./types";
 
 export const tauri = {
@@ -29,8 +41,7 @@ export const tauri = {
   getProcessStatus: (id: string) => invoke<ProcessInfo | null>("get_process_status", { id }),
   listProcesses: () => invoke<ProcessInfo[]>("list_processes"),
   getProcessMetrics: (id: string) => invoke<ProcessMetrics | null>("get_process_metrics", { id }),
-  getProcessStdout: (id: string, lines?: number) =>
-    invoke<string[]>("get_process_stdout", { id, lines: lines ?? 200 }),
+  getProcessStdout: (id: string, lines?: number) => invoke<string[]>("get_process_stdout", { id, lines: lines ?? 200 }),
 
   // System
   getSystemInfo: () => invoke<SystemSnapshot>("get_system_info"),
@@ -51,8 +62,7 @@ export const tauri = {
   deleteWorkspace: (id: string) => invoke<null>("delete_workspace", { id }),
   getActiveWorkspace: () => invoke<string>("get_active_workspace"),
   setActiveWorkspace: (id: string) => invoke<null>("set_active_workspace", { id }),
-  getWorkspaceSettings: (workspaceId: string) =>
-    invoke<WorkspaceSettings>("get_workspace_settings", { workspaceId }),
+  getWorkspaceSettings: (workspaceId: string) => invoke<WorkspaceSettings>("get_workspace_settings", { workspaceId }),
   updateWorkspaceSettings: (workspaceId: string, settings: WorkspaceSettings) =>
     invoke<null>("update_workspace_settings", { workspaceId, settings }),
 
@@ -83,8 +93,13 @@ export const tauri = {
     invokeWithChannel<string>("install_release", { tag, variant, dlId }, onProgress),
   extractZip: (zipPath: string, destDir: string, onProgress?: (p: DownloadProgress) => void) =>
     invokeWithChannel<string>("extract_zip", { zipPath, destDir }, onProgress),
-  downloadCudaLibs: (tag: string, variant: string, destDir: string, dlId: string, onProgress?: (p: DownloadProgress) => void) =>
-    invokeWithChannel<string>("download_cuda_libs", { tag, variant, destDir, dlId }, onProgress),
+  downloadCudaLibs: (
+    tag: string,
+    variant: string,
+    destDir: string,
+    dlId: string,
+    onProgress?: (p: DownloadProgress) => void,
+  ) => invokeWithChannel<string>("download_cuda_libs", { tag, variant, destDir, dlId }, onProgress),
 
   // App directory
   ensureAppDir: () => invoke<string>("ensure_app_dir"),
@@ -95,8 +110,7 @@ export const tauri = {
 
   // External models
   scanExternalModels: async () => (await invoke<ExternalModelDir[]>("scan_external_models", {})) ?? [],
-  syncExternalModels: async (dirs: ExternalModelDir[]) =>
-    (await invoke<number>("sync_external_models", { dirs })) ?? 0,
+  syncExternalModels: async (dirs: ExternalModelDir[]) => (await invoke<number>("sync_external_models", { dirs })) ?? 0,
   importExternalModel: (filePath: string, destDir: string) =>
     invoke<string | null>("import_external_model", { filePath, destDir }),
 

@@ -26,27 +26,28 @@
 
 **Request Parameters:**
 
-| Parameter | Type | Required | Description |
-|--------|------|------|------|
-| page | number | Yes | Page number. Current online definition says it starts from `1`. |
-| size | number | No | Page size, maximum `20` |
-| title | string | Yes | Paper title |
+| Parameter | Type   | Required | Description                                                     |
+| --------- | ------ | -------- | --------------------------------------------------------------- |
+| page      | number | Yes      | Page number. Current online definition says it starts from `1`. |
+| size      | number | No       | Page size, maximum `20`                                         |
+| title     | string | Yes      | Paper title                                                     |
 
 **Response Fields:**
 
-| Field | Description |
-|--------|------|
-| id | Paper ID |
-| title | Paper title |
-| title_zh | Paper title in Chinese |
-| doi | DOI |
-| first_author | First author |
-| venue_name | Venue title |
+| Field             | Description                                                                       |
+| ----------------- | --------------------------------------------------------------------------------- |
+| id                | Paper ID                                                                          |
+| title             | Paper title                                                                       |
+| title_zh          | Paper title in Chinese                                                            |
+| doi               | DOI                                                                               |
+| first_author      | First author                                                                      |
+| venue_name        | Venue title                                                                       |
 | n_citation_bucket | Citation bucket: `0`, `1-10`, `11-50`, `51-200`, `200-1000`, `1000-5000`, `5000+` |
-| year | Publication year |
-| total | Total count |
+| year              | Publication year                                                                  |
+| total             | Total count                                                                       |
 
 **curl Example:**
+
 ```bash
 curl -X GET \
   'https://datacenter.aminer.cn/gateway/open_platform/api/paper/search?page=1&size=10&title=Looking+at+CTR+Prediction+Again%3A+Is+Attention+All+You+Need' \
@@ -64,26 +65,27 @@ curl -X GET \
 
 **Request Parameters:**
 
-| Parameter | Type | Required | Description |
-|--------|------|------|------|
-| ids | []string | Yes | Paper ID list, maximum `100` |
+| Parameter | Type     | Required | Description                  |
+| --------- | -------- | -------- | ---------------------------- |
+| ids       | []string | Yes      | Paper ID list, maximum `100` |
 
 **Response Fields:**
 
-| Field | Description |
-|--------|------|
-| id | Paper ID |
-| title | Paper title |
-| abstract_slice | Partial abstract |
-| authors | Author array |
-| author_count | Total author count |
-| issue | Volume / issue field |
-| raw | Venue raw name |
-| venue | Venue object |
-| venue_id | Venue ID |
-| year | Publication year |
+| Field          | Description          |
+| -------------- | -------------------- |
+| id             | Paper ID             |
+| title          | Paper title          |
+| abstract_slice | Partial abstract     |
+| authors        | Author array         |
+| author_count   | Total author count   |
+| issue          | Volume / issue field |
+| raw            | Venue raw name       |
+| venue          | Venue object         |
+| venue_id       | Venue ID             |
+| year           | Publication year     |
 
 **curl Example:**
+
 ```bash
 curl -X POST \
   'https://datacenter.aminer.cn/gateway/open_platform/api/paper/info' \
@@ -105,29 +107,30 @@ curl -X POST \
 
 **Request Parameters:**
 
-| Parameter | Type | Required | Description |
-|--------|------|------|------|
-| name | string | No | Scholar name |
-| offset | number | No | Starting position (fixed at 0; pagination not supported) |
-| org | string | No | Institution name |
-| size | number | No | Number of results, maximum `10` |
-| org_id | []string | No | Institution entity ID list |
+| Parameter | Type     | Required | Description                                              |
+| --------- | -------- | -------- | -------------------------------------------------------- |
+| name      | string   | No       | Scholar name                                             |
+| offset    | number   | No       | Starting position (fixed at 0; pagination not supported) |
+| org       | string   | No       | Institution name                                         |
+| size      | number   | No       | Number of results, maximum `10`                          |
+| org_id    | []string | No       | Institution entity ID list                               |
 
 **Response Fields:**
 
-| Field | Description |
-|--------|------|
-| id | Scholar ID |
-| interests | Research interests |
-| n_citation | Citation count |
-| name | Name |
-| name_zh | Chinese name |
-| org | Institution in English |
-| org_id | Institution ID |
-| org_zh | Institution in Chinese |
-| total | Total count |
+| Field      | Description            |
+| ---------- | ---------------------- |
+| id         | Scholar ID             |
+| interests  | Research interests     |
+| n_citation | Citation count         |
+| name       | Name                   |
+| name_zh    | Chinese name           |
+| org        | Institution in English |
+| org_id     | Institution ID         |
+| org_zh     | Institution in Chinese |
+| total      | Total count            |
 
 **curl Example:**
+
 ```bash
 curl -X POST \
   'https://datacenter.aminer.cn/gateway/open_platform/api/person/search' \
@@ -149,20 +152,21 @@ curl -X POST \
 
 **Request Parameters:**
 
-| Parameter | Type | Required | Description |
-|--------|------|------|------|
-| orgs | []string | No | Institution names |
+| Parameter | Type     | Required | Description       |
+| --------- | -------- | -------- | ----------------- |
+| orgs      | []string | No       | Institution names |
 
 **Response Fields:**
 
-| Field | Description |
-|--------|------|
-| aliases | Alias list, partial and typically top 3 |
-| org_id | Institution ID |
-| org_name | Institution name |
-| total | Total count |
+| Field    | Description                             |
+| -------- | --------------------------------------- |
+| aliases  | Alias list, partial and typically top 3 |
+| org_id   | Institution ID                          |
+| org_name | Institution name                        |
+| total    | Total count                             |
 
 **curl Example:**
+
 ```bash
 curl -X POST \
   'https://datacenter.aminer.cn/gateway/open_platform/api/organization/search' \
@@ -184,22 +188,23 @@ curl -X POST \
 
 **Request Parameters:**
 
-| Parameter | Type | Required | Description |
-|--------|------|------|------|
-| name | string | No | Venue name |
+| Parameter | Type   | Required | Description |
+| --------- | ------ | -------- | ----------- |
+| name      | string | No       | Venue name  |
 
 **Response Fields:**
 
-| Field | Description |
-|--------|------|
-| id | Venue ID |
-| name_en | Venue English name |
-| name_zh | Venue Chinese name |
-| aliases | Alias list, partial and typically top 3 |
-| venue_type | Venue type: `journal` or `conference` |
-| total | Total count |
+| Field      | Description                             |
+| ---------- | --------------------------------------- |
+| id         | Venue ID                                |
+| name_en    | Venue English name                      |
+| name_zh    | Venue Chinese name                      |
+| aliases    | Alias list, partial and typically top 3 |
+| venue_type | Venue type: `journal` or `conference`   |
+| total      | Total count                             |
 
 **curl Example:**
+
 ```bash
 curl -X POST \
   'https://datacenter.aminer.cn/gateway/open_platform/api/venue/search' \
@@ -221,24 +226,25 @@ curl -X POST \
 
 **Request Parameters:**
 
-| Parameter | Type | Required | Description |
-|--------|------|------|------|
-| query | string | Yes | Query text such as patent title or keywords |
-| page | number | Yes | Page number |
-| size | number | Yes | Page size |
+| Parameter | Type   | Required | Description                                 |
+| --------- | ------ | -------- | ------------------------------------------- |
+| query     | string | Yes      | Query text such as patent title or keywords |
+| page      | number | Yes      | Page number                                 |
+| size      | number | Yes      | Page size                                   |
 
 **Response Fields:**
 
-| Field | Description |
-|--------|------|
-| id | Patent ID |
-| title | Patent title in English |
-| title_zh | Patent title in Chinese |
-| inventor_name | First inventor name |
-| app_year | Application year |
-| pub_year | Publication year |
+| Field         | Description             |
+| ------------- | ----------------------- |
+| id            | Patent ID               |
+| title         | Patent title in English |
+| title_zh      | Patent title in Chinese |
+| inventor_name | First inventor name     |
+| app_year      | Application year        |
+| pub_year      | Publication year        |
 
 **curl Example:**
+
 ```bash
 curl -X POST \
   'https://datacenter.aminer.cn/gateway/open_platform/api/patent/search' \
@@ -258,26 +264,27 @@ curl -X POST \
 
 **Request Parameters:**
 
-| Parameter | Type | Required | Description |
-|--------|------|------|------|
-| id | string | Yes | Patent ID |
+| Parameter | Type   | Required | Description |
+| --------- | ------ | -------- | ----------- |
+| id        | string | Yes      | Patent ID   |
 
 **Response Fields:**
 
-| Field | Description |
-|--------|------|
-| id | Patent ID |
-| title / en | Patent title |
-| app_num | Application number |
-| pub_num | Publication number |
-| pub_kind | Publication kind |
-| inventor | Inventor |
-| country | Country |
-| sequence | Sequence |
-| app_year | Application year |
-| pub_year | Publication year |
+| Field      | Description        |
+| ---------- | ------------------ |
+| id         | Patent ID          |
+| title / en | Patent title       |
+| app_num    | Application number |
+| pub_num    | Publication number |
+| pub_kind   | Publication kind   |
+| inventor   | Inventor           |
+| country    | Country            |
+| sequence   | Sequence           |
+| app_year   | Application year   |
+| pub_year   | Publication year   |
 
 **curl Example:**
+
 ```bash
 curl -X GET \
   'https://datacenter.aminer.cn/gateway/open_platform/api/patent/info?id=<PATENT_ID>' \

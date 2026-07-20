@@ -768,14 +768,11 @@ If the source is user-owned:
 
 ---
 
-
-
 ## Chinese Typography Reference
 
 Use `horizontal-craft/chinese-typography.md` when the artifact contains substantial Chinese / Chinese / CJK text, Chinese editorial layout, public-account formatting, Xiaohongshu content, Chinese deck typography, Chinese UI labels, or print-design-inspired HTML.
 
 Translate print-design methods into HTML structure: 版心, 网格, 留白, 标题组, 图版, 边注, 章节 rhythm, and proper punctuation.
-
 
 ## Quality Gate
 

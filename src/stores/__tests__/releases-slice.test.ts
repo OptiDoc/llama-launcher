@@ -39,12 +39,23 @@ describe("releases-slice", () => {
 
   it("installRelease marks release as installed", () => {
     store.setState({
-      releases: [{
-        id: "r1", tag: "b9951", installed: false, variant: "cuda12",
-        publishedAt: "", commit: "", notes: "", priority: false,
-        sizeMb: 0, workspaceId: undefined,
-        published_at: "", download_url: "", size_mb: 0,
-      } as never],
+      releases: [
+        {
+          id: "r1",
+          tag: "b9951",
+          installed: false,
+          variant: "cuda12",
+          publishedAt: "",
+          commit: "",
+          notes: "",
+          priority: false,
+          sizeMb: 0,
+          workspaceId: undefined,
+          published_at: "",
+          download_url: "",
+          size_mb: 0,
+        } as never,
+      ],
     });
     store.getState().installRelease("r1");
     expect(store.getState().releases[0].installed).toBe(true);
@@ -52,12 +63,23 @@ describe("releases-slice", () => {
 
   it("uninstallRelease marks release as not installed", () => {
     store.setState({
-      releases: [{
-        id: "r1", tag: "b9951", installed: true, variant: "cuda12",
-        publishedAt: "", commit: "", notes: "", priority: false,
-        sizeMb: 0, workspaceId: undefined,
-        published_at: "", download_url: "", size_mb: 0,
-      } as never],
+      releases: [
+        {
+          id: "r1",
+          tag: "b9951",
+          installed: true,
+          variant: "cuda12",
+          publishedAt: "",
+          commit: "",
+          notes: "",
+          priority: false,
+          sizeMb: 0,
+          workspaceId: undefined,
+          published_at: "",
+          download_url: "",
+          size_mb: 0,
+        } as never,
+      ],
     });
     store.getState().uninstallRelease("r1");
     expect(store.getState().releases[0].installed).toBe(false);

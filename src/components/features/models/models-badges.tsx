@@ -54,10 +54,7 @@ export function MoeBadge({ isMoe, expertCount }: { isMoe: boolean; expertCount?:
     );
   }
   return (
-    <Badge
-      variant="secondary"
-      className="bg-muted text-[10px] font-semibold text-muted-foreground"
-    >
+    <Badge variant="secondary" className="bg-muted text-[10px] font-semibold text-muted-foreground">
       Dense
     </Badge>
   );

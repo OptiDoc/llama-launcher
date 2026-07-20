@@ -7,12 +7,14 @@
 import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from "@/components/ui/select";
-import {
-  Dialog, DialogContent, DialogDescription, DialogHeader,
-  DialogTitle, DialogTrigger,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { Plus } from "lucide-react";
@@ -24,7 +26,7 @@ import { ServerSection, PerformanceSection, SamplingSection, AdvancedSection } f
 interface CoreSectionProps {
   f: ProfileFormState;
   dispatch: React.Dispatch<ProfileFormAction>;
-  models: any[];
+  models: unknown[];
 }
 
 export function CoreSection({ f, dispatch, models }: CoreSectionProps) {
@@ -36,27 +38,19 @@ export function CoreSection({ f, dispatch, models }: CoreSectionProps) {
 
       <Separator />
 
-      <ServerSection
-        f={f} errors={errors} dispatch={dispatch}
-      />
+      <ServerSection f={f} errors={errors} dispatch={dispatch} />
 
       <Separator />
 
-      <PerformanceSection
-        f={f} errors={errors} dispatch={dispatch}
-      />
+      <PerformanceSection f={f} errors={errors} dispatch={dispatch} />
 
       <Separator />
 
-      <SamplingSection
-        f={f} errors={errors} dispatch={dispatch}
-      />
+      <SamplingSection f={f} errors={errors} dispatch={dispatch} />
 
       <Separator />
 
-      <AdvancedSection
-        f={f} errors={errors} dispatch={dispatch}
-      />
+      <AdvancedSection f={f} errors={errors} dispatch={dispatch} />
     </div>
   );
 }

@@ -19,9 +19,15 @@ export function HFDownloadInfo({ selectedRepo }: HFDownloadInfoProps) {
       <p className="truncate font-mono text-[11px] font-semibold">{selectedRepo.repo}</p>
       <p className="text-[11px] text-muted-foreground">{selectedRepo.description}</p>
       <div className="flex flex-wrap items-center gap-1.5">
-        <Badge variant="secondary" className="h-4 px-1.5 text-[9px] font-semibold">{selectedRepo.builder}</Badge>
-        <Badge variant="secondary" className="h-4 px-1.5 text-[9px] font-semibold">{selectedRepo.parameterCount}</Badge>
-        <Badge variant="secondary" className="h-4 px-1.5 text-[9px] font-semibold">{selectedRepo.license}</Badge>
+        <Badge variant="secondary" className="h-4 px-1.5 text-[9px] font-semibold">
+          {selectedRepo.builder}
+        </Badge>
+        <Badge variant="secondary" className="h-4 px-1.5 text-[9px] font-semibold">
+          {selectedRepo.parameterCount}
+        </Badge>
+        <Badge variant="secondary" className="h-4 px-1.5 text-[9px] font-semibold">
+          {selectedRepo.license}
+        </Badge>
         <span className="text-[10px] text-muted-foreground">{fmtNum(selectedRepo.downloads)} dl</span>
       </div>
     </Card>

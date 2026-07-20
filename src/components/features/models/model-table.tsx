@@ -2,9 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
@@ -13,13 +11,17 @@ import type { LlamaModel } from "@/lib/llama-store";
 import { FamilyBadge, ArchBadge, MoeBadge } from "./models-badges";
 import { StatusBadge } from "./status-badge";
 import type { CardActions } from "./model-card";
-import {
-  AlertTriangle, Boxes, Download, Edit3, Loader2, Play, Trash2, XSquare,
-} from "lucide-react";
+import { AlertTriangle, Boxes, Download, Edit3, Loader2, Play, Trash2, XSquare } from "lucide-react";
 
 export function ModelTable({
-  models, actions, gpuVramGb,
-}: { models: LlamaModel[]; actions: CardActions; gpuVramGb: number }) {
+  models,
+  actions,
+  gpuVramGb,
+}: {
+  models: LlamaModel[];
+  actions: CardActions;
+  gpuVramGb: number;
+}) {
   return (
     <Card className="shadow-none py-0">
       <CardContent className="p-0">
@@ -34,7 +36,9 @@ export function ModelTable({
               <TableHead className="text-xs uppercase tracking-wide text-muted-foreground">Quant</TableHead>
               <TableHead className="text-xs uppercase tracking-wide text-muted-foreground">Size</TableHead>
               <TableHead className="text-xs uppercase tracking-wide text-muted-foreground">Status</TableHead>
-              <TableHead className="pr-4 text-right text-xs uppercase tracking-wide text-muted-foreground">Actions</TableHead>
+              <TableHead className="pr-4 text-right text-xs uppercase tracking-wide text-muted-foreground">
+                Actions
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -58,9 +62,15 @@ export function ModelTable({
                     </div>
                   </TableCell>
                   <TableCell className="py-3 text-xs text-muted-foreground">{m.builder}</TableCell>
-                  <TableCell className="py-3"><FamilyBadge family={m.family} /></TableCell>
-                  <TableCell className="py-3"><ArchBadge architecture={m.architecture} /></TableCell>
-                  <TableCell className="py-3"><MoeBadge isMoe={m.isMoe} expertCount={m.expertCount} /></TableCell>
+                  <TableCell className="py-3">
+                    <FamilyBadge family={m.family} />
+                  </TableCell>
+                  <TableCell className="py-3">
+                    <ArchBadge architecture={m.architecture} />
+                  </TableCell>
+                  <TableCell className="py-3">
+                    <MoeBadge isMoe={m.isMoe} expertCount={m.expertCount} />
+                  </TableCell>
                   <TableCell className="py-3 text-xs font-mono text-muted-foreground">
                     <span className="inline-flex items-center gap-1.5">
                       {m.quant}
@@ -70,14 +80,17 @@ export function ModelTable({
                             <AlertTriangle className="size-3 text-amber-600 dark:text-amber-400" />
                           </TooltipTrigger>
                           <TooltipContent>
-                            Model size ({m.sizeGb} GB) exceeds GPU VRAM ({gpuVramGb} GB). May require CPU offloading or fail to load.
+                            Model size ({m.sizeGb} GB) exceeds GPU VRAM ({gpuVramGb} GB). May require CPU offloading or
+                            fail to load.
                           </TooltipContent>
                         </Tooltip>
                       )}
                     </span>
                   </TableCell>
                   <TableCell className="py-3 text-xs text-muted-foreground">{fmtBytes(m.sizeGb)}</TableCell>
-                  <TableCell className="py-3"><StatusBadge model={m} /></TableCell>
+                  <TableCell className="py-3">
+                    <StatusBadge model={m} />
+                  </TableCell>
                   <TableCell className="pr-4 py-3">
                     {isDownloading ? (
                       <div className="flex items-center justify-end gap-2">
@@ -89,8 +102,13 @@ export function ModelTable({
                         </div>
                         <span className="font-mono text-[10px] text-muted-foreground">{progress}%</span>
                         <Button
-                          variant="ghost" size="icon" className="size-7 text-destructive hover:text-destructive hover:bg-destructive/10"
-                          onClick={(e) => { e.stopPropagation(); useLlamaStore.getState().cancelDownload(m.downloadId ?? ""); }}
+                          variant="ghost"
+                          size="icon"
+                          className="size-7 text-destructive hover:text-destructive hover:bg-destructive/10"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            useLlamaStore.getState().cancelDownload(m.downloadId ?? "");
+                          }}
                         >
                           <XSquare className="size-3.5" />
                         </Button>
@@ -100,8 +118,15 @@ export function ModelTable({
                         {m.downloaded && !m.missing && (
                           <Tooltip>
                             <TooltipTrigger asChild>
-                              <Button variant="ghost" size="icon" className="size-7"
-                                onClick={(e) => { e.stopPropagation(); actions.onLoad(m); }}>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="size-7"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  actions.onLoad(m);
+                                }}
+                              >
                                 <Play className="size-3.5" />
                               </Button>
                             </TooltipTrigger>
@@ -111,8 +136,15 @@ export function ModelTable({
                         {!m.downloaded && !m.missing && (
                           <Tooltip>
                             <TooltipTrigger asChild>
-                              <Button variant="ghost" size="icon" className="size-7"
-                                onClick={(e) => { e.stopPropagation(); actions.onDownload(m); }}>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="size-7"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  actions.onDownload(m);
+                                }}
+                              >
                                 <Download className="size-3.5" />
                               </Button>
                             </TooltipTrigger>
@@ -121,8 +153,15 @@ export function ModelTable({
                         )}
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <Button variant="ghost" size="icon" className="size-7"
-                              onClick={(e) => { e.stopPropagation(); actions.onEdit(m); }}>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="size-7"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                actions.onEdit(m);
+                              }}
+                            >
                               <Edit3 className="size-3.5" />
                             </Button>
                           </TooltipTrigger>
@@ -130,8 +169,15 @@ export function ModelTable({
                         </Tooltip>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <Button variant="ghost" size="icon" className="size-7 text-destructive hover:text-destructive"
-                              onClick={(e) => { e.stopPropagation(); actions.onEdit(m); }}>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="size-7 text-destructive hover:text-destructive"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                actions.onEdit(m);
+                              }}
+                            >
                               <Trash2 className="size-3.5" />
                             </Button>
                           </TooltipTrigger>

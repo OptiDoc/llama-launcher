@@ -2,7 +2,7 @@
 
 ## What is Raycast?
 
-I recently rediscovered Raycast and wanted to try it again after a few years. Raycast has infinitely more features than Spotlight (Apple's search tool). 
+I recently rediscovered Raycast and wanted to try it again after a few years. Raycast has infinitely more features than Spotlight (Apple's search tool).
 
 I was skeptical, assuming it would be just another Spotlight replacement that would require a lot of effort for minimal productivity gains, so I was hesitant to give it a try thinking I'd need to devote time and resources I don't have to a steep learning curve. Boy was I wrong!
 

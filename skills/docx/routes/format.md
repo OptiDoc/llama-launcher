@@ -62,6 +62,7 @@ for section in doc.sections:
 ### Page Numbers Starting from Specific Page
 
 Use multi-section approach:
+
 ```python
 # Section 1: Front matter (Roman numerals)
 # Section 2: Main content (Arabic, starting from 1)
@@ -69,6 +70,7 @@ Use multi-section approach:
 ```
 
 In raw XML (`word/document.xml`):
+
 ```xml
 <w:sectPr>
   <w:pgNumType w:fmt="upperRoman" w:start="1"/>
@@ -89,11 +91,11 @@ For existing documents, modify `word/document.xml` to split `<w:sectPr>` and cre
 
 When user requests a Chinese font size name:
 
-| Request | Action |
-|---------|--------|
+| Request                       | Action                                          |
+| ----------------------------- | ----------------------------------------------- |
 | "Change to Wu Hao (5th) size" | `font.size = Pt(10.5)` or `size: 21` in docx-js |
-| "Title in San Hao SimHei" | `font.size = Pt(16)`, `font.name = "SimHei"` |
-| "Body in Xiao Si SimSun" | `font.size = Pt(12)`, `font.name = "SimSun"` |
+| "Title in San Hao SimHei"     | `font.size = Pt(16)`, `font.name = "SimHei"`    |
+| "Body in Xiao Si SimSun"      | `font.size = Pt(12)`, `font.name = "SimSun"`    |
 
 ### Line Spacing Adjustment
 
@@ -115,6 +117,7 @@ para.paragraph_format.line_spacing = Pt(28)
 ## Verification
 
 After formatting changes:
+
 1. Open in LibreOffice or convert to PDF for visual check
 2. Extract text with pandoc to ensure content unchanged
 3. Compare file sizes (formatting-only changes shouldn't dramatically change size)

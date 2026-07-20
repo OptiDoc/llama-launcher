@@ -3,13 +3,7 @@ import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import {
-  TerminalSquare,
-  Square,
-  Play,
-  RotateCcw,
-  Trash2,
-} from "lucide-react";
+import { TerminalSquare, Square, Play, RotateCcw, Trash2 } from "lucide-react";
 import { useLlamaStore, type LlamaInstance } from "@/lib/llama-store";
 
 function InstanceActionsCard({
@@ -32,10 +26,7 @@ function InstanceActionsCard({
       <CardContent className="space-y-2 p-5">
         <h3 className="text-[13px] font-semibold text-foreground">Actions</h3>
         <Separator className="mb-1" />
-        <Button
-          className="w-full justify-start"
-          onClick={() => setActiveConsole(instance.id)}
-        >
+        <Button className="w-full justify-start" onClick={() => setActiveConsole(instance.id)}>
           <TerminalSquare className="mr-2 size-4" />
           Open Console
         </Button>

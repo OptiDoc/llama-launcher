@@ -102,14 +102,14 @@ Ask user if they want clean output or tracked changes only if ambiguous.
 
 ## Common Operations Quick Reference
 
-| Operation | Approach |
-|-----------|----------|
-| Replace text | `get_node` + `replace_node` with tracked changes |
-| Change font | Modify `<w:rFonts>` in run properties |
-| Add paragraph | `insert_after` with `<w:p>` element |
-| Delete paragraph | `suggest_deletion` on `<w:p>` |
-| Add table row | Clone `<w:tr>`, modify cells |
-| Update header | Edit `word/headerN.xml` |
-| Change margins | Edit `<w:pgMar>` in `<w:sectPr>` |
-| Add image | See `references/ooxml.md` image insertion pattern |
-| Add comment | `doc.add_comment(start, end, text)` |
+| Operation        | Approach                                          |
+| ---------------- | ------------------------------------------------- |
+| Replace text     | `get_node` + `replace_node` with tracked changes  |
+| Change font      | Modify `<w:rFonts>` in run properties             |
+| Add paragraph    | `insert_after` with `<w:p>` element               |
+| Delete paragraph | `suggest_deletion` on `<w:p>`                     |
+| Add table row    | Clone `<w:tr>`, modify cells                      |
+| Update header    | Edit `word/headerN.xml`                           |
+| Change margins   | Edit `<w:pgMar>` in `<w:sectPr>`                  |
+| Add image        | See `references/ooxml.md` image insertion pattern |
+| Add comment      | `doc.add_comment(start, end, text)`               |

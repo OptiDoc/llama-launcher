@@ -7,9 +7,27 @@ import { SYSTEM_CONSOLE_ID } from "@/lib/types";
 import { uid, nowTs } from "./helpers-utils";
 
 export const initialSystemLogs: ConsoleLine[] = [
-  { id: uid("log"), instanceId: SYSTEM_CONSOLE_ID, ts: nowTs() - 5000, kind: "info", text: "[boot] LlamaLauncher v0.4.2 ready" },
-  { id: uid("log"), instanceId: SYSTEM_CONSOLE_ID, ts: nowTs() - 4800, kind: "info", text: "[boot] connecting to Tauri backend…" },
-  { id: uid("log"), instanceId: SYSTEM_CONSOLE_ID, ts: nowTs() - 200, kind: "info", text: "[ready] start an instance to launch a llama-server process" },
+  {
+    id: uid("log"),
+    instanceId: SYSTEM_CONSOLE_ID,
+    ts: nowTs() - 5000,
+    kind: "info",
+    text: "[boot] LlamaLauncher v0.4.2 ready",
+  },
+  {
+    id: uid("log"),
+    instanceId: SYSTEM_CONSOLE_ID,
+    ts: nowTs() - 4800,
+    kind: "info",
+    text: "[boot] connecting to Tauri backend…",
+  },
+  {
+    id: uid("log"),
+    instanceId: SYSTEM_CONSOLE_ID,
+    ts: nowTs() - 200,
+    kind: "info",
+    text: "[ready] start an instance to launch a llama-server process",
+  },
 ];
 
 export function seedMetrics(): MetricSample[] {

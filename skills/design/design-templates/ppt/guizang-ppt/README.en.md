@@ -1,6 +1,6 @@
 # Magazine Web PPT · Editorial-Style Web Slide Deck Skill
 
-A [Claude Code / Claude Agent Skills](https://agentskills.io/) skill that generates **single-file HTML horizontal-swipe decks** with an "**editorial magazine × electronic ink**" aesthetic — picture *Monocle* with code stitched in.
+A [Claude Code / Claude Agent Skills](https://agentskills.io/) skill that generates **single-file HTML horizontal-swipe decks** with an "**editorial magazine × electronic ink**" aesthetic — picture _Monocle_ with code stitched in.
 
 > Distilled by [Guizang](https://x.com/op7418) from offline talks like "One-Person Company: Organizations Folded by AI" and "A New Way of Working." Every pitfall hit during those decks is logged in `checklist.md`.
 
@@ -82,13 +82,13 @@ magazine-web-ppt/
 
 Pick from `references/themes.md`. **Custom hex values are not allowed** — protecting the aesthetic matters more than freedom of choice.
 
-| Theme | Best for |
-|------|---------|
-| 🖋 Ink Classic | general default, commercial launches, when in doubt |
-| 🌊 Indigo Porcelain | tech / research / AI / technical keynotes |
-| 🌿 Forest Ink | nature / sustainability / culture / non-fiction |
-| 🍂 Kraft Paper | nostalgic / humanist / literary / indie zines |
-| 🌙 Dune | art / design / creative / gallery |
+| Theme               | Best for                                            |
+| ------------------- | --------------------------------------------------- |
+| 🖋 Ink Classic       | general default, commercial launches, when in doubt |
+| 🌊 Indigo Porcelain | tech / research / AI / technical keynotes           |
+| 🌿 Forest Ink       | nature / sustainability / culture / non-fiction     |
+| 🍂 Kraft Paper      | nostalgic / humanist / literary / indie zines       |
+| 🌙 Dune             | art / design / creative / gallery                   |
 
 Switching themes only requires replacing the 6 variables at the top of `template.html`'s `:root{}` block — all other CSS flows through `var(--...)`.
 
@@ -102,7 +102,7 @@ Switching themes only requires replacing the 6 variables at the top of `template
 
 ## Visual references
 
-- [*Monocle*](https://monocle.com) magazine layouts
+- [_Monocle_](https://monocle.com) magazine layouts
 - YC Garry Tan — "Thin Harness, Fat Skills"
 - Guizang's offline talk deck series
 

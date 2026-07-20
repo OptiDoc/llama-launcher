@@ -11,6 +11,7 @@
 - 工科背景 / 985 / 211 / 硕士及以上 / 博士
 
 英文 JD：
+
 - Required / Must have / Mandatory / Essential
 - Minimum X years
 - Strong proficiency in / Expert in
@@ -25,6 +26,7 @@
 - 加分项
 
 英文：
+
 - Preferred / Nice to have / Plus / Bonus / Desirable
 - Familiar with / Exposure to
 - A plus / Would be a plus
@@ -58,17 +60,12 @@
   "company": "XX 公司",
   "position": "XX 岗位",
   "must_have": [
-    {"item": "5 年以上 C 端产品经验", "evidence": "JD 第 X 行"},
-    {"item": "熟练 SQL", "evidence": "JD 第 Y 行"}
+    { "item": "5 年以上 C 端产品经验", "evidence": "JD 第 X 行" },
+    { "item": "熟练 SQL", "evidence": "JD 第 Y 行" }
   ],
-  "nice_to_have": [
-    {"item": "海外业务经验", "evidence": "JD 第 Z 行"}
-  ],
+  "nice_to_have": [{ "item": "海外业务经验", "evidence": "JD 第 Z 行" }],
   "soft_skills": ["跨部门推动", "数据驱动决策"],
-  "responsibilities": [
-    "主导 ___ 业务线产品规划",
-    "通过数据分析驱动迭代"
-  ],
+  "responsibilities": ["主导 ___ 业务线产品规划", "通过数据分析驱动迭代"],
   "special_requirements": {
     "education": "本科及以上",
     "years": "5+",

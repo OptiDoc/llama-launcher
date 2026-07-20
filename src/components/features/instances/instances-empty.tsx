@@ -12,9 +12,7 @@ function EmptyState({ onLaunch }: { onLaunch: () => void }) {
         </div>
         <div className="space-y-1">
           <p className="text-sm font-semibold">No instances yet</p>
-          <p className="text-xs text-muted-foreground">
-            Launch your first llama-server to get started.
-          </p>
+          <p className="text-xs text-muted-foreground">Launch your first llama-server to get started.</p>
         </div>
         <Button size="sm" className="mt-1" onClick={onLaunch}>
           <Plus className="mr-1.5 size-3.5" />

@@ -21,11 +21,7 @@ function LogView({ instanceId }: { instanceId: string }) {
   }, [logs]);
 
   if (!mounted) {
-    return (
-      <div className="flex h-full items-center justify-center text-xs text-muted-foreground/70">
-        Loading...
-      </div>
-    );
+    return <div className="flex h-full items-center justify-center text-xs text-muted-foreground/70">Loading...</div>;
   }
 
   if (logs.length === 0) {
@@ -37,10 +33,7 @@ function LogView({ instanceId }: { instanceId: string }) {
   }
 
   return (
-    <div
-      ref={scrollRef}
-      className="console-output h-full overflow-y-auto px-3 py-2"
-    >
+    <div ref={scrollRef} className="console-output h-full overflow-y-auto px-3 py-2">
       {logs.map((l) => (
         <div key={l.id} className={cn("log-line", `log-${l.kind}`)}>
           <span className="log-time">{fmtTime(l.ts)}</span>

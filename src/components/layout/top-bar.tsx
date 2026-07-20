@@ -6,16 +6,7 @@
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
-import {
-  PanelLeftClose,
-  PanelLeftOpen,
-  Server,
-  Activity,
-  Zap,
-  Snowflake,
-  Moon,
-  ChevronDown,
-} from "lucide-react";
+import { PanelLeftClose, PanelLeftOpen, Server, Activity, Zap, Snowflake, Moon, ChevronDown } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -24,12 +15,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
-import {
-  useLlamaStore,
-  type AppStatus,
-  type Workspace,
-  type NotificationKind,
-} from "@/lib/llama-store";
+import { useLlamaStore, type AppStatus, type Workspace, type NotificationKind } from "@/lib/llama-store";
 import { isTauri } from "@/lib/tauri-api";
 import { useShallow } from "zustand/react/shallow";
 import { TopBarWorkspace } from "./top-bar-workspace";
@@ -53,18 +39,28 @@ function useWindowControls() {
         const { getCurrentWindow } = await import("@tauri-apps/api/window");
         const win = getCurrentWindow();
         setMaximized(await win.isMaximized());
-        unlisten = await win.onResized(() => { win.isMaximized().then(setMaximized); });
-      } catch (e) { /* ignore */ }
+        unlisten = await win.onResized(() => {
+          win.isMaximized().then(setMaximized);
+        });
+      } catch (e) {
+        /* ignore */
+      }
     })();
-    return () => { unlisten?.(); };
+    return () => {
+      unlisten?.();
+    };
   }, []);
 
   const toggleMaximize = React.useCallback(async () => {
-    if (!isTauri()) { return; }
+    if (!isTauri()) {
+      return;
+    }
     try {
       const { getCurrentWindow } = await import("@tauri-apps/api/window");
       await getCurrentWindow().toggleMaximize();
-    } catch (e) { /* ignore */ }
+    } catch (e) {
+      /* ignore */
+    }
   }, []);
 
   return { maximized, toggleMaximize };
@@ -72,25 +68,36 @@ function useWindowControls() {
 
 export function TopBar({ collapsed, onToggleSidebar }: TopBarProps) {
   const {
-    appStatus, instances, workspaces, activeWorkspaceId,
-    setActiveWorkspace, addWorkspace, forceHibernate, forceWake,
-    lastActivityAt, notifications, markNotificationRead,
-    markAllNotificationsRead, clearNotifications,
-  } = useLlamaStore(useShallow((s) => ({
-    appStatus: s.appStatus,
-    instances: s.instances,
-    workspaces: s.workspaces,
-    activeWorkspaceId: s.activeWorkspaceId,
-    setActiveWorkspace: s.setActiveWorkspace,
-    addWorkspace: s.addWorkspace,
-    forceHibernate: s.forceHibernate,
-    forceWake: s.forceWake,
-    lastActivityAt: s.lastActivityAt,
-    notifications: s.notifications,
-    markNotificationRead: s.markNotificationRead,
-    markAllNotificationsRead: s.markAllNotificationsRead,
-    clearNotifications: s.clearNotifications,
-  })));
+    appStatus,
+    instances,
+    workspaces,
+    activeWorkspaceId,
+    setActiveWorkspace,
+    addWorkspace,
+    forceHibernate,
+    forceWake,
+    lastActivityAt,
+    notifications,
+    markNotificationRead,
+    markAllNotificationsRead,
+    clearNotifications,
+  } = useLlamaStore(
+    useShallow((s) => ({
+      appStatus: s.appStatus,
+      instances: s.instances,
+      workspaces: s.workspaces,
+      activeWorkspaceId: s.activeWorkspaceId,
+      setActiveWorkspace: s.setActiveWorkspace,
+      addWorkspace: s.addWorkspace,
+      forceHibernate: s.forceHibernate,
+      forceWake: s.forceWake,
+      lastActivityAt: s.lastActivityAt,
+      notifications: s.notifications,
+      markNotificationRead: s.markNotificationRead,
+      markAllNotificationsRead: s.markAllNotificationsRead,
+      clearNotifications: s.clearNotifications,
+    })),
+  );
 
   const { maximized, toggleMaximize } = useWindowControls();
   const [idleSecs, setIdleSecs] = React.useState(0);
@@ -168,7 +175,9 @@ export function TopBar({ collapsed, onToggleSidebar }: TopBarProps) {
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-52">
-            <DropdownMenuLabel className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">Power management</DropdownMenuLabel>
+            <DropdownMenuLabel className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">
+              Power management
+            </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={forceWake} className="gap-2 py-1.5" disabled={appStatus === "active"}>
               <Activity className="size-3.5 text-emerald-500" />

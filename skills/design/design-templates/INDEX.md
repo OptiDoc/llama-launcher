@@ -224,7 +224,6 @@ Available brand inspiration references:
 
 The following references were added or enriched from `nexu-io/open-design`:
 
-
 ### New references
 
 - `brand-inspiration/arc/`

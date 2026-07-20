@@ -22,14 +22,20 @@ export function createProfilesSlice(
 
     removeProfile: (id) => set((s) => ({ profiles: s.profiles.filter((p) => p.id !== id) })),
 
-    shareProfile: (id) => set((s) => ({
-      profiles: s.profiles.map((p) => (p.id === id ? { ...p, shared: true, shareId: p.shareId ?? `sh_${id}_v1` } : p)),
-    })),
+    shareProfile: (id) =>
+      set((s) => ({
+        profiles: s.profiles.map((p) =>
+          p.id === id ? { ...p, shared: true, shareId: p.shareId ?? `sh_${id}_v1` } : p,
+        ),
+      })),
 
-    calibrateProfile: (id) => set((s) => ({
-      profiles: s.profiles.map((p) =>
-        p.id === id ? { ...p, calibrationScore: Math.min(100, (p.calibrationScore ?? 70) + 5 + Math.floor(Math.random() * 8)) } : p,
-      ),
-    })),
+    calibrateProfile: (id) =>
+      set((s) => ({
+        profiles: s.profiles.map((p) =>
+          p.id === id
+            ? { ...p, calibrationScore: Math.min(100, (p.calibrationScore ?? 70) + 5 + Math.floor(Math.random() * 8)) }
+            : p,
+        ),
+      })),
   };
 }

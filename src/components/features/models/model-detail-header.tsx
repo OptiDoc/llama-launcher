@@ -14,11 +14,7 @@ import { fmtBytes } from "@/lib/llama-store";
 import type { LlamaModel } from "@/lib/llama-store";
 import { ArrowLeft, Boxes, Cpu, HardDrive } from "lucide-react";
 
-export function ModelDetailHeader({
-  model, onBack,
-}: {
-  model: LlamaModel; onBack: () => void;
-}) {
+export function ModelDetailHeader({ model, onBack }: { model: LlamaModel; onBack: () => void }) {
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between gap-3">
@@ -38,7 +34,9 @@ export function ModelDetailHeader({
               <div className="min-w-0">
                 <h2 className="truncate text-lg font-bold">{model.name}</h2>
                 <div className="mt-1 flex flex-wrap items-center gap-1.5">
-                  <Badge variant="secondary" className="text-[10px] font-semibold">{model.builder}</Badge>
+                  <Badge variant="secondary" className="text-[10px] font-semibold">
+                    {model.builder}
+                  </Badge>
                   <FamilyBadge family={model.family} />
                   <Badge variant="secondary" className="gap-1 text-[10px] font-semibold">
                     <Cpu className="size-2.5" /> {model.quant}

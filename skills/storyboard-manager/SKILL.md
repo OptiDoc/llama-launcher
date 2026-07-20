@@ -14,15 +14,19 @@ The Storyboard Manager skill equips Claude with specialized knowledge and tools 
 The skill provides four main capabilities:
 
 ### 1. Character Development & Management
+
 Support creating deep, consistent character profiles with backstories, arcs, and relationships.
 
 ### 2. Story Planning & Structure
+
 Guide plot development using established frameworks (Three-Act, Hero's Journey, Save the Cat, etc.) and help organize narrative elements.
 
 ### 3. Chapter & Scene Writing
+
 Generate chapter content, scene breakdowns, and dialogue that maintains consistency with established characters and plot.
 
 ### 4. Timeline Tracking & Consistency Checking
+
 Use automated tools to verify chronological consistency, character continuity, and world-building coherence.
 
 ## Detecting Project Structure
@@ -61,6 +65,7 @@ User Request
 ### Step 1: Gather Context
 
 Before developing a character, read existing character files to understand:
+
 - Established naming conventions and profile format
 - Existing characters and relationships
 - Story genre and tone
@@ -71,6 +76,7 @@ Use the Read tool to examine existing character files in the characters director
 ### Step 2: Access Character Development Framework
 
 When detailed character guidance is needed, read `references/character_development.md` which contains:
+
 - Core character elements (personality, motivation, goals)
 - Backstory framework (ghost/wound, formative relationships)
 - Character arc types (positive change, flat, negative)
@@ -79,6 +85,7 @@ When detailed character guidance is needed, read `references/character_developme
 - Consistency guidelines
 
 To efficiently find specific guidance, use Grep to search for relevant sections:
+
 ```bash
 # Example: Find guidance on character arcs
 grep -i "character arc" references/character_development.md
@@ -89,26 +96,31 @@ grep -i "character arc" references/character_development.md
 Create or enhance character profiles with these essential elements:
 
 **Basic Information**
+
 - Name, age, role, physical appearance
 - Key personality traits (both positive and negative)
 
 **Background**
+
 - Origin and formative experiences
 - Ghost/wound that shapes their behavior
 - Key relationships and family dynamics
 
 **Character Arc**
+
 - Starting belief or flaw
 - Want vs. Need (external goal vs. internal growth)
 - Transformation journey
 - End state
 
 **Relationships**
+
 - Connections to other characters
 - Dynamic types (ally, rival, mentor, etc.)
 - How relationships evolve
 
 **Unique Elements**
+
 - Abilities, skills, or special knowledge
 - Secrets or hidden aspects
 - Voice/speech patterns
@@ -117,6 +129,7 @@ Create or enhance character profiles with these essential elements:
 ### Step 4: Ensure Consistency
 
 Cross-reference with:
+
 - Existing character profiles (avoid redundancy in roles/traits)
 - Story planning documents (ensure alignment with plot needs)
 - Summary/overview (match genre and tone)
@@ -130,6 +143,7 @@ Write the character profile to `characters/[character-name].md` using markdown f
 ### Step 1: Assess Current Planning State
 
 Read existing planning documents to understand:
+
 - Story concept and premise
 - Established plot points or outline
 - Target audience and genre
@@ -141,6 +155,7 @@ Look in folders like `story-planning/`, `outline/`, or files like `summary.md`.
 ### Step 2: Access Story Structure Reference
 
 For detailed structural guidance, read `references/story_structures.md` which includes:
+
 - Three-Act Structure
 - Hero's Journey (Campbell's Monomyth)
 - Save the Cat Beat Sheet
@@ -151,6 +166,7 @@ For detailed structural guidance, read `references/story_structures.md` which in
 - Genre-specific structures
 
 Use Grep to find specific frameworks:
+
 ```bash
 # Example: Find Three-Act Structure details
 grep -A 20 "Three-Act Structure" references/story_structures.md
@@ -171,27 +187,32 @@ Based on the user's request and story genre, recommend appropriate frameworks:
 Create or enhance planning documents with:
 
 **Story Overview**
+
 - Premise in 2-3 sentences
 - Genre, target audience, tone
 - Central themes and questions
 
 **Plot Structure**
+
 - Act/chapter breakdown with key events
 - Inciting incident and plot points
 - Midpoint twist or revelation
 - Climax and resolution
 
 **Character Arcs**
+
 - How each main character transforms
 - Arc integration with plot beats
 
 **World-Building Elements** (if applicable)
+
 - Setting and locations
 - Magic systems or technology
 - Social structures or rules
 - Historical context
 
 **Timeline**
+
 - Story duration
 - Key event sequence
 - Pacing considerations
@@ -216,6 +237,7 @@ This ensures the new content aligns with established elements.
 ### Step 2: Identify Chapter Requirements
 
 Determine:
+
 - **Story Position**: Where does this fit in the overall structure?
 - **POV Character**: Whose perspective?
 - **Scene Goal**: What does the POV character want in this scene?
@@ -229,11 +251,13 @@ Determine:
 Apply scene structure components:
 
 **Scene (Action)**
+
 1. Goal - What the POV character pursues
 2. Conflict - Opposition encountered
 3. Disaster - Negative outcome that propels forward
 
 **Sequel (Reaction)**
+
 1. Reaction - Emotional response to disaster
 2. Dilemma - Processing options
 3. Decision - Choice leading to next goal
@@ -243,6 +267,7 @@ Alternate between high-tension (action, conflict) and low-tension (reflection, w
 ### Step 4: Write with Character Consistency
 
 Maintain character voice by referencing:
+
 - Established personality traits
 - Speech patterns and vocabulary
 - Behavioral patterns (under stress, when happy, decision-making style)
@@ -252,6 +277,7 @@ Maintain character voice by referencing:
 ### Step 5: Integrate Timeline Markers
 
 Include timeline references to maintain chronological clarity:
+
 - Explicit markers: "Day 3," "Two weeks later"
 - Implicit markers: Time of day, seasonal cues, event references
 - Format: `**Timeline:** Day 5, Evening` in chapter header or as section break
@@ -261,6 +287,7 @@ Include timeline references to maintain chronological clarity:
 Write chapter content to `chapters/chapter-[number].md` or `chapters/[chapter-name].md`. Include:
 
 **Chapter Header**
+
 ```markdown
 # Chapter [Number]: [Optional Title]
 
@@ -270,6 +297,7 @@ Write chapter content to `chapters/chapter-[number].md` or `chapters/[chapter-na
 ```
 
 **Chapter Content**
+
 - Scene-by-scene breakdown
 - Dialogue and action
 - Character thoughts (for POV character)
@@ -278,6 +306,7 @@ Write chapter content to `chapters/chapter-[number].md` or `chapters/[chapter-na
 ### Step 7: Note Continuity Elements
 
 After writing, document any new information introduced:
+
 - Character revelations or development
 - Plot points or clues
 - World-building details
@@ -290,6 +319,7 @@ This helps maintain consistency in future chapters.
 ### When to Use Timeline Tracking
 
 Invoke the timeline tracker when:
+
 - User requests timeline analysis or event sequencing
 - Checking chronological consistency
 - Planning event order across chapters
@@ -304,6 +334,7 @@ python3 .claude/skills/storyboard-manager/scripts/timeline_tracker.py . --output
 ```
 
 **Output format options:**
+
 - `markdown` - Human-readable report (default)
 - `json` - Structured data for further processing
 
@@ -312,17 +343,20 @@ python3 .claude/skills/storyboard-manager/scripts/timeline_tracker.py . --output
 The script provides:
 
 **Statistics**
+
 - Total events tracked
 - Total characters appearing
 - Events per character
 
 **Timeline View**
+
 - Chronological sequence of events
 - Chapter/scene locations
 - Characters present in each event
 - Preview of event content
 
 **Warnings**
+
 - Events without timeline markers
 - Characters mentioned but not defined in character files
 
@@ -336,11 +370,13 @@ After running the tracker:
 4. **Character tracking** - Ensure characters appear consistently with their arc
 
 Add timeline markers to chapters where missing:
+
 ```markdown
 **Timeline:** Day 7, Morning
 ```
 
 Or use inline markers:
+
 ```markdown
 Three days had passed since the incident...
 ```
@@ -350,6 +386,7 @@ Three days had passed since the incident...
 ### When to Use Consistency Checking
 
 Invoke the consistency checker when:
+
 - User requests consistency analysis
 - Before finalizing chapters or acts
 - After making significant character or plot changes
@@ -364,6 +401,7 @@ python3 .claude/skills/storyboard-manager/scripts/consistency_checker.py . --out
 ```
 
 **Output format options:**
+
 - `markdown` - Human-readable report with issue details (default)
 - `json` - Structured data for programmatic analysis
 
@@ -372,17 +410,20 @@ python3 .claude/skills/storyboard-manager/scripts/consistency_checker.py . --out
 The script identifies issues in three severity levels:
 
 **Critical (🔴)**
+
 - Major contradictions requiring immediate attention
 - Character appearing after death
 - Fundamental plot contradictions
 
 **Warning (⚠️)**
+
 - Potential inconsistencies to review
 - Age discrepancies
 - Physical description contradictions
 - Relationship conflicts
 
 **Info (ℹ️)**
+
 - Minor issues or variations
 - Name capitalization inconsistencies
 - Stylistic variations
@@ -397,8 +438,10 @@ For each issue reported:
 4. **Re-run checker** - Verify fixes resolved the issues
 
 **Example workflow for character age inconsistency:**
+
 ```markdown
 Issue: Age inconsistency for Maya
+
 - Profile: 18 years old
 - Chapter 3: mentions "21-year-old Maya"
 
@@ -408,12 +451,14 @@ Fix: Edit chapter-3.md to change "21-year-old" to "18-year-old"
 ### Consistency Checking Limitations
 
 The automated checker catches:
+
 - Physical attribute contradictions
 - Age discrepancies
 - Name variations
 - Basic world-building facts
 
 The checker cannot catch:
+
 - Subtle personality inconsistencies
 - Complex plot logic errors
 - Thematic contradictions
@@ -426,6 +471,7 @@ Manual review is still essential for deep consistency.
 ### Progressive Context Loading
 
 Don't load all reference files at once. Instead:
+
 1. Scan project structure first
 2. Read only relevant character files for the current task
 3. Access reference documentation only when specific guidance is needed
@@ -434,6 +480,7 @@ Don't load all reference files at once. Instead:
 ### Maintaining Genre Voice
 
 Match the story's established tone:
+
 - **YA**: Present tense, immediate emotional connection, contemporary language
 - **Fantasy**: Rich descriptive language, world-building integration
 - **Thriller**: Short sentences, high tension, sensory details
@@ -444,6 +491,7 @@ Reference the summary.md to identify target audience and adjust accordingly.
 ### Character Arc Integration
 
 Every chapter should serve character arcs:
+
 - Track where each character is in their arc
 - Show incremental change, not sudden transformation
 - Use plot events to test character beliefs
@@ -452,6 +500,7 @@ Every chapter should serve character arcs:
 ### Balancing Show vs. Tell
 
 For narrative writing:
+
 - **Show** emotions through actions, dialogue, physical reactions
 - **Tell** to compress time, provide necessary information efficiently
 - Use character-filtered description (what would this POV character notice?)
@@ -459,6 +508,7 @@ For narrative writing:
 ### Handling Multiple POV
 
 When stories have multiple perspectives:
+
 - Create distinct voices for each POV character
 - Ensure each POV section advances both that character's arc and the plot
 - Vary sentence structure and vocabulary by character
@@ -467,6 +517,7 @@ When stories have multiple perspectives:
 ## Common User Requests & Responses
 
 ### "Help me develop a character backstory"
+
 1. Read existing character files for context
 2. Read the character profile (if exists) to enhance
 3. Access character_development.md reference for backstory framework
@@ -474,6 +525,7 @@ When stories have multiple perspectives:
 5. Integrate with their character arc and story role
 
 ### "Write the next chapter"
+
 1. Read summary.md and story planning documents
 2. Read all character profiles for characters appearing in chapter
 3. Read previous 2 chapters for continuity
@@ -482,6 +534,7 @@ When stories have multiple perspectives:
 6. Include timeline markers and POV/location headers
 
 ### "Outline Act 2"
+
 1. Read summary and any existing planning documents
 2. Access story_structures.md for structural guidance
 3. Identify act 2 requirements (complications, midpoint, rising tension)
@@ -489,6 +542,7 @@ When stories have multiple perspectives:
 5. Note how plot and character arcs intersect
 
 ### "Check my story for consistency"
+
 1. Run consistency_checker.py script
 2. Review output identifying issues
 3. Read flagged files to understand contradictions
@@ -496,6 +550,7 @@ When stories have multiple perspectives:
 5. Offer to make edits if user confirms
 
 ### "Track the timeline of my story"
+
 1. Run timeline_tracker.py script
 2. Review output showing event sequence
 3. Identify gaps or inconsistencies in chronology
@@ -503,6 +558,7 @@ When stories have multiple perspectives:
 5. Provide timeline summary organized by character or chapter
 
 ### "What structure should I use for my thriller?"
+
 1. Access story_structures.md reference
 2. Recommend Three-Act Structure or Save the Cat
 3. Explain thriller-specific requirements (escalating tension, ticking clock)
@@ -512,21 +568,25 @@ When stories have multiple perspectives:
 ## Resources
 
 ### scripts/timeline_tracker.py
+
 Python script that analyzes markdown files to extract and organize timeline events. Tracks character appearances, identifies time markers, groups events chronologically, and flags consistency issues.
 
 **Usage:** Run from project root with `python3 .claude/skills/storyboard-manager/scripts/timeline_tracker.py .`
 
 ### scripts/consistency_checker.py
+
 Python script that detects inconsistencies in character details, physical descriptions, ages, names, and world-building facts across all story files. Outputs severity-ranked issues with file locations.
 
 **Usage:** Run from project root with `python3 .claude/skills/storyboard-manager/scripts/consistency_checker.py .`
 
 ### references/character_development.md
+
 Comprehensive framework for creating multi-dimensional characters including core elements, backstory structure, arc types, relationship dynamics, voice development, and consistency guidelines.
 
 **Load when:** Developing new characters, enhancing existing profiles, resolving character consistency issues, or planning character arcs.
 
 ### references/story_structures.md
+
 Detailed reference covering major story structures (Three-Act, Hero's Journey, Save the Cat), character arc templates, scene structure, pacing guidelines, plot development techniques, and genre-specific structures.
 
 **Load when:** Planning story outline, structuring acts, organizing plot beats, determining pacing, or applying specific narrative frameworks.

@@ -5,6 +5,7 @@ This reference provides frameworks for creating compelling, multi-dimensional ch
 ## Core Character Elements
 
 ### Basic Profile
+
 - **Name**: Full name, nicknames, name meaning
 - **Age**: Chronological and how they present
 - **Physical Description**: Distinguishing features, style, mannerisms
@@ -12,6 +13,7 @@ This reference provides frameworks for creating compelling, multi-dimensional ch
 - **Archetype**: Hero, mentor, trickster, everyman, etc.
 
 ### Personality Dimensions
+
 - **Temperament**: Sanguine, choleric, melancholic, phlegmatic
 - **Traits**: 3-5 defining characteristics (both positive and negative)
 - **Quirks**: Unique habits or behaviors
@@ -19,6 +21,7 @@ This reference provides frameworks for creating compelling, multi-dimensional ch
 - **Sense of Humor**: Type and style
 
 ### Motivation & Goals
+
 - **External Goal**: What they're trying to achieve (plot-level)
 - **Internal Goal**: What they're trying to become (character arc)
 - **Motivation**: Why they want these things
@@ -28,6 +31,7 @@ This reference provides frameworks for creating compelling, multi-dimensional ch
 ## Character Backstory Framework
 
 ### The Ghost (Past Wound)
+
 - **Traumatic Event**: What happened in their past
 - **Age When It Occurred**: How it shaped their development
 - **Who Was Involved**: Other characters connected to trauma
@@ -35,6 +39,7 @@ This reference provides frameworks for creating compelling, multi-dimensional ch
 - **Coping Mechanisms**: How they deal with the wound
 
 ### Formative Relationships
+
 - **Family Dynamics**: Parents, siblings, family structure
 - **Key Friendships**: Influences from peers
 - **Romantic History**: Past relationships and their impact
@@ -42,6 +47,7 @@ This reference provides frameworks for creating compelling, multi-dimensional ch
 - **Enemies/Rivals**: Antagonistic relationships that defined them
 
 ### Life History
+
 - **Childhood**: Key events, family situation, early personality
 - **Adolescence**: Identity formation, major choices, first loves/losses
 - **Young Adulthood**: Independence, career/path choices, relationships
@@ -50,7 +56,9 @@ This reference provides frameworks for creating compelling, multi-dimensional ch
 ## Character Arc Types
 
 ### Positive Change Arc
+
 **Structure:**
+
 1. Lie they believe
 2. Want vs. Need established
 3. First glimpse of truth
@@ -60,13 +68,16 @@ This reference provides frameworks for creating compelling, multi-dimensional ch
 7. New worldview demonstrated
 
 **Markers:**
+
 - Start: Incomplete, held back by misbelief
 - Midpoint: Glimpse growth but not ready
 - Climax: Must choose between lie and truth
 - End: Transformed, living truth
 
 ### Flat Arc
+
 **Structure:**
+
 1. Truth known from beginning
 2. World believes lie
 3. Character tested on their truth
@@ -75,13 +86,16 @@ This reference provides frameworks for creating compelling, multi-dimensional ch
 6. Truth proven through action
 
 **Markers:**
+
 - Start: Strong in beliefs
 - Midpoint: Severely tested
 - Climax: Greatest test of faith
 - End: Changed the world, not themselves
 
 ### Negative Arc
+
 **Structure:**
+
 1. Flaw/weakness established
 2. Temptation introduced
 3. Small compromises begin
@@ -91,6 +105,7 @@ This reference provides frameworks for creating compelling, multi-dimensional ch
 7. Tragic conclusion
 
 **Markers:**
+
 - Start: Flawed but sympathetic
 - Midpoint: Questionable choices
 - Climax: Beyond redemption
@@ -99,7 +114,9 @@ This reference provides frameworks for creating compelling, multi-dimensional ch
 ## Relationship Dynamics
 
 ### Character Relationships Matrix
+
 For each significant relationship, define:
+
 - **Dynamic Type**: Mentor/student, rivals, allies, romance, family
 - **Conflict Source**: What creates tension
 - **Common Ground**: What bonds them
@@ -107,6 +124,7 @@ For each significant relationship, define:
 - **Arc**: How relationship evolves
 
 ### Protagonist-Antagonist Relationship
+
 - **Opposition**: How antagonist blocks protagonist's goal
 - **Mirror/Foil**: How they reflect/contrast each other
 - **Personal Stakes**: Why this matters beyond plot
@@ -116,6 +134,7 @@ For each significant relationship, define:
 ## Character Voice Development
 
 ### Dialogue Markers
+
 - **Vocabulary Level**: Formal, casual, slang, technical
 - **Sentence Structure**: Short and punchy vs. long and flowing
 - **Favorite Words/Phrases**: Repeated expressions
@@ -124,6 +143,7 @@ For each significant relationship, define:
 - **Lying Tells**: How they behave when dishonest
 
 ### Internal Voice (POV Characters)
+
 - **Thought Patterns**: Analytical, emotional, scattered, focused
 - **Biases**: How they interpret events
 - **Blind Spots**: What they don't see about themselves
@@ -133,6 +153,7 @@ For each significant relationship, define:
 ## Character Consistency
 
 ### Behavioral Patterns
+
 - **Under Stress**: How they react to pressure
 - **When Happy**: How they express joy
 - **When Angry**: Explosive, cold, passive-aggressive
@@ -140,12 +161,14 @@ For each significant relationship, define:
 - **Trust**: Quick or slow to trust others
 
 ### Core Values
+
 - **Non-Negotiables**: Lines they won't cross
 - **Flexible Areas**: Where they compromise
 - **Value Hierarchy**: Ranking of priorities (family, honor, survival, etc.)
 - **Values Testing**: Scenes where values conflict
 
 ### Growth Indicators
+
 - **Early Story**: How they handle situation type X
 - **Mid Story**: How handling of X begins to shift
 - **Late Story**: How they handle X after growth
@@ -154,6 +177,7 @@ For each significant relationship, define:
 ## Character Roles in Ensemble
 
 ### Ensemble Balance
+
 - **The Leader**: Drives action, makes decisions
 - **The Heart**: Emotional center, unifies group
 - **The Brain**: Strategy, knowledge, analysis
@@ -162,6 +186,7 @@ For each significant relationship, define:
 - **The Conscience**: Moral compass, voice of reason
 
 ### Avoiding Character Redundancy
+
 - **Different Wants**: Each character pursuing different goals
 - **Different Methods**: Varied approaches to problems
 - **Different Worldviews**: Contrasting perspectives
@@ -171,12 +196,14 @@ For each significant relationship, define:
 ## Character Development Questions
 
 ### Surface Level
+
 - What do they look like?
 - How do they dress?
 - What's their job/role?
 - Where do they live?
 
 ### Deeper Level
+
 - What do they fear most?
 - What do they desire more than anything?
 - What's their greatest secret?
@@ -184,6 +211,7 @@ For each significant relationship, define:
 - What would they sacrifice everything for?
 
 ### Behavioral Level
+
 - How do they treat people with less power?
 - What makes them laugh?
 - What makes them cry?
@@ -191,6 +219,7 @@ For each significant relationship, define:
 - How do they handle failure?
 
 ### Thematic Level
+
 - What do they represent in the story?
 - What question does their arc answer?
 - How do they embody or challenge the theme?
@@ -212,6 +241,7 @@ To ensure character depth, test them against:
 ## Red Flags for Weak Characters
 
 ### Avoid:
+
 - **Mary Sue/Gary Stu**: Too perfect, no real flaws
 - **Inconsistent Behavior**: Acts differently for plot convenience
 - **No Agency**: Things happen to them, they don't drive action
@@ -222,6 +252,7 @@ To ensure character depth, test them against:
 - **Token Diversity**: Defined only by identity marker
 
 ### Fix By:
+
 - Adding meaningful flaws and consequences
 - Establishing behavioral patterns and motivations
 - Giving them goals and plans they actively pursue

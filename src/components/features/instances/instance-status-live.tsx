@@ -13,16 +13,8 @@ function InstanceStatusLive({ instance }: { instance: LlamaInstance }) {
     <Card className="py-0">
       <CardContent className="p-5">
         <div className="mb-3 flex items-center justify-between">
-          <h3 className="text-[13px] font-semibold text-foreground">
-            Live status
-          </h3>
-          <Badge
-            variant="secondary"
-            className={cn(
-              "text-[10px] uppercase",
-              STATUS_STYLE[instance.status],
-            )}
-          >
+          <h3 className="text-[13px] font-semibold text-foreground">Live status</h3>
+          <Badge variant="secondary" className={cn("text-[10px] uppercase", STATUS_STYLE[instance.status])}>
             {instance.status}
           </Badge>
         </div>
@@ -31,8 +23,7 @@ function InstanceStatusLive({ instance }: { instance: LlamaInstance }) {
           label="Throughput"
           value={
             <span className="flex items-center gap-1 font-mono">
-              <Zap className="size-3" />{" "}
-              {instance.tokensPerSec.toFixed(1)} tok/s
+              <Zap className="size-3" /> {instance.tokensPerSec.toFixed(1)} tok/s
             </span>
           }
         />
@@ -48,10 +39,7 @@ function InstanceStatusLive({ instance }: { instance: LlamaInstance }) {
           label="Memory"
           value={
             <span className="flex items-center gap-1 font-mono">
-              <MemoryStick className="size-3" />{" "}
-              {instance.memoryMb > 0
-                ? `${instance.memoryMb} MB`
-                : "\u2014"}
+              <MemoryStick className="size-3" /> {instance.memoryMb > 0 ? `${instance.memoryMb} MB` : "\u2014"}
             </span>
           }
         />
@@ -59,8 +47,7 @@ function InstanceStatusLive({ instance }: { instance: LlamaInstance }) {
           label="Uptime"
           value={
             <span className="flex items-center gap-1 font-mono">
-              <Clock className="size-3" />{" "}
-              {uptimeString(instance.startedAt)}
+              <Clock className="size-3" /> {uptimeString(instance.startedAt)}
             </span>
           }
         />

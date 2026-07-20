@@ -216,8 +216,8 @@ HTML skeleton (3:4):
   <div class="content stack gap-4" style="justify-content:center">
     <p class="kicker">The Question · 留给你的</p>
     <h1 class="h-display">
-      下一次<br>
-      你会先<br>
+      下一次<br />
+      你会先<br />
       问 AI 还是问朋友?
     </h1>
     <p class="lead">在评论区告诉我你的答案。</p>
@@ -364,26 +364,26 @@ Never run two M16 in a row. After a full-bleed photo the eye needs text. P2 must
 
 **Four title-placement modes** — pick by subject map (from image-overlay.md Rule 2):
 
-| Mode | Subject location | Title position | Tint (only if Step 4 contrast fails) |
-| ---- | ---------------- | -------------- | ------------------------------------ |
-| **A · 顶压底沉** (top kicker + bottom title) | Subject in middle third (face, peak, hero object), top + bottom open | Top: kicker 0-12% y. Bottom: 1-2 line title 72-92% y. | Try no tint. If needed: bottom-only radial, image-toned, peak α ≤ 0.30 over title block. |
-| **B · 侧栏立柱** (vertical column) | Subject occupies a **clean** vertical column with ≥40% width safe opposite side. Skip B if subject edge is irregular (e.g. tree canopy spilling sideways) — use A or D instead. | Opposite column (~36-40% of width), stacked: kicker → title → subtitle | Try no tint. If needed: one-sided horizontal falloff `radial-gradient(45% 60% at 18% 50%, …)`, image-toned. |
-| **C · 角落徽章** (corner badge) | Subject fills most of the frame; one corner is genuinely empty | Small block in the empty corner (≤35% w × ≤25% h): kicker / short title / meta | Light vignette only in that corner — never darken the whole image |
-| **D · 下沉条带** (bottom ribbon) | Wide landscape / atmospheric scene / no single subject; abundant negative space at bottom | Bottom band 78-92% y: title + meta strip; align flush-left or flush-right (not centered) | Try no tint. If needed: bottom-only radial, image-toned, peak α 0.20-0.30 |
+| Mode                                         | Subject location                                                                                                                                                                | Title position                                                                           | Tint (only if Step 4 contrast fails)                                                                        |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| **A · 顶压底沉** (top kicker + bottom title) | Subject in middle third (face, peak, hero object), top + bottom open                                                                                                            | Top: kicker 0-12% y. Bottom: 1-2 line title 72-92% y.                                    | Try no tint. If needed: bottom-only radial, image-toned, peak α ≤ 0.30 over title block.                    |
+| **B · 侧栏立柱** (vertical column)           | Subject occupies a **clean** vertical column with ≥40% width safe opposite side. Skip B if subject edge is irregular (e.g. tree canopy spilling sideways) — use A or D instead. | Opposite column (~36-40% of width), stacked: kicker → title → subtitle                   | Try no tint. If needed: one-sided horizontal falloff `radial-gradient(45% 60% at 18% 50%, …)`, image-toned. |
+| **C · 角落徽章** (corner badge)              | Subject fills most of the frame; one corner is genuinely empty                                                                                                                  | Small block in the empty corner (≤35% w × ≤25% h): kicker / short title / meta           | Light vignette only in that corner — never darken the whole image                                           |
+| **D · 下沉条带** (bottom ribbon)             | Wide landscape / atmospheric scene / no single subject; abundant negative space at bottom                                                                                       | Bottom band 78-92% y: title + meta strip; align flush-left or flush-right (not centered) | Try no tint. If needed: bottom-only radial, image-toned, peak α 0.20-0.30                                   |
 
 **Typography spec on 1080×1440 (Editorial × E-ink) — restrained, NOT chunky**:
 
-| Element | Mode A | Mode B | Mode C | Mode D |
-| ------- | ------ | ------ | ------ | ------ |
-| Kicker  | mono 20-22px, uppercase, tracking 0.18-0.22em | mono 20-22px | mono 18-20px | mono 22-24px |
-| Title font | Noto Serif SC **400-500** (NOT 700-900) | same | same | same |
-| Title size | **88-108px**. Default 96px for 2-line zh title. Drop to 88px if 2 lines × ≥7 chars. | **84-100px**, wrap on phrase boundary | 56-64px (NOT display) | **96-112px**, single line preferred |
-| Title tracking (zh) | 0.10-0.15em | 0.10-0.15em | 0.05-0.10em | 0.12-0.18em |
-| Title line-height | 1.10-1.18 | 1.10-1.18 | 1.20 | 1.05-1.10 |
-| Subtitle | optional `h-sub` 28-32px italic Playfair, tracking 0 | same | omit | same |
-| Issue strip | mono 18-20px bottom, uppercase, tracking 0.20-0.25em, hairline above | omit | omit | mono 20-22px, tracking 0.20-0.25em |
-| Text color | `#f5f1e8` (paper-cream, NOT pure white #fff) | same | same | same |
-| Hairline color | `rgba(245, 241, 232, 0.35)` (paper at 35% alpha) | same | same | same |
+| Element             | Mode A                                                                              | Mode B                                | Mode C                | Mode D                              |
+| ------------------- | ----------------------------------------------------------------------------------- | ------------------------------------- | --------------------- | ----------------------------------- |
+| Kicker              | mono 20-22px, uppercase, tracking 0.18-0.22em                                       | mono 20-22px                          | mono 18-20px          | mono 22-24px                        |
+| Title font          | Noto Serif SC **400-500** (NOT 700-900)                                             | same                                  | same                  | same                                |
+| Title size          | **88-108px**. Default 96px for 2-line zh title. Drop to 88px if 2 lines × ≥7 chars. | **84-100px**, wrap on phrase boundary | 56-64px (NOT display) | **96-112px**, single line preferred |
+| Title tracking (zh) | 0.10-0.15em                                                                         | 0.10-0.15em                           | 0.05-0.10em           | 0.12-0.18em                         |
+| Title line-height   | 1.10-1.18                                                                           | 1.10-1.18                             | 1.20                  | 1.05-1.10                           |
+| Subtitle            | optional `h-sub` 28-32px italic Playfair, tracking 0                                | same                                  | omit                  | same                                |
+| Issue strip         | mono 18-20px bottom, uppercase, tracking 0.20-0.25em, hairline above                | omit                                  | omit                  | mono 20-22px, tracking 0.20-0.25em  |
+| Text color          | `#f5f1e8` (paper-cream, NOT pure white #fff)                                        | same                                  | same                  | same                                |
+| Hairline color      | `rgba(245, 241, 232, 0.35)` (paper at 35% alpha)                                    | same                                  | same                  | same                                |
 
 **Forbidden in M16 type**:
 
@@ -395,12 +395,12 @@ Never run two M16 in a row. After a full-bleed photo the eye needs text. P2 must
 
 **Title-length budget** (cut copy if you bust this — never shrink type below 84px):
 
-| Mode | Max Chinese chars | Max lines |
-| ---- | ----------------- | --------- |
-| A    | 12 (2 × 6) or 14 (2 × 7 at 88px)  | 2 |
-| B    | 14 (2 × 7)                         | 2 |
-| C    | 8                                  | 1 |
-| D    | 10                                 | 1 |
+| Mode | Max Chinese chars                | Max lines |
+| ---- | -------------------------------- | --------- |
+| A    | 12 (2 × 6) or 14 (2 × 7 at 88px) | 2         |
+| B    | 14 (2 × 7)                       | 2         |
+| C    | 8                                | 1         |
+| D    | 10                               | 1         |
 
 **Square (1:1, 1080×1080) and Wide (21:9, 2100×900) adaptations**:
 
@@ -418,31 +418,44 @@ Never run two M16 in a row. After a full-bleed photo the eye needs text. P2 must
        quiet-zone test: PASS — bottom 30% is uniform water
        light test: PASS — dawn overcast, soft saturation
   -->
-  <div class="hero-bleed" style="background-image: url('assets/hero-yading.jpg');
+  <div
+    class="hero-bleed"
+    style="background-image: url('assets/hero-yading.jpg');
                                   background-size: cover;
                                   background-position: center center;
-                                  position: absolute; inset: 0;"></div>
+                                  position: absolute; inset: 0;"
+  ></div>
   <!-- NO MASK — quiet zone already provides contrast.
        Add only if Step 4 contrast check fails. -->
-  <div class="content" style="position: relative; height: 100%;
+  <div
+    class="content"
+    style="position: relative; height: 100%;
         color: #f5f1e8; padding: 72px 80px;
-        display: flex; flex-direction: column;">
-    <p class="kicker" style="color: #f5f1e8; opacity: .85;
+        display: flex; flex-direction: column;"
+  >
+    <p
+      class="kicker"
+      style="color: #f5f1e8; opacity: .85;
         font-family: var(--mono); font-size: 22px;
-        letter-spacing: 0.22em; text-transform: uppercase; margin: 0">
+        letter-spacing: 0.22em; text-transform: uppercase; margin: 0"
+    >
       Vol. 04 — 2026 — 户外
     </p>
     <div style="flex: 1"></div>
-    <h1 style="font-family: 'Noto Serif SC', serif;
+    <h1
+      style="font-family: 'Noto Serif SC', serif;
         font-weight: 500; font-size: 96px; line-height: 1.12;
         letter-spacing: 0.12em; color: #f5f1e8;
-        margin: 0 0 18px 0">
-      在稻城<br/>看见冬天
+        margin: 0 0 18px 0"
+    >
+      在稻城<br />看见冬天
     </h1>
-    <div style="border-top: 1px solid rgba(245,241,232,.35);
+    <div
+      style="border-top: 1px solid rgba(245,241,232,.35);
          padding-top: 14px; font-family: var(--mono); font-size: 19px;
          letter-spacing: 0.22em; text-transform: uppercase;
-         color: #f5f1e8; opacity: .85">
+         color: #f5f1e8; opacity: .85"
+    >
       DAY 1-4 · 4,200 M · −18°C
     </div>
   </div>
@@ -455,21 +468,31 @@ Never run two M16 in a row. After a full-bleed photo the eye needs text. P2 must
 <section class="poster wide" id="wechat-21x9-led">
   <!-- subject map: wide atmospheric landscape, mist over lake at dawn
        quiet-zone test: PASS — entire bottom 35% is calm water + mist -->
-  <div class="hero-bleed" style="background-image: url('assets/hero-yading-wide.jpg');
+  <div
+    class="hero-bleed"
+    style="background-image: url('assets/hero-yading-wide.jpg');
         background-size: cover; background-position: center 40%;
-        position: absolute; inset: 0;"></div>
-  <div class="content" style="position: relative; height: 100%;
+        position: absolute; inset: 0;"
+  ></div>
+  <div
+    class="content"
+    style="position: relative; height: 100%;
         color: #f5f1e8; padding: 0 96px 88px;
         display: flex; flex-direction: column; justify-content: flex-end;
-        align-items: flex-start;">
-    <h1 style="font-family: 'Noto Serif SC', serif; font-weight: 500;
+        align-items: flex-start;"
+  >
+    <h1
+      style="font-family: 'Noto Serif SC', serif; font-weight: 500;
          font-size: 108px; line-height: 1.05; letter-spacing: 0.14em;
-         margin: 0; color: #f5f1e8">
+         margin: 0; color: #f5f1e8"
+    >
       在稻城看见冬天
     </h1>
-    <div style="margin-top: 18px; border-top: 1px solid rgba(245,241,232,.35);
+    <div
+      style="margin-top: 18px; border-top: 1px solid rgba(245,241,232,.35);
          padding-top: 14px; font-family: var(--mono); font-size: 20px;
-         letter-spacing: 0.24em; text-transform: uppercase">
+         letter-spacing: 0.24em; text-transform: uppercase"
+    >
       VOL. 04 — DAY 1-4 — 4,200 M — 35MM
     </div>
   </div>
@@ -588,10 +611,10 @@ HTML skeleton (21:9, the natural format for this recipe):
     </div>
     <div class="image-hero">
       <div class="hero-img-wrap">
-        <img src="assets/hero.jpg" alt="hero">
+        <img src="assets/hero.jpg" alt="hero" />
         <div class="hero-overlay-block">
           <p class="t-cat">Cover · 主封面</p>
-          <h1 class="h-statement">下一代<br>写作工作流</h1>
+          <h1 class="h-statement">下一代<br />写作工作流</h1>
         </div>
       </div>
       <div class="hero-stats">
@@ -735,28 +758,32 @@ HTML skeleton (3:4):
     <div class="stacked-ledger">
       <div class="ledger-row">
         <p class="ledger-num">¥1,280</p>
-        <div class="ledger-lbl">订阅 · Subscriptions
+        <div class="ledger-lbl">
+          订阅 · Subscriptions
           <span class="sub">Claude · Cursor · Linear</span>
         </div>
         <i class="ledger-icn" data-lucide="square-stack"></i>
       </div>
       <div class="ledger-row">
         <p class="ledger-num">¥860</p>
-        <div class="ledger-lbl">书 · Books
+        <div class="ledger-lbl">
+          书 · Books
           <span class="sub">6 本中文 · 2 本英文</span>
         </div>
         <i class="ledger-icn" data-lucide="book-open"></i>
       </div>
       <div class="ledger-row">
         <p class="ledger-num">¥540</p>
-        <div class="ledger-lbl">咖啡 · Coffee
+        <div class="ledger-lbl">
+          咖啡 · Coffee
           <span class="sub">主要在 Manner 和 Seesaw</span>
         </div>
         <i class="ledger-icn" data-lucide="coffee"></i>
       </div>
       <div class="ledger-row">
         <p class="ledger-num">¥320</p>
-        <div class="ledger-lbl">硬件 · Hardware
+        <div class="ledger-lbl">
+          硬件 · Hardware
           <span class="sub">键盘配件 · 一根 USB-C</span>
         </div>
         <i class="ledger-icn" data-lucide="keyboard"></i>
@@ -787,14 +814,38 @@ HTML skeleton (3:4 — matrix collapses to 2 columns):
     <p class="t-cat">Capabilities · 能力清单</p>
     <h2 class="h-xl">一个 Agent,十二件事</h2>
     <div class="matrix-fill">
-      <div class="matrix-cell"><p class="cell-nb">01</p><p class="cell-title">读取项目结构</p></div>
-      <div class="matrix-cell"><p class="cell-nb">02</p><p class="cell-title">运行测试</p></div>
-      <div class="matrix-cell is-accent"><p class="cell-nb">03</p><p class="cell-title">起草 PR 描述</p></div>
-      <div class="matrix-cell"><p class="cell-nb">04</p><p class="cell-title">回滚错误改动</p></div>
-      <div class="matrix-cell"><p class="cell-nb">05</p><p class="cell-title">迁移 lockfile</p></div>
-      <div class="matrix-cell"><p class="cell-nb">06</p><p class="cell-title">检查类型</p></div>
-      <div class="matrix-cell"><p class="cell-nb">07</p><p class="cell-title">追踪 issue</p></div>
-      <div class="matrix-cell"><p class="cell-nb">08</p><p class="cell-title">阅读日志</p></div>
+      <div class="matrix-cell">
+        <p class="cell-nb">01</p>
+        <p class="cell-title">读取项目结构</p>
+      </div>
+      <div class="matrix-cell">
+        <p class="cell-nb">02</p>
+        <p class="cell-title">运行测试</p>
+      </div>
+      <div class="matrix-cell is-accent">
+        <p class="cell-nb">03</p>
+        <p class="cell-title">起草 PR 描述</p>
+      </div>
+      <div class="matrix-cell">
+        <p class="cell-nb">04</p>
+        <p class="cell-title">回滚错误改动</p>
+      </div>
+      <div class="matrix-cell">
+        <p class="cell-nb">05</p>
+        <p class="cell-title">迁移 lockfile</p>
+      </div>
+      <div class="matrix-cell">
+        <p class="cell-nb">06</p>
+        <p class="cell-title">检查类型</p>
+      </div>
+      <div class="matrix-cell">
+        <p class="cell-nb">07</p>
+        <p class="cell-title">追踪 issue</p>
+      </div>
+      <div class="matrix-cell">
+        <p class="cell-nb">08</p>
+        <p class="cell-title">阅读日志</p>
+      </div>
     </div>
     <div class="hero-stat-bottom">
       <div>

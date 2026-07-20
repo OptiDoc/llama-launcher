@@ -51,7 +51,24 @@ describe("downloads-slice — full cycle", () => {
 
   it("cancelDownload marks download failed", async () => {
     store.setState({
-      downloads: [{ id: "dl1", status: "downloading", kind: "model", repo: "", quant: "", filename: "", sizeGb: 0, progress: 0, speed: 0, eta: "", startedAt: 0, modelName: "", builder: "", completedAt: null }],
+      downloads: [
+        {
+          id: "dl1",
+          status: "downloading",
+          kind: "model",
+          repo: "",
+          quant: "",
+          filename: "",
+          sizeGb: 0,
+          progress: 0,
+          speed: 0,
+          eta: "",
+          startedAt: 0,
+          modelName: "",
+          builder: "",
+          completedAt: null,
+        },
+      ],
     });
     await store.getState().cancelDownload("dl1");
     expect(store.getState().downloads[0].status).toBe("failed");
@@ -64,7 +81,9 @@ describe("downloads-slice — full cycle", () => {
 
   describe("startHFDownload", () => {
     it("creates placeholder model and download entry", () => {
-      const dlId = store.getState().startHFDownload({ repo: "org/model", quant: "Q4_K_M", modelName: "TestModel", builder: "org" });
+      const dlId = store
+        .getState()
+        .startHFDownload({ repo: "org/model", quant: "Q4_K_M", modelName: "TestModel", builder: "org" });
 
       expect(store.getState().downloads).toHaveLength(1);
       expect(store.getState().models).toHaveLength(1);
@@ -106,9 +125,7 @@ describe("downloads-slice — full cycle", () => {
     });
 
     it("proceeds when repo check throws (network error)", async () => {
-      mockFetch
-        .mockRejectedValueOnce(new Error("Network error"))
-        .mockResolvedValue({ ok: true, json: async () => [] });
+      mockFetch.mockRejectedValueOnce(new Error("Network error")).mockResolvedValue({ ok: true, json: async () => [] });
       vi.mocked(tauri.downloadFile).mockResolvedValue("/path/model.gguf");
 
       store.getState().startHFDownload({ repo: "org/model", quant: "Q4_K_M", modelName: "Test", builder: "org" });
@@ -119,12 +136,26 @@ describe("downloads-slice — full cycle", () => {
     });
 
     it("downloads successfully with exact GGUF match", async () => {
-      mockFetch.mockResolvedValue({ ok: true, json: async () => [
-        { path: "model-q4_k_m.gguf", size: 123456789, type: "file" },
-      ]});
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: async () => [{ path: "model-q4_k_m.gguf", size: 123456789, type: "file" }],
+      });
       vi.mocked(tauri.downloadFile).mockResolvedValue("/models/model-q4_k_m.gguf");
       vi.mocked(tauri.scanModels).mockResolvedValue([
-        { id: "m_test123", name: "Test", path: "/models/model-q4_k_m.gguf", size: 6000000000, format: "gguf", architecture: "llama", quantization: "Q4_K_M", context_size: 8192, parameter_count: "7B", modified: 1700000000, metadata: { description: "", author: "", license: "", tags: [], model_card: null, downloads: 0, likes: 0 }, checksum: null },
+        {
+          id: "m_test123",
+          name: "Test",
+          path: "/models/model-q4_k_m.gguf",
+          size: 6000000000,
+          format: "gguf",
+          architecture: "llama",
+          quantization: "Q4_K_M",
+          context_size: 8192,
+          parameter_count: "7B",
+          modified: 1700000000,
+          metadata: { description: "", author: "", license: "", tags: [], model_card: null, downloads: 0, likes: 0 },
+          checksum: null,
+        },
       ]);
 
       store.getState().startHFDownload({ repo: "org/model", quant: "Q4_K_M", modelName: "Test", builder: "org" });
@@ -137,8 +168,8 @@ describe("downloads-slice — full cycle", () => {
 
     it("uses fallback filename when HF API fails", async () => {
       mockFetch
-        .mockResolvedValueOnce({ ok: true })  // HEAD check passes
-        .mockResolvedValue({ ok: false, status: 500 });  // tree API fails
+        .mockResolvedValueOnce({ ok: true }) // HEAD check passes
+        .mockResolvedValue({ ok: false, status: 500 }); // tree API fails
       vi.mocked(tauri.downloadFile).mockResolvedValue("/models/model.q4_k_m.gguf");
 
       store.getState().startHFDownload({ repo: "org/model", quant: "Q4_K_M", modelName: "Test", builder: "org" });
@@ -151,12 +182,11 @@ describe("downloads-slice — full cycle", () => {
 
     it("resolves model in subdirectory", async () => {
       mockFetch
-        .mockResolvedValueOnce({ ok: true, json: async () => [
-          { path: "q4_k_m", type: "directory" },
-        ]})
-        .mockResolvedValueOnce({ ok: true, json: async () => [
-          { path: "q4_k_m/model.gguf", size: 999, type: "file" },
-        ]});
+        .mockResolvedValueOnce({ ok: true, json: async () => [{ path: "q4_k_m", type: "directory" }] })
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => [{ path: "q4_k_m/model.gguf", size: 999, type: "file" }],
+        });
       vi.mocked(tauri.downloadFile).mockResolvedValue("/models/q4_k_m/model.gguf");
 
       store.getState().startHFDownload({ repo: "org/model", quant: "Q4_K_M", modelName: "Test", builder: "org" });
@@ -168,9 +198,10 @@ describe("downloads-slice — full cycle", () => {
     });
 
     it("marks failed when tauri.downloadFile returns null", async () => {
-      mockFetch.mockResolvedValue({ ok: true, json: async () => [
-        { path: "model-q4_k_m.gguf", size: 123, type: "file" },
-      ]});
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: async () => [{ path: "model-q4_k_m.gguf", size: 123, type: "file" }],
+      });
       vi.mocked(tauri.downloadFile).mockResolvedValue(null);
 
       store.getState().startHFDownload({ repo: "org/model", quant: "Q4_K_M", modelName: "Test", builder: "org" });
@@ -184,11 +215,10 @@ describe("downloads-slice — full cycle", () => {
     });
 
     it("matches suffix GGUF (.Q4_K_M.gguf)", async () => {
-      mockFetch
-        .mockResolvedValueOnce({ ok: true })
-        .mockResolvedValue({ ok: true, json: async () => [
-          { path: "model.Q4_K_M.gguf", size: 200000000, type: "file" },
-        ]});
+      mockFetch.mockResolvedValueOnce({ ok: true }).mockResolvedValue({
+        ok: true,
+        json: async () => [{ path: "model.Q4_K_M.gguf", size: 200000000, type: "file" }],
+      });
       vi.mocked(tauri.downloadFile).mockResolvedValue("/models/model.Q4_K_M.gguf");
 
       store.getState().startHFDownload({ repo: "org/model", quant: "Q4_K_M", modelName: "Test", builder: "org" });
@@ -200,12 +230,13 @@ describe("downloads-slice — full cycle", () => {
     });
 
     it("selects first GGUF when no exact/suffix match", async () => {
-      mockFetch
-        .mockResolvedValueOnce({ ok: true })
-        .mockResolvedValue({ ok: true, json: async () => [
+      mockFetch.mockResolvedValueOnce({ ok: true }).mockResolvedValue({
+        ok: true,
+        json: async () => [
           { path: "model-Q4_K_M-4.0.gguf", size: 300, type: "file" },
           { path: "model-Q4_K_M-8.0.gguf", size: 600, type: "file" },
-        ]});
+        ],
+      });
       vi.mocked(tauri.downloadFile).mockResolvedValue("/models/model-Q4_K_M-4.0.gguf");
 
       store.getState().startHFDownload({ repo: "org/model", quant: "Q4_K_M", modelName: "Test", builder: "org" });
@@ -217,12 +248,13 @@ describe("downloads-slice — full cycle", () => {
     });
 
     it("uses fallback when no GGUFs match the quant", async () => {
-      mockFetch
-        .mockResolvedValueOnce({ ok: true })
-        .mockResolvedValue({ ok: true, json: async () => [
+      mockFetch.mockResolvedValueOnce({ ok: true }).mockResolvedValue({
+        ok: true,
+        json: async () => [
           { path: "model-Q2_K.gguf", size: 100, type: "file" },
           { path: "model-Q8_0.gguf", size: 400, type: "file" },
-        ]});
+        ],
+      });
       vi.mocked(tauri.downloadFile).mockResolvedValue("/models/model.Q4_K_M.gguf");
 
       store.getState().startHFDownload({ repo: "org/model", quant: "Q4_K_M", modelName: "Test", builder: "org" });
@@ -234,9 +266,7 @@ describe("downloads-slice — full cycle", () => {
     });
 
     it("uses fallback when HF API returns empty items", async () => {
-      mockFetch
-        .mockResolvedValueOnce({ ok: true })
-        .mockResolvedValue({ ok: true, json: async () => [] });
+      mockFetch.mockResolvedValueOnce({ ok: true }).mockResolvedValue({ ok: true, json: async () => [] });
       vi.mocked(tauri.downloadFile).mockResolvedValue("/models/model.Q4_K_M.gguf");
 
       store.getState().startHFDownload({ repo: "org/model", quant: "Q4_K_M", modelName: "Test", builder: "org" });
@@ -248,9 +278,7 @@ describe("downloads-slice — full cycle", () => {
     });
 
     it("uses fallback when HF API tree fetch throws", async () => {
-      mockFetch
-        .mockResolvedValueOnce({ ok: true })
-        .mockRejectedValue(new Error("API unreachable"));
+      mockFetch.mockResolvedValueOnce({ ok: true }).mockRejectedValue(new Error("API unreachable"));
       vi.mocked(tauri.downloadFile).mockResolvedValue("/models/model.Q4_K_M.gguf");
 
       store.getState().startHFDownload({ repo: "org/model", quant: "Q4_K_M", modelName: "Test", builder: "org" });
@@ -264,9 +292,7 @@ describe("downloads-slice — full cycle", () => {
     it("marks failed when tauri.downloadFile throws unexpectedly", async () => {
       mockFetch
         .mockResolvedValueOnce({ ok: true })
-        .mockResolvedValue({ ok: true, json: async () => [
-          { path: "model.gguf", size: 500, type: "file" },
-        ]});
+        .mockResolvedValue({ ok: true, json: async () => [{ path: "model.gguf", size: 500, type: "file" }] });
       vi.mocked(tauri.downloadFile).mockRejectedValue(new Error("Disk full"));
 
       store.getState().startHFDownload({ repo: "org/model", quant: "Q4_K_M", modelName: "Test", builder: "org" });
@@ -281,13 +307,24 @@ describe("downloads-slice — full cycle", () => {
 
     it("sets correct model state after success", async () => {
       vi.mocked(tauri.scanModels).mockResolvedValue([
-        { id: "m_test123", name: "Test Q4_K_M", path: "/models/custom/model.gguf", size: 500, format: "gguf", architecture: "llama", quantization: "Q4_K_M", context_size: 8192, parameter_count: "7B", modified: 1700000000, metadata: { description: "", author: "", license: "", tags: [], model_card: null, downloads: 0, likes: 0 }, checksum: null },
+        {
+          id: "m_test123",
+          name: "Test Q4_K_M",
+          path: "/models/custom/model.gguf",
+          size: 500,
+          format: "gguf",
+          architecture: "llama",
+          quantization: "Q4_K_M",
+          context_size: 8192,
+          parameter_count: "7B",
+          modified: 1700000000,
+          metadata: { description: "", author: "", license: "", tags: [], model_card: null, downloads: 0, likes: 0 },
+          checksum: null,
+        },
       ]);
       mockFetch
         .mockResolvedValueOnce({ ok: true })
-        .mockResolvedValue({ ok: true, json: async () => [
-          { path: "model.gguf", size: 500, type: "file" },
-        ]});
+        .mockResolvedValue({ ok: true, json: async () => [{ path: "model.gguf", size: 500, type: "file" }] });
       vi.mocked(tauri.downloadFile).mockResolvedValue("/models/custom/model.gguf");
 
       store.getState().startHFDownload({ repo: "org/model", quant: "Q4_K_M", modelName: "Test", builder: "org" });
@@ -306,32 +343,32 @@ describe("downloads-slice — full cycle", () => {
       store.setState({ addNotification: addNotif });
       mockFetch
         .mockResolvedValueOnce({ ok: true })
-        .mockResolvedValue({ ok: true, json: async () => [
-          { path: "model.gguf", size: 500, type: "file" },
-        ]});
+        .mockResolvedValue({ ok: true, json: async () => [{ path: "model.gguf", size: 500, type: "file" }] });
       vi.mocked(tauri.downloadFile).mockResolvedValue("/models/model.gguf");
 
       store.getState().startHFDownload({ repo: "org/model", quant: "Q4_K_M", modelName: "Test", builder: "org" });
 
-      expect(addNotif).toHaveBeenCalledWith(expect.objectContaining({
-        kind: "download",
-        title: "Downloading model",
-      }));
+      expect(addNotif).toHaveBeenCalledWith(
+        expect.objectContaining({
+          kind: "download",
+          title: "Downloading model",
+        }),
+      );
 
       await vi.waitFor(() => {
-        expect(addNotif).toHaveBeenCalledWith(expect.objectContaining({
-          kind: "download",
-          title: "Model downloaded",
-        }));
+        expect(addNotif).toHaveBeenCalledWith(
+          expect.objectContaining({
+            kind: "download",
+            title: "Model downloaded",
+          }),
+        );
       });
     });
 
     it("calls refreshModels after successful download", async () => {
       mockFetch
         .mockResolvedValueOnce({ ok: true })
-        .mockResolvedValue({ ok: true, json: async () => [
-          { path: "model.gguf", size: 500, type: "file" },
-        ]});
+        .mockResolvedValue({ ok: true, json: async () => [{ path: "model.gguf", size: 500, type: "file" }] });
       vi.mocked(tauri.downloadFile).mockResolvedValue("/models/model.gguf");
 
       store.getState().startHFDownload({ repo: "org/model", quant: "Q4_K_M", modelName: "Test", builder: "org" });
@@ -345,12 +382,11 @@ describe("downloads-slice — full cycle", () => {
     it("uses fallback when subdirectory has no GGUF inside", async () => {
       mockFetch
         .mockResolvedValueOnce({ ok: true })
-        .mockResolvedValueOnce({ ok: true, json: async () => [
-          { path: "nomic-ai-tokenizer", type: "directory" },
-        ]})
-        .mockResolvedValueOnce({ ok: true, json: async () => [
-          { path: "nomic-ai-tokenizer/tokenizer.json", size: 999, type: "file" },
-        ]});
+        .mockResolvedValueOnce({ ok: true, json: async () => [{ path: "nomic-ai-tokenizer", type: "directory" }] })
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => [{ path: "nomic-ai-tokenizer/tokenizer.json", size: 999, type: "file" }],
+        });
       vi.mocked(tauri.downloadFile).mockResolvedValue("/models/model.Q4_K_M.gguf");
 
       store.getState().startHFDownload({ repo: "org/model", quant: "Q4_K_M", modelName: "Test", builder: "org" });
@@ -362,12 +398,13 @@ describe("downloads-slice — full cycle", () => {
     });
 
     it("prefers exact GGUF over suffix when both present", async () => {
-      mockFetch
-        .mockResolvedValueOnce({ ok: true })
-        .mockResolvedValue({ ok: true, json: async () => [
+      mockFetch.mockResolvedValueOnce({ ok: true }).mockResolvedValue({
+        ok: true,
+        json: async () => [
           { path: "model.Q4_K_M.gguf", size: 200, type: "file" },
           { path: "model-q4_k_m.gguf", size: 300, type: "file" },
-        ]});
+        ],
+      });
       vi.mocked(tauri.downloadFile).mockResolvedValue("/models/model-q4_k_m.gguf");
 
       store.getState().startHFDownload({ repo: "org/model", quant: "Q4_K_M", modelName: "Test", builder: "org" });
@@ -381,9 +418,7 @@ describe("downloads-slice — full cycle", () => {
     it("keeps resolvedSize 0 when no HF file matched", async () => {
       mockFetch
         .mockResolvedValueOnce({ ok: true })
-        .mockResolvedValue({ ok: true, json: async () => [
-          { path: "unrelated.gguf", size: 999, type: "file" },
-        ]});
+        .mockResolvedValue({ ok: true, json: async () => [{ path: "unrelated.gguf", size: 999, type: "file" }] });
       vi.mocked(tauri.downloadFile).mockResolvedValue("/models/model.Q4_K_M.gguf");
 
       store.getState().startHFDownload({ repo: "org/model", quant: "Q4_K_M", modelName: "Test", builder: "org" });
@@ -400,9 +435,7 @@ describe("downloads-slice — full cycle", () => {
         onProgress?.({ total: 1000, downloaded: 1000, speed: 50 });
         return "/models/model.gguf";
       });
-      mockFetch.mockResolvedValue({ ok: true, json: async () => [
-        { path: "model.gguf", size: 1000, type: "file" },
-      ]});
+      mockFetch.mockResolvedValue({ ok: true, json: async () => [{ path: "model.gguf", size: 1000, type: "file" }] });
 
       store.getState().startHFDownload({ repo: "org/model", quant: "Q4_K_M", modelName: "Test", builder: "org" });
 
@@ -414,7 +447,24 @@ describe("downloads-slice — full cycle", () => {
 
     it("retryDownload retries a failed model download", async () => {
       store.setState({
-        downloads: [{ id: "dl1", status: "failed", kind: "model", repo: "org/model", quant: "Q4_K_M", filename: "m.gguf", sizeGb: 4, progress: 0, speed: 0, eta: "", startedAt: 0, modelName: "Test Q4_K_M", builder: "org", completedAt: null }],
+        downloads: [
+          {
+            id: "dl1",
+            status: "failed",
+            kind: "model",
+            repo: "org/model",
+            quant: "Q4_K_M",
+            filename: "m.gguf",
+            sizeGb: 4,
+            progress: 0,
+            speed: 0,
+            eta: "",
+            startedAt: 0,
+            modelName: "Test Q4_K_M",
+            builder: "org",
+            completedAt: null,
+          },
+        ],
         models: [{ id: "m1", hfRepo: "org/model", quant: "Q4_K_M", name: "Test Q4_K_M", builder: "org" } as never],
       });
       vi.mocked(isTauri).mockReturnValue(false);

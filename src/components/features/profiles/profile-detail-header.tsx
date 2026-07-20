@@ -11,9 +11,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ScopeBadge, SharedBadge } from "./profiles-badges";
 import { Cpu, ArrowLeft } from "lucide-react";
 
-export function ProfileDetailHeader({ profile, onBack }: {
-  profile: LlamaProfile; onBack: () => void;
-}) {
+export function ProfileDetailHeader({ profile, onBack }: { profile: LlamaProfile; onBack: () => void }) {
   const models = useLlamaStore((s) => s.models);
   const boundModel = models.find((m) => m.id === profile.modelId);
 
@@ -42,8 +40,7 @@ export function ProfileDetailHeader({ profile, onBack }: {
               <p className="mt-1 text-sm text-muted-foreground">{profile.description}</p>
               {boundModel && (
                 <p className="mt-1 text-xs text-muted-foreground">
-                  Bound model:{" "}
-                  <span className="font-medium text-foreground/80">{boundModel.name}</span>
+                  Bound model: <span className="font-medium text-foreground/80">{boundModel.name}</span>
                 </p>
               )}
             </div>

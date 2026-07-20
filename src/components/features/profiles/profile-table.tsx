@@ -7,15 +7,11 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Wand2, Share2, Check } from "lucide-react";
 import { ScopeBadge } from "./profiles-badges";
 
-function ProfileTable({ profiles, onSelect }: {
-  profiles: LlamaProfile[]; onSelect: (id: string) => void;
-}) {
+function ProfileTable({ profiles, onSelect }: { profiles: LlamaProfile[]; onSelect: (id: string) => void }) {
   const models = useLlamaStore((s) => s.models);
   const shareProfile = useLlamaStore((s) => s.shareProfile);
   const calibrateProfile = useLlamaStore((s) => s.calibrateProfile);
@@ -25,7 +21,10 @@ function ProfileTable({ profiles, onSelect }: {
   const onCalib = (e: React.MouseEvent, p: LlamaProfile) => {
     e.stopPropagation();
     setBusy(p.id);
-    setTimeout(() => { calibrateProfile(p.id); setBusy(null); }, 1200);
+    setTimeout(() => {
+      calibrateProfile(p.id);
+      setBusy(null);
+    }, 1200);
   };
   const onShare = (e: React.MouseEvent, p: LlamaProfile) => {
     e.stopPropagation();
@@ -56,7 +55,9 @@ function ProfileTable({ profiles, onSelect }: {
                   <span className="max-w-[280px] truncate text-xs text-muted-foreground">{p.description}</span>
                 </div>
               </TableCell>
-              <TableCell className="py-3"><ScopeBadge scope={p.scope} modelName={modelName(p)} /></TableCell>
+              <TableCell className="py-3">
+                <ScopeBadge scope={p.scope} modelName={modelName(p)} />
+              </TableCell>
               <TableCell className="py-3 text-right font-mono text-xs">{p.ctxSize.toLocaleString()}</TableCell>
               <TableCell className="py-3 text-right font-mono text-xs">{p.threads}</TableCell>
               <TableCell className="py-3 text-right font-mono text-xs">{p.gpuLayers}</TableCell>
@@ -66,19 +67,28 @@ function ProfileTable({ profiles, onSelect }: {
                     <Progress value={p.calibrationScore} className="h-1.5 w-12" />
                     <span className="font-mono text-[10px] text-muted-foreground">{p.calibrationScore}</span>
                   </div>
-                ) : <span className="text-xs text-muted-foreground">—</span>}
+                ) : (
+                  <span className="text-xs text-muted-foreground">—</span>
+                )}
               </TableCell>
               <TableCell className="py-3 text-center">
                 {p.shared ? (
                   <Badge variant="secondary" className="gap-1 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
                     <Check className="size-3" />
                   </Badge>
-                ) : <span className="text-xs text-muted-foreground">—</span>}
+                ) : (
+                  <span className="text-xs text-muted-foreground">—</span>
+                )}
               </TableCell>
               <TableCell className="pr-4 py-3 text-right" onClick={(e) => e.stopPropagation()}>
                 <div className="flex items-center justify-end gap-1">
-                  <Button size="sm" variant="ghost" className="px-2"
-                    onClick={(e) => onCalib(e, p)} disabled={busy === p.id}>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="px-2"
+                    onClick={(e) => onCalib(e, p)}
+                    disabled={busy === p.id}
+                  >
                     <Wand2 className={cn("mr-1 size-3", busy === p.id && "animate-spin")} />
                     Calib
                   </Button>

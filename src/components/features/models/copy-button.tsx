@@ -10,7 +10,8 @@ export function CopyButton({ text, className }: { text: string; className?: stri
   const [copied, setCopied] = React.useState(false);
   return (
     <Button
-      variant="ghost" size="icon"
+      variant="ghost"
+      size="icon"
       className={cn("size-6 text-foreground/55 hover:text-foreground", className)}
       onClick={async (e) => {
         e.stopPropagation();
@@ -22,7 +23,9 @@ export function CopyButton({ text, className }: { text: string; className?: stri
             title: "Copied",
             description: text.slice(0, 50) + (text.length > 50 ? "…" : ""),
           });
-        } catch { /* clipboard unavailable */ }
+        } catch {
+          /* clipboard unavailable */
+        }
       }}
       aria-label="Copy"
     >

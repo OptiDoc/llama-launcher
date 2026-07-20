@@ -40,13 +40,26 @@ function startWatchdog() {
       await Promise.all(running.map((inst: { id: string }) => s.stopInstance(inst.id)));
       useLlamaStore.setState((st: LlamaStore) => ({
         hibernatedInstanceIds: [...st.hibernatedInstanceIds, ...newHibernatedIds],
-        instances: st.instances.map((i: any) => {
-          const match = running.find((r: any) => r.id === i.id);
-          return match ? { ...i, hibernatedConfig: { name: i.name, model: i.model, profile: i.profile, port: i.port, host: i.host, gpu: i.gpu } } : i;
+        instances: st.instances.map((i) => {
+          const match = running.find((r) => r.id === i.id);
+          return match
+            ? {
+                ...i,
+                hibernatedConfig: {
+                  name: i.name,
+                  model: i.model,
+                  profile: i.profile,
+                  port: i.port,
+                  host: i.host,
+                  gpu: i.gpu,
+                },
+              }
+            : i;
         }),
       }));
       s.addNotification({
-        kind: "warn", title: "Hibernation started",
+        kind: "warn",
+        title: "Hibernation started",
         body: `${running.length} model(s) unloaded from VRAM after ${Math.round(since / 1000)}s idle.`,
       });
       const state = useLlamaStore.getState();
@@ -117,10 +130,24 @@ if (typeof window !== "undefined") {
 }
 
 import type {
-  LlamaModel, LlamaInstance, InstanceStatus, LlamaProfile, ProfileScope,
-  LlamaRelease, ReleaseVariant, MetricSample, HFDownload,
-  AppNotification, NotificationKind, ConsoleLine, LogKind, AppStatus,
-  GlobalSettings, Workspace, WorkspaceSettings, ViewMode,
+  LlamaModel,
+  LlamaInstance,
+  InstanceStatus,
+  LlamaProfile,
+  ProfileScope,
+  LlamaRelease,
+  ReleaseVariant,
+  MetricSample,
+  HFDownload,
+  AppNotification,
+  NotificationKind,
+  ConsoleLine,
+  LogKind,
+  AppStatus,
+  GlobalSettings,
+  Workspace,
+  WorkspaceSettings,
+  ViewMode,
 } from "@/lib/types";
 import type { HFSearchResult } from "@/lib/catalog";
 
@@ -130,14 +157,25 @@ import { uptimeString, pickPort, fmtNum, fmtBytes } from "@/lib/helpers";
 export const SYSTEM_CONSOLE = SYSTEM_CONSOLE_ID;
 
 export type {
-  LlamaModel, LlamaInstance, InstanceStatus, LlamaProfile, ProfileScope,
-  LlamaRelease, ReleaseVariant, MetricSample, HFDownload,
-  AppNotification, NotificationKind, ConsoleLine, LogKind, AppStatus,
-  GlobalSettings, Workspace, WorkspaceSettings, ViewMode,
+  LlamaModel,
+  LlamaInstance,
+  InstanceStatus,
+  LlamaProfile,
+  ProfileScope,
+  LlamaRelease,
+  ReleaseVariant,
+  MetricSample,
+  HFDownload,
+  AppNotification,
+  NotificationKind,
+  ConsoleLine,
+  LogKind,
+  AppStatus,
+  GlobalSettings,
+  Workspace,
+  WorkspaceSettings,
+  ViewMode,
 };
 export type { HFSearchResult } from "@/lib/catalog";
 
-export {
-  HF_CATALOG, HF_QUANTS, RELEASE_VARIANTS, searchHFModels,
-  uptimeString, pickPort, fmtNum, fmtBytes,
-};
+export { HF_CATALOG, HF_QUANTS, RELEASE_VARIANTS, searchHFModels, uptimeString, pickPort, fmtNum, fmtBytes };

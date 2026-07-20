@@ -36,7 +36,7 @@ export function DropZone({ onFilesSelected }: { onFilesSelected: (files: FileLis
     <div
       className={cn(
         "relative rounded-lg border-2 border-dashed p-6 text-center transition-colors",
-        dragActive ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"
+        dragActive ? "border-primary bg-primary/5" : "border-border hover:border-primary/50",
       )}
       onDragEnter={handleDrag}
       onDragLeave={handleDrag}
@@ -45,7 +45,12 @@ export function DropZone({ onFilesSelected }: { onFilesSelected: (files: FileLis
       onClick={handleClick}
       role="button"
       tabIndex={0}
-      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); handleClick(); } }}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          handleClick();
+        }
+      }}
     >
       <input
         ref={inputRef}

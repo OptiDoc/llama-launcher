@@ -43,9 +43,10 @@
 - CDN importmap，零安装
 
 CDN 模板：
+
 ```html
 <script type="importmap">
-{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.183.0/build/three.module.js" } }
+  { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.183.0/build/three.module.js" } }
 </script>
 ```
 
@@ -58,6 +59,7 @@ CDN 模板：
 ### 1. 理解 parentLayer 与 effects 的父子关系
 
 在 Unicorn Studio 中：
+
 - **Element 层**（shape/text/image）的 `effects[]` 数组存储子效果的 UUID
 - **Effect 层**的 `parentLayer` 字段指向父元素的 UUID
 - 子效果按 effects 数组顺序依次渲染，每个 pass 读取前一个 pass 的 FBO

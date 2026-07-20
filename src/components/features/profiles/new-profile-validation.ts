@@ -2,7 +2,15 @@
  * Profile dialog validation hook.
  */
 
-import { intRequired, intOptional, numRequired, floatOptional, intGeZeroOptional, floatGeZeroOptional, stringRequired } from "./new-profile-validators";
+import {
+  intRequired,
+  intOptional,
+  numRequired,
+  floatOptional,
+  intGeZeroOptional,
+  floatGeZeroOptional,
+  stringRequired,
+} from "./new-profile-validators";
 import type { ProfileFormState } from "./new-profile-form";
 
 function useProfileValidation(f: ProfileFormState) {
@@ -67,7 +75,10 @@ function useProfileValidation(f: ProfileFormState) {
 
   const validate = (): boolean => {
     const errs: Record<string, string> = {};
-    for (const [k, fn] of Object.entries(v)) { const e = fn(); if (e) errs[k] = e; }
+    for (const [k, fn] of Object.entries(v)) {
+      const e = fn();
+      if (e) errs[k] = e;
+    }
     return Object.keys(errs).length === 0;
   };
 

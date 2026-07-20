@@ -8,4 +8,4 @@ export { RELEASE_VARIANTS } from "./catalog-releases";
 export type { HFSearchResult } from "./catalog-types";
 
 // HF_CATALOG is populated by catalog-search at runtime
-export const HF_CATALOG: any[] = [];
+export const HF_CATALOG: unknown[] = [];

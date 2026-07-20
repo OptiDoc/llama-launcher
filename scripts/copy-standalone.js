@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
-const sourceDir = path.join(__dirname, '..', '.next');
-const targetDir = path.join(__dirname, '..', '.next', 'standalone', '.next');
+const sourceDir = path.join(__dirname, "..", ".next");
+const targetDir = path.join(__dirname, "..", ".next", "standalone", ".next");
 
 function copyRecursive(src, dest) {
   if (!fs.existsSync(src)) {
@@ -27,15 +27,9 @@ function copyRecursive(src, dest) {
 }
 
 // Copy .next/static to .next/standalone/.next/static
-copyRecursive(
-  path.join(sourceDir, 'static'),
-  path.join(targetDir, 'static')
-);
+copyRecursive(path.join(sourceDir, "static"), path.join(targetDir, "static"));
 
 // Copy public to .next/standalone/public
-copyRecursive(
-  path.join(__dirname, '..', 'public'),
-  path.join(__dirname, '..', '.next', 'standalone', 'public')
-);
+copyRecursive(path.join(__dirname, "..", "public"), path.join(__dirname, "..", ".next", "standalone", "public"));
 
-console.log('Standalone copy complete');
+console.log("Standalone copy complete");

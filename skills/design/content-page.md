@@ -94,16 +94,16 @@ A strong content page has:
 
 Before designing, infer the content type from the provided material. Do not force every content page into the same article layout.
 
-| Content type | Use when | Layout direction |
-|---|---|---|
-| Article / Essay | one argument, opinion, explanation, or reflection | strong title, readable body, section breaks, pull quotes |
-| Editorial Feature | narrative, culture, brand story, interview, field notes | immersive opening, image/quote rhythm, slower pace |
-| Report / Whitepaper | findings, research, industry analysis, structured sections | executive summary, section index, data cards, figures, source notes |
-| Newsletter / Memo | update, briefing, internal/external note | compact hierarchy, skimmable blocks, clear next step |
-| Release Note / Changelog Article | product updates, version announcement, feature summary | grouped updates, before/after, screenshots, migration/action notes |
-| Guide / Resource | how-to, checklist, tutorial, reference material | steps, examples, callouts, warnings, checklist ending |
-| Case Study | background, challenge, solution, result, reflection | case spine, evidence blocks, before/after, outcome caveats |
-| Public Account / WeChat Article | mobile-first Chinese reading | single-column rhythm, strong title breaking, paragraph breathing, image captions |
+| Content type                     | Use when                                                   | Layout direction                                                                 |
+| -------------------------------- | ---------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| Article / Essay                  | one argument, opinion, explanation, or reflection          | strong title, readable body, section breaks, pull quotes                         |
+| Editorial Feature                | narrative, culture, brand story, interview, field notes    | immersive opening, image/quote rhythm, slower pace                               |
+| Report / Whitepaper              | findings, research, industry analysis, structured sections | executive summary, section index, data cards, figures, source notes              |
+| Newsletter / Memo                | update, briefing, internal/external note                   | compact hierarchy, skimmable blocks, clear next step                             |
+| Release Note / Changelog Article | product updates, version announcement, feature summary     | grouped updates, before/after, screenshots, migration/action notes               |
+| Guide / Resource                 | how-to, checklist, tutorial, reference material            | steps, examples, callouts, warnings, checklist ending                            |
+| Case Study                       | background, challenge, solution, result, reflection        | case spine, evidence blocks, before/after, outcome caveats                       |
+| Public Account / WeChat Article  | mobile-first Chinese reading                               | single-column rhythm, strong title breaking, paragraph breathing, image captions |
 
 If the content combines multiple types, choose the dominant one and borrow only the necessary secondary devices.
 
@@ -115,10 +115,10 @@ If the content combines multiple types, choose the dominant one and borrow only 
 
 Design the reading column before designing decoration.
 
-- Body text must have a controlled measure — but bounded on *both* sides. Target roughly **30–45 Chinese characters / 60–75 Latin characters per line**, i.e. a reading column around **wide: clamp(0, ~42em, ~760px)**. Don't run full-width across a desktop viewport, and equally don't over-narrow it into a cramped ~480px ribbon with huge empty margins. If the layout has no side rail/figures, the column can sit toward the upper end (~46em); a too-narrow column is as much a failure as a full-width one.
+- Body text must have a controlled measure — but bounded on _both_ sides. Target roughly **30–45 Chinese characters / 60–75 Latin characters per line**, i.e. a reading column around **wide: clamp(0, ~42em, ~760px)**. Don't run full-width across a desktop viewport, and equally don't over-narrow it into a cramped ~480px ribbon with huge empty margins. If the layout has no side rail/figures, the column can sit toward the upper end (~46em); a too-narrow column is as much a failure as a full-width one.
 - Long-form text should have generous line-height and stable paragraph rhythm.
 - Margins should frame and pace the reading, not just center a thin column in a sea of white.
-- Do not use the whole viewport width just because HTML allows it — but the fix is a *bounded* measure, not an arbitrarily narrow one.
+- Do not use the whole viewport width just because HTML allows it — but the fix is a _bounded_ measure, not an arbitrarily narrow one.
 
 ### 2. Hierarchy is not only font size
 

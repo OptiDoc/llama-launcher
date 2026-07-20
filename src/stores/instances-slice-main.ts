@@ -13,7 +13,10 @@ import type { ConsoleLine, LlamaInstance, InstancesSlice } from "@/lib/types";
 export function createInstancesMainSlice(
   set: StoreApi<LlamaStore>["setState"],
   get: StoreApi<LlamaStore>["getState"],
-): Pick<InstancesSlice, "stopInstance" | "removeInstance" | "markRunning" | "markStopped" | "bumpStats" | "refreshConsoleLogs"> {
+): Pick<
+  InstancesSlice,
+  "stopInstance" | "removeInstance" | "markRunning" | "markStopped" | "bumpStats" | "refreshConsoleLogs"
+> {
   return {
     stopInstance: async (id) => {
       const inst = get().instances.find((i) => i.id === id);
@@ -48,35 +51,43 @@ export function createInstancesMainSlice(
       });
     },
 
-    markRunning: (id) => set((s) => ({
-      instances: s.instances.map((i) => (i.id === id ? { ...i, status: "running", startedAt: i.startedAt ?? nowTs() } : i)),
-    })),
+    markRunning: (id) =>
+      set((s) => ({
+        instances: s.instances.map((i) =>
+          i.id === id ? { ...i, status: "running", startedAt: i.startedAt ?? nowTs() } : i,
+        ),
+      })),
 
-    markStopped: (id) => set((s) => ({
-      instances: s.instances.map((i) => (i.id === id ? { ...i, status: "stopped", startedAt: 0 } : i)),
-    })),
+    markStopped: (id) =>
+      set((s) => ({
+        instances: s.instances.map((i) => (i.id === id ? { ...i, status: "stopped", startedAt: 0 } : i)),
+      })),
 
-    bumpStats: (id, prompt, gen, tps) => set((s) => ({
-      instances: s.instances.map((i) =>
-        i.id === id
-          ? {
-              ...i,
-              promptTokens: i.promptTokens + prompt,
-              generatedTokens: i.generatedTokens + gen,
-              tokensPerSec: tps,
-              peakTokensPerSec: Math.max(i.peakTokensPerSec, tps),
-              requestsPerMin: i.requestsPerMin + 1,
-              totalRequests: i.totalRequests + 1,
-              memoryMb: Math.round(i.ctxSize * 0.5 + 1200 + Math.random() * 200),
-            }
-          : i,
-      ),
-    })),
+    bumpStats: (id, prompt, gen, tps) =>
+      set((s) => ({
+        instances: s.instances.map((i) =>
+          i.id === id
+            ? {
+                ...i,
+                promptTokens: i.promptTokens + prompt,
+                generatedTokens: i.generatedTokens + gen,
+                tokensPerSec: tps,
+                peakTokensPerSec: Math.max(i.peakTokensPerSec, tps),
+                requestsPerMin: i.requestsPerMin + 1,
+                totalRequests: i.totalRequests + 1,
+                memoryMb: Math.round(i.ctxSize * 0.5 + 1200 + Math.random() * 200),
+              }
+            : i,
+        ),
+      })),
 
     refreshConsoleLogs: async (instanceId) => {
       const lines = await tauri.getProcessStdout(instanceId, 200);
       if (!lines) {
-        log.debug("[STORE] refreshConsoleLogs: getProcessStdout returned null", { category: "store", context: { instanceId } });
+        log.debug("[STORE] refreshConsoleLogs: getProcessStdout returned null", {
+          category: "store",
+          context: { instanceId },
+        });
         return;
       }
       const consoleLines: ConsoleLine[] = lines.map((text, i) => ({

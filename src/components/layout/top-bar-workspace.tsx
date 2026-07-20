@@ -22,7 +22,12 @@ interface TopBarWorkspaceProps {
   addWorkspace: (w: { name: string; description: string; color: Workspace["color"] }) => string;
 }
 
-export function TopBarWorkspace({ workspaces, activeWorkspaceId, setActiveWorkspace, addWorkspace }: TopBarWorkspaceProps) {
+export function TopBarWorkspace({
+  workspaces,
+  activeWorkspaceId,
+  setActiveWorkspace,
+  addWorkspace,
+}: TopBarWorkspaceProps) {
   const activeWorkspace = workspaces.find((w) => w.id === activeWorkspaceId) ?? workspaces[0] ?? null;
 
   return (
@@ -40,7 +45,9 @@ export function TopBarWorkspace({ workspaces, activeWorkspaceId, setActiveWorksp
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start" className="w-52">
-          <DropdownMenuLabel className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">Workspaces</DropdownMenuLabel>
+          <DropdownMenuLabel className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">
+            Workspaces
+          </DropdownMenuLabel>
           <DropdownMenuSeparator />
           {workspaces.map((w) => (
             <DropdownMenuItem key={w.id} onClick={() => setActiveWorkspace(w.id)} className="gap-2 py-1.5">
@@ -55,7 +62,16 @@ export function TopBarWorkspace({ workspaces, activeWorkspaceId, setActiveWorksp
             </DropdownMenuItem>
           ))}
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => addWorkspace({ name: `Workspace ${workspaces.length + 1}`, color: "orange", description: "New workspace" })} className="gap-2 py-1.5 text-[11px]">
+          <DropdownMenuItem
+            onClick={() =>
+              addWorkspace({
+                name: `Workspace ${workspaces.length + 1}`,
+                color: "orange",
+                description: "New workspace",
+              })
+            }
+            className="gap-2 py-1.5 text-[11px]"
+          >
             <Plus className="size-3" /> New workspace
           </DropdownMenuItem>
         </DropdownMenuContent>

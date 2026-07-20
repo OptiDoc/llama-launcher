@@ -51,9 +51,7 @@ export function InstancesPage() {
     [instances, activeWorkspaceId],
   );
 
-  const selectedInstance = selectedId
-    ? filtered.find((i) => i.id === selectedId) ?? null
-    : null;
+  const selectedInstance = selectedId ? (filtered.find((i) => i.id === selectedId) ?? null) : null;
 
   // If selection points to a removed/non-existent instance, fall back to list.
   React.useEffect(() => {
@@ -65,9 +63,7 @@ export function InstancesPage() {
 
   // ---------- detail view ----------
   if (selectedInstance) {
-    return (
-      <InstanceDetailView instance={selectedInstance} onBack={handleBack} />
-    );
+    return <InstanceDetailView instance={selectedInstance} onBack={handleBack} />;
   }
 
   // ---------- list view ----------

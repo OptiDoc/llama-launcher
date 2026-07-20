@@ -7,6 +7,7 @@ metadata:
 ---
 
 <!-- TYPEUI_SH_MANAGED_START -->
+
 # Material Design System Skill (Antigravity)
 
 ## Mission
@@ -24,7 +25,6 @@ UX (user experience) designers use it to create visually consistent, intuitive, 
 - Typography scale: 12/14/16/20/24/32 | Fonts: primary=Inter, display=Roboto, mono=Fira Code | weights=100, 200, 300, 400, 500, 600, 700, 800, 900
 - Color palette: primary, secondary, neutral, success, warning, danger | Tokens: primary=#6442D6, secondary=#C8B3FD, success=#16A34A, warning=#D97706, danger=#DC2626, surface=#FFFFFF, text=#111827
 - Spacing scale: 4/8/12/16/24/32
-
 
 ## Accessibility
 

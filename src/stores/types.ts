@@ -7,4 +7,11 @@ import type { WorkspacesSlice } from "@/stores/workspaces-slice";
 import type { NotificationsSlice } from "@/stores/notifications-slice";
 import type { SystemSlice } from "@/stores/system-slice";
 
-export type LlamaStore = ModelsSlice & InstancesSlice & DownloadsSlice & ProfilesSlice & ReleasesSlice & WorkspacesSlice & NotificationsSlice & SystemSlice;
+export type LlamaStore = ModelsSlice &
+  InstancesSlice &
+  DownloadsSlice &
+  ProfilesSlice &
+  ReleasesSlice &
+  WorkspacesSlice &
+  NotificationsSlice &
+  SystemSlice;

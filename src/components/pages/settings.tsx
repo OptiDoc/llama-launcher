@@ -18,11 +18,21 @@ export function SettingsPage() {
       </div>
       <Tabs value={tab} onValueChange={(v) => setTab(v as "global" | "workspace")}>
         <TabsList>
-          <TabsTrigger value="global"><SettingsIcon className="size-3.5" />Global</TabsTrigger>
-          <TabsTrigger value="workspace"><Boxes className="size-3.5" />Workspace</TabsTrigger>
+          <TabsTrigger value="global">
+            <SettingsIcon className="size-3.5" />
+            Global
+          </TabsTrigger>
+          <TabsTrigger value="workspace">
+            <Boxes className="size-3.5" />
+            Workspace
+          </TabsTrigger>
         </TabsList>
-        <TabsContent value="global" className="mt-6 outline-none"><GlobalSettingsTab /></TabsContent>
-        <TabsContent value="workspace" className="mt-6 outline-none"><WorkspaceSettingsTab /></TabsContent>
+        <TabsContent value="global" className="mt-6 outline-none">
+          <GlobalSettingsTab />
+        </TabsContent>
+        <TabsContent value="workspace" className="mt-6 outline-none">
+          <WorkspaceSettingsTab />
+        </TabsContent>
       </Tabs>
     </div>
   );

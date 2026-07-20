@@ -64,19 +64,19 @@ If a chart, diagram, animation, or interaction does not change what the user can
 
 ## Information Shape → Representation
 
-| Information shape | Preferred representation | Avoid |
-|---|---|---|
-| Hierarchy / taxonomy | tree, nested cards, layered outline, collapsible hierarchy | force-fitting into a timeline |
-| Process / workflow | flowchart, stepper, pipeline, state machine | disconnected numbered cards |
-| Time / evolution | timeline, sequence strip, trend chart | unordered bullet grid |
-| Comparison / trade-off | matrix, side-by-side, before/after, toggle compare | decorative radar charts with unclear axes |
-| Quantity / metric | chart, KPI group, ranking, distribution, small multiples | chart without units, labels, or conclusion |
-| Relationship / network | node-link, adjacency list, map of dependencies | dense spaghetti graph |
+| Information shape               | Preferred representation                                                     | Avoid                                      |
+| ------------------------------- | ---------------------------------------------------------------------------- | ------------------------------------------ |
+| Hierarchy / taxonomy            | tree, nested cards, layered outline, collapsible hierarchy                   | force-fitting into a timeline              |
+| Process / workflow              | flowchart, stepper, pipeline, state machine                                  | disconnected numbered cards                |
+| Time / evolution                | timeline, sequence strip, trend chart                                        | unordered bullet grid                      |
+| Comparison / trade-off          | matrix, side-by-side, before/after, toggle compare                           | decorative radar charts with unclear axes  |
+| Quantity / metric               | chart, KPI group, ranking, distribution, small multiples                     | chart without units, labels, or conclusion |
+| Relationship / network          | node-link, adjacency list, map of dependencies                               | dense spaghetti graph                      |
 | System inventory / architecture | layered architecture map, responsibility map, component relationship diagram | pretending architecture is a time sequence |
-| Geography / spatial relation | map, route, region block, schematic geography | fake map when real geography matters |
-| Argument / evidence chain | claim → evidence → implication layout | pile of quotes or stats without logic |
-| Explorable model | input controls that update output or explanation | sliders that only animate decoration |
-| Collection / resource set | filterable grid/list, facets, search, detail drawer | endless undifferentiated cards |
+| Geography / spatial relation    | map, route, region block, schematic geography                                | fake map when real geography matters       |
+| Argument / evidence chain       | claim → evidence → implication layout                                        | pile of quotes or stats without logic      |
+| Explorable model                | input controls that update output or explanation                             | sliders that only animate decoration       |
+| Collection / resource set       | filterable grid/list, facets, search, detail drawer                          | endless undifferentiated cards             |
 
 Use the simplest representation that makes the information clearer.
 

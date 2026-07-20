@@ -2,7 +2,6 @@
 
 > **⚠️ Before writing any code, read [`_rules.md`](references/_rules.md) — three non-negotiable rules on overlap, hierarchy, and color.**
 
-
 Mermaid is the best "text-as-diagram" solution — write structural diagrams with Markdown-like syntax, zero design skills needed.
 Best for: flowcharts, sequence diagrams, architecture diagrams, Gantt charts, class diagrams, ER diagrams, mind maps, state diagrams, pie charts, Git branch graphs.
 
@@ -11,12 +10,15 @@ Best for: flowcharts, sequence diagrams, architecture diagrams, Gantt charts, cl
 ## ⚠️ Flowchart Quality Rules (Highest Priority)
 
 ### Font Size Control
+
 Mermaid font sizes are controlled via `themeVariables` and CSS:
+
 - `fontSize`: Global font size, recommended `14px`-`16px`, **no less than 12px**
 - Node text is controlled via `fontSize` or `%%{init:}%%` directive
 - Annotations/footnotes use subgraph titles or separate nodes, font size no less than `11px`
 
 ### Connectors & Spacing
+
 ```javascript
 flowchart: {
   padding: 32,           // Node padding (CJK needs more space)
@@ -46,47 +48,54 @@ The following constraints are enforced **when generating Mermaid flowchart code*
 ```html
 <!DOCTYPE html>
 <html lang="zh">
-<head>
-<meta charset="UTF-8">
-<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
-<style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    background: #FFFFFF;
-    font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'SimHei', sans-serif;
-    display: flex;
-    justify-content: center;
-    padding: 48px;
-  }
-  #diagram { width: fit-content; min-width: 800px; }
-</style>
-</head>
-<body>
-<div id="diagram">
-  <pre class="mermaid">
+  <head>
+    <meta charset="UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        background: #ffffff;
+        font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "SimHei", sans-serif;
+        display: flex;
+        justify-content: center;
+        padding: 48px;
+      }
+      #diagram {
+        width: fit-content;
+        min-width: 800px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="diagram">
+      <pre class="mermaid">
     <!-- Mermaid code goes here -->
   </pre>
-</div>
-<script>
-  mermaid.initialize({
-    startOnLoad: true,
-    theme: 'base',
-    themeVariables: {
-      // See "Theme configuration" below
-    },
-    flowchart: { 
-      curve: 'basis', 
-      padding: 32,           // Node padding (CJK chars 50% wider than Latin, need more space)
-      nodeSpacing: 80,       // Horizontal spacing (prevents CJK node overlap)
-      rankSpacing: 80,       // Vertical spacing between ranks (prevents overlap between levels)
-      htmlLabels: true,      // Enable HTML label rendering, supports line breaks
-      wrappingWidth: 160,    // Max text width before auto-wrap (160 wraps earlier than 200, prevents overly wide nodes)
-    },
-    sequence: { mirrorActors: false, messageAlign: 'center' },
-    gantt: { titleTopMargin: 25, barHeight: 24, barGap: 6 },
-  });
-</script>
-</body>
+    </div>
+    <script>
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: "base",
+        themeVariables: {
+          // See "Theme configuration" below
+        },
+        flowchart: {
+          curve: "basis",
+          padding: 32, // Node padding (CJK chars 50% wider than Latin, need more space)
+          nodeSpacing: 80, // Horizontal spacing (prevents CJK node overlap)
+          rankSpacing: 80, // Vertical spacing between ranks (prevents overlap between levels)
+          htmlLabels: true, // Enable HTML label rendering, supports line breaks
+          wrappingWidth: 160, // Max text width before auto-wrap (160 wraps earlier than 200, prevents overly wide nodes)
+        },
+        sequence: { mirrorActors: false, messageAlign: "center" },
+        gantt: { titleTopMargin: 25, barHeight: 24, barGap: 6 },
+      });
+    </script>
+  </body>
 </html>
 ```
 
@@ -104,11 +113,11 @@ async def mermaid_to_png(html_path, png_path, width=1400, scale=2):
             device_scale_factor=scale
         )
         await page.goto(f'file://{html_path}', wait_until='load', timeout=30000)
-        
+
         # Wait for Mermaid SVG to render
         await page.wait_for_selector('#diagram svg', timeout=15000)
         await page.wait_for_timeout(1000)
-        
+
         # ⚠️ Read SVG's ACTUAL rendered size (not CSS box model!)
         # Mermaid SVGs often overflow their CSS container — getBBox/clientRect
         # returns the true size, while CSS bounding_box() returns the clipped box.
@@ -118,25 +127,25 @@ async def mermaid_to_png(html_path, png_path, width=1400, scale=2):
             const r = svg.getBoundingClientRect();
             return { width: r.width, height: r.height };
         }''')
-        
+
         el = page.locator('#diagram')
         css_bbox = await el.bounding_box()
-        
+
         svg_w = svg_size['width'] if svg_size else width
         svg_h = svg_size['height'] if svg_size else 800
         css_w = css_bbox['width'] if css_bbox else width
         css_h = css_bbox['height'] if css_bbox else 800
-        
+
         # Use the LARGER of CSS box and SVG actual size
         fit_w = max(width, int(max(svg_w, css_w) + 200))
         fit_h = int(max(svg_h, css_h) + 200)
-        
+
         await page.set_viewport_size({'width': fit_w, 'height': fit_h})
         await page.wait_for_timeout(500)
-        
+
         await el.screenshot(path=png_path)
         await browser.close()
-        
+
         import os
         print(f'✅ {png_path} ({os.path.getsize(png_path)/1024:.0f}KB)')
 
@@ -261,16 +270,16 @@ flowchart TB
 
 ### Node Shape Quick Reference
 
-| Syntax | Shape | Use For |
-|------|------|--------|
-| `A[text]` | Rectangle | Steps/Actions |
-| `A(text)` | Rounded rect | General nodes |
-| `A([text])` | Stadium | Start/End |
-| `A{text}` | Diamond | Decision |
-| `A{{text}}` | Hexagon | Preparation |
-| `A[/text/]` | Parallelogram | Input/Output |
-| `A((text))` | Circle | Connector |
-| `A>text]` | Flag | Event/Signal |
+| Syntax      | Shape         | Use For       |
+| ----------- | ------------- | ------------- |
+| `A[text]`   | Rectangle     | Steps/Actions |
+| `A(text)`   | Rounded rect  | General nodes |
+| `A([text])` | Stadium       | Start/End     |
+| `A{text}`   | Diamond       | Decision      |
+| `A{{text}}` | Hexagon       | Preparation   |
+| `A[/text/]` | Parallelogram | Input/Output  |
+| `A((text))` | Circle        | Connector     |
+| `A>text]`   | Flag          | Event/Signal  |
 
 ### Subgraphs (Grouping)
 
@@ -305,7 +314,7 @@ sequenceDiagram
     前端->>API: POST /auth/login
     API->>DB: 查询用户
     DB-->>API: 用户信息
-    
+
     alt 验证成功
         API-->>前端: 200 + JWT Token
         前端-->>用户: 跳转首页
@@ -313,18 +322,18 @@ sequenceDiagram
         API-->>前端: 401 未授权
         前端-->>用户: 显示错误提示
     end
-    
+
     Note over 前端,API: Token 有效期 24 小时
 ```
 
 ### Arrow Types
 
-| Syntax | Meaning |
-|------|------|
-| `->>` | Solid arrow (synchronous call) |
-| `-->>` | Dashed arrow (return/response) |
-| `-x` | Solid with x (failure/rejection) |
-| `-)` | Async message |
+| Syntax | Meaning                          |
+| ------ | -------------------------------- |
+| `->>`  | Solid arrow (synchronous call)   |
+| `-->>` | Dashed arrow (return/response)   |
+| `-x`   | Solid with x (failure/rejection) |
+| `-)`   | Async message                    |
 
 ---
 
@@ -472,22 +481,28 @@ Mermaid mindmap doesn't support `style`/`classDef`, but you can greatly improve 
 ```html
 <!DOCTYPE html>
 <html lang="zh">
-<head>
-<meta charset="UTF-8">
-<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
-<style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    background: #FFFFFF;
-    font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'SimHei', sans-serif;
-    display: flex;
-    justify-content: center;
-    padding: 48px;
-  }
-  #diagram { min-width: 900px; }
+  <head>
+    <meta charset="UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        background: #ffffff;
+        font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "SimHei", sans-serif;
+        display: flex;
+        justify-content: center;
+        padding: 48px;
+      }
+      #diagram {
+        min-width: 900px;
+      }
 
-  /* ─── CSS injection to optimize Mermaid mindmap rendering ─── */
-  /* 
+      /* ─── CSS injection to optimize Mermaid mindmap rendering ─── */
+      /* 
    * Actual SVG class names in Mermaid v11 mindmap:
    * - .section-root = root node
    * - .section-0 ~ .section-N = first-level branches (in order)
@@ -499,66 +514,160 @@ Mermaid mindmap doesn't support `style`/`classDef`, but you can greatly improve 
    * - .edge-depth-1/5 = connector depth level
    */
 
-  /* 1. All connectors: rounded, soft */
-  .edge { stroke-width: 2px !important; stroke-linecap: round !important; }
+      /* 1. All connectors: rounded, soft */
+      .edge {
+        stroke-width: 2px !important;
+        stroke-linecap: round !important;
+      }
 
-  /* 2. Remove node bottom decoration line (ugly by default) */
-  .node-line- { stroke: transparent !important; }
+      /* 2. Remove node bottom decoration line (ugly by default) */
+      .node-line- {
+        stroke: transparent !important;
+      }
 
-  /* 3. Root node: deep blue circle + shadow */
-  .section-root circle,
-  .section-root ellipse {
-    fill: #1E40AF !important;
-    stroke: #1E3A8A !important;
-    stroke-width: 3px !important;
-    filter: drop-shadow(0 4px 12px rgba(30,64,175,0.35));
-  }
-  .section-root .nodeLabel { color: #FFFFFF !important; font-size: 17px !important; font-weight: 700 !important; }
+      /* 3. Root node: deep blue circle + shadow */
+      .section-root circle,
+      .section-root ellipse {
+        fill: #1e40af !important;
+        stroke: #1e3a8a !important;
+        stroke-width: 3px !important;
+        filter: drop-shadow(0 4px 12px rgba(30, 64, 175, 0.35));
+      }
+      .section-root .nodeLabel {
+        color: #ffffff !important;
+        font-size: 17px !important;
+        font-weight: 700 !important;
+      }
 
-  /* 4. First-level branches colored in order (supports up to 8-color cycle) */
-  /* Blue */
-  .section-0 .node-bkg { fill: #DBEAFE !important; stroke: #3B82F6 !important; stroke-width: 2px !important; }
-  .section-0 .nodeLabel { color: #1E40AF !important; font-weight: 600 !important; font-size: 14px !important; }
-  .section-edge-0 { stroke: #93C5FD !important; }
-  /* Green */
-  .section-1 .node-bkg { fill: #D1FAE5 !important; stroke: #10B981 !important; stroke-width: 2px !important; }
-  .section-1 .nodeLabel { color: #065F46 !important; font-weight: 600 !important; font-size: 14px !important; }
-  .section-edge-1 { stroke: #6EE7B7 !important; }
-  /* Amber */
-  .section-2 .node-bkg { fill: #FEF3C7 !important; stroke: #F59E0B !important; stroke-width: 2px !important; }
-  .section-2 .nodeLabel { color: #92400E !important; font-weight: 600 !important; font-size: 14px !important; }
-  .section-edge-2 { stroke: #FCD34D !important; }
-  /* Purple */
-  .section-3 .node-bkg { fill: #EDE9FE !important; stroke: #8B5CF6 !important; stroke-width: 2px !important; }
-  .section-3 .nodeLabel { color: #5B21B6 !important; font-weight: 600 !important; font-size: 14px !important; }
-  .section-edge-3 { stroke: #C4B5FD !important; }
-  /* Red */
-  .section-4 .node-bkg { fill: #FEE2E2 !important; stroke: #EF4444 !important; stroke-width: 2px !important; }
-  .section-4 .nodeLabel { color: #991B1B !important; font-weight: 600 !important; font-size: 14px !important; }
-  .section-edge-4 { stroke: #FCA5A5 !important; }
-  /* Cyan */
-  .section-5 .node-bkg { fill: #CFFAFE !important; stroke: #06B6D4 !important; stroke-width: 2px !important; }
-  .section-5 .nodeLabel { color: #155E75 !important; font-weight: 600 !important; font-size: 14px !important; }
-  .section-edge-5 { stroke: #67E8F9 !important; }
-  /* Pink */
-  .section-6 .node-bkg { fill: #FCE7F3 !important; stroke: #EC4899 !important; stroke-width: 2px !important; }
-  .section-6 .nodeLabel { color: #9D174D !important; font-weight: 600 !important; font-size: 14px !important; }
-  .section-edge-6 { stroke: #F9A8D4 !important; }
-  /* Gray-green */
-  .section-7 .node-bkg { fill: #D1FAE5 !important; stroke: #059669 !important; stroke-width: 2px !important; }
-  .section-7 .nodeLabel { color: #064E3B !important; font-weight: 600 !important; font-size: 14px !important; }
-  .section-edge-7 { stroke: #6EE7B7 !important; }
+      /* 4. First-level branches colored in order (supports up to 8-color cycle) */
+      /* Blue */
+      .section-0 .node-bkg {
+        fill: #dbeafe !important;
+        stroke: #3b82f6 !important;
+        stroke-width: 2px !important;
+      }
+      .section-0 .nodeLabel {
+        color: #1e40af !important;
+        font-weight: 600 !important;
+        font-size: 14px !important;
+      }
+      .section-edge-0 {
+        stroke: #93c5fd !important;
+      }
+      /* Green */
+      .section-1 .node-bkg {
+        fill: #d1fae5 !important;
+        stroke: #10b981 !important;
+        stroke-width: 2px !important;
+      }
+      .section-1 .nodeLabel {
+        color: #065f46 !important;
+        font-weight: 600 !important;
+        font-size: 14px !important;
+      }
+      .section-edge-1 {
+        stroke: #6ee7b7 !important;
+      }
+      /* Amber */
+      .section-2 .node-bkg {
+        fill: #fef3c7 !important;
+        stroke: #f59e0b !important;
+        stroke-width: 2px !important;
+      }
+      .section-2 .nodeLabel {
+        color: #92400e !important;
+        font-weight: 600 !important;
+        font-size: 14px !important;
+      }
+      .section-edge-2 {
+        stroke: #fcd34d !important;
+      }
+      /* Purple */
+      .section-3 .node-bkg {
+        fill: #ede9fe !important;
+        stroke: #8b5cf6 !important;
+        stroke-width: 2px !important;
+      }
+      .section-3 .nodeLabel {
+        color: #5b21b6 !important;
+        font-weight: 600 !important;
+        font-size: 14px !important;
+      }
+      .section-edge-3 {
+        stroke: #c4b5fd !important;
+      }
+      /* Red */
+      .section-4 .node-bkg {
+        fill: #fee2e2 !important;
+        stroke: #ef4444 !important;
+        stroke-width: 2px !important;
+      }
+      .section-4 .nodeLabel {
+        color: #991b1b !important;
+        font-weight: 600 !important;
+        font-size: 14px !important;
+      }
+      .section-edge-4 {
+        stroke: #fca5a5 !important;
+      }
+      /* Cyan */
+      .section-5 .node-bkg {
+        fill: #cffafe !important;
+        stroke: #06b6d4 !important;
+        stroke-width: 2px !important;
+      }
+      .section-5 .nodeLabel {
+        color: #155e75 !important;
+        font-weight: 600 !important;
+        font-size: 14px !important;
+      }
+      .section-edge-5 {
+        stroke: #67e8f9 !important;
+      }
+      /* Pink */
+      .section-6 .node-bkg {
+        fill: #fce7f3 !important;
+        stroke: #ec4899 !important;
+        stroke-width: 2px !important;
+      }
+      .section-6 .nodeLabel {
+        color: #9d174d !important;
+        font-weight: 600 !important;
+        font-size: 14px !important;
+      }
+      .section-edge-6 {
+        stroke: #f9a8d4 !important;
+      }
+      /* Gray-green */
+      .section-7 .node-bkg {
+        fill: #d1fae5 !important;
+        stroke: #059669 !important;
+        stroke-width: 2px !important;
+      }
+      .section-7 .nodeLabel {
+        color: #064e3b !important;
+        font-weight: 600 !important;
+        font-size: 14px !important;
+      }
+      .section-edge-7 {
+        stroke: #6ee7b7 !important;
+      }
 
-  /* 5. Deeper connectors are lighter */
-  .edge-depth-5 { stroke-width: 1.5px !important; opacity: 0.6; }
+      /* 5. Deeper connectors are lighter */
+      .edge-depth-5 {
+        stroke-width: 1.5px !important;
+        opacity: 0.6;
+      }
 
-  /* 6. Light gray background */
-  body { background: #FAFBFE; }
-</style>
-</head>
-<body>
-<div id="diagram">
-  <pre class="mermaid">
+      /* 6. Light gray background */
+      body {
+        background: #fafbfe;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="diagram">
+      <pre class="mermaid">
 mindmap
     root((你的主题))
         一级分支1
@@ -567,26 +676,26 @@ mindmap
         一级分支2
             二级内容C
   </pre>
-</div>
-<script>
-  mermaid.initialize({
-    startOnLoad: true,
-    theme: 'base',
-    themeVariables: {
-      primaryColor: '#EFF6FF',
-      primaryBorderColor: '#3B82F6',
-      primaryTextColor: '#1E293B',
-      lineColor: '#CBD5E1',
-      fontSize: '13px',
-      fontFamily: '-apple-system, BlinkMacSystemFont, PingFang SC, SimHei, sans-serif',
-    },
-    mindmap: {
-      padding: 20,
-      useMaxWidth: false,
-    }
-  });
-</script>
-</body>
+    </div>
+    <script>
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: "base",
+        themeVariables: {
+          primaryColor: "#EFF6FF",
+          primaryBorderColor: "#3B82F6",
+          primaryTextColor: "#1E293B",
+          lineColor: "#CBD5E1",
+          fontSize: "13px",
+          fontFamily: "-apple-system, BlinkMacSystemFont, PingFang SC, SimHei, sans-serif",
+        },
+        mindmap: {
+          padding: 20,
+          useMaxWidth: false,
+        },
+      });
+    </script>
+  </body>
 </html>
 ```
 
@@ -597,21 +706,21 @@ mindmap
 
 When content complexity exceeds Mermaid mindmap's comfort zone, **auto-switch to CSS approach** (`references/mindmap-css.md`):
 
-| Trigger Condition (any one met) | Action |
-|----------------------|------|
-| More than 7 L1 branches | → Switch to CSS |
-| Any branch has >8 child nodes | → Switch to CSS |
-| Nesting exceeds 3 levels | → Switch to CSS |
-| Single node text >15 chars | → Switch to CSS |
-| Total nodes >40 | → Switch to CSS |
+| Trigger Condition (any one met) | Action          |
+| ------------------------------- | --------------- |
+| More than 7 L1 branches         | → Switch to CSS |
+| Any branch has >8 child nodes   | → Switch to CSS |
+| Nesting exceeds 3 levels        | → Switch to CSS |
+| Single node text >15 chars      | → Switch to CSS |
+| Total nodes >40                 | → Switch to CSS |
 
 **When none of the above triggers**, Mermaid mindmap is adequate. The following suggestions help optimize rendering (recommendations, not hard limits):
 
-| Suggestion | Notes |
-|------|------|
-| Keep node text concise | Use spaces to segment long text, avoid punctuation |
-| Use emoji prefixes per branch | Higher visual distinctiveness |
-| Use CSS injection for coloring | Use the optimized HTML shell above |
+| Suggestion                     | Notes                                              |
+| ------------------------------ | -------------------------------------------------- |
+| Keep node text concise         | Use spaces to segment long text, avoid punctuation |
+| Use emoji prefixes per branch  | Higher visual distinctiveness                      |
+| Use CSS injection for coloring | Use the optimized HTML shell above                 |
 
 ### Example (Optimized)
 
@@ -718,18 +827,18 @@ linkStyle 1 stroke:#10B981,stroke-width:2px,stroke-dasharray: 5 5
 
 ## Mermaid vs Other Approaches
 
-| Capability | Mermaid | Playwright+CSS | draw.io |
-|------|---------|---------------|---------|
-| Learning curve | ✅ Very low (Markdown-like) | Medium (HTML/CSS) | ✅ Very low (drag&drop) |
-| Version control friendly | ✅ Plain text | ✅ Plain text | ❌ XML binary |
-| Flowcharts | ✅ Built-in | ⚠️ Manual layout | ✅ Drag&drop |
-| Sequence diagrams | ✅ Built-in | ❌ Very complex | ✅ Templates |
-| Gantt charts | ✅ Built-in | ❌ Build from scratch | ⚠️ Limited |
-| Class/ER diagrams | ✅ Built-in | ❌ Not suited | ✅ Templates |
-| Visual freedom | ⚠️ Limited | ✅ Full freedom | ✅ Free |
-| PNG export | ✅ mmdc/Playwright | ✅ Playwright | ✅ Built-in |
-| CJK support | ✅ Native | ✅ Font config | ✅ Native |
-| Auto layout | ✅ Automatic | ❌ Manual | ⚠️ Semi-auto |
+| Capability               | Mermaid                     | Playwright+CSS        | draw.io                 |
+| ------------------------ | --------------------------- | --------------------- | ----------------------- |
+| Learning curve           | ✅ Very low (Markdown-like) | Medium (HTML/CSS)     | ✅ Very low (drag&drop) |
+| Version control friendly | ✅ Plain text               | ✅ Plain text         | ❌ XML binary           |
+| Flowcharts               | ✅ Built-in                 | ⚠️ Manual layout      | ✅ Drag&drop            |
+| Sequence diagrams        | ✅ Built-in                 | ❌ Very complex       | ✅ Templates            |
+| Gantt charts             | ✅ Built-in                 | ❌ Build from scratch | ⚠️ Limited              |
+| Class/ER diagrams        | ✅ Built-in                 | ❌ Not suited         | ✅ Templates            |
+| Visual freedom           | ⚠️ Limited                  | ✅ Full freedom       | ✅ Free                 |
+| PNG export               | ✅ mmdc/Playwright          | ✅ Playwright         | ✅ Built-in             |
+| CJK support              | ✅ Native                   | ✅ Font config        | ✅ Native               |
+| Auto layout              | ✅ Automatic                | ❌ Manual             | ⚠️ Semi-auto            |
 
 **Principle: Use Mermaid for structural/relationship diagrams, Playwright+CSS for creative design diagrams.**
 
@@ -740,15 +849,17 @@ linkStyle 1 stroke:#10B981,stroke-width:2px,stroke-dasharray: 5 5
 ### Q: CJK node names cause layout issues?
 
 Ensure `fontFamily` includes a CJK font:
+
 ```javascript
 themeVariables: {
-  fontFamily: '-apple-system, PingFang SC, SimHei, sans-serif'
+  fontFamily: "-apple-system, PingFang SC, SimHei, sans-serif";
 }
 ```
 
 ### Q: How to control node spacing?
 
 Mermaid auto-layouts; spacing is adjusted via config:
+
 ```javascript
 flowchart: { padding: 16, nodeSpacing: 50, rankSpacing: 60 }
 ```
@@ -762,6 +873,7 @@ flowchart: { padding: 16, nodeSpacing: 50, rankSpacing: 60 }
 ### Q: How to add line breaks in nodes?
 
 Use `<br>` tags:
+
 ```mermaid
 A[第一行<br>第二行<br><small>小字注释</small>]
 ```
@@ -777,6 +889,7 @@ A[第一行<br>第二行<br><small>小字注释</small>]
 5. **When using classDef**: ensure `font-size` isn't too large, 12-14px is ideal
 
 **Correct approach for long-text nodes**:
+
 ```mermaid
 flowchart LR
     A["这是一段比较长的<br>需要换行的文字"]
@@ -784,6 +897,7 @@ flowchart LR
 ```
 
 **Key configuration**:
+
 ```javascript
 mermaid.initialize({
   flowchart: {
@@ -792,6 +906,6 @@ mermaid.initialize({
     rankSpacing: 80,
     htmlLabels: true,
     wrappingWidth: 160,
-  }
+  },
 });
 ```

@@ -8,11 +8,21 @@ import * as React from "react";
 import { useLlamaStore, type LlamaProfile } from "@/lib/llama-store";
 import { Button } from "@/components/ui/button";
 import {
-  Dialog, DialogContent, DialogDescription, DialogFooter,
-  DialogHeader, DialogTitle, DialogTrigger,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Plus } from "lucide-react";
-import { defaultFormState, profileFormReducer, type ProfileFormState, type ProfileFormAction } from "./new-profile-form";
+import {
+  defaultFormState,
+  profileFormReducer,
+  type ProfileFormState,
+  type ProfileFormAction,
+} from "./new-profile-form";
 import { CoreSection } from "./core-section";
 
 export function NewProfileDialog() {
@@ -53,8 +63,12 @@ export function NewProfileDialog() {
           <form onSubmit={handleSubmit} className="grid gap-4">
             <CoreSection f={f} dispatch={dispatch} models={models} />
             <DialogFooter className="flex-row justify-end gap-2">
-              <Button type="button" variant="outline" size="sm" onClick={() => setOpen(false)}>Cancel</Button>
-              <Button type="submit" size="sm">Create Profile</Button>
+              <Button type="button" variant="outline" size="sm" onClick={() => setOpen(false)}>
+                Cancel
+              </Button>
+              <Button type="submit" size="sm">
+                Create Profile
+              </Button>
             </DialogFooter>
           </form>
         </div>

@@ -9,6 +9,7 @@ typography:
   fonts: "Inter, Helvetica Neue, Helvetica"
 note: "Frontmatter is auto-extracted; the prose body below is the authoritative source for full tokens, components, and rules."
 ---
+
 # Design System Inspired by Cisco
 
 > Category: Backend & Data
@@ -23,6 +24,7 @@ Typography is disciplined and corporate. Cisco's internal and presentation ecosy
 What makes Cisco distinct is the combination of **deep infrastructure darkness** with a **single electric trust signal**. Use blue for the moment that matters: primary action, focus, active tab, chart highlight, or key data edge. Let the rest of the interface stay disciplined.
 
 **Key Characteristics:**
+
 - Dark navy-charcoal surfaces instead of flat black
 - Cisco Blue (`#049fd9`) as the primary signal color
 - Restrained neutral system built from grays and pale technical whites
@@ -34,12 +36,14 @@ What makes Cisco distinct is the combination of **deep infrastructure darkness**
 ## 2. Color Palette & Roles
 
 ### Primary
+
 - **Cisco Blue** (`#049fd9`): High-signal accent, outline CTA, active state, key link.
 - **Status Blue** (`#64bbe3`): Focus halo, secondary emphasis, lightweight chart signal.
 - **Cisco Indigo** (`#005073`): Filled primary CTA, dense accent, deeper data emphasis.
 - **Dark Blue** (`#2b5592`): Secondary brand accent for graphics, charts, and layered blue compositions.
 
 ### Neutral / Surface
+
 - **Dark Gray 1** (`#39393b`): Mid-dark container surface, panel base, dense modules.
 - **Dark Gray 2** (`#58585b`): Borders, separators, secondary shells.
 - **Medium Gray 2** (`#9e9ea2`): Muted labels and low-emphasis metadata.
@@ -47,6 +51,7 @@ What makes Cisco distinct is the combination of **deep infrastructure darkness**
 - **Core White** (`#ffffff`): Primary inverse text, bright UI foreground, light surface content.
 
 ### Support
+
 - **Sage Green** (`#abc233`): Positive outcome or infrastructure-health accent.
 - **Status Green** (`#6cc04a`): Success state.
 - **Status Yellow** (`#ffcc00`): Warning or caution state.
@@ -54,6 +59,7 @@ What makes Cisco distinct is the combination of **deep infrastructure darkness**
 - **Status Red** (`#cf2030`): Error or critical state.
 
 ### Recommended Surface Roles
+
 - **Primary canvas**: a blue-black or charcoal blend built around `#0f1720` to `#1b2530` using the Cisco palette as anchor.
 - **Elevated card**: Dark Gray 1 (`#39393b`) or a slightly bluer variant.
 - **Border / outline**: Dark Gray 2 (`#58585b`) with subtle transparency when needed.
@@ -62,23 +68,25 @@ What makes Cisco distinct is the combination of **deep infrastructure darkness**
 ## 3. Typography Rules
 
 ### Font Family
+
 - **Primary**: `CiscoSansTT`, fallbacks: `Inter, Arial, Helvetica Neue, Helvetica, sans-serif`
 - **Mono / Technical**: `IBM Plex Mono`, `SF Mono`, or `ui-monospace` if a code-supporting mono face is needed for metrics and IDs
 
 ### Hierarchy
 
-| Role | Font | Size | Weight | Line Height | Letter Spacing | Notes |
-|------|------|------|--------|-------------|----------------|-------|
-| Hero Display | CiscoSansTT | 72px | 500 | 1.05 | -1.6px | Large launch/positioning headline |
-| Section Display | CiscoSansTT | 56px | 500 | 1.08 | -1.1px | Major section statement |
-| Heading | CiscoSansTT | 32px | 500 | 1.20 | -0.4px | Feature title, card header |
-| Subheading | CiscoSansTT | 24px | 500 | 1.30 | -0.2px | Supporting header |
-| Body | CiscoSansTT | 16px | 400 | 1.55 | normal | Default body copy |
-| Body Small | CiscoSansTT | 14px | 400 | 1.50 | normal | Metadata, nav, helper text |
-| Label / Eyebrow | CiscoSansTT | 12px | 700 | 1.30 | 0.24px | Tags, overlines, section labels |
-| Button | CiscoSansTT | 16px | 500 | 1.20 | normal | CTA labels |
+| Role            | Font        | Size | Weight | Line Height | Letter Spacing | Notes                             |
+| --------------- | ----------- | ---- | ------ | ----------- | -------------- | --------------------------------- |
+| Hero Display    | CiscoSansTT | 72px | 500    | 1.05        | -1.6px         | Large launch/positioning headline |
+| Section Display | CiscoSansTT | 56px | 500    | 1.08        | -1.1px         | Major section statement           |
+| Heading         | CiscoSansTT | 32px | 500    | 1.20        | -0.4px         | Feature title, card header        |
+| Subheading      | CiscoSansTT | 24px | 500    | 1.30        | -0.2px         | Supporting header                 |
+| Body            | CiscoSansTT | 16px | 400    | 1.55        | normal         | Default body copy                 |
+| Body Small      | CiscoSansTT | 14px | 400    | 1.50        | normal         | Metadata, nav, helper text        |
+| Label / Eyebrow | CiscoSansTT | 12px | 700    | 1.30        | 0.24px         | Tags, overlines, section labels   |
+| Button          | CiscoSansTT | 16px | 500    | 1.20        | normal         | CTA labels                        |
 
 ### Principles
+
 - Keep display typography decisive and compressed, but not ultra-light or editorial.
 - Body copy should be practical and highly legible, with no clever type effects.
 - Use bold weight mainly for short labels, status tags, and compact emphasis.
@@ -89,6 +97,7 @@ What makes Cisco distinct is the combination of **deep infrastructure darkness**
 ### Buttons
 
 **Primary Action Pill**
+
 - Background: Cisco Indigo (`#005073`)
 - Text: White (`#ffffff`)
 - Radius: full pill
@@ -99,6 +108,7 @@ What makes Cisco distinct is the combination of **deep infrastructure darkness**
 - Use case: high-priority submit, deploy, or "learn more" action on dark Cisco surfaces
 
 **Signal Outline Pill**
+
 - Background: transparent
 - Text: Cisco Blue (`#049fd9`) on dark surfaces, Cisco Indigo (`#005073`) on light surfaces
 - Border: 1.5px Cisco Blue (`#049fd9`)
@@ -108,6 +118,7 @@ What makes Cisco distinct is the combination of **deep infrastructure darkness**
 - Use case: brand-forward secondary action that keeps Cisco Blue prominent without sacrificing contrast
 
 **Secondary Dark Pill**
+
 - Background: transparent or dark surface
 - Text: White or Pale Gray 1
 - Border: Dark Gray 2 (`#58585b`)
@@ -115,18 +126,21 @@ What makes Cisco distinct is the combination of **deep infrastructure darkness**
 - Purpose: low-noise secondary CTA
 
 ### Cards & Containers
+
 - Background: layered dark surface based on `#39393b` or a cooler navy-charcoal adaptation
 - Border: 1px subtle border using `#58585b`
 - Radius: 16px to 20px
 - Shadow: minimal; depth should come mostly from surface contrast and spacing
 
 ### Navigation
+
 - Dark glass-like masthead or shell over a dark hero
 - Text: White / Pale Gray 1
 - Active state: Cisco Blue underline, chip, or glow
 - Navigation should feel like product chrome, not marketing candy
 
 ### Data / Product Modules
+
 - Charts and diagrams should use Cisco Blue as primary highlight and keep supporting colors minimal
 - Use green/yellow/red only for actual operational meaning
 - Dense technical blocks should still preserve breathing room and hierarchy
@@ -134,17 +148,20 @@ What makes Cisco distinct is the combination of **deep infrastructure darkness**
 ### Brand-Specific Recipes
 
 **Network Telemetry Card**
+
 - Anatomy: eyebrow label, large metric, delta chip, 12-24h sparkline, quiet footer metadata
 - Density: compact but not cramped; 16px-24px padding with clear alignment to chart axes
 - States: normal, selected, degraded, critical, loading skeleton
 - Brand behavior: use Cisco Blue for the selected edge or sparkline, and semantic colors only for health state
 
 **Topology / Product Diagram Module**
+
 - Anatomy: title, system canvas, node chips, connection lines, side legend
 - Visual rule: dark field first, blue path highlight second, all other nodes muted until active
 - States: idle overview, hovered path, selected node, degraded route
 
 **Dense Control Panel**
+
 - Anatomy: left nav rail, filter bar, split metric region, log/event table, contextual right rail
 - Control sizing: compact 36px inputs are acceptable on desktop, but action buttons remain 44px minimum height
 - States: quiet default, blue active filter, clear warning/error escalation
@@ -152,6 +169,7 @@ What makes Cisco distinct is the combination of **deep infrastructure darkness**
 ## 5. Layout Principles
 
 ### Spacing & Grid
+
 - Base rhythm: 8px
 - Common scale: 8px, 12px, 16px, 24px, 32px, 48px, 64px, 96px
 - Prefer wide desktop containers and large sectional spacing
@@ -159,6 +177,7 @@ What makes Cisco distinct is the combination of **deep infrastructure darkness**
 - Breakpoints: mobile up to 767px, tablet 768px-1199px, desktop 1200px and above
 
 ### Composition
+
 - Alternate expansive hero/outcome sections with denser information bands
 - Use asymmetry where it serves product imagery or system diagrams
 - Large dark fields with one blue focal point are more on-brand than many small colorful fragments
@@ -167,6 +186,7 @@ What makes Cisco distinct is the combination of **deep infrastructure darkness**
 - Navigation should collapse from a full masthead to a compact menu button plus one primary CTA on tablet/mobile
 
 ### Accessibility & Responsiveness
+
 - Minimum touch target: 44px by 44px for any tappable control
 - Keyboard focus must remain visible on every interactive element via the blue outer halo plus white inner keyline pairing
 - Do not rely on hover-only disclosure; show essential state and actions on focus and touch
@@ -199,6 +219,7 @@ What makes Cisco distinct is the combination of **deep infrastructure darkness**
 ## 9. Agent Prompt Guide
 
 ### Quick Color Reference
+
 - Primary signal: Cisco Blue (`#049fd9`)
 - Hover / secondary signal: Status Blue (`#64bbe3`)
 - Deep accent: Cisco Indigo (`#005073`)
@@ -207,6 +228,7 @@ What makes Cisco distinct is the combination of **deep infrastructure darkness**
 - Inverse text: White (`#ffffff`) or Pale Gray 1 (`#e8ebf1`)
 
 ### Example Component Prompts
+
 - "Create a Cisco-style dark enterprise landing page with layered navy-charcoal surfaces, a bright Cisco Blue primary CTA, and a 72px high-confidence hero headline."
 - "Design a technical dashboard card on a dark surface with a subtle gray border, white text, and Cisco Blue chart highlights."
 - "Build a dark glass navigation bar with restrained white labels and one Cisco Blue active indicator."

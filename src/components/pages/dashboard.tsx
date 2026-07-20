@@ -2,12 +2,7 @@
 
 import * as React from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Server, Zap, MemoryStick, Activity } from "lucide-react";
 import { useLlamaStore } from "@/lib/llama-store";
 import { StatCard } from "@/components/features/dashboard/dashboard-charts";

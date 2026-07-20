@@ -16,7 +16,7 @@ Use for business commentary, AI essays, product thinking, and neutral editorial 
   --paper-2: #ebe6da;
   --ink: #0a0a0b;
   --muted: #68625a;
-  --line: rgba(10,10,11,.22);
+  --line: rgba(10, 10, 11, 0.22);
   --accent: #111111;
   --accent-soft: #d8d2c6;
 }
@@ -32,7 +32,7 @@ Use for technology, research, data, AI infrastructure, and calm analytical writi
   --paper-2: #e5ebef;
   --ink: #0a1f3d;
   --muted: #5f6d78;
-  --line: rgba(10,31,61,.20);
+  --line: rgba(10, 31, 61, 0.2);
   --accent: #315d93;
   --accent-soft: #d7e1ec;
 }
@@ -48,7 +48,7 @@ Use for hiking, outdoor, nature, sustainability, personal field notes, and groun
   --paper-2: #e8dfcf;
   --ink: #16251b;
   --muted: #5d665d;
-  --line: rgba(22,37,27,.22);
+  --line: rgba(22, 37, 27, 0.22);
   --accent: #2e6b4f;
   --accent-soft: #d4dfd2;
 }
@@ -64,7 +64,7 @@ Use for memory, craft, personal essays, old objects, creator notes, and warm low
   --paper-2: #dfc9a8;
   --ink: #2a1e13;
   --muted: #755f49;
-  --line: rgba(42,30,19,.24);
+  --line: rgba(42, 30, 19, 0.24);
   --accent: #9b5a2e;
   --accent-soft: #d5b58f;
 }
@@ -80,7 +80,7 @@ Use for design, object studies, portfolio-like covers, gallery tone, and restrai
   --paper-2: #ded0b7;
   --ink: #1f1a14;
   --muted: #6f6557;
-  --line: rgba(31,26,20,.22);
+  --line: rgba(31, 26, 20, 0.22);
   --accent: #8f7650;
   --accent-soft: #d4c2a4;
 }
@@ -96,7 +96,7 @@ The **only** official dark Editorial palette. Use for game key art, night photog
   --paper-2: #1a1714;
   --ink: #ece2cf;
   --muted: #9a8c75;
-  --line: rgba(236,226,207,.22);
+  --line: rgba(236, 226, 207, 0.22);
   --accent: #d4a04a;
   --accent-soft: #3a2a14;
 }
@@ -106,19 +106,19 @@ Midnight Ink **must** also override two background layers — light-paper math d
 
 ```css
 [data-theme="midnight-ink"] .grain {
-  opacity: .26;
+  opacity: 0.26;
   mix-blend-mode: screen;
-  background-image: radial-gradient(rgba(255,244,214,.10) 1px, transparent 1px);
+  background-image: radial-gradient(rgba(255, 244, 214, 0.1) 1px, transparent 1px);
 }
 [data-theme="midnight-ink"] .paper-wash {
   background:
-    radial-gradient(80% 50% at 28% 16%, rgba(212,160,74,.12), transparent 64%),
-    radial-gradient(70% 60% at 80% 86%, rgba(60,40,20,.20), transparent 72%),
-    linear-gradient(180deg, rgba(236,226,207,.02), rgba(0,0,0,.32));
+    radial-gradient(80% 50% at 28% 16%, rgba(212, 160, 74, 0.12), transparent 64%),
+    radial-gradient(70% 60% at 80% 86%, rgba(60, 40, 20, 0.2), transparent 72%),
+    linear-gradient(180deg, rgba(236, 226, 207, 0.02), rgba(0, 0, 0, 0.32));
 }
 [data-theme="midnight-ink"] .frame-img {
   background: #18120f;
-  box-shadow: 0 0 0 1px rgba(236,226,207,.10);
+  box-shadow: 0 0 0 1px rgba(236, 226, 207, 0.1);
 }
 ```
 
@@ -147,7 +147,7 @@ Default for AI, technology, product updates, design, and engineering topics.
   --grey-1: #f0f0ee;
   --grey-2: #d4d4d2;
   --grey-3: #737373;
-  --accent: #002FA7;
+  --accent: #002fa7;
   --accent-on: #ffffff;
 }
 ```
@@ -163,7 +163,7 @@ Use for young, consumer, active, retail, sporty, or playful information.
   --grey-1: #f0f0ee;
   --grey-2: #d4d4d2;
   --grey-3: #737373;
-  --accent: #FFD500;
+  --accent: #ffd500;
   --accent-on: #0a0a0a;
 }
 ```
@@ -179,7 +179,7 @@ Use for ecology, future, emerging tech, health, and highlighter-like contemporar
   --grey-1: #f0f0ee;
   --grey-2: #d4d4d2;
   --grey-3: #737373;
-  --accent: #C5E803;
+  --accent: #c5e803;
   --accent-on: #0a0a0a;
 }
 ```
@@ -195,7 +195,7 @@ Use for industrial, warning, urgency, risk, decision points, and sharp correctio
   --grey-1: #f0f0ee;
   --grey-2: #d4d4d2;
   --grey-3: #737373;
-  --accent: #FF6B35;
+  --accent: #ff6b35;
   --accent-on: #ffffff;
 }
 ```

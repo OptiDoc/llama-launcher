@@ -18,17 +18,20 @@ export function createNotificationsSlice(
   return {
     notifications: [],
 
-    addNotification: (n) => set((s) => ({
-      notifications: [{ ...n, id: uid("notif"), ts: nowTs(), read: false }, ...s.notifications].slice(0, 50),
-    })),
+    addNotification: (n) =>
+      set((s) => ({
+        notifications: [{ ...n, id: uid("notif"), ts: nowTs(), read: false }, ...s.notifications].slice(0, 50),
+      })),
 
-    markNotificationRead: (id) => set((s) => ({
-      notifications: s.notifications.map((n) => (n.id === id ? { ...n, read: true } : n)),
-    })),
+    markNotificationRead: (id) =>
+      set((s) => ({
+        notifications: s.notifications.map((n) => (n.id === id ? { ...n, read: true } : n)),
+      })),
 
-    markAllNotificationsRead: () => set((s) => ({
-      notifications: s.notifications.map((n) => ({ ...n, read: true })),
-    })),
+    markAllNotificationsRead: () =>
+      set((s) => ({
+        notifications: s.notifications.map((n) => ({ ...n, read: true })),
+      })),
 
     clearNotifications: () => set({ notifications: [] }),
   };

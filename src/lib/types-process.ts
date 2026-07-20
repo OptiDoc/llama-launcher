@@ -110,7 +110,7 @@ export interface LlamaInstance {
   peakTokensPerSec: number;
   totalRequests: number;
   errorCount: number;
-  hibernatedConfig: any;
+  hibernatedConfig: { name: string; model: string; profile: string; port: number; host: string; gpu: string } | null;
 }
 
 export interface InstancesSlice {

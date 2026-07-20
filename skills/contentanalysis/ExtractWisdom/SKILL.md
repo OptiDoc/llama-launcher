@@ -27,17 +27,18 @@ A programming interview gets "Programming Philosophy" and "Developer Workflow Ti
 
 Extract at different depths depending on need. Default is **Full** if no level is specified.
 
-| Level | Sections | Bullets/Section | Closing Sections | When |
-|-------|----------|----------------|-----------------|------|
-| **Instant** | 1 | 8 | None | Quick hit. One killer section. |
-| **Fast** | 3 | 3 | None | Skim in 30 seconds. |
-| **Basic** | 3 | 5 | One-Sentence Takeaway only | Solid overview without the deep cuts. |
-| **Full** | 5-12 | 3-15 | All three | The default. Complete extraction. |
-| **Comprehensive** | 10-15 | 8-15 | All three + Themes & Connections | Maximum depth. Nothing left behind. |
+| Level             | Sections | Bullets/Section | Closing Sections                 | When                                  |
+| ----------------- | -------- | --------------- | -------------------------------- | ------------------------------------- |
+| **Instant**       | 1        | 8               | None                             | Quick hit. One killer section.        |
+| **Fast**          | 3        | 3               | None                             | Skim in 30 seconds.                   |
+| **Basic**         | 3        | 5               | One-Sentence Takeaway only       | Solid overview without the deep cuts. |
+| **Full**          | 5-12     | 3-15            | All three                        | The default. Complete extraction.     |
+| **Comprehensive** | 10-15    | 8-15            | All three + Themes & Connections | Maximum depth. Nothing left behind.   |
 
 **How to invoke:** "extract wisdom (fast)" or "extract wisdom at comprehensive level" or just "extract wisdom" for Full.
 
 **Comprehensive extras:**
+
 - **Themes & Connections** closing section: identify 3-5 throughlines that connect multiple sections. Not summaries — the deeper patterns the speaker may not even realize they're revealing.
 - Prioritize breadth. Every significant wisdom domain gets its own section.
 - No merging sections to save space. If the content supports 15 sections, use 15.
@@ -46,8 +47,8 @@ Extract at different depths depending on need. Default is **Full** if no level i
 
 ## Workflow Routing
 
-| Workflow | Trigger | File |
-|----------|---------|------|
+| Workflow    | Trigger                                            | File                   |
+| ----------- | -------------------------------------------------- | ---------------------- |
 | **Extract** | "extract wisdom from", "analyze this", YouTube URL | `Workflows/Extract.md` |
 
 ## The Core Idea
@@ -65,16 +66,19 @@ The output should feel like your smartest friend watched/read the thing and is t
 **THREE LEVELS — we're aiming for Level 3:**
 
 **Level 1 (BAD — documentation):**
+
 - The speaker discussed the importance of self-modifying software in the context of agentic AI development
 - It was noted that financial success has diminishing returns beyond a certain threshold
 - The distinction between "vibe coding" and "agentic engineering" was emphasized as meaningful
 
 **Level 2 (BETTER — but still "smart bullet points"):**
+
 - He built self-modifying software basically by accident — just made the agent aware of its own source code
 - Money has diminishing returns. A cheeseburger is a cheeseburger no matter how rich you are.
 - "Vibe coding is a slur" — he calls it agentic engineering, and only does vibe coding after 3am
 
 **Level 3 (YES — this is what we want — conversational, {PRINCIPAL.NAME}'s voice):**
+
 - He wasn't trying to build self-modifying software. He just let the agent see its own source code and it started fixing itself.
 - Past a certain point, money stops mattering. A cheeseburger is a cheeseburger no matter how rich you are.
 - He calls vibe coding a slur. What he does is agentic engineering. The vibe coding only happens after 3am, and he regrets it in the morning.
@@ -82,6 +86,7 @@ The output should feel like your smartest friend watched/read the thing and is t
 **The difference between Level 2 and 3:** Level 2 is compressed info with em-dashes. Level 3 is how you'd actually SAY it. Varied sentence lengths. Letting a thought breathe. Not trying to be clever — just being clear and direct and a little bit personal.
 
 **Key signals of Level 3:**
+
 - Reads naturally when spoken aloud
 - Varied sentence lengths — some short, some longer
 - Understated — lets the content carry the weight
@@ -112,6 +117,7 @@ The output should feel like your smartest friend watched/read the thing and is t
 Read/listen to the full content. As you go, notice what DOMAINS of wisdom are present. These aren't the topics discussed — they're the TYPES of insight being delivered.
 
 Examples of wisdom domains (these are illustrative, not exhaustive):
+
 - Programming Philosophy (how to think about code, not specific syntax)
 - Developer Workflow (practical tips for how to work)
 - Business/Money Philosophy (unconventional takes on money, success, building companies)
@@ -127,6 +133,7 @@ Examples of wisdom domains (these are illustrative, not exhaustive):
 ### Phase 2: Section Selection
 
 Pick sections based on depth level (default Full = 5-12). Requirements:
+
 - Section count follows depth level table. Full = 5-12, Comprehensive = 10-15, Basic/Fast = 3, Instant = 1.
 - Each section must have at least 3 STRONG bullets to justify existing (except Fast, where 3 tight bullets IS the section). If you can only scrape together 2 weak ones, merge into a related section.
 - Always include "Quotes That Hit Different" if the content has good ones
@@ -151,13 +158,13 @@ For each section, extract 3-15 bullets depending on density. Apply all tone rule
 
 Which closing sections to include depends on depth level:
 
-| Level | Closing Sections |
-|-------|-----------------|
-| **Instant** | None |
-| **Fast** | None |
-| **Basic** | One-Sentence Takeaway only |
-| **Full** | One-Sentence Takeaway + If You Only Have 2 Minutes + References & Rabbit Holes |
-| **Comprehensive** | All three above + Themes & Connections |
+| Level             | Closing Sections                                                               |
+| ----------------- | ------------------------------------------------------------------------------ |
+| **Instant**       | None                                                                           |
+| **Fast**          | None                                                                           |
+| **Basic**         | One-Sentence Takeaway only                                                     |
+| **Full**          | One-Sentence Takeaway + If You Only Have 2 Minutes + References & Rabbit Holes |
+| **Comprehensive** | All three above + Themes & Connections                                         |
 
 **One-Sentence Takeaway**
 The single most important thing from the entire piece in 15-20 words.
@@ -175,6 +182,7 @@ People, projects, books, tools, and ideas mentioned that are worth following up 
 
 ```markdown
 # EXTRACT WISDOM: {Content Title}
+
 > {One-line description of what this is and who's talking}
 
 ---
@@ -215,6 +223,7 @@ People, projects, books, tools, and ideas mentioned that are worth following up 
 ## Quality Check
 
 Before delivering output, verify:
+
 - [ ] Sections are specific to THIS content, not generic
 - [ ] No bullet sounds like it was written by a committee
 - [ ] Every bullet has a specific detail, quote, or insight — not vague summaries

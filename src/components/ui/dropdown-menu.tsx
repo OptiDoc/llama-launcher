@@ -17,13 +17,5 @@ export {
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
 } from "./dropdown-menu-item";
-export {
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuShortcut,
-} from "./dropdown-menu-label";
-export {
-  DropdownMenuSub,
-  DropdownMenuSubTrigger,
-  DropdownMenuSubContent,
-} from "./dropdown-menu-sub";
+export { DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuShortcut } from "./dropdown-menu-label";
+export { DropdownMenuSub, DropdownMenuSubTrigger, DropdownMenuSubContent } from "./dropdown-menu-sub";

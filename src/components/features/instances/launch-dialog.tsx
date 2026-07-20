@@ -37,9 +37,7 @@ export function LaunchDialog() {
           <DialogTitle className="flex items-center gap-2">
             <Play className="size-4 text-primary" /> Launch Instance
           </DialogTitle>
-          <DialogDescription>
-            Configure and launch a new llama.cpp instance.
-          </DialogDescription>
+          <DialogDescription>Configure and launch a new llama.cpp instance.</DialogDescription>
         </DialogHeader>
 
         <div className="grid gap-4 py-4">
@@ -85,7 +83,9 @@ export function LaunchDialog() {
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => dialog.setOpen(false)}>Cancel</Button>
+          <Button variant="outline" onClick={() => dialog.setOpen(false)}>
+            Cancel
+          </Button>
           <Button onClick={dialog.onLaunch} disabled={!dialog.canLaunch}>
             <Play className="mr-1.5 size-3.5" /> Launch
           </Button>

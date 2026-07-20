@@ -41,14 +41,14 @@
 
 ## mood 枚举值
 
-| 值 | 含义 |
-|----|------|
-| anxious | 焦虑、恐惧、紧张 |
-| peaceful | 平静、美好、舒适 |
-| sad | 悲伤、失落、遗憾 |
-| surreal | 奇幻、荒诞、超现实 |
-| exciting | 兴奋、刺激、冒险 |
-| nostalgic | 怀旧、温馨、思念 |
+| 值        | 含义               |
+| --------- | ------------------ |
+| anxious   | 焦虑、恐惧、紧张   |
+| peaceful  | 平静、美好、舒适   |
+| sad       | 悲伤、失落、遗憾   |
+| surreal   | 奇幻、荒诞、超现实 |
+| exciting  | 兴奋、刺激、冒险   |
+| nostalgic | 怀旧、温馨、思念   |
 
 ## color_scheme 与 mood 的对应
 

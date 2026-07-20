@@ -31,18 +31,19 @@ const sidebarVariants = cva(
     defaultVariants: {
       side: "left",
     },
-  }
+  },
 );
 
 const sidebarVariantOverrides = {
-  sidebar: "data-[state=open]:sm:data-[state=open]:translate-x-0 data-[state=closed]:sm:data-[state=closed]:-translate-x-full",
-  floating: "data-[state=open]:sm:data-[state=open]:translate-x-0 data-[state=closed]:sm:data-[state=closed]:-translate-x-full inset-y-0 left-0 z-10 border-r",
-  inset: "data-[state=open]:sm:data-[state=open]:translate-x-0 data-[state=closed]:sm:data-[state=closed]:-translate-x-full inset-y-0 left-0 z-10 border-r",
+  sidebar:
+    "data-[state=open]:sm:data-[state=open]:translate-x-0 data-[state=closed]:sm:data-[state=closed]:-translate-x-full",
+  floating:
+    "data-[state=open]:sm:data-[state=open]:translate-x-0 data-[state=closed]:sm:data-[state=closed]:-translate-x-full inset-y-0 left-0 z-10 border-r",
+  inset:
+    "data-[state=open]:sm:data-[state=open]:translate-x-0 data-[state=closed]:sm:data-[state=closed]:-translate-x-full inset-y-0 left-0 z-10 border-r",
 };
 
-interface SidebarProps
-  extends React.ComponentProps<"div">,
-    VariantProps<typeof sidebarVariants> {
+interface SidebarProps extends React.ComponentProps<"div">, VariantProps<typeof sidebarVariants> {
   side?: "left" | "right";
   variant?: "sidebar" | "floating" | "inset";
   collapsible?: "offcanvas" | "icon" | "none";
@@ -62,10 +63,7 @@ function Sidebar({
     return (
       <div
         data-slot="sidebar"
-        className={cn(
-          "bg-sidebar text-sidebar-foreground flex h-full w-(--sidebar-width) flex-col",
-          className
-        )}
+        className={cn("bg-sidebar text-sidebar-foreground flex h-full w-(--sidebar-width) flex-col", className)}
         {...props}
       >
         {children}
@@ -97,7 +95,7 @@ function Sidebar({
   return (
     <div
       className={cn("group peer text-sidebar-foreground group/sidebar-wrapper", className)}
-      style={{"--sidebar-width": SIDEBAR_WIDTH} as React.CSSProperties}
+      style={{ "--sidebar-width": SIDEBAR_WIDTH } as React.CSSProperties}
       {...props}
     >
       <div
@@ -109,7 +107,7 @@ function Sidebar({
           "data-[state=open]:sm:data-[state=open]:translate-x-0",
           "data-[state=closed]:sm:data-[state=closed]:-translate-x-full",
           "data-[state=closed]:sm:data-[state=closed]:hover:visible",
-          className
+          className,
         )}
         data-slot="sidebar"
         data-state={state}

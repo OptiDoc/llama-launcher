@@ -10,7 +10,9 @@ import { type WorkspaceSettings } from "@/lib/llama-store";
 import { fmtHibernation } from "@/components/features/settings/settings-form";
 
 export function HibernationCard({
-  wsSettings, onSetNum, onChange,
+  wsSettings,
+  onSetNum,
+  onChange,
 }: {
   wsSettings: WorkspaceSettings;
   onSetNum: (key: keyof WorkspaceSettings, raw: string) => void;
@@ -20,7 +22,9 @@ export function HibernationCard({
     <Card className="p-4">
       <CardHeader className="p-0 mb-3">
         <CardTitle className="flex items-center gap-2 text-[13px]">
-          <span className="text-primary"><Moon className="size-4" /></span>
+          <span className="text-primary">
+            <Moon className="size-4" />
+          </span>
           Hibernation
         </CardTitle>
         <CardDescription>Auto-unload idle models from VRAM; hot-reload on the next request.</CardDescription>
@@ -32,18 +36,30 @@ export function HibernationCard({
             <div className="text-3xl font-bold tabular-nums">{fmtHibernation(wsSettings.hibernate_after_sec)}</div>
           </div>
           <div className="flex items-center gap-1.5 rounded-md bg-muted/40 px-2 py-1 font-mono text-[11px]">
-            <Clock className="size-3" />{wsSettings.hibernate_after_sec}s
+            <Clock className="size-3" />
+            {wsSettings.hibernate_after_sec}s
           </div>
         </div>
         <div className="space-y-2">
-          <Label htmlFor="ws-hib-input" className="text-xs text-muted-foreground">Seconds idle (0–600)</Label>
-          <Input id="ws-hib-input" type="number" min={0} max={600} step={5}
+          <Label htmlFor="ws-hib-input" className="text-xs text-muted-foreground">
+            Seconds idle (0–600)
+          </Label>
+          <Input
+            id="ws-hib-input"
+            type="number"
+            min={0}
+            max={600}
+            step={5}
             value={wsSettings.hibernate_after_sec}
-            onChange={(e) => onSetNum("hibernate_after_sec", e.target.value)} className="font-mono text-sm h-8" />
+            onChange={(e) => onSetNum("hibernate_after_sec", e.target.value)}
+            className="font-mono text-sm h-8"
+          />
         </div>
         <Slider
           value={[Math.min(Math.max(wsSettings.hibernate_after_sec, 0), 600)]}
-          min={0} max={600} step={5}
+          min={0}
+          max={600}
+          step={5}
           onValueChange={(v) => onChange({ hibernate_after_sec: v[0] ?? 0 })}
         />
         <p className="text-xs text-muted-foreground">Set to 0 to disable auto-hibernation.</p>

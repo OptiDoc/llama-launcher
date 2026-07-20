@@ -6,45 +6,12 @@
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  CartesianGrid,
-  Area,
-  AreaChart,
-} from "recharts";
-import {
-  Cpu,
-  MemoryStick,
-  HardDrive,
-  Activity,
-  Radio,
-  Gauge,
-} from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Area, AreaChart } from "recharts";
+import { Cpu, MemoryStick, HardDrive, Activity, Radio, Gauge } from "lucide-react";
 import { useLlamaStore } from "@/lib/llama-store";
-import {
-  utilChartConfig,
-  tpsChartConfig,
-  fmtClock,
-  LiveIndicator,
-  MetricGauge,
-} from "./dashboard-charts";
+import { utilChartConfig, tpsChartConfig, fmtClock, LiveIndicator, MetricGauge } from "./dashboard-charts";
 import { LiveMetricsSkeleton } from "./live-metrics-skeleton";
 import { LiveMetricsHeader } from "./live-metrics-header";
 
@@ -156,7 +123,13 @@ function LiveMetricsColumn() {
                   <XAxis dataKey="time" tick={{ fontSize: 10 }} />
                   <YAxis tick={{ fontSize: 10 }} />
                   <ChartTooltip content={<ChartTooltipContent />} />
-                  <Area type="monotone" dataKey="tps" stroke="hsl(var(--primary))" fill="hsl(var(--primary))" fillOpacity={0.2} />
+                  <Area
+                    type="monotone"
+                    dataKey="tps"
+                    stroke="hsl(var(--primary))"
+                    fill="hsl(var(--primary))"
+                    fillOpacity={0.2}
+                  />
                 </AreaChart>
               </ResponsiveContainer>
             </ChartContainer>

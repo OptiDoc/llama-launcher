@@ -56,14 +56,14 @@ to `--output <path>` if supplied.
 
 ### Flags
 
-| Flag                | Default | Notes |
-|---------------------|---------|-------|
-| `--query`, `-q`     | —       | Required. Natural-language sentence describing what should be in the image. Prefer one coherent concept; avoid mixing unrelated keywords. |
-| `--count`, `-c`     | 5       | Number of images to return. Range 1–20. |
-| `--gl`              | `cn`    | Region code for localization. Common: `cn`, `us`, `jp`, `kr`. |
-| `--no-rank`         | —       | Disable captioning for a faster, caption-less response (default is on). |
-| `--output`, `-o`    | —       | Optional: write the full JSON response to this path. |
-| `--help`, `-h`      | —       | Show CLI help. |
+| Flag             | Default | Notes                                                                                                                                     |
+| ---------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `--query`, `-q`  | —       | Required. Natural-language sentence describing what should be in the image. Prefer one coherent concept; avoid mixing unrelated keywords. |
+| `--count`, `-c`  | 5       | Number of images to return. Range 1–20.                                                                                                   |
+| `--gl`           | `cn`    | Region code for localization. Common: `cn`, `us`, `jp`, `kr`.                                                                             |
+| `--no-rank`      | —       | Disable captioning for a faster, caption-less response (default is on).                                                                   |
+| `--output`, `-o` | —       | Optional: write the full JSON response to this path.                                                                                      |
+| `--help`, `-h`   | —       | Show CLI help.                                                                                                                            |
 
 ### Examples
 
@@ -127,18 +127,18 @@ Failure response (HTTP is still 200; check `success`):
 
 ### Field reference
 
-| Field                       | Type    | Notes |
-|-----------------------------|---------|-------|
-| `success`                   | boolean | Always check this before reading `results`. |
-| `query`                     | string  | Echo of the input query. |
-| `count`                     | integer | Number of images actually returned. |
-| `ranked`                    | boolean | Whether captioning was applied. |
-| `results[].original_url`    | string  | OSS-hosted direct image URL. Stable and embeddable. |
+| Field                       | Type    | Notes                                                |
+| --------------------------- | ------- | ---------------------------------------------------- |
+| `success`                   | boolean | Always check this before reading `results`.          |
+| `query`                     | string  | Echo of the input query.                             |
+| `count`                     | integer | Number of images actually returned.                  |
+| `ranked`                    | boolean | Whether captioning was applied.                      |
+| `results[].original_url`    | string  | OSS-hosted direct image URL. Stable and embeddable.  |
 | `results[].caption`         | string  | Short caption. Present only when `ranked` is `true`. |
 | `results[].source`          | string  | Original source site (e.g. `Unsplash`, `Pinterest`). |
-| `results[].original_width`  | string  | Image width as `"NNNpx"`. |
-| `results[].original_height` | string  | Image height as `"NNNpx"`. |
-| `error`                     | string  | Present only on failure. |
+| `results[].original_width`  | string  | Image width as `"NNNpx"`.                            |
+| `results[].original_height` | string  | Image height as `"NNNpx"`.                           |
+| `error`                     | string  | Present only on failure.                             |
 
 ## Operating tips
 
@@ -155,9 +155,9 @@ Failure response (HTTP is still 200; check `success`):
 
 ## Error handling
 
-| Symptom | Likely cause | What to do |
-|---------|--------------|------------|
-| `Unknown command "image-search"` | SDK too old | Upgrade: `npm install -g z-ai-web-dev-sdk@latest`. |
-| `API request failed with status 401` / `403` | Auth issue at the gateway | Tell the user — credentials are managed outside this skill. |
-| `API request failed with status 502` | Upstream service unreachable | Retry; if it persists the in-house service is down. |
-| Empty `results` but `success: true` | Query too narrow or upstream filtered everything | Broaden the query, raise `--count`, or change `--gl`. |
+| Symptom                                      | Likely cause                                     | What to do                                                  |
+| -------------------------------------------- | ------------------------------------------------ | ----------------------------------------------------------- |
+| `Unknown command "image-search"`             | SDK too old                                      | Upgrade: `npm install -g z-ai-web-dev-sdk@latest`.          |
+| `API request failed with status 401` / `403` | Auth issue at the gateway                        | Tell the user — credentials are managed outside this skill. |
+| `API request failed with status 502`         | Upstream service unreachable                     | Retry; if it persists the in-house service is down.         |
+| Empty `results` but `success: true`          | Query too narrow or upstream filtered everything | Broaden the query, raise `--count`, or change `--gl`.       |

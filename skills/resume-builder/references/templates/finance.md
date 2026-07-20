@@ -50,6 +50,7 @@
 金融 / 咨询岗位**很多公司只接受英文简历**（外资行、MBB、IBD）。本 skill 默认产出中文版，但要主动问："你需要英文版本吗？我可以同时生成。"
 
 英文版本注意：
+
 - 用 American English（金融业以美式为主）
 - Action verb 用过去式：Led、Built、Drove、Analyzed、Advised
 - 不要用 we / our team，要用 I / my team；强调 individual contribution

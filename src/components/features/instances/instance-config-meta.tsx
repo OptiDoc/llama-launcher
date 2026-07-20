@@ -13,45 +13,23 @@ function InstanceConfigMeta({ instance }: { instance: LlamaInstance }) {
   return (
     <Card className="py-0">
       <CardContent className="p-5">
-        <h3 className="mb-3 text-[13px] font-semibold text-foreground">
-          Configuration
-        </h3>
+        <h3 className="mb-3 text-[13px] font-semibold text-foreground">Configuration</h3>
         <Separator className="mb-2" />
-        <MetaItem
-          label="Context size"
-          value={<span className="font-mono">{instance.ctxSize}</span>}
-        />
-        <MetaItem
-          label="Threads"
-          value={<span className="font-mono">{instance.threads}</span>}
-        />
-        <MetaItem
-          label="GPU layers"
-          value={
-            <span className="font-mono">{profile?.gpuLayers ?? "\u2014"}</span>
-          }
-        />
+        <MetaItem label="Context size" value={<span className="font-mono">{instance.ctxSize}</span>} />
+        <MetaItem label="Threads" value={<span className="font-mono">{instance.threads}</span>} />
+        <MetaItem label="GPU layers" value={<span className="font-mono">{profile?.gpuLayers ?? "\u2014"}</span>} />
         <MetaItem
           label="Card color"
           value={
             <span className="flex items-center gap-1.5">
-              <span
-                className={cn(
-                  "size-2.5 rounded-full",
-                  COLOR_DOT[instance.color],
-                )}
-              />
+              <span className={cn("size-2.5 rounded-full", COLOR_DOT[instance.color])} />
               {instance.color}
             </span>
           }
         />
         <MetaItem
           label="Started at"
-          value={
-            <span className="font-mono text-[11px]">
-              {fmtStartedAt(instance.startedAt)}
-            </span>
-          }
+          value={<span className="font-mono text-[11px]">{fmtStartedAt(instance.startedAt)}</span>}
         />
       </CardContent>
     </Card>

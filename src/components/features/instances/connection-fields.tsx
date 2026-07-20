@@ -2,13 +2,7 @@
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface ConnectionFieldsProps {
   port: string;
@@ -48,9 +42,7 @@ export function ConnectionFields({
             }}
             className={cn("h-8", errors.port ? "border-red-500" : "")}
           />
-          {errors.port && (
-            <p className="text-xs text-red-500">{errors.port}</p>
-          )}
+          {errors.port && <p className="text-xs text-red-500">{errors.port}</p>}
         </div>
         <div className="grid gap-2">
           <Label htmlFor="inst-host">Host</Label>
@@ -63,9 +55,7 @@ export function ConnectionFields({
             }}
             className={cn("h-8", errors.host ? "border-red-500" : "")}
           />
-          {errors.host && (
-            <p className="text-xs text-red-500">{errors.host}</p>
-          )}
+          {errors.host && <p className="text-xs text-red-500">{errors.host}</p>}
         </div>
       </div>
       <div className="grid gap-2">

@@ -53,7 +53,7 @@ export function createWorkspacesSlice(
       set((s) => {
         if (s.workspaces.length <= 1) return s;
         const remaining = s.workspaces.filter((w) => w.id !== id);
-        const newActive = s.activeWorkspaceId === id ? remaining[0]?.id ?? "" : s.activeWorkspaceId;
+        const newActive = s.activeWorkspaceId === id ? (remaining[0]?.id ?? "") : s.activeWorkspaceId;
         return {
           workspaces: remaining,
           instances: s.instances.filter((i) => i.workspaceId !== id),

@@ -42,10 +42,7 @@ export function mapTauriModel(m: ModelInfo, workspaceId: string): LlamaModel {
   };
 }
 
-export function mapTauriProcess(
-  p: ProcessInfo,
-  models: LlamaModel[],
-): LlamaInstance {
+export function mapTauriProcess(p: ProcessInfo, models: LlamaModel[]): LlamaInstance {
   const model = models.find((m) => m.id === p.model_id);
   const statusMap: Record<string, InstanceStatus> = {
     starting: "starting",
@@ -80,6 +77,6 @@ export function mapTauriProcess(
     workspaceId: "",
     metrics: null,
     log: [],
-    hibernatedConfig: undefined,
+    hibernatedConfig: null,
   };
 }

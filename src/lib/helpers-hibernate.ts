@@ -33,7 +33,10 @@ export function persistHibernatedState(
     localStorage.setItem(HIBERNATION_STORAGE_KEY, JSON.stringify(state));
     localStorage.setItem(LAST_ACTIVITY_STORAGE_KEY, String(lastActivityAt));
   } catch (e) {
-    log.error("[STORE] hibernate: failed to persist state", { category: "store", context: { error: e instanceof Error ? e.message : String(e) } });
+    log.error("[STORE] hibernate: failed to persist state", {
+      category: "store",
+      context: { error: e instanceof Error ? e.message : String(e) },
+    });
   }
 }
 
@@ -46,7 +49,10 @@ export function restoreHibernatedState(): PersistedHibernationState | null {
     if (typeof parsed.lastActivityAt !== "number") return null;
     return parsed;
   } catch (e) {
-    log.error("[STORE] hibernate: failed to restore state", { category: "store", context: { error: e instanceof Error ? e.message : String(e) } });
+    log.error("[STORE] hibernate: failed to restore state", {
+      category: "store",
+      context: { error: e instanceof Error ? e.message : String(e) },
+    });
     return null;
   }
 }
@@ -55,6 +61,9 @@ export function persistLastActivity(ts: number) {
   try {
     localStorage.setItem(LAST_ACTIVITY_STORAGE_KEY, String(ts));
   } catch (e) {
-    log.error("[STORE] hibernate: failed to persist lastActivityAt", { category: "store", context: { error: e instanceof Error ? e.message : String(e) } });
+    log.error("[STORE] hibernate: failed to persist lastActivityAt", {
+      category: "store",
+      context: { error: e instanceof Error ? e.message : String(e) },
+    });
   }
 }

@@ -9,8 +9,16 @@ import { useLlamaStore, fmtBytes } from "@/lib/llama-store";
 import type { LlamaModel } from "@/lib/llama-store";
 import { FamilyBadge, ArchBadge, MoeBadge, VramWarningBadge } from "./models-badges";
 import {
-  AlertCircle, Boxes, CheckCircle2, Cpu, Download, Loader2,
-  Pencil, Sparkles, XCircle, XSquare,
+  AlertCircle,
+  Boxes,
+  CheckCircle2,
+  Cpu,
+  Download,
+  Loader2,
+  Pencil,
+  Sparkles,
+  XCircle,
+  XSquare,
 } from "lucide-react";
 
 export const CARD_COLORS = ["green", "orange", "blue", "pink", "purple"] as const;
@@ -23,8 +31,16 @@ export interface CardActions {
 }
 
 export function ModelCard({
-  model, index, actions, gpuVramGb,
-}: { model: LlamaModel; index: number; actions: CardActions; gpuVramGb: number }) {
+  model,
+  index,
+  actions,
+  gpuVramGb,
+}: {
+  model: LlamaModel;
+  index: number;
+  actions: CardActions;
+  gpuVramGb: number;
+}) {
   const color = CARD_COLORS[index % CARD_COLORS.length];
   const isMissing = model.missing;
   const isReady = model.downloaded && !isMissing;
@@ -41,7 +57,12 @@ export function ModelCard({
       onClick={interactive ? () => actions.onSelect(model) : undefined}
       onKeyDown={
         interactive
-          ? (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); actions.onSelect(model); } }
+          ? (e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                actions.onSelect(model);
+              }
+            }
           : undefined
       }
       className={cn(
@@ -65,19 +86,31 @@ export function ModelCard({
             </div>
           </div>
           {isDownloading ? (
-            <Badge variant="secondary" className="shrink-0 gap-1 bg-amber-500/15 text-[10px] font-semibold uppercase text-amber-700 dark:text-amber-300">
+            <Badge
+              variant="secondary"
+              className="shrink-0 gap-1 bg-amber-500/15 text-[10px] font-semibold uppercase text-amber-700 dark:text-amber-300"
+            >
               <Loader2 className="size-3 animate-spin" /> Downloading
             </Badge>
           ) : isReady ? (
-            <Badge variant="secondary" className="shrink-0 gap-1 bg-emerald-500/15 text-[10px] font-semibold uppercase text-emerald-700 dark:text-emerald-300">
+            <Badge
+              variant="secondary"
+              className="shrink-0 gap-1 bg-emerald-500/15 text-[10px] font-semibold uppercase text-emerald-700 dark:text-emerald-300"
+            >
               <CheckCircle2 className="size-3" /> Ready
             </Badge>
           ) : isMissing ? (
-            <Badge variant="secondary" className="shrink-0 gap-1 bg-red-500/15 text-[10px] font-semibold uppercase text-red-700 dark:text-red-300">
+            <Badge
+              variant="secondary"
+              className="shrink-0 gap-1 bg-red-500/15 text-[10px] font-semibold uppercase text-red-700 dark:text-red-300"
+            >
               <XCircle className="size-3" /> Not found
             </Badge>
           ) : (
-            <Badge variant="secondary" className="shrink-0 gap-1 bg-white/60 text-[10px] font-semibold uppercase text-muted-foreground dark:bg-black/20">
+            <Badge
+              variant="secondary"
+              className="shrink-0 gap-1 bg-white/60 text-[10px] font-semibold uppercase text-muted-foreground dark:bg-black/20"
+            >
               <AlertCircle className="size-3" /> Missing
             </Badge>
           )}
@@ -130,7 +163,14 @@ export function ModelCard({
             {isReady ? (
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button size="sm" className="flex-1" onClick={(e) => { e.stopPropagation(); actions.onLoad(model); }}>
+                  <Button
+                    size="sm"
+                    className="flex-1"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      actions.onLoad(model);
+                    }}
+                  >
                     <Sparkles className="mr-1.5 size-3.5" /> Load
                   </Button>
                 </TooltipTrigger>
@@ -138,17 +178,25 @@ export function ModelCard({
               </Tooltip>
             ) : isMissing ? (
               <Button
-                size="sm" variant="secondary"
+                size="sm"
+                variant="secondary"
                 className="flex-1 bg-white/60 dark:bg-black/20"
-                onClick={(e) => { e.stopPropagation(); actions.onEdit(model); }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  actions.onEdit(model);
+                }}
               >
                 <Pencil className="mr-1.5 size-3.5" /> Edit
               </Button>
             ) : (
               <Button
-                size="sm" variant="secondary"
+                size="sm"
+                variant="secondary"
                 className="flex-1 bg-white/60 dark:bg-black/20"
-                onClick={(e) => { e.stopPropagation(); actions.onDownload(model); }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  actions.onDownload(model);
+                }}
               >
                 <Download className="mr-1.5 size-3.5" /> Download
               </Button>

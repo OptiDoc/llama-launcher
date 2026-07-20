@@ -34,27 +34,27 @@ $env:PDF_SKILL_DIR = "<skill_directory>"
 
 Run the platform-appropriate setup script:
 
-| Platform | Command |
-|----------|---------|
-| macOS / Linux | `bash "$PDF_SKILL_DIR/env_setup/setup_mac_linux.sh"` |
-| Windows | `powershell -ExecutionPolicy Bypass -File "$env:PDF_SKILL_DIR\env_setup\setup_windows.ps1"` |
+| Platform      | Command                                                                                     |
+| ------------- | ------------------------------------------------------------------------------------------- |
+| macOS / Linux | `bash "$PDF_SKILL_DIR/env_setup/setup_mac_linux.sh"`                                        |
+| Windows       | `powershell -ExecutionPolicy Bypass -File "$env:PDF_SKILL_DIR\env_setup\setup_windows.ps1"` |
 
 ### Required Dependencies
 
-| Category | Package | Purpose |
-|----------|---------|---------|
-| Runtime | Python 3 + pip | PDF generation and processing |
-| Runtime | Node.js + npm | Playwright for Creative pipeline |
-| Python pkg | pikepdf | PDF manipulation (merge/split/encrypt) |
-| Python pkg | pdfplumber | Text/table extraction |
-| Python pkg | pypdf | PDF reading/writing |
-| Python pkg | reportlab | Report pipeline PDF generation |
-| Python pkg | PyMuPDF (fitz) | Fast PDF rendering and extraction |
-| npm pkg | playwright | HTML-to-PDF for Creative pipeline |
-| Browser | Chromium (via Playwright) | Headless rendering |
-| Optional | tectonic | LaTeX/Academic PDF compilation |
-| Optional | LibreOffice | Office-to-PDF conversion |
-| Font | CJK fonts (from CDN) | Chinese text in PDFs |
+| Category   | Package                   | Purpose                                |
+| ---------- | ------------------------- | -------------------------------------- |
+| Runtime    | Python 3 + pip            | PDF generation and processing          |
+| Runtime    | Node.js + npm             | Playwright for Creative pipeline       |
+| Python pkg | pikepdf                   | PDF manipulation (merge/split/encrypt) |
+| Python pkg | pdfplumber                | Text/table extraction                  |
+| Python pkg | pypdf                     | PDF reading/writing                    |
+| Python pkg | reportlab                 | Report pipeline PDF generation         |
+| Python pkg | PyMuPDF (fitz)            | Fast PDF rendering and extraction      |
+| npm pkg    | playwright                | HTML-to-PDF for Creative pipeline      |
+| Browser    | Chromium (via Playwright) | Headless rendering                     |
+| Optional   | tectonic                  | LaTeX/Academic PDF compilation         |
+| Optional   | LibreOffice               | Office-to-PDF conversion               |
+| Font       | CJK fonts (from CDN)      | Chinese text in PDFs                   |
 
 ### Manual Install by Platform
 
@@ -96,6 +96,7 @@ winget install TheDocumentFoundation.LibreOffice  # Office-to-PDF
 ```
 
 Alternative Windows package managers:
+
 - `choco install python3 nodejs-lts`
 - `scoop install python nodejs-lts`
 
@@ -114,28 +115,28 @@ The setup scripts read `font_list.txt`, check which fonts are already installed,
 
 ### CDN Directory Structure (78 fonts)
 
-| Directory | Count | Description |
-|-----------|-------|-------------|
-| `truetype/lxgw-wenkai/` | 6 | LXGW WenKai — Chinese handwriting style |
-| `truetype/noto-serif-sc/` | 9 | Noto Serif SC — Chinese serif (variable + 8 static weights) |
-| `chinese/` | 14 | Noto Sans SC, Sarasa Mono SC, Liberation fallbacks |
-| `dejavu/` | 8 | DejaVu Sans/Serif/Mono — Latin/symbol fallback |
-| `emoji/` | 1 | Noto Color Emoji |
-| `english/` | 12 | Tinos, Carlito, Calibri |
-| `freefont/` | 12 | FreeSans/FreeSerif/FreeMono — open-source fallback |
-| `liberation/` | 12 | Liberation Sans/Serif/Mono — MS-metric-compatible |
-| `libreoffice/` | 1 | OpenSymbol |
-| `noto/` | 1 | Noto Color Emoji (duplicate) |
-| `wqy/` | 1 | WenQuanYi Zen Hei — CJK fallback |
-| *(root)* | 1 | Japanese Gothic |
+| Directory                 | Count | Description                                                 |
+| ------------------------- | ----- | ----------------------------------------------------------- |
+| `truetype/lxgw-wenkai/`   | 6     | LXGW WenKai — Chinese handwriting style                     |
+| `truetype/noto-serif-sc/` | 9     | Noto Serif SC — Chinese serif (variable + 8 static weights) |
+| `chinese/`                | 14    | Noto Sans SC, Sarasa Mono SC, Liberation fallbacks          |
+| `dejavu/`                 | 8     | DejaVu Sans/Serif/Mono — Latin/symbol fallback              |
+| `emoji/`                  | 1     | Noto Color Emoji                                            |
+| `english/`                | 12    | Tinos, Carlito, Calibri                                     |
+| `freefont/`               | 12    | FreeSans/FreeSerif/FreeMono — open-source fallback          |
+| `liberation/`             | 12    | Liberation Sans/Serif/Mono — MS-metric-compatible           |
+| `libreoffice/`            | 1     | OpenSymbol                                                  |
+| `noto/`                   | 1     | Noto Color Emoji (duplicate)                                |
+| `wqy/`                    | 1     | WenQuanYi Zen Hei — CJK fallback                            |
+| _(root)_                  | 1     | Japanese Gothic                                             |
 
 ### Install Targets by Platform
 
-| Platform | User Font Directory |
-|----------|-------------------|
-| macOS | `~/Library/Fonts/` |
-| Linux | `~/.local/share/fonts/` (then run `fc-cache -f`) |
-| Windows | `%LOCALAPPDATA%\Microsoft\Windows\Fonts` (per-user, no admin) |
+| Platform | User Font Directory                                           |
+| -------- | ------------------------------------------------------------- |
+| macOS    | `~/Library/Fonts/`                                            |
+| Linux    | `~/.local/share/fonts/` (then run `fc-cache -f`)              |
+| Windows  | `%LOCALAPPDATA%\Microsoft\Windows\Fonts` (per-user, no admin) |
 
 ### Manual Font Installation
 
@@ -161,11 +162,11 @@ done < env_setup/font_list.txt
 
 After font installation, `FONT_DIR` points to the user font directory:
 
-| Platform | FONT_DIR |
-|----------|---------------|
-| macOS | `~/Library/Fonts` |
-| Linux | `~/.local/share/fonts` |
-| Windows | `%LOCALAPPDATA%\Microsoft\Windows\Fonts` |
+| Platform | FONT_DIR                                 |
+| -------- | ---------------------------------------- |
+| macOS    | `~/Library/Fonts`                        |
+| Linux    | `~/.local/share/fonts`                   |
+| Windows  | `%LOCALAPPDATA%\Microsoft\Windows\Fonts` |
 
 ---
 
@@ -206,7 +207,7 @@ npx playwright install chromium
 
 ### Installer downloads (China)
 
-| Software | China Mirror |
-|----------|-------------|
-| Node.js | https://npmmirror.com/mirrors/node/ |
-| Python | https://npmmirror.com/mirrors/python/ |
+| Software | China Mirror                          |
+| -------- | ------------------------------------- |
+| Node.js  | https://npmmirror.com/mirrors/node/   |
+| Python   | https://npmmirror.com/mirrors/python/ |

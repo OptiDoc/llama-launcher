@@ -9,6 +9,7 @@ typography:
   fonts: "Helvetica Neue, Helvetica"
 note: "Frontmatter is auto-extracted; the prose body below is the authoritative source for full tokens, components, and rules."
 ---
+
 # WeChat Design System
 
 > Category: Social & Messaging
@@ -24,37 +25,37 @@ WeChat's identity is built on simplicity, cleanness, and trust — reflecting it
 
 ### Brand Colors
 
-| Token | Hex | Usage |
-|---|----|----|
-| `--wechat-green` | `#07C160` | Primary brand, CTA buttons, active states |
-| `--wechat-green-light` | `#10B160` | Hover state for primary actions |
-| `--wechat-green-dark` | `#059050` | Pressed/active state |
+| Token                  | Hex       | Usage                                     |
+| ---------------------- | --------- | ----------------------------------------- |
+| `--wechat-green`       | `#07C160` | Primary brand, CTA buttons, active states |
+| `--wechat-green-light` | `#10B160` | Hover state for primary actions           |
+| `--wechat-green-dark`  | `#059050` | Pressed/active state                      |
 
 ### Chat Bubble Colors
 
-| Token | Hex | Usage |
-|---|----|----|
-| `--wechat-bubble-self` | `#95EC69` | Outgoing message bubbles |
+| Token                   | Hex       | Usage                    |
+| ----------------------- | --------- | ------------------------ |
+| `--wechat-bubble-self`  | `#95EC69` | Outgoing message bubbles |
 | `--wechat-bubble-other` | `#FFFFFF` | Incoming message bubbles |
-| `--wechat-bubble-text` | `#1A1A1A` | Primary text in bubbles |
+| `--wechat-bubble-text`  | `#1A1A1A` | Primary text in bubbles  |
 
 ### UI Neutrals
 
-| Token | Hex | Usage |
-|---|----|----|
-| `--wechat-bg` | `#EDEDED` | Page/app background |
-| `--wechat-surface` | `#F7F7F7` | Card, modal surfaces |
-| `--wechat-border` | `#E0E0E0` | Dividers, borders |
-| `--wechat-ink` | `#1A1A1A` | Primary text |
-| `--wechat-muted` | `#888888` | Secondary text, timestamps |
+| Token              | Hex       | Usage                      |
+| ------------------ | --------- | -------------------------- |
+| `--wechat-bg`      | `#EDEDED` | Page/app background        |
+| `--wechat-surface` | `#F7F7F7` | Card, modal surfaces       |
+| `--wechat-border`  | `#E0E0E0` | Dividers, borders          |
+| `--wechat-ink`     | `#1A1A1A` | Primary text               |
+| `--wechat-muted`   | `#888888` | Secondary text, timestamps |
 
 ### Functional Colors
 
-| Token | Hex | Usage |
-|---|----|----|
-| `--wechat-red` | `#FA5151` | Errors, destructive actions |
-| `--wechat-orange` | `#FAB702` | Warnings |
-| `--wechat-blue` | `#576B95` | Links, info states |
+| Token             | Hex       | Usage                       |
+| ----------------- | --------- | --------------------------- |
+| `--wechat-red`    | `#FA5151` | Errors, destructive actions |
+| `--wechat-orange` | `#FAB702` | Warnings                    |
+| `--wechat-blue`   | `#576B95` | Links, info states          |
 
 ---
 
@@ -68,14 +69,14 @@ font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue",
 
 ### Type Scale
 
-| Role | Size | Weight | Line Height |
-|---|---|---|---|
-| Page Title | 18px | 600 | 1.3 |
-| Section Header | 16px | 600 | 1.4 |
-| Body Text | 15px | 400 | 1.6 |
-| Secondary Text | 13px | 400 | 1.5 |
-| Caption/Timestamp | 11px | 400 | 1.4 |
-| Button Label | 16px | 500 | 1.0 |
+| Role              | Size | Weight | Line Height |
+| ----------------- | ---- | ------ | ----------- |
+| Page Title        | 18px | 600    | 1.3         |
+| Section Header    | 16px | 600    | 1.4         |
+| Body Text         | 15px | 400    | 1.6         |
+| Secondary Text    | 13px | 400    | 1.5         |
+| Caption/Timestamp | 11px | 400    | 1.4         |
+| Button Label      | 16px | 500    | 1.0         |
 
 ---
 
@@ -83,24 +84,24 @@ font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue",
 
 4px base unit.
 
-| Token | Value |
-|---|-----|
-| `--space-xs` | 4px |
-| `--space-sm` | 8px |
-| `--space-md` | 12px |
-| `--space-lg` | 16px |
-| `--space-xl` | 24px |
-| `--space-2xl` | 32px |
+| Token         | Value |
+| ------------- | ----- |
+| `--space-xs`  | 4px   |
+| `--space-sm`  | 8px   |
+| `--space-md`  | 12px  |
+| `--space-lg`  | 16px  |
+| `--space-xl`  | 24px  |
+| `--space-2xl` | 32px  |
 
 ### Border Radius
 
-| Token | Value |
-|---|-----|
-| `--radius-sm` | 4px |
-| `--radius-md` | 8px |
-| `--radius-lg` | 16px |
+| Token             | Value                               |
+| ----------------- | ----------------------------------- |
+| `--radius-sm`     | 4px                                 |
+| `--radius-md`     | 8px                                 |
+| `--radius-lg`     | 16px                                |
 | `--radius-bubble` | 16px (with directional corner clip) |
-| `--radius-full` | 9999px (avatars, pills) |
+| `--radius-full`   | 9999px (avatars, pills)             |
 
 ---
 
@@ -231,8 +232,14 @@ font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue",
   background: var(--wechat-border);
 }
 
-.avatar.sm { width: 32px; height: 32px; }
-.avatar.lg { width: 56px; height: 56px; }
+.avatar.sm {
+  width: 32px;
+  height: 32px;
+}
+.avatar.lg {
+  width: 56px;
+  height: 56px;
+}
 ```
 
 ### Timestamp Badge
@@ -253,12 +260,12 @@ font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue",
 
 ## Motion & Animation
 
-| Token | Value |
-|---|-----|
-| `--duration-instant` | 100ms |
-| `--duration-fast` | 200ms |
-| `--duration-normal` | 300ms |
-| `--ease-default` | cubic-bezier(0.25, 0.1, 0.25, 1) |
+| Token                | Value                            |
+| -------------------- | -------------------------------- |
+| `--duration-instant` | 100ms                            |
+| `--duration-fast`    | 200ms                            |
+| `--duration-normal`  | 300ms                            |
+| `--ease-default`     | cubic-bezier(0.25, 0.1, 0.25, 1) |
 
 Chat message entry: fade-in + slight slide up, 200ms.
 
@@ -266,12 +273,12 @@ Chat message entry: fade-in + slight slide up, 200ms.
 
 ## Dark Mode
 
-| Token | Light | Dark |
-|---|---|---|
-| `--wechat-bg` | `#EDEDED` | `#1A1A1A` |
-| `--wechat-surface` | `#F7F7F7` | `#2C2C2C` |
-| `--wechat-ink` | `#1A1A1A` | `#F7F7F7` |
-| `--wechat-bubble-self` | `#95EC69` | `#4CAF50` |
+| Token                   | Light     | Dark      |
+| ----------------------- | --------- | --------- |
+| `--wechat-bg`           | `#EDEDED` | `#1A1A1A` |
+| `--wechat-surface`      | `#F7F7F7` | `#2C2C2C` |
+| `--wechat-ink`          | `#1A1A1A` | `#F7F7F7` |
+| `--wechat-bubble-self`  | `#95EC69` | `#4CAF50` |
 | `--wechat-bubble-other` | `#FFFFFF` | `#2C2C2C` |
 
 ---
@@ -280,20 +287,20 @@ Chat message entry: fade-in + slight slide up, 200ms.
 
 ```css
 :root {
-  --wechat-green: #07C160;
-  --wechat-green-light: #10B160;
+  --wechat-green: #07c160;
+  --wechat-green-light: #10b160;
   --wechat-green-dark: #059050;
-  --wechat-bubble-self: #95EC69;
-  --wechat-bubble-other: #FFFFFF;
-  --wechat-bubble-text: #1A1A1A;
-  --wechat-bg: #EDEDED;
-  --wechat-surface: #F7F7F7;
-  --wechat-border: #E0E0E0;
-  --wechat-ink: #1A1A1A;
+  --wechat-bubble-self: #95ec69;
+  --wechat-bubble-other: #ffffff;
+  --wechat-bubble-text: #1a1a1a;
+  --wechat-bg: #ededed;
+  --wechat-surface: #f7f7f7;
+  --wechat-border: #e0e0e0;
+  --wechat-ink: #1a1a1a;
   --wechat-muted: #888888;
-  --wechat-red: #FA5151;
-  --wechat-orange: #FAB702;
-  --wechat-blue: #576B95;
+  --wechat-red: #fa5151;
+  --wechat-orange: #fab702;
+  --wechat-blue: #576b95;
   --space-xs: 4px;
   --space-sm: 8px;
   --space-md: 12px;

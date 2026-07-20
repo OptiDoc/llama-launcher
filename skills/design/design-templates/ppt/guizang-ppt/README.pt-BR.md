@@ -3,7 +3,7 @@
 > 🌏 **English version: [README.en.md](./README.en.md)**
 > 🌏 **中文版: [README.md](./README.md)**
 
-Uma skill do [Claude Code / Claude Agent Skills](https://agentskills.io/) para gerar **PPTs HTML em arquivo único com swipe horizontal**. O tom visual é "**revista eletrônica × tinta digital**" — como se a *Monocle* tivesse colado código.
+Uma skill do [Claude Code / Claude Agent Skills](https://agentskills.io/) para gerar **PPTs HTML em arquivo único com swipe horizontal**. O tom visual é "**revista eletrônica × tinta digital**" — como se a _Monocle_ tivesse colado código.
 
 > Destilada por [歸藏](https://x.com/op7418) em palestras presenciais como "Empresa de uma pessoa só: a organização dobrada pela IA" e "Uma nova forma de trabalhar"; cada armadilha que ele já pisou virou linha em `checklist.md`.
 
@@ -84,13 +84,13 @@ magazine-web-ppt/
 
 Escolha uma em `references/themes.md` — **valores hex personalizados não são permitidos**; preservar a estética importa mais do que dar liberdade.
 
-| Paleta | Cenário ideal |
-|--------|---------------|
-| 🖋 Tinta Clássica | Default genérico, lançamento comercial, quando estiver na dúvida |
-| 🌊 Azul-Índigo Porcelana | Tecnologia / pesquisa / IA / lançamentos técnicos |
-| 🌿 Tinta Floresta | Natureza / sustentabilidade / cultura / não-ficção |
-| 🍂 Papel Kraft | Nostálgico / humanidades / literatura / revistas independentes |
-| 🌙 Duna | Arte / design / criativo / galeria |
+| Paleta                   | Cenário ideal                                                    |
+| ------------------------ | ---------------------------------------------------------------- |
+| 🖋 Tinta Clássica         | Default genérico, lançamento comercial, quando estiver na dúvida |
+| 🌊 Azul-Índigo Porcelana | Tecnologia / pesquisa / IA / lançamentos técnicos                |
+| 🌿 Tinta Floresta        | Natureza / sustentabilidade / cultura / não-ficção               |
+| 🍂 Papel Kraft           | Nostálgico / humanidades / literatura / revistas independentes   |
+| 🌙 Duna                  | Arte / design / criativo / galeria                               |
 
 Para trocar a paleta basta substituir as 6 linhas de variáveis dentro do `:root{}` no início do `template.html`; todo o resto do CSS usa `var(--...)`.
 
@@ -104,7 +104,7 @@ Para trocar a paleta basta substituir as 6 linhas de variáveis dentro do `:root
 
 ## Referências visuais
 
-- Diagramação da revista [*Monocle*](https://monocle.com)
+- Diagramação da revista [_Monocle_](https://monocle.com)
 - "Thin Harness, Fat Skills" do Garry Tan (YC)
 - Série de PPTs de palestras presenciais do 歸藏
 

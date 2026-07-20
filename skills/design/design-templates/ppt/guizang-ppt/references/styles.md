@@ -23,22 +23,22 @@
 
 ## 1. Monocle Editorial · 国际杂志风 ✦ 默认推荐
 
-**关键词**：克制、知识感、跨国、有 *taste*
+**关键词**：克制、知识感、跨国、有 _taste_
 
-| 配方 | 选择 |
-|---|---|
-| 主题色 | 🖋 墨水经典 |
-| 推荐 slide 数 | 18–24 页(60% non-hero / 40% hero) |
-| 主力 layouts | **1 封面 / 2 章节幕 / 4 左文右图 / 8 大引用 / 10 图文混排** |
-| Chrome 文案 | `Vol.04 · Spring 2026` / `Act II · 12 / 24` / `lukew.com · 2026.04` |
-| Kicker 风格 | 短英文 + 中点：`THE TWIST` / `BUT` / `DEC.` |
-| Foot 文案 | `Page 12 · 一种新的工作方式` |
+| 配方          | 选择                                                                |
+| ------------- | ------------------------------------------------------------------- |
+| 主题色        | 🖋 墨水经典                                                          |
+| 推荐 slide 数 | 18–24 页(60% non-hero / 40% hero)                                   |
+| 主力 layouts  | **1 封面 / 2 章节幕 / 4 左文右图 / 8 大引用 / 10 图文混排**         |
+| Chrome 文案   | `Vol.04 · Spring 2026` / `Act II · 12 / 24` / `lukew.com · 2026.04` |
+| Kicker 风格   | 短英文 + 中点：`THE TWIST` / `BUT` / `DEC.`                         |
+| Foot 文案     | `Page 12 · 一种新的工作方式`                                        |
 
 **适合**：商业发布、行业内部讲话、产品宣发、个人品牌沉淀分享。**默认就选这个**，跑不出大错。
 
 **反例**：技术深度报告（密度太低），表格数据很多的 ops 复盘（没有合适的 layout）。
 
-**视觉锚点**：*Monocle* / *Apricot Magazine* / *A Book Apart* / *Apartamento*。
+**视觉锚点**：_Monocle_ / _Apricot Magazine_ / _A Book Apart_ / _Apartamento_。
 
 ---
 
@@ -46,20 +46,20 @@
 
 **关键词**：硬数据、流水线、对比、未来感
 
-| 配方 | 选择 |
-|---|---|
-| 主题色 | 🌊 靛蓝瓷 |
-| 推荐 slide 数 | 14–18 页(轻巧、数据密) |
-| 主力 layouts | **1 封面 / 3 数据大字报 / 6 Pipeline / 7 问题页 / 9 Before/After** |
-| Chrome 文案 | `Q2 / 2026 · Field Report` / `Data · 03` / `Eng Notes` |
-| Kicker 风格 | 全大写 + 数字：`38× FASTER` / `RUNTIME 04` / `CASE 02` |
-| Foot 文案 | `Page 03 · benchmark` / `methodology footnote` |
+| 配方          | 选择                                                               |
+| ------------- | ------------------------------------------------------------------ |
+| 主题色        | 🌊 靛蓝瓷                                                          |
+| 推荐 slide 数 | 14–18 页(轻巧、数据密)                                             |
+| 主力 layouts  | **1 封面 / 3 数据大字报 / 6 Pipeline / 7 问题页 / 9 Before/After** |
+| Chrome 文案   | `Q2 / 2026 · Field Report` / `Data · 03` / `Eng Notes`             |
+| Kicker 风格   | 全大写 + 数字：`38× FASTER` / `RUNTIME 04` / `CASE 02`             |
+| Foot 文案     | `Page 03 · benchmark` / `methodology footnote`                     |
 
 **适合**：技术发布会、研究分享、benchmark 报告、工程团队对内沟通、AI 产品 demo day。
 
 **反例**：人文类金句分享（太冷）、艺术品牌（不够温度）。
 
-**视觉锚点**：*WIRED* 长文版 / *MIT Technology Review* / *The Pudding* / *Stripe Press*。
+**视觉锚点**：_WIRED_ 长文版 / _MIT Technology Review_ / _The Pudding_ / _Stripe Press_。
 
 **特殊建议**：每个 stat-card 的 `stat-label` 用英文等宽（这是 WIRED 风的核心），数字别加千分位逗号（不够工程），用 `K` / `M` / `×` 简写。
 
@@ -69,22 +69,23 @@
 
 **关键词**：留白、衬线、温度、私享会
 
-| 配方 | 选择 |
-|---|---|
-| 主题色 | 🍂 牛皮纸 |
-| 推荐 slide 数 | 9–12 页(慢、放空、低密度) |
-| 主力 layouts | **1 封面 / 4 左文右图 / 8 大引用 / 10 图文混排 / 2 章节幕** |
-| Chrome 文案 | `Vol.07 · Autumn` / `一封信 · 03` / `Notes from Kyoto` |
-| Kicker 风格 | 中文短语 + 标点："给一个朋友。" / "晚秋。" / "Letter Three" |
-| Foot 文案 | `Page 03 · Letter Three` / `2026 · Spring Issue` |
+| 配方          | 选择                                                        |
+| ------------- | ----------------------------------------------------------- |
+| 主题色        | 🍂 牛皮纸                                                   |
+| 推荐 slide 数 | 9–12 页(慢、放空、低密度)                                   |
+| 主力 layouts  | **1 封面 / 4 左文右图 / 8 大引用 / 10 图文混排 / 2 章节幕** |
+| Chrome 文案   | `Vol.07 · Autumn` / `一封信 · 03` / `Notes from Kyoto`      |
+| Kicker 风格   | 中文短语 + 标点："给一个朋友。" / "晚秋。" / "Letter Three" |
+| Foot 文案     | `Page 03 · Letter Three` / `2026 · Spring Issue`            |
 
 **适合**：私享会、读书分享、人物访谈复盘、生活方式品牌、个人随笔。
 
 **反例**：产品发布（太慢）、技术分享（太软）、严肃数据（信息密度不够）。
 
-**视觉锚点**：*Kinfolk* / *The Gentlewoman* / *Cereal* / *Drift Magazine*。
+**视觉锚点**：_Kinfolk_ / _The Gentlewoman_ / _Cereal_ / _Drift Magazine_。
 
 **特殊建议**：
+
 - **故意把 slide 数压到 10 页以下**——Kinfolk 的核心是"少即是多"，不要塞满
 - 大量使用 Layout 8（大引用）和 Layout 10（图文混排）
 - 不要用 Layout 3（数据大字报）——和气质冲突
@@ -96,22 +97,23 @@
 
 **关键词**：尺度、几何、不对称、克制的炫耀
 
-| 配方 | 选择 |
-|---|---|
-| 主题色 | 🌙 沙丘 |
-| 推荐 slide 数 | 12–18 页(中密度，强视觉) |
-| 主力 layouts | **1 封面 / 2 章节幕 / 5 图片网格 / 9 Before/After / 10 图文混排** |
-| Chrome 文案 | `Spazio 09 · Project File` / `Plan · 03` / `Fig.4` |
-| Kicker 风格 | 数字 + 类别：`PROJECT 04` / `SECTION B` / `FIGURE 12` |
-| Foot 文案 | `Page 09 · West Wing` / `1:200 scale` |
+| 配方          | 选择                                                              |
+| ------------- | ----------------------------------------------------------------- |
+| 主题色        | 🌙 沙丘                                                           |
+| 推荐 slide 数 | 12–18 页(中密度，强视觉)                                          |
+| 主力 layouts  | **1 封面 / 2 章节幕 / 5 图片网格 / 9 Before/After / 10 图文混排** |
+| Chrome 文案   | `Spazio 09 · Project File` / `Plan · 03` / `Fig.4`                |
+| Kicker 风格   | 数字 + 类别：`PROJECT 04` / `SECTION B` / `FIGURE 12`             |
+| Foot 文案     | `Page 09 · West Wing` / `1:200 scale`                             |
 
 **适合**：设计 / 建筑案例分享、产品设计 review、品牌视觉发布、画廊式 portfolio 展示。
 
 **反例**：金句分享（太硬）、技术 deep dive（不擅长流水线）。
 
-**视觉锚点**：*Domus* / *Apartamento* / *Mark Magazine* / *Pin-Up*。
+**视觉锚点**：_Domus_ / _Apartamento_ / _Mark Magazine_ / _Pin-Up_。
 
 **特殊建议**：
+
 - **每个 hero 页都要"留 60% 空"** — 不要塞满，建筑感来自呼吸
 - 大量使用 Layout 5（图片网格）但**只放 4 张大图**，不要放 6 张小图
 - `chrome` 文案保持冷峻，全用英文 + 数字
@@ -122,22 +124,23 @@
 
 **关键词**：克制、有图有表、可复现、工程师爱看
 
-| 配方 | 选择 |
-|---|---|
-| 主题色 | 🌿 森林墨 |
-| 推荐 slide 数 | 16–24 页(密度高、有图表) |
-| 主力 layouts | **1 封面 / 2 章节幕 / 3 数据大字报 / 6 Pipeline / 9 Before/After** |
-| Chrome 文案 | `Field Notes · Vol.II` / `Section 3.2 · Method` / `Reference 04` |
-| Kicker 风格 | 编号：`§ 3.2` / `Ref. 04` / `Method 01` |
-| Foot 文案 | `Page 12 · 3.2 Calibration` / `appendix A` |
+| 配方          | 选择                                                               |
+| ------------- | ------------------------------------------------------------------ |
+| 主题色        | 🌿 森林墨                                                          |
+| 推荐 slide 数 | 16–24 页(密度高、有图表)                                           |
+| 主力 layouts  | **1 封面 / 2 章节幕 / 3 数据大字报 / 6 Pipeline / 9 Before/After** |
+| Chrome 文案   | `Field Notes · Vol.II` / `Section 3.2 · Method` / `Reference 04`   |
+| Kicker 风格   | 编号：`§ 3.2` / `Ref. 04` / `Method 01`                            |
+| Foot 文案     | `Page 12 · 3.2 Calibration` / `appendix A`                         |
 
 **适合**：学术分享、内部研究复盘、可持续 / 自然主题、长期产品复盘、有方法论的工艺型分享（咖啡 / 香水 / 茶）。
 
 **反例**：商业发布（太冷静）、营销活动（不够 catchy）。
 
-**视觉锚点**：*National Geographic*（旧版）/ *Hand-Eye Magazine* / *Nautilus* / *MIT Press* book layouts。
+**视觉锚点**：_National Geographic_（旧版）/ _Hand-Eye Magazine_ / _Nautilus_ / _MIT Press_ book layouts。
 
 **特殊建议**：
+
 - 大量 `meta-row` 标注来源、方法、引用
 - 比其他方向**更频繁地用 `<figcaption class="img-cap">`** 给每张图标编号
 - `kicker` 用 § 章节编号，不用感叹句
@@ -146,18 +149,18 @@
 
 ## 推荐速查（如果用户描述了一个意图，你应该选哪个）
 
-| 用户说的话 | 推荐方向 |
-|---|---|
-| "通用分享" / "不知道选啥" | **1. Monocle** |
-| "一人公司 / AI 折叠 / 创业 demo day" | **1. Monocle**（默认）或 **2. WIRED**（如果偏技术） |
-| "AI / benchmark / 模型评测" | **2. WIRED** |
-| "产品发布会 / 工程团队分享" | **2. WIRED** |
-| "读书分享 / 人物访谈 / 一个人的故事" | **3. Kinfolk** |
-| "私享会 / 朋友间分享 / 周末闲聊式" | **3. Kinfolk** |
-| "设计案例 / 品牌发布 / portfolio 展示" | **4. Domus** |
-| "建筑 / 空间 / 装置" | **4. Domus** |
-| "学术 / 研究 / 方法论 / 教程" | **5. Lab** |
-| "可持续 / 环保 / 自然主题" | **5. Lab** |
+| 用户说的话                             | 推荐方向                                            |
+| -------------------------------------- | --------------------------------------------------- |
+| "通用分享" / "不知道选啥"              | **1. Monocle**                                      |
+| "一人公司 / AI 折叠 / 创业 demo day"   | **1. Monocle**（默认）或 **2. WIRED**（如果偏技术） |
+| "AI / benchmark / 模型评测"            | **2. WIRED**                                        |
+| "产品发布会 / 工程团队分享"            | **2. WIRED**                                        |
+| "读书分享 / 人物访谈 / 一个人的故事"   | **3. Kinfolk**                                      |
+| "私享会 / 朋友间分享 / 周末闲聊式"     | **3. Kinfolk**                                      |
+| "设计案例 / 品牌发布 / portfolio 展示" | **4. Domus**                                        |
+| "建筑 / 空间 / 装置"                   | **4. Domus**                                        |
+| "学术 / 研究 / 方法论 / 教程"          | **5. Lab**                                          |
+| "可持续 / 环保 / 自然主题"             | **5. Lab**                                          |
 
 ---
 

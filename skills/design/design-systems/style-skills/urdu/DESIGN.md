@@ -1,7 +1,7 @@
 # Urdu Modern (Indus Script System)
 
 > Category: Editorial / Personal / Publication
-Urdu-first digital experiences with native RTL support,Nastaliq typography, and bilingual harmony.
+> Urdu-first digital experiences with native RTL support,Nastaliq typography, and bilingual harmony.
 
 ---
 
@@ -12,6 +12,7 @@ Urdu-first digital experiences with native RTL support,Nastaliq typography, and 
 The system avoids visual clutter. Every component prioritizes **whitespace**, **legibility**, and the inherent elegance of the Nastaliq script. The color palette echoes the earth tones and cultural symbols of the Indus region. Typography is the protagonist; everything else supports readability and cultural authenticity.
 
 **Design Philosophy:**
+
 - Urdu is not a "regional variant" of another language; it's the primary voice
 - RTL layout is not an afterthought; it's architecturally primary
 - Nastaliq's vertical complexity demands generous spacing
@@ -25,14 +26,14 @@ All colors are tested for WCAG AA contrast compliance (minimum 4.5:1 for body te
 
 ### Primary Colors
 
-| Color | Hex | Name | Usage | WCAG Contrast (on Parchment) |
-|-------|-----|------|-------|------------------------------|
-| **Primary Brand** | `#0F595E` | Deep Teal / Jungle Green | CTAs, primary actions, headers | 8.4:1 ✅ AA |
-| **Background** | `#F4F1EA` | Parchment / Off-White | Main canvas, card backgrounds | — |
-| **Accent** | `#C05621` | Terracotta / Rust | Secondary CTAs, highlights, focus states | 4.05:1 ✅ AA(large) |
-| **Text Primary** | `#1A202C` | Rich Slate | Body text, labels | 15.1:1 ✅ AAA |
-| **Text Secondary** | `#4A5568` | Warm Grey | Secondary labels, captions | 3.56:1 ✅ UI Only |
-| **Border** | `#E2E8F0` | Light Silver | Component borders, dividers | — |
+| Color              | Hex       | Name                     | Usage                                    | WCAG Contrast (on Parchment) |
+| ------------------ | --------- | ------------------------ | ---------------------------------------- | ---------------------------- |
+| **Primary Brand**  | `#0F595E` | Deep Teal / Jungle Green | CTAs, primary actions, headers           | 8.4:1 ✅ AA                  |
+| **Background**     | `#F4F1EA` | Parchment / Off-White    | Main canvas, card backgrounds            | —                            |
+| **Accent**         | `#C05621` | Terracotta / Rust        | Secondary CTAs, highlights, focus states | 4.05:1 ✅ AA(large)          |
+| **Text Primary**   | `#1A202C` | Rich Slate               | Body text, labels                        | 15.1:1 ✅ AAA                |
+| **Text Secondary** | `#4A5568` | Warm Grey                | Secondary labels, captions               | 3.56:1 ✅ UI Only            |
+| **Border**         | `#E2E8F0` | Light Silver             | Component borders, dividers              | —                            |
 
 ### Why These Colors?
 
@@ -46,33 +47,33 @@ All colors are tested for WCAG AA contrast compliance (minimum 4.5:1 for body te
 ```css
 :root {
   /* Primary */
-  --color-primary: #0F595E;
-  --color-primary-dark: #0D3F45;
-  --color-primary-light: #2B7A82;
-  
+  --color-primary: #0f595e;
+  --color-primary-dark: #0d3f45;
+  --color-primary-light: #2b7a82;
+
   /* Accent */
-  --color-accent: #C05621;
-  --color-accent-dark: #A03F1C;
-  --color-accent-light: #E8754A;
-  
+  --color-accent: #c05621;
+  --color-accent-dark: #a03f1c;
+  --color-accent-light: #e8754a;
+
   /* Backgrounds */
-  --color-bg-primary: #F4F1EA;
-  --color-bg-secondary: #FAFAF8;
-  
+  --color-bg-primary: #f4f1ea;
+  --color-bg-secondary: #fafaf8;
+
   /* Text */
-  --color-text-primary: #1A202C;
-  --color-text-secondary: #4A5568;
+  --color-text-primary: #1a202c;
+  --color-text-secondary: #4a5568;
   --color-text-tertiary: #718096;
-  
+
   /* Status Colors */
-  --color-success: #2D5B4A; /* Deep green */
-  --color-warning: #C05621; /* Terracotta (doubles as warning) */
-  --color-error: #8B3A3A;   /* Deep burgundy */
-  --color-info: #2B7A82;    /* Light teal */
-  
+  --color-success: #2d5b4a; /* Deep green */
+  --color-warning: #c05621; /* Terracotta (doubles as warning) */
+  --color-error: #8b3a3a; /* Deep burgundy */
+  --color-info: #2b7a82; /* Light teal */
+
   /* Borders & Dividers */
-  --color-border: #E2E8F0;
-  --color-border-dark: #CBD5E0;
+  --color-border: #e2e8f0;
+  --color-border-dark: #cbd5e0;
 }
 ```
 
@@ -91,14 +92,20 @@ font-family: "Noto Nastaliq Urdu", "Mehr Nastaliq", "URW Chancery", serif;
 ```
 
 **Font Selection Rationale:**
+
 - **Noto Nastaliq Urdu** (Google Fonts): Professionally maintained, open-source, optimized for modern screens. Heavy weight (700) gives proper authority.
 - **Mehr Nastaliq**: Pakistani-developed alternative; excellent Urdu-specific kerning.
 - **URW Chancery** (system fallback): Hand-drawn serif; graceful degradation when web fonts fail.
 
 **Import (add to `<head>`):**
+
 ```html
-<link rel="preload" href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" as="style">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
+<link
+  rel="preload"
+  href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&display=swap"
+  as="style"
+/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet" />
 ```
 
 #### Latin Script (Secondary)
@@ -115,32 +122,35 @@ font-family: "Inter", "Segoe UI", "Helvetica Neue", sans-serif;
 
 **Base Unit:** 16px
 
-| Level | Size | Line-Height | Usage |
-|-------|------|-------------|-------|
-| **Display XL** | 48px | 1.2 | Page titles |
-| **Display Large** | 36px | 1.3 | Section headers |
-| **Heading 1** | 32px | 1.4 | Major headings |
-| **Heading 2** | 24px | 1.5 | Section subheadings |
-| **Heading 3** | 20px | 1.6 | Component titles |
-| **Body Large** | 18px | 1.8 | Lead paragraphs, intro text |
-| **Body** | 16px | 1.8 | Standard body text, editorial |
-| **Body Small** | 14px | 1.8 | Secondary text, captions |
-| **Label** | 12px | 1.8 | Form labels, micro-copy |
+| Level             | Size | Line-Height | Usage                         |
+| ----------------- | ---- | ----------- | ----------------------------- |
+| **Display XL**    | 48px | 1.2         | Page titles                   |
+| **Display Large** | 36px | 1.3         | Section headers               |
+| **Heading 1**     | 32px | 1.4         | Major headings                |
+| **Heading 2**     | 24px | 1.5         | Section subheadings           |
+| **Heading 3**     | 20px | 1.6         | Component titles              |
+| **Body Large**    | 18px | 1.8         | Lead paragraphs, intro text   |
+| **Body**          | 16px | 1.8         | Standard body text, editorial |
+| **Body Small**    | 14px | 1.8         | Secondary text, captions      |
+| **Label**         | 12px | 1.8         | Form labels, micro-copy       |
 
 ### Line-Height (Critical for Nastaliq)
 
 **Minimum line-height: 1.8**
 
-Nastaliq has high vertical ascenders and deep descenders. Standard web line-heights (1.5) cause nuqtas (diacritical marks) to clip or overlap. 
+Nastaliq has high vertical ascenders and deep descenders. Standard web line-heights (1.5) cause nuqtas (diacritical marks) to clip or overlap.
 
 **Enforcement:**
+
 ```css
 body {
   line-height: 1.8;
 }
 
 /* Headings can compress slightly, but never below 1.4 */
-h1, h2, h3 {
+h1,
+h2,
+h3 {
   line-height: 1.4;
 }
 
@@ -161,8 +171,11 @@ body {
 }
 
 /* Prevent font-weight shifts during hover states */
-button, a {
-  transition: color 0.2s ease, background 0.2s ease;
+button,
+a {
+  transition:
+    color 0.2s ease,
+    background 0.2s ease;
   /* Do NOT animate font-weight; it causes layout shift */
 }
 ```
@@ -170,6 +183,7 @@ button, a {
 ### Font Weights
 
 Only use:
+
 - **400 (Regular):** Body text, standard labels
 - **700 (Bold):** Headings, emphasis, strong text
 
@@ -185,31 +199,33 @@ All spacing follows a **modular scale** rooted in 4px. This allows for both fine
 
 ### Spacing Scale
 
-| Name | Value | Usage |
-|------|-------|-------|
-| **xs** | 4px | Micro-spacing (inline elements, icon gaps) |
-| **sm** | 8px | Component internal padding, tight grouping |
-| **md** | 16px | Standard padding, default gaps |
-| **lg** | 24px | Section spacing, moderate breathing room |
-| **xl** | 32px | Large section gaps, hero spacing |
-| **2xl** | 48px | Page-level spacing, major layout blocks |
-| **3xl** | 64px | Full-screen spacing, viewport-scale gaps |
+| Name    | Value | Usage                                      |
+| ------- | ----- | ------------------------------------------ |
+| **xs**  | 4px   | Micro-spacing (inline elements, icon gaps) |
+| **sm**  | 8px   | Component internal padding, tight grouping |
+| **md**  | 16px  | Standard padding, default gaps             |
+| **lg**  | 24px  | Section spacing, moderate breathing room   |
+| **xl**  | 32px  | Large section gaps, hero spacing           |
+| **2xl** | 48px  | Page-level spacing, major layout blocks    |
+| **3xl** | 64px  | Full-screen spacing, viewport-scale gaps   |
 
 ### Layout Principles
 
 #### Horizontal (RTL-Aware)
 
 In RTL context, directionality is reversed:
+
 - **margin-inline-start:** Becomes right margin (logical property; auto-flips on RTL)
 - **padding-inline-end:** Becomes left padding (logical property; auto-flips on RTL)
 
 **Always use logical properties:**
+
 ```css
 .component {
   /* ✅ GOOD: Auto-flips in RTL */
   margin-inline: 16px;
   padding-inline-start: 24px;
-  
+
   /* ❌ BAD: Hard-coded LTR; breaks in RTL */
   margin-left: 16px;
   padding-right: 24px;
@@ -222,8 +238,8 @@ Vertical spacing is **unaffected by RTL**. All vertical margins and paddings rem
 
 ```css
 .card {
-  padding-block: 24px;      /* 24px top + bottom */
-  margin-block: 16px;       /* 16px top + bottom */
+  padding-block: 24px; /* 24px top + bottom */
+  margin-block: 16px; /* 16px top + bottom */
 }
 ```
 
@@ -231,28 +247,29 @@ Vertical spacing is **unaffected by RTL**. All vertical margins and paddings rem
 
 ```css
 .card {
-  padding: 24px;            /* Internal spacing */
-  margin-block: 16px;       /* External spacing */
+  padding: 24px; /* Internal spacing */
+  margin-block: 16px; /* External spacing */
   border: 1px solid var(--color-border);
   border-radius: 8px;
   background: var(--color-bg-secondary);
 }
 
 .section {
-  padding-block: 32px;      /* Vertical padding within section */
-  padding-inline: 24px;     /* Horizontal padding (RTL-safe) */
+  padding-block: 32px; /* Vertical padding within section */
+  padding-inline: 24px; /* Horizontal padding (RTL-safe) */
 }
 ```
 
 ### Grid System (Optional: 12-column)
 
 For complex layouts, use a 12-column grid:
+
 ```css
 .grid {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
   gap: 16px;
-  direction: rtl;           /* RTL grid automatically reverses columns */
+  direction: rtl; /* RTL grid automatically reverses columns */
 }
 
 .grid-col-6 {
@@ -271,6 +288,7 @@ For complex layouts, use a 12-column grid:
 ### Buttons
 
 #### Primary Button
+
 ```html
 <button class="button button-primary">
   <span lang="ur">موافقہ</span>
@@ -306,6 +324,7 @@ For complex layouts, use a 12-column grid:
 ```
 
 #### Secondary Button
+
 ```html
 <button class="button button-secondary">
   <span lang="ur">منسوخ</span>
@@ -323,7 +342,9 @@ For complex layouts, use a 12-column grid:
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
-  transition: background 0.2s ease, border-color 0.2s ease;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .button-secondary:hover {
@@ -366,14 +387,7 @@ In RTL, icons should be placed on the **right (logical-right)** of the text:
 ```html
 <div class="form-group">
   <label lang="ur" for="username">صارف کا نام</label>
-  <input 
-    id="username" 
-    type="text" 
-    class="input" 
-    placeholder="اپنا صارف کا نام درج کریں"
-    lang="ur"
-    dir="rtl"
-  />
+  <input id="username" type="text" class="input" placeholder="اپنا صارف کا نام درج کریں" lang="ur" dir="rtl" />
 </div>
 ```
 
@@ -390,7 +404,7 @@ In RTL, icons should be placed on the **right (logical-right)** of the text:
   font-weight: 700;
   color: var(--color-text-primary);
   margin-block-end: 8px;
-  text-align: right;  /* Right-aligned for RTL labels */
+  text-align: right; /* Right-aligned for RTL labels */
 }
 
 .input {
@@ -435,11 +449,7 @@ In RTL, icons should be placed on the **right (logical-right)** of the text:
 
 <!-- ✅ EXCELLENT: Label + aria-label for screen readers -->
 <label for="username" lang="ur">صارف کا نام</label>
-<input 
-  id="username" 
-  aria-label="صارف کا نام درج کریں"
-  placeholder="احمد علی"
-/>
+<input id="username" aria-label="صارف کا نام درج کریں" placeholder="احمد علی" />
 ```
 
 ### Cards
@@ -458,7 +468,9 @@ In RTL, icons should be placed on the **right (logical-right)** of the text:
   border: 1px solid var(--color-border);
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  transition:
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
 }
 
 .card:hover {
@@ -550,12 +562,12 @@ All animations respect RTL directionality and maintain readability.
 
 ### Recommended Durations
 
-| Animation Type | Duration | Easing |
-|---|---|---|
-| Entrance | 300ms | ease-out |
-| Hover | 200ms | ease-in-out |
-| Exit | 200ms | ease-in |
-| Scroll-reveal | 600ms | ease-out |
+| Animation Type | Duration | Easing      |
+| -------------- | -------- | ----------- |
+| Entrance       | 300ms    | ease-out    |
+| Hover          | 200ms    | ease-in-out |
+| Exit           | 200ms    | ease-in     |
+| Scroll-reveal  | 600ms    | ease-out    |
 
 ---
 
@@ -565,12 +577,12 @@ This system is built to be accessible. All color contrasts are verified against 
 
 ### Color Contrast (Verified Ratios)
 
-| Combination | Contrast | Standard | Notes |
-|---|---|---|---|
-| Deep Teal (#0F595E) on Parchment | 8.4:1 | ✅ AAA | Safe for all text |
-| Rich Slate (#1A202C) on Parchment | 15.1:1 | ✅ AAA | Safe for all text |
-| Terracotta (#C05621) on Parchment | 4.05:1 | ⚠️ AA (Large) | **Large Text (18pt+) or Bold only** |
-| Muted Slate (#718096) on Parchment | 3.56:1 | ❌ UI Only | Decorative/Borders only; avoid for text |
+| Combination                        | Contrast | Standard      | Notes                                   |
+| ---------------------------------- | -------- | ------------- | --------------------------------------- |
+| Deep Teal (#0F595E) on Parchment   | 8.4:1    | ✅ AAA        | Safe for all text                       |
+| Rich Slate (#1A202C) on Parchment  | 15.1:1   | ✅ AAA        | Safe for all text                       |
+| Terracotta (#C05621) on Parchment  | 4.05:1   | ⚠️ AA (Large) | **Large Text (18pt+) or Bold only**     |
+| Muted Slate (#718096) on Parchment | 3.56:1   | ❌ UI Only    | Decorative/Borders only; avoid for text |
 
 ### Text Size Minimums
 
@@ -592,13 +604,13 @@ input:focus {
 ```
 
 ### ARIA Labels (For Screen Readers)
+
 Accessible Naming Rules (ARIA Best Practices)
 Native Labels First: Always use standard <label for="..."> elements. This is the gold standard for screen readers and ensures the accessible name matches the visible text.
 
 When to use aria-label: Only use aria-label when an interactive element has no visible text (e.g., an icon-only button).
 
 Avoid Overriding: Do not use an aria-label that repeats or conflicts with visible text. This prevents WCAG "Label-in-Name" mismatches.
-
 
 ```html
 <label for="email" lang="ur">ای میل</label>
@@ -611,7 +623,6 @@ Avoid Overriding: Do not use an aria-label that repeats or conflicts with visibl
 <label for="pass" lang="ur">پاس ورڈ</label>
 <input id="pass" type="password" aria-describedby="pass-hint" />
 <p id="pass-hint" lang="ur">کم از کم 8 حروف۔</p>
-
 ```
 
 ### Language Declaration
@@ -621,7 +632,7 @@ Properly declaring the document language is critical for Urdu screen reading and
 ```html
 <html lang="ur" dir="rtl">
   <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
   </head>
   <body>
     <h1 lang="ur">خیر مقدم</h1>
@@ -638,6 +649,7 @@ Urdu is a **formal, respectful language**. Microcopy should reflect this.
 ### Formality Levels
 
 #### Formal (Government, Banking, Official)
+
 ```urdu
 ✅ معافی چاہتے ہیں، آپ کی درخواست مکمل نہیں ہو سکی۔ براہ کرم دوبارہ کوشش کریں۔
 ❌ خرابی ہوگئی
@@ -646,6 +658,7 @@ Urdu is a **formal, respectful language**. Microcopy should reflect this.
 Translation: "We apologize; your request could not be completed. Please try again."
 
 #### Friendly (Apps, Products)
+
 ```urdu
 ✅ کوئی مسئلہ! دوبارہ کوشش کریں۔
 ❌ Error 503
@@ -654,6 +667,7 @@ Translation: "We apologize; your request could not be completed. Please try agai
 Translation: "Oops! Try again."
 
 #### Technical (Developer Docs, Code)
+
 ```urdu
 ✅ API جواب میں خرابی: [error_code]
 ❌ بھئی، غلط ہوا
@@ -675,13 +689,13 @@ Always use Pakistani Rupee (₨), not generic rupee (₹):
 
 ### Microcopy Examples
 
-| English | Urdu | Context |
-|---------|------|---------|
-| "Submit" | "بھیجیں" or "جمع کرائیں" | Form action |
-| "Cancel" | "منسوخ کریں" or "واپس جائیں" | Dismissal |
-| "Loading..." | "لوڈ ہو رہا ہے..." | Wait state |
+| English          | Urdu                                    | Context     |
+| ---------------- | --------------------------------------- | ----------- |
+| "Submit"         | "بھیجیں" or "جمع کرائیں"                | Form action |
+| "Cancel"         | "منسوخ کریں" or "واپس جائیں"            | Dismissal   |
+| "Loading..."     | "لوڈ ہو رہا ہے..."                      | Wait state  |
 | "Error occurred" | "معافی چاہتے ہیں، کوئی مسئلہ واقع ہوا۔" | Error state |
-| "No results" | "کوئی نتیجہ نہیں ملا" | Empty state |
+| "No results"     | "کوئی نتیجہ نہیں ملا"                   | Empty state |
 
 ---
 
@@ -693,12 +707,11 @@ Always use Pakistani Rupee (₨), not generic rupee (₹):
 - **Fixed Widths on Text Containers:** Urdu script has a large vertical footprint; fixed heights will cause "nuqta" (dot) clipping.
 
 ### ✅ Bidirectional (Bidi) Success Patterns
+
 - **Isolate LTR content:** When mixing Urdu with English product names, URLs, or numbers, always use the `<bdi>` tag or `dir="ltr"` to prevent punctuation (like brackets or periods) from flipping to the wrong side.
 
 ```html
-<p dir="rtl">
-  Check our website <bdi dir="ltr">example.com</bdi> for more details.
-</p>
+<p dir="rtl">Check our website <bdi dir="ltr">example.com</bdi> for more details.</p>
 ```
 
 ### ❌ Typography
@@ -712,22 +725,22 @@ Always use Pakistani Rupee (₨), not generic rupee (₹):
 ### ❌ Visual Design
 
 - **Soft shadows on Urdu text:** Shadows make nuqtas invisible. Use only on containers.
+
   ```css
   /* ❌ BAD */
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-  
+
   /* ✅ GOOD: Shadows only on containers */
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   ```
 
 - **Emoji as primary icons:** Emoji is LTR by default; ambiguous in RTL. Use SVG icons instead.
 - **Truncate text with ellipsis in RTL:** `text-overflow: ellipsis` reads backwards. Use expand-button or full text instead.
+
   ```html
   <!-- ❌ BAD: Ellipsis reads wrong in RTL -->
-  <p style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-    یہ بہت لمبا متن ہے...
-  </p>
-  
+  <p style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">یہ بہت لمبا متن ہے...</p>
+
   <!-- ✅ GOOD: Full text or expand-button -->
   <details>
     <summary lang="ur">مزید دیکھیں</summary>
@@ -748,6 +761,9 @@ Always use Pakistani Rupee (₨), not generic rupee (₹):
   <button style="display: flex; gap: 8px;">
     <icon name="arrow-left" style="transform: scaleX(-1);"></icon>
     <span lang="ur">بھیجیں</span>
+  </button>
+  ```
+
 </button>
   ```
 
@@ -762,155 +778,152 @@ Here's a complete, production-ready example:
 ```html
 <!DOCTYPE html>
 <html lang="ur" dir="rtl">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Urdu Modern - Quick Start</title>
-  
-  <!-- Google Fonts: Noto Nastaliq Urdu -->
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
-  
-  <style>
-    :root {
-      /* Colors */
-      --color-primary: #0F595E;
-      --color-primary-dark: #0D3F45;
-      --color-accent: #C05621;
-      --color-bg: #F4F1EA;
-      --color-text: #1A202C;
-      --color-border: #E2E8F0;
-      
-      /* Typography */
-      --font-urdu: "Noto Nastaliq Urdu", serif;
-      --font-latin: "Inter", "Segoe UI", sans-serif;
-      
-      /* Spacing */
-      --space-xs: 4px;
-      --space-sm: 8px;
-      --space-md: 16px;
-      --space-lg: 24px;
-      --space-xl: 32px;
-    }
-    
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    
-    body {
-      font-family: var(--font-urdu);
-      background: var(--color-bg);
-      color: var(--color-text);
-      line-height: 1.8;
-      direction: rtl;
-      -webkit-font-smoothing: antialiased;
-    }
-    
-    .container {
-      max-width: 600px;
-      margin: 0 auto;
-      padding: var(--space-lg);
-    }
-    
-    h1 {
-      font-size: 32px;
-      font-weight: 700;
-      margin-block-end: var(--space-lg);
-      color: var(--color-primary);
-      line-height: 1.4;
-    }
-    
-    p {
-      font-size: 16px;
-      line-height: 1.8;
-      margin-block-end: var(--space-md);
-      color: var(--color-text);
-    }
-    
-    .button-group {
-      display: flex;
-      gap: var(--space-md);
-      margin-block-start: var(--space-lg);
-      flex-direction: row-reverse; /* Reverses button order for RTL visual hierarchy */
-    }
-    
-    .button {
-      padding: 12px 24px;
-      border: none;
-      border-radius: 6px;
-      font-family: var(--font-urdu);
-      font-size: 16px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: background 0.2s ease;
-      flex: 1;
-    }
-    
-    .button-primary {
-      background: var(--color-primary);
-      color: white;
-    }
-    
-    .button-primary:hover {
-      background: var(--color-primary-dark);
-    }
-    
-    .button-secondary {
-      background: transparent;
-      color: var(--color-primary);
-      border: 2px solid var(--color-primary);
-    }
-    
-    .button-secondary:hover {
-      background: rgba(15, 89, 94, 0.1);
-    }
-    
-    .button:focus {
-      outline: 2px solid var(--color-accent);
-      outline-offset: 2px;
-    }
-    
-    .code-block {
-      background: #f5f5f5;
-      padding: var(--space-md);
-      border-radius: 6px;
-      font-family: "Courier New", monospace;
-      direction: ltr; /* Code is LTR, even in RTL pages */
-      text-align: left;
-      margin-block: var(--space-md);
-      border-inline-start: 4px solid var(--color-accent);
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h1>خیر مقدم — Urdu Modern Quick Start</h1>
-    
-    <p>
-      یہ ایک مکمل مثال ہے جو دکھاتی ہے کہ کیسے Urdu Modern ڈیزائن سسٹم استعمال کریں۔
-    </p>
-    
-    <p>
-      یہاں کچھ اہم خصوصیات ہیں:
-    </p>
-    
-    <ul style="margin-block-start: var(--space-md); margin-inline-start: var(--space-lg);">
-      <li>نسطعلیق فونٹ خودکار طور پر RTL کے لیے بہتر بنایا گیا ہے</li>
-      <li>رنگ نقطے <code>#0F595E</code> معلومات تنبیہی کے ساتھ منظم ہیں</li>
-      <li>تمام اردو ٹیکسٹ <code>lang="ur"</code> کے ساتھ نشان زد ہے</li>
-    </ul>
-    
-    <div class="code-block">
-      &lt;button class="button-primary"&gt;موافقہ&lt;/button&gt;
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Urdu Modern - Quick Start</title>
+
+    <!-- Google Fonts: Noto Nastaliq Urdu -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        /* Colors */
+        --color-primary: #0f595e;
+        --color-primary-dark: #0d3f45;
+        --color-accent: #c05621;
+        --color-bg: #f4f1ea;
+        --color-text: #1a202c;
+        --color-border: #e2e8f0;
+
+        /* Typography */
+        --font-urdu: "Noto Nastaliq Urdu", serif;
+        --font-latin: "Inter", "Segoe UI", sans-serif;
+
+        /* Spacing */
+        --space-xs: 4px;
+        --space-sm: 8px;
+        --space-md: 16px;
+        --space-lg: 24px;
+        --space-xl: 32px;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: var(--font-urdu);
+        background: var(--color-bg);
+        color: var(--color-text);
+        line-height: 1.8;
+        direction: rtl;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: var(--space-lg);
+      }
+
+      h1 {
+        font-size: 32px;
+        font-weight: 700;
+        margin-block-end: var(--space-lg);
+        color: var(--color-primary);
+        line-height: 1.4;
+      }
+
+      p {
+        font-size: 16px;
+        line-height: 1.8;
+        margin-block-end: var(--space-md);
+        color: var(--color-text);
+      }
+
+      .button-group {
+        display: flex;
+        gap: var(--space-md);
+        margin-block-start: var(--space-lg);
+        flex-direction: row-reverse; /* Reverses button order for RTL visual hierarchy */
+      }
+
+      .button {
+        padding: 12px 24px;
+        border: none;
+        border-radius: 6px;
+        font-family: var(--font-urdu);
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background 0.2s ease;
+        flex: 1;
+      }
+
+      .button-primary {
+        background: var(--color-primary);
+        color: white;
+      }
+
+      .button-primary:hover {
+        background: var(--color-primary-dark);
+      }
+
+      .button-secondary {
+        background: transparent;
+        color: var(--color-primary);
+        border: 2px solid var(--color-primary);
+      }
+
+      .button-secondary:hover {
+        background: rgba(15, 89, 94, 0.1);
+      }
+
+      .button:focus {
+        outline: 2px solid var(--color-accent);
+        outline-offset: 2px;
+      }
+
+      .code-block {
+        background: #f5f5f5;
+        padding: var(--space-md);
+        border-radius: 6px;
+        font-family: "Courier New", monospace;
+        direction: ltr; /* Code is LTR, even in RTL pages */
+        text-align: left;
+        margin-block: var(--space-md);
+        border-inline-start: 4px solid var(--color-accent);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>خیر مقدم — Urdu Modern Quick Start</h1>
+
+      <p>یہ ایک مکمل مثال ہے جو دکھاتی ہے کہ کیسے Urdu Modern ڈیزائن سسٹم استعمال کریں۔</p>
+
+      <p>یہاں کچھ اہم خصوصیات ہیں:</p>
+
+      <ul style="margin-block-start: var(--space-md); margin-inline-start: var(--space-lg);">
+        <li>نسطعلیق فونٹ خودکار طور پر RTL کے لیے بہتر بنایا گیا ہے</li>
+        <li>رنگ نقطے <code>#0F595E</code> معلومات تنبیہی کے ساتھ منظم ہیں</li>
+        <li>تمام اردو ٹیکسٹ <code>lang="ur"</code> کے ساتھ نشان زد ہے</li>
+      </ul>
+
+      <div class="code-block">&lt;button class="button-primary"&gt;موافقہ&lt;/button&gt;</div>
+
+      <div class="button-group">
+        <button class="button button-primary">موافقہ</button>
+        <button class="button button-secondary">منسوخ</button>
+      </div>
     </div>
-    
-    <div class="button-group">
-      <button class="button button-primary">موافقہ</button>
-      <button class="button button-secondary">منسوخ</button>
-    </div>
-  </div>
-</body>
+  </body>
 </html>
 ```
 
@@ -923,12 +936,14 @@ When an agent generates UI using the Urdu Modern design system, it **must** foll
 1. **Set document direction:** Root `<html>` element always has `dir="rtl"` and `lang="ur"`
 
 2. **Wrap Urdu text:** All Urdu strings wrapped in semantic tags with `lang="ur"`:
+
    ```html
    <h1 lang="ur">یہ ایک سرخ</h1>
    <p lang="ur">یہاں متن ہے۔</p>
    ```
 
 3. **Use logical CSS properties:** Never hard-code `left`/`right`; use logical equivalents:
+
    ```css
    margin-inline-start  /* instead of margin-left */
    padding-inline-end   /* instead of padding-right */
@@ -938,6 +953,7 @@ When an agent generates UI using the Urdu Modern design system, it **must** foll
 4. **Respect line-height:** Minimum 1.8 for body Urdu text; never drop below 1.6
 
 5. **Test icon mirroring:** Directional icons (arrows, back buttons) must flip in RTL context:
+
    ```html
    <!-- Icon automatically flips in RTL thanks to flex direction -->
    <button>
@@ -994,9 +1010,9 @@ target_audience: Pakistani startups, news, education, government, global Urdu co
 
 ## Version History
 
-| Version | Date | Changes |
-|---------|------|---------|
-| 1.0 | 2025-05-07 | Initial release; complete Nastaliq + RTL + bilingual support |
+| Version | Date       | Changes                                                      |
+| ------- | ---------- | ------------------------------------------------------------ |
+| 1.0     | 2025-05-07 | Initial release; complete Nastaliq + RTL + bilingual support |
 
 **Last Updated:** 2025-05-07  
 **Status:** Production-Ready ✅

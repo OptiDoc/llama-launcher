@@ -15,6 +15,7 @@
 **根因**：如果 `template.html` 的 `<style>` 里没有这些类的定义,浏览器就 fallback 到默认样式。
 
 **做法**：
+
 - **生成 PPT 前,必须先 `Read` `assets/template.html`**,确认 layouts.md 里用到的类都已定义
 - 最常见遗漏的类:`h-hero / h-xl / h-sub / h-md / lead / meta-row / stat-card / stat-label / stat-nb / stat-unit / stat-note / pipeline-section / pipeline-label / pipeline / step / step-nb / step-title / step-desc / grid-2-7-5 / grid-2-6-6 / grid-2-8-4 / grid-3-3 / frame / img-cap / callout-src`
 - 如果某个类确实缺了,**在 template.html 的 `<style>` 里补上**,不要在每页 inline 重写
@@ -31,7 +32,9 @@
 ...
 <i data-lucide="target" class="ico-md"></i>
 ...
-<script>lucide.createIcons();</script>
+<script>
+  lucide.createIcons();
+</script>
 ```
 
 常用图标名：`target / palette / search-check / compass / share-2 / crown / check-circle / x-circle / plus / arrow-right / grid-2x2 / network`
@@ -44,7 +47,7 @@
 
 ```html
 <figure class="frame-img" style="height:26vh">
-  <img src="screenshot.png">
+  <img src="screenshot.png" />
 </figure>
 ```
 
@@ -66,6 +69,7 @@ CSS 里 `.frame-img img` 已经预设 `object-position:top`，只裁底。
 **根因**:JS 根据 slide 的主题切换两张 canvas 的 opacity。如果整个 deck 开场是 hero dark,而没有任何机制能把 bg 切到 light,body 永远不加 `light-bg` 类,`canvas#bg-dark` 一直在上面。
 
 **做法**:
+
 - 模板里 `go()` 函数已改为从 `classList` 推断主题(`light` / `dark`),所以 **slide 必须明确带 `light` 或 `dark` 类**。不要漏写,更不要用其他自定义主题名
 - hero 页用 `hero light` / `hero dark`,正文页用 `light` / `dark`。只写 `hero` 不带主题色是坏的
 - 一个 deck 里必须至少有一个 **非 hero 的 light 页**,确保 body 有机会加 `light-bg`
@@ -77,6 +81,7 @@ CSS 里 `.frame-img img` 已经预设 `object-position:top`，只裁底。
 **根因**:layouts.md 的骨架默认全写 `light`,如果只是粘贴骨架不调整主题,就会全亮。
 
 **做法**:
+
 - **生成前画"主题节奏表"**:每一页写清 `hero dark` / `hero light` / `light` / `dark` 中的哪一个,对齐后再写代码
 - **硬规则**:连续 3 页以上同主题 = 不允许;8 页以上必须有 ≥1 `hero dark` + ≥1 `hero light`;不能全是 `light` 正文页——必须有 `dark` 正文页
 - **按布局选主题**(详见 layouts.md 开头"主题节奏规划"):
@@ -91,6 +96,7 @@ CSS 里 `.frame-img img` 已经预设 `object-position:top`，只裁底。
 **现象**:左上角 `.chrome` 写"Design First · 设计先行",同一页里 `.kicker` 又写"Phase 01 · 设计阶段"——同义翻译,AI 味浓。
 
 **做法**:
+
 - **chrome = 杂志页眉 / 导航标签**:跨多页可相同(如 "Act II · Workflow"、"Data · Result"、"lukew.com · 2026.04")
 - **kicker = 本页独一份的引导句**:短、有钩子、是大标题的"小前缀"(如 "BUT"、"一个人,做了什么。"、"The Question")
 - 一个描述栏目,一个描述这一页——绝不互相翻译
@@ -100,6 +106,7 @@ CSS 里 `.frame-img img` 已经预设 `object-position:top`，只裁底。
 **现象**：中文大标题字号设太大（比如 13vw），结果每行只容 1 个字，强制换行非常难看。
 
 **做法**：
+
 - `h-hero`（最大）：10vw，**且标题长度 ≤ 5 字**
 - `h-xl`（次大）：6vw-7vw
 - 长标题用 `<br>` 手工断行，不要依赖自动换行
@@ -110,6 +117,7 @@ CSS 里 `.frame-img img` 已经预设 `object-position:top`，只裁底。
 ### 4. 字体分工：标题衬线、正文非衬线
 
 **做法**：
+
 - 大标题、重点 quote、数字大字 → **衬线字体**（Noto Serif SC + Playfair Display + Source Serif）
 - 正文、描述、pipeline 步骤名 → **非衬线字体**（Noto Sans SC + Inter）
 - 元数据、代码、标签 → **等宽字体**（IBM Plex Mono + JetBrains Mono）
@@ -119,10 +127,12 @@ CSS 里 `.frame-img img` 已经预设 `object-position:top`，只裁底。
 ### 4b. 图片不要用 `align-self:end` 贴底
 
 **现象**：左文右图布局里,为了让右列图片和左列 callout 底部对齐,在 `<figure>` 上加 `align-self:end`。结果:
+
 - 如果父容器不是 grid(比如类名没定义),`align-self` 完全失效,图片掉到文档流最下面被浏览器底栏遮挡
 - 即使是 grid,图片会在 cell 里贴底,低分屏上仍然被 `.foot` 和 `#nav` 圆点遮挡
 
 **做法**:
+
 - 图文混排**必须用 `.frame.grid-2-7-5`**(或 `.grid-2-6-6`/`.grid-2-8-4`)
 - 右列 `<figure class="frame-img">` 用 **标准比例 16/10 或 4/3 + max-height:56vh**,自然贴顶即可
 - 要让左列 callout 看起来"贴底",给**左列**加 flex column + `justify-content:space-between`,不要动右列
@@ -146,6 +156,7 @@ CSS 里 `.frame-img img` 已经预设 `object-position:top`，只裁底。
 ### 6. Hero 页和非 hero 页要交替
 
 **推荐节奏**（25-30 页）：
+
 ```
 Hero Cover → Act Divider (hero) → 3-4 pages non-hero → Act Divider (hero)
 → 4-5 pages non-hero → Hero Question → ... → Hero Close
@@ -162,6 +173,7 @@ Hero Cover → Act Divider (hero) → 3-4 pages non-hero → Act Divider (hero)
 **现象**：一会儿写 "Skills"，一会儿写 "技能"，一会儿写 "薄承载厚技能"，全篇不一致。
 
 **做法**：
+
 - 术语优先用**英文单词**（Skills / Harness / Pipeline / Workflow），这些都是圈内熟悉词
 - **别硬翻译**，硬翻译反而生硬
 - 整个 deck 里同一个词 1 个写法

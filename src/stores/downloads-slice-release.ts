@@ -28,10 +28,21 @@ export function createStartReleaseDownloadSlice(
       const sizeGb = sizeMb / 1024;
       const filename = `llama-${rel.tag}-bin-${rel.variant}-x64.zip`;
       const dl: HFDownload = {
-        id: dlId, repo: `llama.cpp ${rel.tag} (${rel.variant})`, quant: rel.variant,
-        filename, sizeGb, progress: 0, speed: 0, eta: "",
-        status: "downloading", startedAt: nowTs(), modelName: `llama.cpp ${rel.tag}`,
-        builder: "ggerganov", kind: "release", variant: rel.variant, completedAt: null,
+        id: dlId,
+        repo: `llama.cpp ${rel.tag} (${rel.variant})`,
+        quant: rel.variant,
+        filename,
+        sizeGb,
+        progress: 0,
+        speed: 0,
+        eta: "",
+        status: "downloading",
+        startedAt: nowTs(),
+        modelName: `llama.cpp ${rel.tag}`,
+        builder: "ggerganov",
+        kind: "release",
+        variant: rel.variant,
+        completedAt: null,
       };
       set((s) => ({
         downloads: [...s.downloads, dl],
@@ -40,7 +51,10 @@ export function createStartReleaseDownloadSlice(
 
       const msg = NOTIF_MESSAGES.releaseDownloadStart(rel.tag, rel.variant, sizeMb);
       get().addNotification?.({ kind: "download", ...msg });
-      log.info("[STORE] Release download started", { category: "store", context: { tag: rel.tag, variant: rel.variant, sizeMb } });
+      log.info("[STORE] Release download started", {
+        category: "store",
+        context: { tag: rel.tag, variant: rel.variant, sizeMb },
+      });
 
       (async () => {
         if (!isTauri()) {
@@ -56,9 +70,7 @@ export function createStartReleaseDownloadSlice(
 
         const result = await tauri.installRelease(rel.tag, rel.variant, dlId, (p) => {
           const pct = p.total > 0 ? (p.downloaded / p.total) * 100 : 0;
-          const eta = p.speed > 0 && p.total > 0
-            ? formatDuration((p.total - p.downloaded) / p.speed)
-            : "";
+          const eta = p.speed > 0 && p.total > 0 ? formatDuration((p.total - p.downloaded) / p.speed) : "";
           set((st) => ({
             downloads: patchDownload(st, dlId, { progress: pct, speed: p.speed, eta }),
             releases: patchRelease(st, releaseId, { installProgress: pct }),

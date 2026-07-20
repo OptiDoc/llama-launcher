@@ -6,9 +6,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Globe, Boxes, Share2, Cpu } from "lucide-react";
 import type { ProfileScope } from "@/lib/llama-store";
 
-function StatPill({ icon, label, value }: {
-  icon: React.ReactNode; label: string; value: string;
-}) {
+function StatPill({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
     <Card className="rounded-lg border bg-muted/40 p-0 shadow-none">
       <CardContent className="flex items-center gap-2 p-2.5">
@@ -45,24 +43,44 @@ function SharedBadge() {
   );
 }
 
-function ScopeOption({ active, onClick, icon, label, desc }: {
-  active: boolean; onClick: () => void;
-  icon: React.ReactNode; label: string; desc: string;
+function ScopeOption({
+  active,
+  onClick,
+  icon,
+  label,
+  desc,
+}: {
+  active: boolean;
+  onClick: () => void;
+  icon: React.ReactNode;
+  label: string;
+  desc: string;
 }) {
   return (
-    <button type="button" onClick={onClick}
+    <button
+      type="button"
+      onClick={onClick}
       className={cn(
         "flex flex-col items-start gap-1 rounded-lg border p-3 text-left transition-colors",
         active ? "border-primary bg-primary/5 ring-1 ring-primary" : "border-border hover:bg-accent",
-      )}>
-      <div className="flex items-center gap-1.5 text-sm font-medium">{icon} {label}</div>
+      )}
+    >
+      <div className="flex items-center gap-1.5 text-sm font-medium">
+        {icon} {label}
+      </div>
       <span className="text-[11px] text-muted-foreground">{desc}</span>
     </button>
   );
 }
 
-function DetailCard({ title, action, children }: {
-  title?: React.ReactNode; action?: React.ReactNode; children: React.ReactNode;
+function DetailCard({
+  title,
+  action,
+  children,
+}: {
+  title?: React.ReactNode;
+  action?: React.ReactNode;
+  children: React.ReactNode;
 }) {
   return (
     <Card className="gap-0 py-5">
@@ -72,16 +90,12 @@ function DetailCard({ title, action, children }: {
           {action}
         </CardHeader>
       )}
-      <CardContent className="px-5 pt-0">
-        {children}
-      </CardContent>
+      <CardContent className="px-5 pt-0">{children}</CardContent>
     </Card>
   );
 }
 
-function ParamTile({ icon, label, value }: {
-  icon: React.ReactNode; label: string; value: string;
-}) {
+function ParamTile({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
     <Card className="rounded-lg border bg-muted/30 p-0 shadow-none">
       <CardContent className="p-3">

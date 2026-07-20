@@ -9,6 +9,7 @@ typography:
   fonts: "Söhne, Inter, JetBrains Mono"
 note: "Frontmatter is auto-extracted; the prose body below is the authoritative source for full tokens, components, and rules."
 ---
+
 # Design System Inspired by OpenAI
 
 > Category: AI & LLM
@@ -23,6 +24,7 @@ The signature move is the use of **Söhne** (or its system stand-in `inter`) at 
 The shape system is uniformly soft: 8px–12px radii, 9999px pills for tags and chips, no harsh corners anywhere. Section transitions are denoted by whitespace rather than dividers; when borders appear they are `#e5e5e5` hairlines that read as the absence of color rather than its presence.
 
 **Key Characteristics:**
+
 - True white canvas (`#ffffff`) with deep teal-black ink (`#0d0d0d`)
 - Söhne / Inter at modest weights (400, 500, 600) — restraint over assertion
 - Signifier serif for editorial display headlines
@@ -34,27 +36,32 @@ The shape system is uniformly soft: 8px–12px radii, 9999px pills for tags and 
 ## 2. Color Palette & Roles
 
 ### Primary
+
 - **Pure White** (`#ffffff`): Primary background, card surface, button background.
 - **Ink Black** (`#0d0d0d`): Primary text, brand mark, primary CTA.
 - **Soft Black** (`#1a1a1a`): Secondary heading, alternative ink for non-critical text.
 
 ### Surface & Background
+
 - **Mist** (`#fafafa`): Section break background, footer surface.
 - **Pearl** (`#f5f5f5`): Card surface, elevated panel.
 - **Cloud** (`#ececec`): Disabled background, divider tint.
 
 ### Brand Accent
+
 - **OpenAI Teal** (`#10a37f`): Brand primary, link, highlight badge — the lone color in an otherwise neutral system.
 - **Teal Deep** (`#0a7a5e`): Hover and pressed state for the brand color.
 - **Teal Soft** (`#e8f5f0`): Surface tint for success badges, highlight callouts.
 
 ### Neutrals & Text
+
 - **Graphite** (`#3c3c3c`): Body text, default reading color.
 - **Slate** (`#6e6e6e`): Secondary text, captions, metadata.
 - **Ash** (`#9b9b9b`): Tertiary text, placeholder, disabled label.
 - **Stone** (`#c4c4c4`): Decorative dividers, faint icons.
 
 ### Semantic & Border
+
 - **Border Hairline** (`#e5e5e5`): Standard hairline separator.
 - **Border Soft** (`#ededed`): Card outline on white surface.
 - **Error** (`#ef4146`): Validation, destructive action.
@@ -64,26 +71,28 @@ The shape system is uniformly soft: 8px–12px radii, 9999px pills for tags and 
 ## 3. Typography Rules
 
 ### Font Family
+
 - **Display / Editorial**: `Signifier`, with fallback: `'Source Serif Pro', Georgia, serif`
 - **Body / UI**: `Söhne`, with fallback: `Inter, system-ui, -apple-system, 'Segoe UI', sans-serif`
 - **Code / Mono**: `Söhne Mono`, with fallback: `ui-monospace, 'JetBrains Mono', Menlo, Consolas, monospace`
 
 ### Hierarchy
 
-| Role | Font | Size | Weight | Line Height | Letter Spacing | Notes |
-|------|------|------|--------|-------------|----------------|-------|
-| Display | Signifier | 56px (3.5rem) | 400 | 1.08 | -0.02em | Editorial hero, announcement titles |
-| H1 | Söhne | 40px (2.5rem) | 600 | 1.15 | -0.01em | Page heading |
-| H2 | Söhne | 28px (1.75rem) | 600 | 1.2 | -0.005em | Section heading |
-| H3 | Söhne | 20px (1.25rem) | 600 | 1.3 | normal | Sub-section |
-| Body Large | Söhne | 18px (1.125rem) | 400 | 1.6 | normal | Lede paragraphs |
-| Body | Söhne | 16px (1rem) | 400 | 1.65 | normal | Standard reading text |
-| Body Small | Söhne | 14px (0.875rem) | 400 | 1.55 | normal | Card body, dense UI |
-| Caption | Söhne | 13px (0.8125rem) | 500 | 1.4 | 0.01em | Metadata, badges |
-| Label | Söhne | 12px (0.75rem) | 500 | 1.3 | 0.04em | Eyebrow, uppercase nav links |
-| Code | Söhne Mono | 14px (0.875rem) | 400 | 1.55 | normal | Code blocks, terminal output |
+| Role       | Font       | Size             | Weight | Line Height | Letter Spacing | Notes                               |
+| ---------- | ---------- | ---------------- | ------ | ----------- | -------------- | ----------------------------------- |
+| Display    | Signifier  | 56px (3.5rem)    | 400    | 1.08        | -0.02em        | Editorial hero, announcement titles |
+| H1         | Söhne      | 40px (2.5rem)    | 600    | 1.15        | -0.01em        | Page heading                        |
+| H2         | Söhne      | 28px (1.75rem)   | 600    | 1.2         | -0.005em       | Section heading                     |
+| H3         | Söhne      | 20px (1.25rem)   | 600    | 1.3         | normal         | Sub-section                         |
+| Body Large | Söhne      | 18px (1.125rem)  | 400    | 1.6         | normal         | Lede paragraphs                     |
+| Body       | Söhne      | 16px (1rem)      | 400    | 1.65        | normal         | Standard reading text               |
+| Body Small | Söhne      | 14px (0.875rem)  | 400    | 1.55        | normal         | Card body, dense UI                 |
+| Caption    | Söhne      | 13px (0.8125rem) | 500    | 1.4         | 0.01em         | Metadata, badges                    |
+| Label      | Söhne      | 12px (0.75rem)   | 500    | 1.3         | 0.04em         | Eyebrow, uppercase nav links        |
+| Code       | Söhne Mono | 14px (0.875rem)  | 400    | 1.55        | normal         | Code blocks, terminal output        |
 
 ### Principles
+
 - **Restraint as identity**: weights cap at 600; 700+ feels off-brand. Hierarchy comes from size and color, not weight.
 - **Serif for soul, sans for system**: Signifier appears only in editorial display moments. The product UI is sans-only.
 - **Negative tracking on display**: -0.02em on display sizes; tracking returns to zero by 16px.
@@ -93,6 +102,7 @@ The shape system is uniformly soft: 8px–12px radii, 9999px pills for tags and 
 ### Buttons
 
 **Primary**
+
 - Background: `#0d0d0d`
 - Text: `#ffffff`
 - Padding: 10px 18px
@@ -101,6 +111,7 @@ The shape system is uniformly soft: 8px–12px radii, 9999px pills for tags and 
 - Use: Primary CTA, "Try ChatGPT", "Sign in"
 
 **Secondary**
+
 - Background: `#ffffff`
 - Text: `#0d0d0d`
 - Border: 1px solid `#e5e5e5`
@@ -109,6 +120,7 @@ The shape system is uniformly soft: 8px–12px radii, 9999px pills for tags and 
 - Hover: background `#fafafa`, border `#d4d4d4`
 
 **Brand Accent**
+
 - Background: `#10a37f`
 - Text: `#ffffff`
 - Padding: 10px 18px
@@ -117,6 +129,7 @@ The shape system is uniformly soft: 8px–12px radii, 9999px pills for tags and 
 - Use: Highlighted upgrade CTA, success path
 
 ### Cards
+
 - Background: `#ffffff`
 - Border: 1px solid `#ededed`
 - Radius: 16px
@@ -124,6 +137,7 @@ The shape system is uniformly soft: 8px–12px radii, 9999px pills for tags and 
 - Shadow: none by default; on hover `0 4px 16px rgba(13,13,13,0.06)`
 
 ### Inputs
+
 - Background: `#ffffff`
 - Border: 1px solid `#e5e5e5`
 - Radius: 12px
@@ -131,6 +145,7 @@ The shape system is uniformly soft: 8px–12px radii, 9999px pills for tags and 
 - Focus: border `#10a37f`, ring `0 0 0 3px rgba(16,163,127,0.12)`
 
 ### Pills & Tags
+
 - Background: `#f5f5f5`
 - Text: `#3c3c3c`
 - Padding: 4px 10px

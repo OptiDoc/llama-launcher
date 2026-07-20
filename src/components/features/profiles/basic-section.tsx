@@ -7,9 +7,7 @@
 import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ScopeOption } from "./profiles-badges";
 import { Globe, Boxes } from "lucide-react";
 import type { ProfileFormState, ProfileFormAction } from "./new-profile-form";
@@ -18,7 +16,7 @@ interface BasicSectionProps {
   f: ProfileFormState;
   errors: Record<string, () => string>;
   dispatch: React.Dispatch<ProfileFormAction>;
-  models: any[];
+  models: unknown[];
 }
 
 export function BasicSection({ f, errors, dispatch, models }: BasicSectionProps) {
@@ -30,7 +28,9 @@ export function BasicSection({ f, errors, dispatch, models }: BasicSectionProps)
           id="prof-name"
           placeholder="e.g. Balanced"
           value={f.name}
-          onChange={(e) => { dispatch({ type: "SET_FIELD", key: "name", value: e.target.value }); }}
+          onChange={(e) => {
+            dispatch({ type: "SET_FIELD", key: "name", value: e.target.value });
+          }}
           className={cn("h-8 text-xs", errors.name() && "border-red-500")}
         />
         {errors.name() && <p className="text-xs text-red-500">{errors.name()}</p>}
@@ -68,9 +68,15 @@ export function BasicSection({ f, errors, dispatch, models }: BasicSectionProps)
         <div className="grid gap-1.5">
           <Label>Bound model</Label>
           <Select value={f.modelId} onValueChange={(v) => dispatch({ type: "SET_FIELD", key: "modelId", value: v })}>
-            <SelectTrigger className="w-full h-8 text-xs"><SelectValue placeholder="Select" /></SelectTrigger>
+            <SelectTrigger className="w-full h-8 text-xs">
+              <SelectValue placeholder="Select" />
+            </SelectTrigger>
             <SelectContent>
-              {models.map((m: any) => <SelectItem key={m.id} value={m.id}>{m.name}</SelectItem>)}
+              {models.map((m: any) => (
+                <SelectItem key={m.id} value={m.id}>
+                  {m.name}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>

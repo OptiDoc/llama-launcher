@@ -55,10 +55,14 @@ Recommended preset marker format:
 
 ```html
 <section data-platform="xhs" data-preset="cover-3x4" data-export-ratio="3:4">
-<section data-platform="xhs" data-preset="portrait-4x5" data-export-ratio="4:5">
-<section data-platform="xhs" data-preset="square" data-export-size="1080x1080">
-<section data-platform="wechat" data-preset="article-cover">
-<section data-platform="poster" data-preset="a4-portrait">
+  <section data-platform="xhs" data-preset="portrait-4x5" data-export-ratio="4:5">
+    <section data-platform="xhs" data-preset="square" data-export-size="1080x1080">
+      <section data-platform="wechat" data-preset="article-cover">
+        <section data-platform="poster" data-preset="a4-portrait"></section>
+      </section>
+    </section>
+  </section>
+</section>
 ```
 
 ### Current social/export presets
@@ -82,64 +86,96 @@ These presets are collected from the user's provided social-media size reference
 
 #### Xiaohongshu / RED
 
-| Preset | Size | Ratio | Use |
-|---|---:|---:|---|
-| `xhs-avatar` | 400 × 400 | 1:1 | 头像 |
-| `xhs-profile-background` | 1000 × 800 | 5:4 | 个人背景图 |
-| `xhs-note-cover-portrait` | 1242 × 1660 | ~3:4 | 图文封面，竖版 |
-| `xhs-note-cover-square` | 1080 × 1080 | 1:1 | 图文封面，方版 |
-| `xhs-note-cover-landscape` | 2560 × 1440 | 16:9 | 图文封面，横版 |
-| `xhs-video-cover-portrait` | 1080 × 1440 | 3:4 | 视频封面，竖版 |
-| `xhs-video-cover-landscape-4x3` | 1440 × 1080 | 4:3 | 视频封面，横版；source image labels it as 3:4, but the pixel ratio is 4:3 |
-| `xhs-video-cover-landscape-16x9` | 1920 × 1080 | 16:9 | 视频封面，横版 / widescreen |
+| Preset                           |        Size | Ratio | Use                                                                       |
+| -------------------------------- | ----------: | ----: | ------------------------------------------------------------------------- |
+| `xhs-avatar`                     |   400 × 400 |   1:1 | 头像                                                                      |
+| `xhs-profile-background`         |  1000 × 800 |   5:4 | 个人背景图                                                                |
+| `xhs-note-cover-portrait`        | 1242 × 1660 |  ~3:4 | 图文封面，竖版                                                            |
+| `xhs-note-cover-square`          | 1080 × 1080 |   1:1 | 图文封面，方版                                                            |
+| `xhs-note-cover-landscape`       | 2560 × 1440 |  16:9 | 图文封面，横版                                                            |
+| `xhs-video-cover-portrait`       | 1080 × 1440 |   3:4 | 视频封面，竖版                                                            |
+| `xhs-video-cover-landscape-4x3`  | 1440 × 1080 |   4:3 | 视频封面，横版；source image labels it as 3:4, but the pixel ratio is 4:3 |
+| `xhs-video-cover-landscape-16x9` | 1920 × 1080 |  16:9 | 视频封面，横版 / widescreen                                               |
 
 Recommended markers:
 
 ```html
 <section data-platform="xhs" data-preset="xhs-note-cover-portrait" data-export-size="1242x1660" data-export-ratio="3:4">
-<section data-platform="xhs" data-preset="xhs-note-cover-square" data-export-size="1080x1080" data-export-ratio="1:1">
-<section data-platform="xhs" data-preset="xhs-note-cover-landscape" data-export-size="2560x1440" data-export-ratio="16:9">
-<section data-platform="xhs" data-preset="xhs-video-cover-portrait" data-export-size="1080x1440" data-export-ratio="3:4">
+  <section data-platform="xhs" data-preset="xhs-note-cover-square" data-export-size="1080x1080" data-export-ratio="1:1">
+    <section
+      data-platform="xhs"
+      data-preset="xhs-note-cover-landscape"
+      data-export-size="2560x1440"
+      data-export-ratio="16:9"
+    >
+      <section
+        data-platform="xhs"
+        data-preset="xhs-video-cover-portrait"
+        data-export-size="1080x1440"
+        data-export-ratio="3:4"
+      ></section>
+    </section>
+  </section>
+</section>
 ```
 
 #### Douyin / TikTok China
 
-| Preset | Size | Ratio | Use |
-|---|---:|---:|---|
-| `douyin-avatar` | 400 × 400 | 1:1 | 头像 |
-| `douyin-profile-background` | 1125 × 633 | ~16:9 | 个人背景图 |
-| `douyin-cover-portrait-3x4` | 1242 × 1660 | ~3:4 | 封面，竖版 |
-| `douyin-cover-portrait-9x16` | 1080 × 1920 | 9:16 | 封面，竖版 |
-| `douyin-cover-landscape-16x9` | 1080 × 608 | ~16:9 | 封面，横版 |
+| Preset                        |        Size | Ratio | Use        |
+| ----------------------------- | ----------: | ----: | ---------- |
+| `douyin-avatar`               |   400 × 400 |   1:1 | 头像       |
+| `douyin-profile-background`   |  1125 × 633 | ~16:9 | 个人背景图 |
+| `douyin-cover-portrait-3x4`   | 1242 × 1660 |  ~3:4 | 封面，竖版 |
+| `douyin-cover-portrait-9x16`  | 1080 × 1920 |  9:16 | 封面，竖版 |
+| `douyin-cover-landscape-16x9` |  1080 × 608 | ~16:9 | 封面，横版 |
 
 Recommended markers:
 
 ```html
-<section data-platform="douyin" data-preset="douyin-cover-portrait-9x16" data-export-size="1080x1920" data-export-ratio="9:16">
-<section data-platform="douyin" data-preset="douyin-cover-landscape-16x9" data-export-size="1080x608" data-export-ratio="16:9">
+<section
+  data-platform="douyin"
+  data-preset="douyin-cover-portrait-9x16"
+  data-export-size="1080x1920"
+  data-export-ratio="9:16"
+>
+  <section
+    data-platform="douyin"
+    data-preset="douyin-cover-landscape-16x9"
+    data-export-size="1080x608"
+    data-export-ratio="16:9"
+  ></section>
+</section>
 ```
 
 #### WeChat ecosystem
 
-| Preset | Size | Ratio | Use |
-|---|---:|---:|---|
-| `wechat-official-account-avatar` | 240 × 240 | 1:1 | 公众号头像 |
-| `wechat-official-account-cover` | 900 × 383 | ~2.35:1 | 公众号封面 |
-| `wechat-official-account-thumbnail` | 200 × 200 | 1:1 | 公众号小图 |
-| `wechat-official-account-qrcode-card` | 600 × 600 | 1:1 | 公众号二维码名片 |
-| `wechat-official-account-guide-image` | 1080 × 300 | 18:5 | 公众号内容引导图 |
-| `wechat-channels-cover-portrait` | 1080 × 1260 | 6:7 | 视频号封面，竖版 |
-| `wechat-channels-cover-landscape` | 1080 × 608 | ~16:9 | 视频号封面，横版 |
-| `wechat-miniprogram-cover` | 520 × 416 | 5:4 | 小程序封面 |
-| `wechat-moments-cover` | 1280 × 1184 | ~1.08:1 | 朋友圈封面 |
+| Preset                                |        Size |   Ratio | Use              |
+| ------------------------------------- | ----------: | ------: | ---------------- |
+| `wechat-official-account-avatar`      |   240 × 240 |     1:1 | 公众号头像       |
+| `wechat-official-account-cover`       |   900 × 383 | ~2.35:1 | 公众号封面       |
+| `wechat-official-account-thumbnail`   |   200 × 200 |     1:1 | 公众号小图       |
+| `wechat-official-account-qrcode-card` |   600 × 600 |     1:1 | 公众号二维码名片 |
+| `wechat-official-account-guide-image` |  1080 × 300 |    18:5 | 公众号内容引导图 |
+| `wechat-channels-cover-portrait`      | 1080 × 1260 |     6:7 | 视频号封面，竖版 |
+| `wechat-channels-cover-landscape`     |  1080 × 608 |   ~16:9 | 视频号封面，横版 |
+| `wechat-miniprogram-cover`            |   520 × 416 |     5:4 | 小程序封面       |
+| `wechat-moments-cover`                | 1280 × 1184 | ~1.08:1 | 朋友圈封面       |
 
 Recommended markers:
 
 ```html
 <section data-platform="wechat" data-preset="wechat-official-account-cover" data-export-size="900x383">
-<section data-platform="wechat" data-preset="wechat-official-account-guide-image" data-export-size="1080x300">
-<section data-platform="wechat-channels" data-preset="wechat-channels-cover-portrait" data-export-size="1080x1260" data-export-ratio="6:7">
-<section data-platform="wechat-moments" data-preset="wechat-moments-cover" data-export-size="1280x1184">
+  <section data-platform="wechat" data-preset="wechat-official-account-guide-image" data-export-size="1080x300">
+    <section
+      data-platform="wechat-channels"
+      data-preset="wechat-channels-cover-portrait"
+      data-export-size="1080x1260"
+      data-export-ratio="6:7"
+    >
+      <section data-platform="wechat-moments" data-preset="wechat-moments-cover" data-export-size="1280x1184"></section>
+    </section>
+  </section>
+</section>
 ```
 
 ---
@@ -230,13 +266,20 @@ Recommended markers:
 
 ```html
 <section data-device="ios" data-viewport="390x844">
-<section data-device="ios-large" data-viewport="430x932">
-<section data-device="android" data-viewport="360x800">
-<section data-platform="mobile-web" data-viewport="390x844">
-<section data-platform="desktop-web" data-viewport="1440x900">
-<section data-platform="dashboard" data-viewport="1440x1024">
-<section data-export-size="1080x1920">
-<section data-export-ratio="3:4">
+  <section data-device="ios-large" data-viewport="430x932">
+    <section data-device="android" data-viewport="360x800">
+      <section data-platform="mobile-web" data-viewport="390x844">
+        <section data-platform="desktop-web" data-viewport="1440x900">
+          <section data-platform="dashboard" data-viewport="1440x1024">
+            <section data-export-size="1080x1920">
+              <section data-export-ratio="3:4"></section>
+            </section>
+          </section>
+        </section>
+      </section>
+    </section>
+  </section>
+</section>
 ```
 
 Recommended CSS:

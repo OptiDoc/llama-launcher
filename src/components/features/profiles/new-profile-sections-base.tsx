@@ -58,14 +58,22 @@ interface NumInputProps {
   placeholder?: string;
 }
 
-export function NumInput({ value, onChange, error, placeholder, ...props }: NumInputProps & Omit<React.InputHTMLAttributes<HTMLInputElement>, "value" | "onChange">) {
+export function NumInput({
+  value,
+  onChange,
+  error,
+  placeholder,
+  ...props
+}: NumInputProps & Omit<React.InputHTMLAttributes<HTMLInputElement>, "value" | "onChange">) {
   const errorMsg = typeof error === "function" ? error() : error;
   return (
     <Input
       type="number"
       value={value}
       placeholder={placeholder}
-      onChange={(e) => { onChange(e.target.value); }}
+      onChange={(e) => {
+        onChange(e.target.value);
+      }}
       className={cn("h-8 text-xs", errorMsg && "border-red-500")}
       {...props}
     />

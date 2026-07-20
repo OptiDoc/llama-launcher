@@ -38,10 +38,15 @@ export function createCancelDownloadSlice(
       log.info("[STORE] Retrying download", { category: "store", context: { dlId, kind: dl.kind } });
       if (dl.kind === "model") {
         const model = get().models.find(
-          (m) => m.name === dl.modelName && m.quant === dl.quant && m.builder === dl.builder
+          (m) => m.name === dl.modelName && m.quant === dl.quant && m.builder === dl.builder,
         );
         if (model && model.hfRepo) {
-          get().startHFDownload({ repo: model.hfRepo, quant: model.quant, modelName: model.name, builder: model.builder });
+          get().startHFDownload({
+            repo: model.hfRepo,
+            quant: model.quant,
+            modelName: model.name,
+            builder: model.builder,
+          });
         }
       }
     },

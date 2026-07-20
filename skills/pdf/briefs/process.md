@@ -30,7 +30,7 @@ User request
 python3 "$PDF_SKILL_DIR/scripts/pdf.py" env.check
 ```
 
-Reports availability but does **not** auto-install. 
+Reports availability but does **not** auto-install.
 
 Entry point: `python3 "$PDF_SKILL_DIR/scripts/pdf.py" <group>.<action> [options]`
 
@@ -197,12 +197,12 @@ python3 "$PDF_SKILL_DIR/scripts/pdf.py" form.fill input.pdf -o filled.pdf \
   -d '{"name": "John", "agree": "true", "country": "US"}'
 ```
 
-| Type | Value | Example |
-|------|-------|---------|
-| text | Free string | `"name": "Jane Doe"` |
-| checkbox | `"true"` / `"false"` | `"agree": "true"` |
-| radio | One of `radio_options[].value` | `"gender": "/Choice1"` |
-| dropdown | One of `choice_options[].value` | `"country": "US"` |
+| Type     | Value                           | Example                |
+| -------- | ------------------------------- | ---------------------- |
+| text     | Free string                     | `"name": "Jane Doe"`   |
+| checkbox | `"true"` / `"false"`            | `"agree": "true"`      |
+| radio    | One of `radio_options[].value`  | `"gender": "/Choice1"` |
+| dropdown | One of `choice_options[].value` | `"country": "US"`      |
 
 For complex forms: `form.detail input.pdf -o fields.json` (full field info) and `form.render input.pdf -o ./pages/` (visual check).
 
@@ -211,6 +211,7 @@ For complex forms: `form.detail input.pdf -o fields.json` (full field info) and 
 For PDFs without interactive fields (scanned forms, image-based). All four steps are mandatory.
 
 **Step 1 — Render pages as PNG**:
+
 ```bash
 python3 "$PDF_SKILL_DIR/scripts/pdf.py" form.render input.pdf -o ./pages/
 ```
@@ -219,25 +220,33 @@ python3 "$PDF_SKILL_DIR/scripts/pdf.py" form.render input.pdf -o ./pages/
 
 ```json
 {
-  "sheet": [{
-    "pg": 1, "dims": [1000, 1400],
-    "regions": [{
-      "id": "last_name", "hint": "Last name field",
-      "label": {"tag": "Last name", "bbox": [30, 125, 95, 142]},
-      "target": {"bbox": [100, 125, 280, 142]},
-      "ink": {"value": "Simpson", "size": 14, "color": "000000"}
-    }]
-  }]
+  "sheet": [
+    {
+      "pg": 1,
+      "dims": [1000, 1400],
+      "regions": [
+        {
+          "id": "last_name",
+          "hint": "Last name field",
+          "label": { "tag": "Last name", "bbox": [30, 125, 95, 142] },
+          "target": { "bbox": [100, 125, 280, 142] },
+          "ink": { "value": "Simpson", "size": 14, "color": "000000" }
+        }
+      ]
+    }
+  ]
 }
 ```
 
 **Step 3 — Validate**:
+
 ```bash
 python3 "$PDF_SKILL_DIR/scripts/pdf.py" form.check-bbox fields.json
 python3 "$PDF_SKILL_DIR/scripts/pdf.py" form.validate 1 fields.json page1.png validation.png
 ```
 
 **Step 4 — Fill**:
+
 ```bash
 python3 "$PDF_SKILL_DIR/scripts/pdf.py" form.annotate input.pdf fields.json -o filled.pdf
 ```
@@ -258,6 +267,7 @@ qpdf --encrypt user_pass owner_pass 256 --print=none --modify=none -- input.pdf 
 ```
 
 Python alternative:
+
 ```python
 from pypdf import PdfReader
 reader = PdfReader("encrypted.pdf")
@@ -332,6 +342,7 @@ soffice --headless --convert-to pdf --outdir ./output input.docx
 **macOS path**: `/Applications/LibreOffice.app/Contents/MacOS/soffice`
 
 **Gotchas:**
+
 - soffice allows only one instance at a time; use `--env:UserInstallation=file:///tmp/libreoffice_tmp` if needed
 - Missing Chinese fonts → squares. Ensure Noto Sans SC/Noto Serif SC are installed
 - Large files (>50MB) may take 1-2 min; set reasonable timeout
@@ -408,26 +419,26 @@ def batch_process(input_dir, operation='merge'):
 
 ## Caveats & Performance
 
-| Topic | Detail |
-|-------|--------|
-| < 50 MB | Instant |
-| 50–200 MB | 1–2 minutes |
-| > 200 MB | Split first, or extend timeout |
-| Memory | ~2-3× input file size |
+| Topic                 | Detail                                                           |
+| --------------------- | ---------------------------------------------------------------- |
+| < 50 MB               | Instant                                                          |
+| 50–200 MB             | 1–2 minutes                                                      |
+| > 200 MB              | Split first, or extend timeout                                   |
+| Memory                | ~2-3× input file size                                            |
 | Text extraction speed | `pdftotext -bbox-layout` fastest; pdfplumber for structured data |
-| Image extraction | `pdfimages` faster than full-page rendering |
-| Large PDFs | Process in chunks to manage memory |
+| Image extraction      | `pdfimages` faster than full-page rendering                      |
+| Large PDFs            | Process in chunks to manage memory                               |
 
 ## Tooling Inventory
 
-| Library / Tool | Role | Licence |
-|----------------|------|---------|
-| pikepdf | Low-level PDF manipulation (forms, pages, metadata) | MPL-2.0 |
-| pdfplumber | Content extraction (text, tables) | MIT |
-| pypdfium2 | Fast rendering, text extraction (PyMuPDF alternative) | Apache/BSD |
-| pypdf | Merge, split, crop, metadata, encryption | BSD |
-| poppler-utils | CLI text/image extraction, rendering | GPL-2 |
-| qpdf | Page manipulation, optimization, encryption, repair | Apache |
-| pytesseract | OCR for scanned PDFs | Apache |
-| pdf2image | PDF-to-image conversion via poppler | MIT |
-| LibreOffice | Office format conversion engine | MPL-2.0 |
+| Library / Tool | Role                                                  | Licence    |
+| -------------- | ----------------------------------------------------- | ---------- |
+| pikepdf        | Low-level PDF manipulation (forms, pages, metadata)   | MPL-2.0    |
+| pdfplumber     | Content extraction (text, tables)                     | MIT        |
+| pypdfium2      | Fast rendering, text extraction (PyMuPDF alternative) | Apache/BSD |
+| pypdf          | Merge, split, crop, metadata, encryption              | BSD        |
+| poppler-utils  | CLI text/image extraction, rendering                  | GPL-2      |
+| qpdf           | Page manipulation, optimization, encryption, repair   | Apache     |
+| pytesseract    | OCR for scanned PDFs                                  | Apache     |
+| pdf2image      | PDF-to-image conversion via poppler                   | MIT        |
+| LibreOffice    | Office format conversion engine                       | MPL-2.0    |

@@ -10,21 +10,21 @@ Three.js r170+ 的 TSL (Three Shading Language) 用 JS 函数调用链组合 sha
 
 ## TSL → GLSL 映射
 
-| TSL | GLSL |
-|-----|------|
-| `screenUV` | `gl_FragCoord.xy / resolution` |
-| `viewportSize` | `uniform vec2 resolution` |
-| `float()`/`vec2()`/`vec3()`/`vec4()` | 同名（但 TSL 中是 JS 函数） |
-| `.mul()`/`.add()`/`.sub()`/`.div()` | `*`/`+`/`-`/`/` |
-| `sin()`/`cos()`/`mix()`/`smoothstep()` | 同名 |
-| `clamp()`/`abs()`/`fract()`/`floor()` | 同名 |
-| `pow()`/`exp()`/`sqrt()`/`dot()`/`length()` | 同名 |
-| `Fn()` | shader 函数包裹器（内联到 GLSL） |
-| `uniform()` | `uniform <type> name` |
-| `convertToTexture()` | RTT（多 pass 渲染） |
-| `.sample(uv)` | `texture(sampler, uv)` |
-| `.toVar()`/`.assign()` | 声明/赋值可变变量 |
-| `.oneMinus()` | `1.0 - x` |
+| TSL                                         | GLSL                             |
+| ------------------------------------------- | -------------------------------- |
+| `screenUV`                                  | `gl_FragCoord.xy / resolution`   |
+| `viewportSize`                              | `uniform vec2 resolution`        |
+| `float()`/`vec2()`/`vec3()`/`vec4()`        | 同名（但 TSL 中是 JS 函数）      |
+| `.mul()`/`.add()`/`.sub()`/`.div()`         | `*`/`+`/`-`/`/`                  |
+| `sin()`/`cos()`/`mix()`/`smoothstep()`      | 同名                             |
+| `clamp()`/`abs()`/`fract()`/`floor()`       | 同名                             |
+| `pow()`/`exp()`/`sqrt()`/`dot()`/`length()` | 同名                             |
+| `Fn()`                                      | shader 函数包裹器（内联到 GLSL） |
+| `uniform()`                                 | `uniform <type> name`            |
+| `convertToTexture()`                        | RTT（多 pass 渲染）              |
+| `.sample(uv)`                               | `texture(sampler, uv)`           |
+| `.toVar()`/`.assign()`                      | 声明/赋值可变变量                |
+| `.oneMinus()`                               | `1.0 - x`                        |
 
 ## 重建步骤
 

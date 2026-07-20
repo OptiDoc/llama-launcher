@@ -21,7 +21,7 @@
     ctx.clearRect(0, 0, w, h);
     for (let i = 0; i < 5; i++) {
       const x = w * (0.14 + ((i * 0.19 + 0.17) % 0.72));
-      const y = h * (0.10 + ((i * 0.29 + 0.23) % 0.78));
+      const y = h * (0.1 + ((i * 0.29 + 0.23) % 0.78));
       const r = Math.max(w, h) * (0.22 + i * 0.045);
       const g = ctx.createRadialGradient(x, y, 0, x, y, r);
       g.addColorStop(0, i % 2 ? accent : ink);
@@ -33,7 +33,15 @@
     ctx.strokeStyle = opts.inkCss || "rgba(26,46,31,.22)";
     for (let i = 0; i < 18; i++) {
       ctx.beginPath();
-      ctx.ellipse(w * (0.5 + Math.sin(i) * 0.34), h * (0.5 + Math.cos(i * 1.7) * 0.28), 120 + i * 18, 42 + i * 9, i * 0.37, 0, Math.PI * 2);
+      ctx.ellipse(
+        w * (0.5 + Math.sin(i) * 0.34),
+        h * (0.5 + Math.cos(i * 1.7) * 0.28),
+        120 + i * 18,
+        42 + i * 9,
+        i * 0.37,
+        0,
+        Math.PI * 2,
+      );
       ctx.stroke();
     }
     ctx.globalAlpha = 1;
@@ -115,7 +123,7 @@
 
     const buffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, -1,1, 1,-1, 1,1]), gl.STATIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1]), gl.STATIC_DRAW);
     const loc = gl.getAttribLocation(program, "aPos");
     gl.enableVertexAttribArray(loc);
     gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
@@ -126,8 +134,8 @@
     const uPaper = gl.getUniformLocation(program, "uPaper");
     const uAccent = gl.getUniformLocation(program, "uAccent");
     const uStrength = gl.getUniformLocation(program, "uStrength");
-    const ink = rgb(opts.ink, [0.10, 0.18, 0.12]);
-    const paper = rgb(opts.paper, [0.96, 0.94, 0.90]);
+    const ink = rgb(opts.ink, [0.1, 0.18, 0.12]);
+    const paper = rgb(opts.paper, [0.96, 0.94, 0.9]);
     const accent = rgb(opts.accent, [0.18, 0.42, 0.31]);
 
     function resize() {

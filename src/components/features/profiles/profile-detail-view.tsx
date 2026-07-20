@@ -11,8 +11,19 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import {
-  Pencil, Files, Share2, Wand2, Trash2, Copy, Check,
-  Gauge, Zap, Layers, Flashlight, Terminal, Activity,
+  Pencil,
+  Files,
+  Share2,
+  Wand2,
+  Trash2,
+  Copy,
+  Check,
+  Gauge,
+  Zap,
+  Layers,
+  Flashlight,
+  Terminal,
+  Activity,
 } from "lucide-react";
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer } from "recharts";
 import { ProfileDetailHeader } from "./profile-detail-header";
@@ -24,9 +35,7 @@ function deriveCalibration(id: string) {
   return dims.map((dim) => ({ dim, value: score }));
 }
 
-export function ProfileDetailView({ profile, onBack }: {
-  profile: LlamaProfile; onBack: () => void;
-}) {
+export function ProfileDetailView({ profile, onBack }: { profile: LlamaProfile; onBack: () => void }) {
   const shareProfile = useLlamaStore((s) => s.shareProfile);
   const calibrateProfile = useLlamaStore((s) => s.calibrateProfile);
   const removeProfile = useLlamaStore((s) => s.removeProfile);
@@ -43,17 +52,29 @@ export function ProfileDetailView({ profile, onBack }: {
 
   const onCalibrate = () => {
     setCalibrating(true);
-    setTimeout(() => { calibrateProfile(profile.id); setCalibrating(false); }, 1400);
+    setTimeout(() => {
+      calibrateProfile(profile.id);
+      setCalibrating(false);
+    }, 1400);
   };
-  const onShare = () => { if (!profile.shared) shareProfile(profile.id); };
+  const onShare = () => {
+    if (!profile.shared) shareProfile(profile.id);
+  };
   const onCopy = () => {
     if (profile.shareId) {
-      try { navigator.clipboard?.writeText(profile.shareId); } catch { /* clipboard unavailable */ }
+      try {
+        navigator.clipboard?.writeText(profile.shareId);
+      } catch {
+        /* clipboard unavailable */
+      }
     }
     setCopied(true);
     setTimeout(() => setCopied(false), 1800);
   };
-  const onDelete = () => { removeProfile(profile.id); onBack(); };
+  const onDelete = () => {
+    removeProfile(profile.id);
+    onBack();
+  };
 
   return (
     <div className="space-y-5">
@@ -78,7 +99,9 @@ export function ProfileDetailView({ profile, onBack }: {
                 </div>
                 <div className="flex flex-col gap-2">
                   <p className="text-xs text-muted-foreground">Usage count: {usageCount}</p>
-                  <p className="text-xs text-muted-foreground">Created: {new Date(profile.createdAt).toLocaleDateString()}</p>
+                  <p className="text-xs text-muted-foreground">
+                    Created: {new Date(profile.createdAt).toLocaleDateString()}
+                  </p>
                 </div>
               </div>
             </CardContent>

@@ -24,7 +24,7 @@ The key difference here is that vibe coding allows me to leverage my current kno
 
 ### The Collapse of Quality
 
-Another important factor to understand here is that AI art isn't producing the worst work or the best work. It's producing the *median* of everything it has been trained on (actual artists' work). This is incredibly dangerous. It's essentially producing a blob of an over-generalized consensus on what looks "good." That doesn't work when you amalgamate every style and genre of art in order to produce something. This is not creative. This is aggregative.
+Another important factor to understand here is that AI art isn't producing the worst work or the best work. It's producing the _median_ of everything it has been trained on (actual artists' work). This is incredibly dangerous. It's essentially producing a blob of an over-generalized consensus on what looks "good." That doesn't work when you amalgamate every style and genre of art in order to produce something. This is not creative. This is aggregative.
 
 Another problem here isn't that AI can't make art. Everything it makes is, by design, is just good enough. Therefore, this hits dead center in the sweet spot for what massive corporations are looking for. Why pay a junior designer to iterate on multiple concepts when an AI can generate you 200 versions of something that are all "good enough"?
 

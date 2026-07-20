@@ -19,14 +19,41 @@ import { DropZone } from "@/components/features/models/drop-zone";
 
 export function ModelsPage() {
   const {
-    workspaceModels, ready, view, mounted, selectedModel, externalModels,
-    systemCapabilities, scanningExternal, editModel, editOpen, editFocusPath,
-    launchModel, launchOpen, hfOpen, hfPrefillRepo, hfPrefillName,
-    importDialogOpen, selectedImportFiles, importMoveMode, importStatus,
-    setEditOpen, setLaunchOpen, setHfOpen, setImportDialogOpen,
-    setImportMoveMode, handleViewChange, handleScanExternalModels,
-    handleOpenImportDialog, handleImportSelected, handleFilesDrop,
-    openEdit, handleLoad, openHF, actions, setSelectedId,
+    workspaceModels,
+    ready,
+    view,
+    mounted,
+    selectedModel,
+    externalModels,
+    systemCapabilities,
+    scanningExternal,
+    editModel,
+    editOpen,
+    editFocusPath,
+    launchModel,
+    launchOpen,
+    hfOpen,
+    hfPrefillRepo,
+    hfPrefillName,
+    importDialogOpen,
+    selectedImportFiles,
+    importMoveMode,
+    importStatus,
+    setEditOpen,
+    setLaunchOpen,
+    setHfOpen,
+    setImportDialogOpen,
+    setImportMoveMode,
+    handleViewChange,
+    handleScanExternalModels,
+    handleOpenImportDialog,
+    handleImportSelected,
+    handleFilesDrop,
+    openEdit,
+    handleLoad,
+    openHF,
+    actions,
+    setSelectedId,
   } = useModelsPage();
 
   if (selectedModel) {
@@ -40,7 +67,12 @@ export function ModelsPage() {
         />
         <EditModelDialog model={editModel} open={editOpen} onOpenChange={setEditOpen} focusPath={editFocusPath} />
         <LaunchConfirmDialog model={launchModel} open={launchOpen} onOpenChange={setLaunchOpen} />
-        <HFDownloadDialog open={hfOpen} onOpenChange={setHfOpen} prefillRepo={hfPrefillRepo} prefillModelName={hfPrefillName} />
+        <HFDownloadDialog
+          open={hfOpen}
+          onOpenChange={setHfOpen}
+          prefillRepo={hfPrefillRepo}
+          prefillModelName={hfPrefillName}
+        />
       </div>
     );
   }
@@ -55,11 +87,7 @@ export function ModelsPage() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          {mounted ? (
-            <ViewToggle value={view} onChange={handleViewChange} />
-          ) : (
-            <div className="h-9 w-32" />
-          )}
+          {mounted ? <ViewToggle value={view} onChange={handleViewChange} /> : <div className="h-9 w-32" />}
           <Tooltip>
             <TooltipTrigger asChild>
               <Button size="sm" variant="outline" onClick={handleOpenImportDialog}>
@@ -111,12 +139,7 @@ export function ModelsPage() {
           </div>
 
           <div className="flex items-center gap-2">
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={handleScanExternalModels}
-              disabled={scanningExternal}
-            >
+            <Button size="sm" variant="outline" onClick={handleScanExternalModels} disabled={scanningExternal}>
               {scanningExternal ? (
                 <>
                   <Loader2 className="mr-1.5 size-3.5 animate-spin" />
@@ -130,7 +153,7 @@ export function ModelsPage() {
               )}
             </Button>
             <p className="text-xs text-muted-foreground">
-              Found {externalModels.length} external model directory{externalModels.length !== 1 && 's'}
+              Found {externalModels.length} external model directory{externalModels.length !== 1 && "s"}
             </p>
           </div>
 
@@ -144,7 +167,12 @@ export function ModelsPage() {
 
       <EditModelDialog model={editModel} open={editOpen} onOpenChange={setEditOpen} focusPath={editFocusPath} />
       <LaunchConfirmDialog model={launchModel} open={launchOpen} onOpenChange={setLaunchOpen} />
-      <HFDownloadDialog open={hfOpen} onOpenChange={setHfOpen} prefillRepo={hfPrefillRepo} prefillModelName={hfPrefillName} />
+      <HFDownloadDialog
+        open={hfOpen}
+        onOpenChange={setHfOpen}
+        prefillRepo={hfPrefillRepo}
+        prefillModelName={hfPrefillName}
+      />
       <LocalModelImportDialog
         open={importDialogOpen}
         onOpenChange={setImportDialogOpen}

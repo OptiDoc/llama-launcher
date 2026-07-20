@@ -56,11 +56,11 @@ python3 scripts/generate_html.py \
 
 ## 合并前检查
 
-| 检查项 | 说明 |
-|--------|------|
-| 专业字段一致 | `recommended_majors` 的 name/code 与 `parsed.json` 一致 |
+| 检查项       | 说明                                                     |
+| ------------ | -------------------------------------------------------- |
+| 专业字段一致 | `recommended_majors` 的 name/code 与 `parsed.json` 一致  |
 | 院校字段一致 | `recommended_schools` 的 name/code 与 `parsed.json` 一致 |
-| 文案完整 | `intro`、`strategy`、`school_strategy` 非空 |
+| 文案完整     | `intro`、`strategy`、`school_strategy` 非空              |
 
 若合并前发现推荐字段不匹配，应回到对应 Skill 修正 JSON。
 

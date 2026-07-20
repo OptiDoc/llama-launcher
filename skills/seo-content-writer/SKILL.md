@@ -30,7 +30,6 @@ metadata:
 
 # SEO Content Writer
 
-
 > **[SEO & GEO Skills Library](https://skills.sh/aaron-he-zhu/seo-geo-claude-skills)** · 20 skills for SEO + GEO · Install all: `npx skills add aaron-he-zhu/seo-geo-claude-skills`
 
 <details>
@@ -104,6 +103,7 @@ Automatically pull keyword metrics (search volume, difficulty, CPC), competitor 
 
 **With manual data only:**
 Ask the user to provide:
+
 1. Target primary keyword and 3-5 secondary keywords
 2. Target audience and search intent (informational/commercial/transactional)
 3. Target word count and desired tone
@@ -118,10 +118,10 @@ When a user requests SEO content:
 1. **Gather Requirements**
 
    Confirm or ask for:
-   
+
    ```markdown
    ### Content Requirements
-   
+
    **Primary Keyword**: [main keyword]
    **Secondary Keywords**: [2-5 related keywords]
    **Target Word Count**: [length]
@@ -145,24 +145,24 @@ When a user requests SEO content:
 
    Apply these standards while writing:
 
-   | ID | Standard | How to Apply |
-   |----|----------|-------------|
-   | C01 | Intent Alignment | Title promise must match content delivery |
-   | C02 | Direct Answer | Core answer in first 150 words |
-   | C06 | Audience Targeting | State "this article is for..." |
-   | C10 | Semantic Closure | Conclusion answers opening question + next steps |
-   | O01 | Heading Hierarchy | H1→H2→H3, no level skipping |
-   | O02 | Summary Box | Include TL;DR or Key Takeaways |
-   | O06 | Section Chunking | Each section single topic; paragraphs 3–5 sentences |
-   | O09 | Information Density | No filler; consistent terminology |
-   | R01 | Data Precision | ≥5 precise numbers with units |
-   | R02 | Citation Density | ≥1 external citation per 500 words |
-   | R04 | Evidence-Claim Mapping | Every claim backed by evidence |
-   | R07 | Entity Precision | Full names for people/orgs/products |
-   | C03 | Query Coverage | Cover ≥3 query variants (synonyms, long-tail) |
-   | O08 | Anchor Navigation | Table of contents with jump links |
-   | O10 | Multimedia Structure | Images/videos have captions and carry information |
-   | E07 | Practical Tools | Include downloadable templates, checklists, or calculators |
+   | ID  | Standard               | How to Apply                                               |
+   | --- | ---------------------- | ---------------------------------------------------------- |
+   | C01 | Intent Alignment       | Title promise must match content delivery                  |
+   | C02 | Direct Answer          | Core answer in first 150 words                             |
+   | C06 | Audience Targeting     | State "this article is for..."                             |
+   | C10 | Semantic Closure       | Conclusion answers opening question + next steps           |
+   | O01 | Heading Hierarchy      | H1→H2→H3, no level skipping                                |
+   | O02 | Summary Box            | Include TL;DR or Key Takeaways                             |
+   | O06 | Section Chunking       | Each section single topic; paragraphs 3–5 sentences        |
+   | O09 | Information Density    | No filler; consistent terminology                          |
+   | R01 | Data Precision         | ≥5 precise numbers with units                              |
+   | R02 | Citation Density       | ≥1 external citation per 500 words                         |
+   | R04 | Evidence-Claim Mapping | Every claim backed by evidence                             |
+   | R07 | Entity Precision       | Full names for people/orgs/products                        |
+   | C03 | Query Coverage         | Cover ≥3 query variants (synonyms, long-tail)              |
+   | O08 | Anchor Navigation      | Table of contents with jump links                          |
+   | O10 | Multimedia Structure   | Images/videos have captions and carry information          |
+   | E07 | Practical Tools        | Include downloadable templates, checklists, or calculators |
 
    _These 16 items apply across all content types. For content-type-specific dimension weights, see the Content-Type Weight Table in [core-eeat-benchmark.md](../../references/core-eeat-benchmark.md)._
    _Full 80-item benchmark: [references/core-eeat-benchmark.md](../../references/core-eeat-benchmark.md)_
@@ -172,22 +172,24 @@ When a user requests SEO content:
 3. **Research and Plan**
 
    Before writing:
-   
+
    ```markdown
    ### Content Research
-   
+
    **SERP Analysis**:
+
    - Top results format: [what's ranking]
    - Average word count: [X] words
    - Common sections: [list]
    - SERP features: [snippets, PAA, etc.]
-   
+
    **Keyword Map**:
+
    - Primary: [keyword] - use in title, H1, intro, conclusion
    - Secondary: [keywords] - use in H2s, body paragraphs
    - LSI/Related: [terms] - sprinkle naturally throughout
    - Questions: [PAA questions] - use as H2/H3s or FAQ
-   
+
    **Content Angle**:
    [What unique perspective or value will this content provide?]
    ```
@@ -196,23 +198,24 @@ When a user requests SEO content:
 
    ```markdown
    ### Title Optimization
-   
+
    **Requirements**:
+
    - Include primary keyword (preferably at start)
    - Under 60 characters for full SERP display
    - Compelling and click-worthy
    - Match search intent
-   
+
    **Title Options**:
-   
+
    1. [Title option 1] ([X] chars)
       - Keyword position: [front/middle]
       - Power words: [list]
-   
+
    2. [Title option 2] ([X] chars)
       - Keyword position: [front/middle]
       - Power words: [list]
-   
+
    **Recommended**: [Best option with reasoning]
    ```
 
@@ -220,17 +223,19 @@ When a user requests SEO content:
 
    ```markdown
    ### Meta Description
-   
+
    **Requirements**:
+
    - 150-160 characters
    - Include primary keyword naturally
    - Include call-to-action
    - Compelling and specific
-   
+
    **Meta Description**:
    "[Description text]" ([X] characters)
-   
+
    **Elements included**:
+
    - ✅ Primary keyword
    - ✅ Value proposition
    - ✅ CTA or curiosity hook
@@ -240,32 +245,34 @@ When a user requests SEO content:
 
    ```markdown
    ### Content Structure
-   
+
    **H1**: [Primary keyword in H1 - only one per page]
-   
+
    **Introduction** (100-150 words)
+
    - Hook reader in first sentence
    - State what they'll learn
    - Include primary keyword in first 100 words
-   
+
    **H2**: [Secondary keyword or question]
    [Content section]
-   
+
    **H2**: [Secondary keyword or question]
-   
+
    **H3**: [Sub-topic]
    [Content]
-   
+
    **H3**: [Sub-topic]
    [Content]
-   
+
    **H2**: [Secondary keyword or question]
    [Content]
-   
+
    **H2**: Frequently Asked Questions
    [FAQ section for PAA optimization]
-   
+
    **Conclusion**
+
    - Summarize key points
    - Include primary keyword
    - Clear call-to-action
@@ -275,8 +282,9 @@ When a user requests SEO content:
 
    ```markdown
    ### On-Page SEO Checklist
-   
+
    **Keyword Placement**:
+
    - [ ] Primary keyword in title
    - [ ] Primary keyword in H1
    - [ ] Primary keyword in first 100 words
@@ -285,22 +293,25 @@ When a user requests SEO content:
    - [ ] Primary keyword in meta description
    - [ ] Secondary keywords in H2s/H3s
    - [ ] Related terms throughout body
-   
+
    **Content Quality**:
+
    - [ ] Comprehensive coverage of topic
    - [ ] Original insights or data
    - [ ] Actionable takeaways
    - [ ] Examples and illustrations
    - [ ] Expert quotes or citations (for E-E-A-T)
-   
+
    **Readability**:
+
    - [ ] Paragraphs of 3-5 sentences (per CORE-EEAT O06 Section Chunking standard)
    - [ ] Varied sentence length
    - [ ] Bullet points and lists
    - [ ] Bold key phrases
    - [ ] Table of contents for long content
-   
+
    **Technical**:
+
    - [ ] Internal links to relevant pages (2-5)
    - [ ] External links to authoritative sources (2-3)
    - [ ] Image alt text with keywords
@@ -313,68 +324,69 @@ When a user requests SEO content:
 
    ```markdown
    # [H1 with Primary Keyword]
-   
+
    [Hook sentence that grabs attention]
-   
+
    [Problem statement or context - why this matters]
-   
+
    [Promise - what the reader will learn/gain] [Include primary keyword naturally]
-   
+
    [Brief overview of what's covered - can be bullet points for scanability]
-   
+
    ## [H2 - First Main Section with Secondary Keyword]
-   
+
    [Introduction to section - 1-2 sentences]
-   
+
    [Main content with valuable information]
-   
+
    [Examples, data, or evidence to support points]
-   
+
    [Transition to next section]
-   
+
    ### [H3 - Sub-section if needed]
-   
+
    [Detailed content]
-   
+
    [Key points in bullet format]:
+
    - Point 1
    - Point 2
    - Point 3
-   
+
    ## [H2 - Second Main Section]
-   
+
    [Continue with valuable content...]
-   
+
    > **Pro Tip**: [Highlighted tip or key insight]
-   
+
    | Column 1 | Column 2 | Column 3 |
-   |----------|----------|----------|
-   | Data | Data | Data |
-   
+   | -------- | -------- | -------- |
+   | Data     | Data     | Data     |
+
    ## [H2 - Additional Sections as Needed]
-   
+
    [Content...]
-   
+
    ## Frequently Asked Questions
-   
+
    ### [Question from PAA or common query]?
-   
+
    [Direct, concise answer in 40-60 words for featured snippet opportunity]
-   
+
    ### [Question 2]?
-   
+
    [Answer]
-   
+
    ### [Question 3]?
-   
+
    [Answer]
-   
+
    ## Conclusion
-   
+
    [Summary of key points - include primary keyword]
-   
+
    [Final thought or insight]
-   
+
    [Clear call-to-action: what should reader do next?]
    ```
 
@@ -382,55 +394,58 @@ When a user requests SEO content:
 
    ```markdown
    ### Featured Snippet Optimization
-   
+
    **For Definition Snippets**:
    "[Term] is [clear, concise definition in 40-60 words]"
-   
+
    **For List Snippets**:
    Create clear, numbered or bulleted lists under H2s
-   
+
    **For Table Snippets**:
    Use comparison tables with clear headers
-   
+
    **For How-To Snippets**:
    Number each step clearly: "Step 1:", "Step 2:", etc.
    ```
 
 10. **Add Internal/External Links**
 
-   ```markdown
-   ### Link Recommendations
-   
-   **Internal Links** (include 2-5):
-   1. "[anchor text]" → [/your-page-url] (relevant because: [reason])
-   2. "[anchor text]" → [/your-page-url] (relevant because: [reason])
-   
-   **External Links** (include 2-3 authoritative sources):
-   1. "[anchor text]" → [authoritative-source.com] (supports: [claim])
-   2. "[anchor text]" → [authoritative-source.com] (supports: [claim])
-   ```
+```markdown
+### Link Recommendations
+
+**Internal Links** (include 2-5):
+
+1. "[anchor text]" → [/your-page-url] (relevant because: [reason])
+2. "[anchor text]" → [/your-page-url] (relevant because: [reason])
+
+**External Links** (include 2-3 authoritative sources):
+
+1. "[anchor text]" → [authoritative-source.com] (supports: [claim])
+2. "[anchor text]" → [authoritative-source.com] (supports: [claim])
+```
 
 11. **Final SEO Review**
 
     ```markdown
     ### Content SEO Score
 
-    | Factor | Status | Notes |
-    |--------|--------|-------|
-    | Title optimized | ✅/⚠️/❌ | [notes] |
-    | Meta description | ✅/⚠️/❌ | [notes] |
-    | H1 with keyword | ✅/⚠️/❌ | [notes] |
-    | Keyword in first 100 words | ✅/⚠️/❌ | [notes] |
-    | H2s optimized | ✅/⚠️/❌ | [notes] |
-    | Internal links | ✅/⚠️/❌ | [notes] |
-    | External links | ✅/⚠️/❌ | [notes] |
-    | FAQ section | ✅/⚠️/❌ | [notes] |
-    | Readability | ✅/⚠️/❌ | [notes] |
-    | Word count | ✅/⚠️/❌ | [X] words |
+    | Factor                     | Status   | Notes     |
+    | -------------------------- | -------- | --------- |
+    | Title optimized            | ✅/⚠️/❌ | [notes]   |
+    | Meta description           | ✅/⚠️/❌ | [notes]   |
+    | H1 with keyword            | ✅/⚠️/❌ | [notes]   |
+    | Keyword in first 100 words | ✅/⚠️/❌ | [notes]   |
+    | H2s optimized              | ✅/⚠️/❌ | [notes]   |
+    | Internal links             | ✅/⚠️/❌ | [notes]   |
+    | External links             | ✅/⚠️/❌ | [notes]   |
+    | FAQ section                | ✅/⚠️/❌ | [notes]   |
+    | Readability                | ✅/⚠️/❌ | [notes]   |
+    | Word count                 | ✅/⚠️/❌ | [X] words |
 
     **Overall SEO Score**: [X]/10
 
     **Improvements to Consider**:
+
     1. [Suggestion]
     2. [Suggestion]
     ```
@@ -442,23 +457,23 @@ When a user requests SEO content:
     ```markdown
     ### CORE-EEAT Post-Write Check
 
-    | ID | Standard | Status | Notes |
-    |----|----------|--------|-------|
-    | C01 | Intent Alignment: title = content | ✅/⚠️/❌ | [notes] |
-    | C02 | Direct Answer in first 150 words | ✅/⚠️/❌ | [notes] |
-    | C06 | Audience explicitly stated | ✅/⚠️/❌ | [notes] |
-    | C10 | Conclusion answers opening question | ✅/⚠️/❌ | [notes] |
-    | O01 | Heading hierarchy correct | ✅/⚠️/❌ | [notes] |
-    | O02 | Summary/Key Takeaways present | ✅/⚠️/❌ | [notes] |
-    | O06 | Paragraphs 3–5 sentences | ✅/⚠️/❌ | [notes] |
-    | O09 | No filler; consistent terms | ✅/⚠️/❌ | [notes] |
-    | R01 | ≥5 precise data points with units | ✅/⚠️/❌ | [notes] |
-    | R02 | ≥1 citation per 500 words | ✅/⚠️/❌ | [notes] |
-    | R04 | Claims backed by evidence | ✅/⚠️/❌ | [notes] |
-    | R07 | Full entity names used | ✅/⚠️/❌ | [notes] |
-    | C03 | ≥3 query variants covered | ✅/⚠️/❌ | [notes] |
-    | O08 | Table of contents with jump links | ✅/⚠️/❌ | [notes] |
-    | O10 | Images/videos captioned and informative | ✅/⚠️/❌ | [notes] |
+    | ID  | Standard                                 | Status   | Notes   |
+    | --- | ---------------------------------------- | -------- | ------- |
+    | C01 | Intent Alignment: title = content        | ✅/⚠️/❌ | [notes] |
+    | C02 | Direct Answer in first 150 words         | ✅/⚠️/❌ | [notes] |
+    | C06 | Audience explicitly stated               | ✅/⚠️/❌ | [notes] |
+    | C10 | Conclusion answers opening question      | ✅/⚠️/❌ | [notes] |
+    | O01 | Heading hierarchy correct                | ✅/⚠️/❌ | [notes] |
+    | O02 | Summary/Key Takeaways present            | ✅/⚠️/❌ | [notes] |
+    | O06 | Paragraphs 3–5 sentences                 | ✅/⚠️/❌ | [notes] |
+    | O09 | No filler; consistent terms              | ✅/⚠️/❌ | [notes] |
+    | R01 | ≥5 precise data points with units        | ✅/⚠️/❌ | [notes] |
+    | R02 | ≥1 citation per 500 words                | ✅/⚠️/❌ | [notes] |
+    | R04 | Claims backed by evidence                | ✅/⚠️/❌ | [notes] |
+    | R07 | Full entity names used                   | ✅/⚠️/❌ | [notes] |
+    | C03 | ≥3 query variants covered                | ✅/⚠️/❌ | [notes] |
+    | O08 | Table of contents with jump links        | ✅/⚠️/❌ | [notes] |
+    | O10 | Images/videos captioned and informative  | ✅/⚠️/❌ | [notes] |
     | E07 | Downloadable template/checklist included | ✅/⚠️/❌ | [notes] |
 
     **Items Needing Attention**: [list any ⚠️/❌ items]
@@ -469,12 +484,14 @@ When a user requests SEO content:
 ## Validation Checkpoints
 
 ### Input Validation
+
 - [ ] Primary keyword confirmed and matches search intent
 - [ ] Target word count specified (minimum 800 words for substantive content)
 - [ ] Content type and audience clearly defined
 - [ ] Competitor URLs reviewed or target SERP features identified
 
 ### Output Validation
+
 - [ ] Keyword density within 1-2% for primary keyword (Note: Keyword density is a guideline, not a hard rule. Modern search engines prioritize semantic relevance and natural language over exact density targets. Focus on covering the topic comprehensively with semantic variants rather than hitting a specific percentage.)
 - [ ] All sections from outline covered completely
 - [ ] Internal links included (2-5 relevant links)
@@ -500,6 +517,7 @@ Want to know the secret behind small businesses that consistently turn subscribe
 Email marketing remains one of the most effective channels for small businesses, delivering an average ROI of $42 for every $1 spent. But with inboxes more crowded than ever, following email marketing best practices isn't optional—it's essential for survival.
 
 In this guide, you'll learn:
+
 - How to build a quality email list that converts
 - Proven strategies to increase open and click rates
 - Advanced personalization techniques that drive results
@@ -514,6 +532,7 @@ Before we explore the best practices, let's understand why email deserves your a
 Unlike social media where algorithms control who sees your content, email gives you direct access to your audience. You own your email list—no platform can take it away.
 
 **Key email marketing statistics for small businesses**:
+
 - 81% of SMBs rely on email as their primary customer acquisition channel
 - Email subscribers are 3x more likely to share content on social media
 - Personalized emails generate 6x higher transaction rates
@@ -525,6 +544,7 @@ Unlike social media where algorithms control who sees your content, email gives 
 The foundation of effective email marketing is a quality list. Here's how to grow yours:
 
 **Lead magnets that convert**:
+
 - Industry-specific templates
 - Exclusive discounts or early access
 - Free tools or calculators
@@ -536,12 +556,12 @@ The foundation of effective email marketing is a quality list. Here's how to gro
 
 Double opt-in confirms subscriber intent and improves deliverability. Yes, you'll have fewer subscribers, but they'll be more engaged.
 
-| Single Opt-in | Double Opt-in |
-|---------------|---------------|
-| More subscribers | Fewer subscribers |
-| Higher bounce rates | Lower bounce rates |
-| Lower engagement | Higher engagement |
-| Spam risk | Better deliverability |
+| Single Opt-in       | Double Opt-in         |
+| ------------------- | --------------------- |
+| More subscribers    | Fewer subscribers     |
+| Higher bounce rates | Lower bounce rates    |
+| Lower engagement    | Higher engagement     |
+| Spam risk           | Better deliverability |
 
 ## Crafting Emails That Get Opened
 
@@ -550,6 +570,7 @@ Double opt-in confirms subscriber intent and improves deliverability. Yes, you'l
 Your subject line determines whether emails get opened or ignored.
 
 **Subject line best practices**:
+
 1. Keep it under 50 characters
 2. Create urgency without being spammy
 3. Use numbers and specifics
@@ -567,6 +588,7 @@ Generic emails perform poorly. Here's how to personalize effectively:
 ### Segment Your Email List
 
 Divide your list based on:
+
 - Purchase history
 - Engagement level
 - Demographics
@@ -601,9 +623,9 @@ Start with one improvement today. Whether it's segmenting your list, testing sub
 
 ---
 
-*Further reading: [Internal link: "How to Write Email Copy That Converts"]*
+_Further reading: [Internal link: "How to Write Email Copy That Converts"]_
 
-*Sources: [Litmus Email Marketing Statistics](https://litmus.com), [Campaign Monitor Email Benchmarks](https://campaignmonitor.com)*
+_Sources: [Litmus Email Marketing Statistics](https://litmus.com), [Campaign Monitor Email Benchmarks](https://campaignmonitor.com)_
 ```
 
 ## Content Type Templates
@@ -658,4 +680,3 @@ Write an ultimate guide about [topic] (3,000+ words) targeting [keyword]
 - [memory-management](../../cross-cutting/memory-management/) — Track content performance over time
 - [content-gap-analysis](../../research/content-gap-analysis/) — Identify content opportunities to write about
 - [schema-markup-generator](../schema-markup-generator/) — Add structured data to published content
-

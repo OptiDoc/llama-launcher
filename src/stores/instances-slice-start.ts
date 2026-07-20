@@ -32,7 +32,21 @@ export function createStartInstanceSlice(
       }
     },
 
-    startInstance: ({ name, model, profile, port, host, gpu }: { name: string; model: string; profile: string; port: number; host: string; gpu: string }) => {
+    startInstance: ({
+      name,
+      model,
+      profile,
+      port,
+      host,
+      gpu,
+    }: {
+      name: string;
+      model: string;
+      profile: string;
+      port: number;
+      host: string;
+      gpu: string;
+    }) => {
       if (isTauri()) {
         const wsId = get().activeWorkspaceId;
         const prof = get().profiles.find((p) => p.id === profile);
@@ -40,17 +54,36 @@ export function createStartInstanceSlice(
         const color = colors[get().instances.length % colors.length];
         const placeholderId = uid("inst");
         const instance: LlamaInstance = {
-          id: placeholderId, name, model, profile: prof?.name ?? "default", port, host,
-          status: "starting", gpu, ctxSize: prof ? parseInt(prof.ctxSize) || 8192 : 8192, threads: prof ? parseInt(prof.threads) || 8 : 8,
-          color, startedAt: nowTs(), promptTokens: 0, generatedTokens: 0,
-          requestsPerMin: 0, tokensPerSec: 0, memoryMb: 0,
-          peakTokensPerSec: 0, totalRequests: 0, errorCount: 0, workspaceId: wsId,
-          metrics: null, log: [], hibernatedConfig: undefined,
+          id: placeholderId,
+          name,
+          model,
+          profile: prof?.name ?? "default",
+          port,
+          host,
+          status: "starting",
+          gpu,
+          ctxSize: prof ? parseInt(prof.ctxSize) || 8192 : 8192,
+          threads: prof ? parseInt(prof.threads) || 8 : 8,
+          color,
+          startedAt: nowTs(),
+          promptTokens: 0,
+          generatedTokens: 0,
+          requestsPerMin: 0,
+          tokensPerSec: 0,
+          memoryMb: 0,
+          peakTokensPerSec: 0,
+          totalRequests: 0,
+          errorCount: 0,
+          workspaceId: wsId,
+          metrics: null,
+          log: [],
+          hibernatedConfig: null,
         };
         set((s) => ({
           instances: [...s.instances, instance],
           logs: { ...s.logs, [placeholderId]: [] },
-          activeConsoleId: placeholderId, consoleOpen: true,
+          activeConsoleId: placeholderId,
+          consoleOpen: true,
         }));
         emitLog(placeholderId, "info", `Launching llama-server for "${name}" (model: ${model})`);
         emitLog(placeholderId, "info", `  model       : ${model}`);
@@ -69,7 +102,8 @@ export function createStartInstanceSlice(
             no_mmap: !(prof?.mmap ?? true),
             no_mlock: prof?.mlock ?? false,
             numa: prof?.numa ?? false,
-            port, host,
+            port,
+            host,
             parallel: prof ? parseInt(prof.parallel) || -1 : -1,
             cont_batching: prof?.contBatching ?? true,
             n_predict: prof ? parseInt(prof.nPredict) || -1 : -1,
@@ -121,9 +155,7 @@ export function createStartInstanceSlice(
             emitLog(tauriProc.id, "success", `server started (pid: ${tauriProc.pid}, port: ${tauriProc.port})`);
           } else {
             set((s) => ({
-              instances: s.instances.map((i) =>
-                i.id === placeholderId ? { ...i, status: "error" } : i,
-              ),
+              instances: s.instances.map((i) => (i.id === placeholderId ? { ...i, status: "error" } : i)),
             }));
             emitLog(placeholderId, "error", `Failed to start llama-server. Check the binary path in Settings.`);
           }
@@ -131,9 +163,7 @@ export function createStartInstanceSlice(
           const errMsg = e instanceof Error ? e.message : String(e);
           emitLog(placeholderId, "error", `Unexpected error: ${errMsg}`);
           set((s) => ({
-            instances: s.instances.map((i) =>
-              i.id === placeholderId ? { ...i, status: "error" } : i,
-            ),
+            instances: s.instances.map((i) => (i.id === placeholderId ? { ...i, status: "error" } : i)),
           }));
         });
         get().registerActivity?.();

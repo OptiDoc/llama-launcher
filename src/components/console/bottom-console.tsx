@@ -8,15 +8,8 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import {
-  ChevronDown,
-  Trash2,
-  X,
-} from "lucide-react";
-import {
-  useLlamaStore,
-  SYSTEM_CONSOLE,
-} from "@/lib/llama-store";
+import { ChevronDown, Trash2, X } from "lucide-react";
+import { useLlamaStore, SYSTEM_CONSOLE } from "@/lib/llama-store";
 import { StatusDot } from "./status-dot";
 import { LogView } from "./log-view";
 import { buildConsoleTabs } from "./console-tabs";
@@ -74,21 +67,14 @@ export function BottomConsole() {
       style={consoleOpen ? { height: consoleHeight, left: "12px", right: "12px" } : { left: "12px", right: "12px" }}
     >
       {/* Drag handle */}
-      <div
-        className="h-2 cursor-row-resize border-b border-border/60 bg-muted/30"
-        onMouseDown={onResizeStart}
-      />
+      <div className="h-2 cursor-row-resize border-b border-border/60 bg-muted/30" onMouseDown={onResizeStart} />
 
       {/* Tabs */}
       <div className="flex items-center justify-between border-b border-border/60 px-3 py-1.5">
         <Tabs value={activeConsoleId} onValueChange={(v) => setActiveConsole(v)}>
           <TabsList className="h-7">
             {tabs.map((tab) => (
-              <TabsTrigger
-                key={tab.id}
-                value={tab.id}
-                className="h-6 gap-1.5 text-[11px]"
-              >
+              <TabsTrigger key={tab.id} value={tab.id} className="h-6 gap-1.5 text-[11px]">
                 {tab.icon}
                 {tab.label}
                 {tab.logCount > 0 && (

@@ -14,10 +14,7 @@ export type ChartConfig = {
   [k in string]: {
     label?: React.ReactNode;
     icon?: React.ComponentType;
-  } & (
-    | { color?: string; theme?: never }
-    | { color?: never; theme: Record<keyof typeof THEMES, string> }
-  );
+  } & ({ color?: string; theme?: never } | { color?: never; theme: Record<keyof typeof THEMES, string> });
 };
 
 type ChartContextProps = {
@@ -36,11 +33,7 @@ function useChart() {
   return context;
 }
 
-function getPayloadConfigFromPayload(
-  config: ChartConfig,
-  payload: Record<string, unknown>,
-  key: string
-) {
+function getPayloadConfigFromPayload(config: ChartConfig, payload: Record<string, unknown>, key: string) {
   const payloadKey = key in payload ? key : Object.keys(payload)[0];
   const payloadConfig = config[payloadKey as keyof typeof config];
   return payloadConfig;
@@ -49,6 +42,4 @@ function getPayloadConfigFromPayload(
 export { useChart, getPayloadConfigFromPayload };
 
 // Re-export Recharts types for convenience
-export type {
-  Payload as ChartPayload,
-} from "recharts/types/component/DefaultTooltipContent";
+export type { Payload as ChartPayload } from "recharts/types/component/DefaultTooltipContent";

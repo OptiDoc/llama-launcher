@@ -65,13 +65,17 @@ export function createReleasesSlice(
       }
     },
 
-    installRelease: (id) => set((s) => ({
-      releases: s.releases.map((r) => (r.id === id ? { ...r, installed: true, installing: false, installProgress: 100 } : r)),
-    })),
+    installRelease: (id) =>
+      set((s) => ({
+        releases: s.releases.map((r) =>
+          r.id === id ? { ...r, installed: true, installing: false, installProgress: 100 } : r,
+        ),
+      })),
 
-    uninstallRelease: (id) => set((s) => ({
-      releases: s.releases.map((r) => (r.id === id ? { ...r, installed: false } : r)),
-    })),
+    uninstallRelease: (id) =>
+      set((s) => ({
+        releases: s.releases.map((r) => (r.id === id ? { ...r, installed: false } : r)),
+      })),
 
     copyCudaLibs: (releaseId) => {
       log.info("[STORE] copyCudaLibs called", { category: "store", context: { releaseId } });

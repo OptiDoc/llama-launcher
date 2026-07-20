@@ -26,13 +26,22 @@ export function useHFDownloadDialog() {
   const scrollRef = React.useRef<HTMLDivElement | null>(null);
 
   React.useEffect(() => {
-    if (!selectedRepo) { setAvailableQuants([]); return; }
+    if (!selectedRepo) {
+      setAvailableQuants([]);
+      return;
+    }
     let cancelled = false;
     setLoadingQuants(true);
     (async () => {
       try {
         const resp = await fetch(`https://huggingface.co/api/models/${selectedRepo.repo}/tree/main`);
-        if (!resp.ok) { if (!cancelled) { setAvailableQuants([]); setLoadingQuants(false); } return; }
+        if (!resp.ok) {
+          if (!cancelled) {
+            setAvailableQuants([]);
+            setLoadingQuants(false);
+          }
+          return;
+        }
         const items: Array<{ path: string; type?: string }> = await resp.json();
         const found = new Set<string>();
         for (const item of items) {
@@ -42,17 +51,21 @@ export function useHFDownloadDialog() {
           }
           if (item.type === "directory") {
             try {
-              const subResp = await fetch(`https://huggingface.co/api/models/${selectedRepo.repo}/tree/main/${item.path}`);
+              const subResp = await fetch(
+                `https://huggingface.co/api/models/${selectedRepo.repo}/tree/main/${item.path}`,
+              );
               if (subResp.ok) {
                 const subItems: Array<{ path: string; type?: string }> = await subResp.json();
                 for (const si of subItems) {
                   if (si.type === "file" && si.path.endsWith(".gguf")) {
-                    const m = si.path.match(/\.([A-Z0-9_]+)[\.-]/i) ?? si.path.match(/([A-Z0-9_]+)[\.-]/i);
+                    const m = si.path.match(/\.[A-Z0-9_]+[.-]/i) ?? si.path.match(/[A-Z0-9_]+[.-]/i);
                     if (m) found.add(m[1].toUpperCase());
                   }
                 }
               }
-            } catch { /* ignore subdirectory fetch errors */ }
+            } catch {
+              /* ignore subdirectory fetch errors */
+            }
           }
         }
         if (!cancelled) {
@@ -69,7 +82,9 @@ export function useHFDownloadDialog() {
         if (!cancelled) setLoadingQuants(false);
       }
     })();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [selectedRepo?.repo]);
 
   const handleOpenChange = (open: boolean) => {
@@ -84,7 +99,11 @@ export function useHFDownloadDialog() {
   };
 
   React.useEffect(() => {
-    if (!query.trim()) { setResults([]); setSearching(false); return; }
+    if (!query.trim()) {
+      setResults([]);
+      setSearching(false);
+      return;
+    }
     setSearching(true);
     setVisibleCount(PAGE_SIZE);
     let cancelled = false;
@@ -122,7 +141,9 @@ export function useHFDownloadDialog() {
 
   const baseSizeGb = selectedRepo?.baseSizeGb ?? 0;
   const estimatedGb = Math.round(baseSizeGb * 0.6 * 10) / 10;
-  const filename = selectedRepo ? `${(selectedRepo.repo.split("/")[1] ?? selectedRepo.repo).replace(/[-_]?[Gg][Gg][Uu][Ff]$/i, "")}.${quant}.gguf` : "";
+  const filename = selectedRepo
+    ? `${(selectedRepo.repo.split("/")[1] ?? selectedRepo.repo).replace(/[-_]?[Gg][Gg][Uu][Ff]$/i, "")}.${quant}.gguf`
+    : "";
   const builder = selectedRepo?.builder ?? "";
   const quantAvailable = availableQuants.length === 0 || availableQuants.includes(quant);
   const canStart = !!selectedRepo && quantAvailable && modelName.trim().length > 0;

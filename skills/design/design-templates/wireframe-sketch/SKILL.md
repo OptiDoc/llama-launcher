@@ -26,12 +26,12 @@ The biggest failure mode of this skill: model inherits the brush strokes (wobble
 
 **Before you write a single line, declare in your reply which skeleton you're using and why.** Match user's words to one of:
 
-| User says | Skeleton | Why |
-|---|---|---|
-| 报纸 / 杂志 / landing / 官网 / brochure / 单页 / 一篇 / 简报 / 海报式文档 / one-pager / editorial | **A. Single-Page Editorial** | One long page, sections stack, content-dense |
-| App / 小程序 / 移动端 / 手机 / 桌面应用 / SaaS 流程 / 用户路径 / 注册流 / 下单流 / 多屏 / 多页 / 注册 / 登录 / 引导 / 设置 / Tab / 表单流 | **B. App Multi-Screen Flow** | Multiple screens, navigation, states, triggers |
-| 信息架构 / IA / sitemap / 站点地图 / 流程图 / 关系图 / 节点图 / 数据流 / 状态机 / 权限矩阵 | **C. IA / Sitemap Diagram** | Nodes + edges, no actual screens |
-| 不明 / 用户没说 / 都行 | **ask the user** before picking — don't default | — |
+| User says                                                                                                                                 | Skeleton                                        | Why                                            |
+| ----------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------- | ---------------------------------------------- |
+| 报纸 / 杂志 / landing / 官网 / brochure / 单页 / 一篇 / 简报 / 海报式文档 / one-pager / editorial                                         | **A. Single-Page Editorial**                    | One long page, sections stack, content-dense   |
+| App / 小程序 / 移动端 / 手机 / 桌面应用 / SaaS 流程 / 用户路径 / 注册流 / 下单流 / 多屏 / 多页 / 注册 / 登录 / 引导 / 设置 / Tab / 表单流 | **B. App Multi-Screen Flow**                    | Multiple screens, navigation, states, triggers |
+| 信息架构 / IA / sitemap / 站点地图 / 流程图 / 关系图 / 节点图 / 数据流 / 状态机 / 权限矩阵                                                | **C. IA / Sitemap Diagram**                     | Nodes + edges, no actual screens               |
+| 不明 / 用户没说 / 都行                                                                                                                    | **ask the user** before picking — don't default | —                                              |
 
 If the user gave a topic but no skeleton hint, **ask which one**. Picking wrong = doing the work twice.
 
@@ -69,6 +69,7 @@ Density: aim for the foolscap reference's content-per-square-inch — sparse sin
 ### Per-screen requirements
 
 Every screen block must have:
+
 - **Figure number** — `图 02` / `Fig. 03`, sequential, referenced from flow diagrams
 - **One-line responsibility** — "记一笔 · 从主页点'+'进入,保存后弹 toast 并返回主页"
 - **Trigger annotations** — what entry points lead here, what exits go where
@@ -109,14 +110,14 @@ Wobble + handwriting still apply. Box-and-line layout, lots of whitespace, singl
 
 Marginalia is what separates a real lo-fi wireframe from a "high-fi draft pretending to be lo-fi". Use these moves:
 
-| Mark | When | How |
-|---|---|---|
-| Side note | Constraint or rationale | `<aside class="margin">` in handwritten font, accent color, pulled into the margin |
-| Circle + arrow | Calling out a specific element | SVG `<circle>` + `<path>` with `filter:url(#wobble)`, accent stroke |
-| TBD / ? | Unresolved decision | Handwritten "TBD" in accent color, sometimes inside a wobbly circle |
-| Strikethrough | Old idea kept for context | `text-decoration:line-through` + slight rotation `transform:rotate(-1deg)` |
-| Underline + ! | Important / must-discuss | Wavy underline SVG below the term |
-| Numbered call-out | Reference into a legend table below | Circled digit in accent color, with `<ol>` legend at section end |
+| Mark              | When                                | How                                                                                |
+| ----------------- | ----------------------------------- | ---------------------------------------------------------------------------------- |
+| Side note         | Constraint or rationale             | `<aside class="margin">` in handwritten font, accent color, pulled into the margin |
+| Circle + arrow    | Calling out a specific element      | SVG `<circle>` + `<path>` with `filter:url(#wobble)`, accent stroke                |
+| TBD / ?           | Unresolved decision                 | Handwritten "TBD" in accent color, sometimes inside a wobbly circle                |
+| Strikethrough     | Old idea kept for context           | `text-decoration:line-through` + slight rotation `transform:rotate(-1deg)`         |
+| Underline + !     | Important / must-discuss            | Wavy underline SVG below the term                                                  |
+| Numbered call-out | Reference into a legend table below | Circled digit in accent color, with `<ol>` legend at section end                   |
 
 **Marginalia ink color** = the one accent (template uses bright blue). Body ink stays monochrome.
 
@@ -142,6 +143,7 @@ Lo-fi wireframes lean heavily on **drawn-in-place** marks, not real icons or pho
 Read this `SKILL.md` first, end to end. **Don't** open `foolscap-wireframe.html` until you've picked a skeleton.
 
 Then:
+
 - **Skeleton A** → read foolscap fully, both for structure and brush vocabulary
 - **Skeleton B** → open foolscap ONLY to copy: the `<filter>` SVG turbulence values, the dotted background pattern, the dashed/wavy divider paths, the handwritten font stack. **Do not copy** the masthead/hero/long-reads structure — wrong skeleton.
 - **Skeleton C** → same as B, brush-only extraction

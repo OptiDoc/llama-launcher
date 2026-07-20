@@ -11,10 +11,7 @@ import type { LlamaStore } from "@/stores/types";
 import type { MetricSample, AppStatus } from "@/lib/types";
 import { createActivitySlice } from "./system-slice-activity";
 
-export function createSystemMainSlice(
-  set: StoreApi<LlamaStore>["setState"],
-  get: StoreApi<LlamaStore>["getState"],
-) {
+export function createSystemMainSlice(set: StoreApi<LlamaStore>["setState"], get: StoreApi<LlamaStore>["getState"]) {
   const activity = createActivitySlice(set, get);
 
   return {
@@ -35,7 +32,8 @@ export function createSystemMainSlice(
           t: Date.now(),
           cpu: sys.cpu_percent,
           ram: sys.memory_total_mb > 0 ? (sys.memory_used_mb / sys.memory_total_mb) * 100 : 0,
-          gpu: 0, gpuMem: 0,
+          gpu: 0,
+          gpuMem: 0,
           tps: get().instances?.reduce((sum, i) => sum + i.tokensPerSec, 0) ?? 0,
           reqPerMin: get().instances?.reduce((sum, i) => sum + i.requestsPerMin, 0) ?? 0,
         };
@@ -47,20 +45,22 @@ export function createSystemMainSlice(
         get().pushMetric(sample);
       }
       if (caps) {
-        set({ systemCapabilities: {
-          gpu_name: caps.gpu_name,
-          gpu_vram_gb: Math.round(caps.gpu_vram_gb * 10) / 10,
-          gpu_vendor: caps.gpu_vendor,
-          ram_gb: Math.round(caps.ram_gb * 10) / 10,
-          cpu_name: caps.cpu_name,
-          cpu_cores: caps.cpu_cores,
-          has_cuda: caps.has_cuda,
-          has_vulkan: caps.has_vulkan,
-          has_metal: caps.has_metal,
-          has_rocm: caps.has_rocm,
-          disk_free_gb: caps.disk_free_gb,
-          os_name: caps.os_name,
-        }});
+        set({
+          systemCapabilities: {
+            gpu_name: caps.gpu_name,
+            gpu_vram_gb: Math.round(caps.gpu_vram_gb * 10) / 10,
+            gpu_vendor: caps.gpu_vendor,
+            ram_gb: Math.round(caps.ram_gb * 10) / 10,
+            cpu_name: caps.cpu_name,
+            cpu_cores: caps.cpu_cores,
+            has_cuda: caps.has_cuda,
+            has_vulkan: caps.has_vulkan,
+            has_metal: caps.has_metal,
+            has_rocm: caps.has_rocm,
+            disk_free_gb: caps.disk_free_gb,
+            os_name: caps.os_name,
+          },
+        });
       }
     },
 
@@ -79,7 +79,11 @@ export function createSystemMainSlice(
             }),
           }));
         }
-        emitLog(SYSTEM_CONSOLE_ID, "info", `restored ${persisted.hibernatedInstanceIds.length} hibernated model(s) from previous session`);
+        emitLog(
+          SYSTEM_CONSOLE_ID,
+          "info",
+          `restored ${persisted.hibernatedInstanceIds.length} hibernated model(s) from previous session`,
+        );
       }
 
       if (!isTauri()) {
@@ -89,7 +93,11 @@ export function createSystemMainSlice(
         if (!get().activeWorkspaceId && get().workspaces?.length > 0) {
           set({ activeWorkspaceId: get().workspaces[0].id });
         }
-        emitLog(SYSTEM_CONSOLE_ID, "warn", `not running in Tauri — data will be empty. Start the desktop app to scan real models.`);
+        emitLog(
+          SYSTEM_CONSOLE_ID,
+          "warn",
+          `not running in Tauri — data will be empty. Start the desktop app to scan real models.`,
+        );
         return;
       }
       set({ tauriReady: true });
@@ -134,19 +142,33 @@ export function createSystemMainSlice(
         const activeId = await tauri.getActiveWorkspace();
         set({ activeWorkspaceId: activeId || ws[0].id });
       }
-      const settingsMap: Record<string, any> = {};
+      const settingsMap: Record<
+        string,
+        {
+          hibernate_after_sec: number;
+          default_gpu_layers: number;
+          default_threads: number;
+          auto_calibrate: boolean;
+          max_concurrent_instances: number;
+        }
+      > = {};
       for (const w of ws || []) {
         const st = await tauri.getWorkspaceSettings(w.id);
-        if (st) settingsMap[w.id] = {
-          hibernateAfterSec: st.hibernate_after_sec,
-          defaultGpuLayers: st.default_gpu_layers,
-          defaultThreads: st.default_threads,
-          autoCalibrate: st.auto_calibrate,
-          maxConcurrentInstances: st.max_concurrent_instances,
-        };
+        if (st)
+          settingsMap[w.id] = {
+            hibernate_after_sec: st.hibernate_after_sec,
+            default_gpu_layers: st.default_gpu_layers,
+            default_threads: st.default_threads,
+            auto_calibrate: st.auto_calibrate,
+            max_concurrent_instances: st.max_concurrent_instances,
+          };
       }
       set({ workspaceSettings: settingsMap });
-      emitLog(SYSTEM_CONSOLE_ID, "success", `bootstrap complete — ${get().models?.length} models, ${get().instances?.length} instances, ${get().workspaces?.length} workspaces`);
+      emitLog(
+        SYSTEM_CONSOLE_ID,
+        "success",
+        `bootstrap complete — ${get().models?.length} models, ${get().instances?.length} instances, ${get().workspaces?.length} workspaces`,
+      );
     },
   };
 }

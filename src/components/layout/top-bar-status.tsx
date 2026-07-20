@@ -15,7 +15,9 @@ export function TopBarStatus({ appStatus }: TopBarStatusProps) {
   const isHibernating = appStatus === "hibernating";
 
   return (
-    <div className={cn("flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium", statusCfg.textColor)}>
+    <div
+      className={cn("flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium", statusCfg.textColor)}
+    >
       <span className={cn("size-1.5 rounded-full", statusCfg.dotColor, isHibernating && "animate-pulse")} />
       {statusCfg.label}
     </div>

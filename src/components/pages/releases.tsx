@@ -51,9 +51,7 @@ export function ReleasesPage() {
 
   const filtered = React.useMemo(() => {
     const q = query.trim().toLowerCase();
-    const ws = releases.filter(
-      (r) => r.workspaceId === null || r.workspaceId === activeWorkspaceId,
-    );
+    const ws = releases.filter((r) => r.workspaceId === null || r.workspaceId === activeWorkspaceId);
     if (!q) return ws;
     return ws.filter(
       (r) =>
@@ -94,10 +92,7 @@ export function ReleasesPage() {
   }, [sortedFiltered]);
 
   const installedTag = React.useMemo(() => {
-    const r = releases.find(
-      (x) =>
-        (x.workspaceId === null || x.workspaceId === activeWorkspaceId) && x.installed,
-    );
+    const r = releases.find((x) => (x.workspaceId === null || x.workspaceId === activeWorkspaceId) && x.installed);
     return r?.tag;
   }, [releases, activeWorkspaceId]);
 
@@ -108,42 +103,30 @@ export function ReleasesPage() {
           <h1 className="text-lg font-bold tracking-tight text-foreground">Releases</h1>
           <p className="text-[12px] text-muted-foreground">
             llama.cpp builds. Active build:{" "}
-            <span className="font-mono font-semibold text-foreground">
-              {installedTag ?? "none"}
-            </span>
-            .
+            <span className="font-mono font-semibold text-foreground">{installedTag ?? "none"}</span>.
           </p>
         </div>
-
       </div>
 
       <div className="flex w-full justify-between">
-      <div className="relative w-md bg-card rounded-md">
-        <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-        <Input
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search releases by tag, commit, variant…"
-          className="h-9 pl-9"
-          aria-label="Search releases"
-        />
-      </div>
-      {mounted ? (
-          <ViewToggle value={view} onChange={handleViewChange} />
-      ) : (
-          <div className="h-8 w-37" />
-      )}
+        <div className="relative w-md bg-card rounded-md">
+          <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search releases by tag, commit, variant…"
+            className="h-9 pl-9"
+            aria-label="Search releases"
+          />
+        </div>
+        {mounted ? <ViewToggle value={view} onChange={handleViewChange} /> : <div className="h-8 w-37" />}
       </div>
       {filtered.length === 0 ? (
         <EmptyState hasQuery={query.trim().length > 0} />
       ) : view === "grid" ? (
         <GridView releases={sortedFiltered} />
       ) : (
-        <TableView
-          groups={groups}
-          expandedTags={expandedTags}
-          onToggleExpand={handleToggleExpand}
-        />
+        <TableView groups={groups} expandedTags={expandedTags} onToggleExpand={handleToggleExpand} />
       )}
     </div>
   );

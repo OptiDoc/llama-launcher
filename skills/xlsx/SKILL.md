@@ -14,6 +14,7 @@ license: Proprietary. LICENSE.txt has complete terms
 ```bash
 bash "$XLSX_SKILL_DIR/setup.sh"    # Interactive environment check + install
 ```
+
 ## Pre-Flight: Intent Gate
 
 Before touching any code, confirm the user actually needs a spreadsheet:
@@ -27,6 +28,7 @@ Before touching any code, confirm the user actually needs a spreadsheet:
 If confirmed xlsx → proceed to Scene Router below.
 
 **Request Decomposition** (do this every time):
+
 - **Explicit needs**: sheets, columns, formulas, metrics the user stated
 - **Implicit needs**: business context, downstream use (filter? sort? input?)
 - **Multi-part requests**: generate ALL parts — never silently drop a component
@@ -114,6 +116,7 @@ User Request
 **Mixed requests**: load all matching files. Engine files always **append** to a scene.
 
 **Finance detection**:
+
 - **finance.md** (complex): DCF, LBO, P&L, 利润表, 资产负债, valuation, 估值, IRR, 三表联动, sensitivity, scenario
 - **finance_lite.md** (simple): 预算, budget, 费用, expense, 收支, 记账, 项目成本, cost tracking, 报销, ROI
 
@@ -124,24 +127,31 @@ User Request
 ## Design Principles
 
 ### 1. Live Formula Guarantee
+
 Every derived value SHOULD be an Excel formula so the spreadsheet stays dynamic.
 
 **Exception — Programmatic Verification**: When the output file will be verified by Python (not opened in Excel), TOTAL/SUM rows should write **computed values** instead of formulas, because openpyxl cannot evaluate formulas and `data_only=True` returns `None` for newly-written formulas. Optionally add the formula as a cell comment for reference.
 
 ### 2. Zero Error Tolerance
+
 Deliverables must have zero formula errors. All divisions wrapped with `IFERROR` or `IF(denom=0,...)`. Absolute references (`$C$42`) for shared denominators.
 
 ### 3. Compatibility First
+
 No dynamic array functions (`FILTER`, `UNIQUE`, `XLOOKUP`, `SORT`, `SORTBY`, `XMATCH`, `SEQUENCE`, `LET`, `LAMBDA`, `RANDARRAY`). No implicit array formulas — use `SUMPRODUCT` alternatives.
 
 ### 4. Preserve & Match
+
 When editing existing files: study and exactly match format, style, conventions. Existing patterns always override defaults. Text starting with `=` must be prefixed with `'`.
 
 ### 5. Language Mirror
+
 Output language (sheet names, headers, labels) matches user's input language.
 
 ### 6. Data Consistency Over Instructions
+
 When user instructions conflict with the actual data patterns in the existing file:
+
 - **First priority**: match the existing data pattern (e.g., if existing data uses `0` for empty, don't switch to `-`)
 - **Second priority**: follow user instructions literally
 - Always flag the conflict to the user
@@ -179,14 +189,14 @@ for sub in [XLSX_SKILL_DIR, os.path.join(XLSX_SKILL_DIR, "templates")]:
 
 ### Tool Reference
 
-| Tool | Use |
-|------|-----|
-| **openpyxl** | Formulas, formatting, charts, cell-level control |
-| **pandas** | Data analysis, bulk operations, CSV/TSV |
-| `load_workbook(read_only=True)` | Large file reads |
-| `Workbook(write_only=True)` | Large file writes |
-| **templates/base.py** | Design tokens, font resolution, style factories, utilities (single source of truth) |
-| **xlsx.py** | QA commands (see `quality/pipeline.md`) |
+| Tool                            | Use                                                                                 |
+| ------------------------------- | ----------------------------------------------------------------------------------- |
+| **openpyxl**                    | Formulas, formatting, charts, cell-level control                                    |
+| **pandas**                      | Data analysis, bulk operations, CSV/TSV                                             |
+| `load_workbook(read_only=True)` | Large file reads                                                                    |
+| `Workbook(write_only=True)`     | Large file writes                                                                   |
+| **templates/base.py**           | Design tokens, font resolution, style factories, utilities (single source of truth) |
+| **xlsx.py**                     | QA commands (see `quality/pipeline.md`)                                             |
 
 Workbook metadata: `wb.properties.creator = "Z.ai"`
 
@@ -201,6 +211,7 @@ Every deliverable must pass the full integrity pipeline before delivery.
 → **Load `quality/pipeline.md` for the role-based integrity workflow.**
 
 Quick reference:
+
 ```
 Blueprint → Build & Self-check (per-sheet) → Inspect → Pivot (if needed) → Release
 ```
@@ -209,22 +220,22 @@ Blueprint → Build & Self-check (per-sheet) → Inspect → Pivot (if needed) �
 
 ## Capability Matrix
 
-| Capability | Supported | Scene/Engine |
-|-----------|-----------|-------------|
-| Create from scratch | ✅ | scenes/create |
-| Edit existing file | ✅ | scenes/edit |
-| Data analysis & EDA | ✅ | scenes/analyze |
-| Format conversion | ✅ | scenes/convert |
-| Financial models (DCF/LBO/P&L) | ✅ | scenes/finance |
-| Simple budgets & expenses | ✅ | scenes/finance_lite |
-| VBA macros & automation | ✅ | scenes/vba + engines/vba-templates |
-| Batch processing | ✅ | scenes/advanced |
-| Embedded charts | ✅ | engines/chart |
-| Smart chart recommendation | ✅ | engines/chart |
-| Design system & styling | ✅ | engines/design |
-| PivotTable creation | ✅ | quality/pipeline (pivot cmd) |
-| Formula validation | ✅ | quality/pipeline |
-| Structural validation | ✅ | quality/pipeline |
-| Data provenance tracking | ✅ | scenes/analyze |
-| Large file handling | ✅ | scenes/advanced |
-| Data protection & locking | ✅ | scenes/advanced |
+| Capability                     | Supported | Scene/Engine                       |
+| ------------------------------ | --------- | ---------------------------------- |
+| Create from scratch            | ✅        | scenes/create                      |
+| Edit existing file             | ✅        | scenes/edit                        |
+| Data analysis & EDA            | ✅        | scenes/analyze                     |
+| Format conversion              | ✅        | scenes/convert                     |
+| Financial models (DCF/LBO/P&L) | ✅        | scenes/finance                     |
+| Simple budgets & expenses      | ✅        | scenes/finance_lite                |
+| VBA macros & automation        | ✅        | scenes/vba + engines/vba-templates |
+| Batch processing               | ✅        | scenes/advanced                    |
+| Embedded charts                | ✅        | engines/chart                      |
+| Smart chart recommendation     | ✅        | engines/chart                      |
+| Design system & styling        | ✅        | engines/design                     |
+| PivotTable creation            | ✅        | quality/pipeline (pivot cmd)       |
+| Formula validation             | ✅        | quality/pipeline                   |
+| Structural validation          | ✅        | quality/pipeline                   |
+| Data provenance tracking       | ✅        | scenes/analyze                     |
+| Large file handling            | ✅        | scenes/advanced                    |
+| Data protection & locking      | ✅        | scenes/advanced                    |

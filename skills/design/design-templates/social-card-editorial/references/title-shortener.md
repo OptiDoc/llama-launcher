@@ -8,12 +8,12 @@ It also applies whenever you reuse one piece of content across multiple platform
 
 Tested empirically across the smoke decks:
 
-| Source title (3:4 / 21:9)                                | Squeezed into 1:1 verbatim         | Authored short title    |
-| -------------------------------------------------------- | ---------------------------------- | ----------------------- |
-| 第三次进山，装备比上一次轻 3.4kg                          | overflows at 88px, fights bleed    | 装备减重 3.4kg          |
-| 开源了一个 Skill，让 AI 接管你屏幕边那张便签纸           | 3-line wrap, looks like a paragraph | AI 接管便签纸           |
-| 当代年轻人，不为了变美，只为了不丑                       | 4-line wrap on `.poster.square`     | 不为变美，只为不丑      |
-| 我把家从北京搬到大理后，第一次安静地写完了一本书         | overflows even at 80px              | 北京到大理，写完一本书   |
+| Source title (3:4 / 21:9)                        | Squeezed into 1:1 verbatim          | Authored short title   |
+| ------------------------------------------------ | ----------------------------------- | ---------------------- |
+| 第三次进山，装备比上一次轻 3.4kg                 | overflows at 88px, fights bleed     | 装备减重 3.4kg         |
+| 开源了一个 Skill，让 AI 接管你屏幕边那张便签纸   | 3-line wrap, looks like a paragraph | AI 接管便签纸          |
+| 当代年轻人，不为了变美，只为了不丑               | 4-line wrap on `.poster.square`     | 不为变美，只为不丑     |
+| 我把家从北京搬到大理后，第一次安静地写完了一本书 | overflows even at 80px              | 北京到大理，写完一本书 |
 
 The squeezed version reads as a wall of text. The authored short title reads as a poster headline.
 
@@ -93,13 +93,13 @@ When the numerical fact is the news, lead with it. Editorial uses `.num-mega` (2
 
 Type scale defaults on square boards:
 
-| Style     | Class       | Default size | Use                                |
-| --------- | ----------- | ------------ | ---------------------------------- |
-| Editorial | `.h-display`| 110px        | Pattern A or B, 1-2 lines          |
-| Editorial | `.h-xl`     |  78px        | Subtitle or secondary headline     |
-| Swiss     | `.h-hero`   | 200px        | Pattern A or B, 1-2 lines          |
-| Swiss     | `.h-statement` | 160px     | Same role as `.h-hero`, slightly tamer |
-| Both      | `.num-mega` | 200px        | Pattern D leading number           |
+| Style     | Class          | Default size | Use                                    |
+| --------- | -------------- | ------------ | -------------------------------------- |
+| Editorial | `.h-display`   | 110px        | Pattern A or B, 1-2 lines              |
+| Editorial | `.h-xl`        | 78px         | Subtitle or secondary headline         |
+| Swiss     | `.h-hero`      | 200px        | Pattern A or B, 1-2 lines              |
+| Swiss     | `.h-statement` | 160px        | Same role as `.h-hero`, slightly tamer |
+| Both      | `.num-mega`    | 200px        | Pattern D leading number               |
 
 If a single-line short title is ≤ 4 Chinese chars on Swiss square, you can push `.h-hero` to 240px without overflow.
 
@@ -107,12 +107,12 @@ If a single-line short title is ≤ 4 Chinese chars on Swiss square, you can pus
 
 When the same content runs as XHS carousel + WeChat cover pair + Lvshu single:
 
-| Surface              | Title source                                | Length band              |
-| -------------------- | ------------------------------------------- | ------------------------ |
-| XHS p1 cover (3:4)   | Authored long title (12-30 chars)           | 1-2 lines, ≤ 9 chars/line|
-| WeChat 21:9 main     | Authored long title or 80% of it            | 1 line, ≤ 14 chars       |
-| WeChat 1:1 square    | Shortened per this file (4-10 chars)        | 1-2 lines, ≤ 6 chars/line|
-| Lvshu single (3:4)   | Same as XHS p1 or shortened to 8-12 chars   | 1-2 lines                |
+| Surface            | Title source                              | Length band               |
+| ------------------ | ----------------------------------------- | ------------------------- |
+| XHS p1 cover (3:4) | Authored long title (12-30 chars)         | 1-2 lines, ≤ 9 chars/line |
+| WeChat 21:9 main   | Authored long title or 80% of it          | 1 line, ≤ 14 chars        |
+| WeChat 1:1 square  | Shortened per this file (4-10 chars)      | 1-2 lines, ≤ 6 chars/line |
+| Lvshu single (3:4) | Same as XHS p1 or shortened to 8-12 chars | 1-2 lines                 |
 
 The 1:1 short title is the **shortest** of the family. If you cannot shorten further without losing meaning, the content probably needs a different framing — talk to the user.
 

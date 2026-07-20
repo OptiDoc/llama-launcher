@@ -44,10 +44,12 @@ export function HFDownloadQuant({
                 isSel ? "border-primary bg-primary/5" : "border-border/60 hover:bg-muted/40",
               )}
             >
-              <div className={cn(
-                "mt-0.5 grid size-3.5 shrink-0 place-items-center rounded-full border",
-                isSel ? "border-primary bg-primary" : "border-muted-foreground/40",
-              )}>
+              <div
+                className={cn(
+                  "mt-0.5 grid size-3.5 shrink-0 place-items-center rounded-full border",
+                  isSel ? "border-primary bg-primary" : "border-muted-foreground/40",
+                )}
+              >
                 {isSel && <CheckCircle2 className="size-2.5 text-primary-foreground" />}
               </div>
               <div className="min-w-0 flex-1">
@@ -61,7 +63,9 @@ export function HFDownloadQuant({
           );
         })}
         {!loadingQuants && availableQuants.length === 0 && selectedRepo && (
-          <p className="text-[10px] text-muted-foreground italic">Could not verify available quants — all quantizations shown.</p>
+          <p className="text-[10px] text-muted-foreground italic">
+            Could not verify available quants — all quantizations shown.
+          </p>
         )}
       </div>
     </>

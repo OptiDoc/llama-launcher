@@ -3,13 +3,7 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Boxes, Download, CheckCircle2 } from "lucide-react";
 import { useLlamaStore, RELEASE_VARIANTS } from "@/lib/llama-store";
 
@@ -27,7 +21,9 @@ export function BuildsCard() {
             </CardTitle>
             <CardDescription>Available release variants</CardDescription>
           </div>
-          <Badge variant="secondary" className="text-xs">{releases.filter((r) => r.installed).length} installed</Badge>
+          <Badge variant="secondary" className="text-xs">
+            {releases.filter((r) => r.installed).length} installed
+          </Badge>
         </div>
       </CardHeader>
       <CardContent>
@@ -36,13 +32,21 @@ export function BuildsCard() {
             const variantReleases = releases.filter((r) => r.variant === v.id);
             const installed = variantReleases.some((r) => r.installed);
             return (
-              <div key={v.id} className={cn("rounded-lg border p-2.5", v.priority ? "border-primary/20 bg-primary/5" : "border-border/40 bg-muted/20")}>
+              <div
+                key={v.id}
+                className={cn(
+                  "rounded-lg border p-2.5",
+                  v.priority ? "border-primary/20 bg-primary/5" : "border-border/40 bg-muted/20",
+                )}
+              >
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-semibold text-foreground">{v.label}</span>
                   {installed ? (
                     <CheckCircle2 className="size-3 text-emerald-500" />
                   ) : v.priority ? (
-                    <Badge variant="secondary" className="text-[10px]">Priority</Badge>
+                    <Badge variant="secondary" className="text-[10px]">
+                      Priority
+                    </Badge>
                   ) : null}
                 </div>
                 <p className="mt-0.5 text-[10px] text-muted-foreground">{v.note}</p>

@@ -2,32 +2,11 @@
 
 import * as React from "react";
 import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
-import {
-  CartesianGrid,
-  XAxis,
-  YAxis,
-  Area,
-  AreaChart,
-  Line,
-  LineChart,
-} from "recharts";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { CartesianGrid, XAxis, YAxis, Area, AreaChart, Line, LineChart } from "recharts";
 import { useLlamaStore } from "@/lib/llama-store";
-import {
-  cpuChartConfig,
-  tpsChartConfig,
-} from "@/components/features/dashboard/dashboard-charts";
+import { cpuChartConfig, tpsChartConfig } from "@/components/features/dashboard/dashboard-charts";
 
 export function SystemCharts() {
   const instances = useLlamaStore((s) => s.instances);
@@ -82,7 +61,14 @@ export function SystemCharts() {
                 tickLine={false}
               />
               <ChartTooltip content={<ChartTooltipContent />} />
-              <Area type="monotone" dataKey="cpu" stroke="var(--color-cpu)" strokeWidth={1.5} fill="url(#cpuGrad)" isAnimationActive={false} />
+              <Area
+                type="monotone"
+                dataKey="cpu"
+                stroke="var(--color-cpu)"
+                strokeWidth={1.5}
+                fill="url(#cpuGrad)"
+                isAnimationActive={false}
+              />
             </AreaChart>
           </ChartContainer>
         </CardContent>
@@ -119,13 +105,16 @@ export function SystemCharts() {
                 interval="preserveStartEnd"
                 minTickGap={30}
               />
-              <YAxis
-                tick={{ fontSize: 9, fill: "hsl(var(--muted-foreground))" }}
-                axisLine={false}
-                tickLine={false}
-              />
+              <YAxis tick={{ fontSize: 9, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} />
               <ChartTooltip content={<ChartTooltipContent />} />
-              <Line type="monotone" dataKey="tps" stroke="var(--color-tps)" strokeWidth={1.5} dot={false} isAnimationActive={false} />
+              <Line
+                type="monotone"
+                dataKey="tps"
+                stroke="var(--color-tps)"
+                strokeWidth={1.5}
+                dot={false}
+                isAnimationActive={false}
+              />
             </LineChart>
           </ChartContainer>
         </CardContent>

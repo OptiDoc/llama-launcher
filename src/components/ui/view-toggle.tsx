@@ -19,9 +19,7 @@ export function ViewToggle({ value, onChange, className }: ViewToggleProps) {
         onClick={() => onChange("grid")}
         className={cn(
           "flex h-[calc(100%-1px)] items-center gap-1.5 rounded-md border border-transparent px-2.5 text-sm font-medium transition-colors",
-          value === "grid"
-            ? "bg-white/80 text-foreground shadow-sm"
-            : "text-muted-foreground hover:text-foreground",
+          value === "grid" ? "bg-white/80 text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground",
         )}
         title="Grid view"
         aria-pressed={value === "grid"}
@@ -34,9 +32,7 @@ export function ViewToggle({ value, onChange, className }: ViewToggleProps) {
         onClick={() => onChange("table")}
         className={cn(
           "flex h-[calc(100%-1px)] items-center gap-1.5 rounded-md border border-transparent px-2.5 text-sm font-medium transition-colors",
-          value === "table"
-            ? "bg-white/80 text-foreground shadow-sm"
-            : "text-muted-foreground hover:text-foreground",
+          value === "table" ? "bg-white/80 text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground",
         )}
         title="Table view"
         aria-pressed={value === "table"}

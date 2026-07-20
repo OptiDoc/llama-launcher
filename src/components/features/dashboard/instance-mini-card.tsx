@@ -4,15 +4,9 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import {
-  Card,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Server } from "lucide-react";
-import {
-  useLlamaStore,
-  uptimeString,
-} from "@/lib/llama-store";
+import { useLlamaStore, uptimeString } from "@/lib/llama-store";
 
 function InstanceMiniCard({
   instance,
@@ -22,15 +16,10 @@ function InstanceMiniCard({
   onOpen: () => void;
 }) {
   const statusVariant =
-    instance.status === "running"
-      ? "default"
-      : instance.status === "starting"
-        ? "secondary"
-        : "outline";
+    instance.status === "running" ? "default" : instance.status === "starting" ? "secondary" : "outline";
 
-  const memPercent = instance.status === "running"
-    ? Math.min(100, (instance.memoryMb / (instance.ctxSize * 0.5 + 1200)) * 100)
-    : 0;
+  const memPercent =
+    instance.status === "running" ? Math.min(100, (instance.memoryMb / (instance.ctxSize * 0.5 + 1200)) * 100) : 0;
 
   return (
     <Card className="py-4 transition-shadow hover:shadow-md">

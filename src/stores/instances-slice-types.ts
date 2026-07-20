@@ -13,7 +13,14 @@ export interface InstancesSlice {
   _navigate: ((page: string) => void) | null;
   setNavigate: (fn: (page: string) => void) => void;
   refreshProcesses: () => Promise<void>;
-  startInstance: (config: { name: string; model: string; profile: string; port: number; host: string; gpu: string }) => string;
+  startInstance: (config: {
+    name: string;
+    model: string;
+    profile: string;
+    port: number;
+    host: string;
+    gpu: string;
+  }) => string;
   stopInstance: (id: string) => Promise<void>;
   removeInstance: (id: string) => void;
   markRunning: (id: string) => void;

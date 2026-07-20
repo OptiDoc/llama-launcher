@@ -13,17 +13,6 @@ export {
   ContextMenuSub,
   ContextMenuRadioGroup,
 } from "./context-menu-base";
-export {
-  ContextMenuItem,
-  ContextMenuCheckboxItem,
-  ContextMenuRadioItem,
-} from "./context-menu-item";
-export {
-  ContextMenuLabel,
-  ContextMenuSeparator,
-  ContextMenuShortcut,
-} from "./context-menu-label";
-export {
-  ContextMenuSubTrigger,
-  ContextMenuSubContent,
-} from "./context-menu-sub";
+export { ContextMenuItem, ContextMenuCheckboxItem, ContextMenuRadioItem } from "./context-menu-item";
+export { ContextMenuLabel, ContextMenuSeparator, ContextMenuShortcut } from "./context-menu-label";
+export { ContextMenuSubTrigger, ContextMenuSubContent } from "./context-menu-sub";

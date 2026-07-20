@@ -26,7 +26,11 @@ export function createActivitySlice(
       if (wasHibernating) {
         wakeInProgress = true;
         set({ appStatus: "waking" });
-        emitLog(SYSTEM_CONSOLE_ID, "info", `wake: activity detected — hot-reloading ${s.hibernatedInstanceIds.length} hibernated model(s)`);
+        emitLog(
+          SYSTEM_CONSOLE_ID,
+          "info",
+          `wake: activity detected — hot-reloading ${s.hibernatedInstanceIds.length} hibernated model(s)`,
+        );
         const hibernatedIds = [...s.hibernatedInstanceIds];
         set({ hibernatedInstanceIds: [] });
         if (typeof window !== "undefined") {
@@ -66,6 +70,8 @@ export function createActivitySlice(
       set({ lastActivityAt: nowTs() - (wsSettings?.hibernate_after_sec ?? 75) * 1000 - 1000 });
     },
 
-    forceWake: () => { get().registerActivity(); },
+    forceWake: () => {
+      get().registerActivity();
+    },
   };
 }

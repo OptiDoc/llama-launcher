@@ -2,12 +2,22 @@
 
 import * as React from "react";
 import {
-  Dialog, DialogContent, DialogDescription, DialogFooter,
-  DialogHeader, DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
 import {
-  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
-  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,7 +30,10 @@ import type { LlamaModel } from "@/lib/llama-store";
 import { AlertTriangle, CheckCircle2, Edit3, Trash2 } from "lucide-react";
 
 export function EditModelDialog({
-  model, open, onOpenChange, focusPath,
+  model,
+  open,
+  onOpenChange,
+  focusPath,
 }: {
   model: LlamaModel | null;
   open: boolean;
@@ -56,7 +69,13 @@ export function EditModelDialog({
   if (!model) return null;
 
   const handleSave = () => {
-    updateModel(model.id, { name: name.trim(), path: path.trim(), builder: builder.trim(), quant: quant.trim(), description });
+    updateModel(model.id, {
+      name: name.trim(),
+      path: path.trim(),
+      builder: builder.trim(),
+      quant: quant.trim(),
+      description,
+    });
     if (model.missing && path.trim() !== model.path) {
       locateModel(model.id, path.trim());
     }
@@ -75,14 +94,20 @@ export function EditModelDialog({
           </DialogHeader>
           <div className="space-y-3 py-1">
             <div className="space-y-1.5">
-              <Label htmlFor="ed-name" className="text-xs">Display name</Label>
+              <Label htmlFor="ed-name" className="text-xs">
+                Display name
+              </Label>
               <Input id="ed-name" value={name} onChange={(e) => setName(e.target.value)} className="h-8" />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="ed-path" className="text-xs">File path</Label>
+              <Label htmlFor="ed-path" className="text-xs">
+                File path
+              </Label>
               <Input
-                id="ed-path" ref={pathRef}
-                value={path} onChange={(e) => setPath(e.target.value)}
+                id="ed-path"
+                ref={pathRef}
+                value={path}
+                onChange={(e) => setPath(e.target.value)}
                 className="h-8 font-mono text-xs"
               />
               {model.missing && (
@@ -93,22 +118,40 @@ export function EditModelDialog({
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <Label htmlFor="ed-builder" className="text-xs">Builder</Label>
+                <Label htmlFor="ed-builder" className="text-xs">
+                  Builder
+                </Label>
                 <Input id="ed-builder" value={builder} onChange={(e) => setBuilder(e.target.value)} className="h-8" />
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="ed-quant" className="text-xs">Quant</Label>
-                <Input id="ed-quant" value={quant} onChange={(e) => setQuant(e.target.value)} className="h-8 font-mono text-xs" />
+                <Label htmlFor="ed-quant" className="text-xs">
+                  Quant
+                </Label>
+                <Input
+                  id="ed-quant"
+                  value={quant}
+                  onChange={(e) => setQuant(e.target.value)}
+                  className="h-8 font-mono text-xs"
+                />
               </div>
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="ed-desc" className="text-xs">Description</Label>
-              <Textarea id="ed-desc" value={description} onChange={(e) => setDescription(e.target.value)} rows={3} className="text-xs" />
+              <Label htmlFor="ed-desc" className="text-xs">
+                Description
+              </Label>
+              <Textarea
+                id="ed-desc"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                rows={3}
+                className="text-xs"
+              />
             </div>
           </div>
           <DialogFooter className="flex-row items-center justify-between sm:justify-between">
             <Button
-              variant="outline" size="sm"
+              variant="outline"
+              size="sm"
               className="text-destructive hover:bg-red-500/10 hover:text-destructive"
               onClick={() => markModelMissing(model.id, !model.missing)}
             >
@@ -116,15 +159,21 @@ export function EditModelDialog({
               {model.missing ? "Mark as found" : "Mark as missing"}
             </Button>
             <div className="flex items-center gap-2">
-              <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
-              <Button onClick={handleSave}><CheckCircle2 className="mr-1.5 size-3.5" /> Save</Button>
+              <Button variant="outline" onClick={() => onOpenChange(false)}>
+                Cancel
+              </Button>
+              <Button onClick={handleSave}>
+                <CheckCircle2 className="mr-1.5 size-3.5" /> Save
+              </Button>
             </div>
           </DialogFooter>
           <Separator />
           <Card className="flex items-center justify-between border-red-200/60 bg-red-500/5 p-3 shadow-none">
             <div>
               <p className="text-xs font-medium text-red-700 dark:text-red-400">Delete this model</p>
-              <p className="text-[11px] text-muted-foreground">Removes it from the list. File on disk is not touched.</p>
+              <p className="text-[11px] text-muted-foreground">
+                Removes it from the list. File on disk is not touched.
+              </p>
             </div>
             <Button variant="destructive" size="sm" onClick={() => setConfirmDelete(true)}>
               <Trash2 className="mr-1.5 size-3.5" /> Delete
@@ -138,15 +187,19 @@ export function EditModelDialog({
           <AlertDialogHeader>
             <AlertDialogTitle>Delete &quot;{model.name}&quot;?</AlertDialogTitle>
             <AlertDialogDescription>
-              This removes the model from LlamaLauncher. The GGUF file on disk is not deleted.
-              This action cannot be undone.
+              This removes the model from LlamaLauncher. The GGUF file on disk is not deleted. This action cannot be
+              undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              onClick={() => { deleteModel(model.id); setConfirmDelete(false); onOpenChange(false); }}
+              onClick={() => {
+                deleteModel(model.id);
+                setConfirmDelete(false);
+                onOpenChange(false);
+              }}
             >
               Delete model
             </AlertDialogAction>

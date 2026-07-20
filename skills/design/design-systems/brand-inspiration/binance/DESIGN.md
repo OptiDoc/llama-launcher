@@ -340,6 +340,7 @@ Type runs Binance's custom **BinanceNova** (display + body) and **BinancePlex** 
 The product is **multi-theme**: marketing surfaces (homepage, smart-money, futures arena) default to dark, while transactional surfaces (buy crypto, deposit, withdraw) flip to a light theme. The same yellow CTAs and gray-blue hairlines (`{colors.hairline-on-light}` — #eaecef) thread through both — only canvas, surface, and text tones flip. Trading **green** (`{colors.trading-up}` — #0ecb81) and **red** (`{colors.trading-down}` — #f6465d) signal price direction in tables, charts, and price tickers across both modes.
 
 **Key Characteristics:**
+
 - Single accent color: `{colors.primary}` (#FCD535) does all brand voltage — primary CTAs, hero headlines, brand mark, badges. Used scarcely on dark for emphasis, ubiquitously on transactional dialogs.
 - Custom type stack: `BinanceNova` (display + body) and `BinancePlex` (numbers, prices, financial data). Big stat numbers always render in BinancePlex for tabular consistency.
 - Multi-theme: marketing pages default dark (`{colors.canvas-dark}`); transactional pages flip light (`{colors.canvas-light}`). Yellow CTAs and trading green/red are shared across both.
@@ -352,6 +353,7 @@ The product is **multi-theme**: marketing surfaces (homepage, smart-money, futur
 ## Colors
 
 ### Brand & Accent
+
 - **Binance Yellow** (`{colors.primary}` — #FCD535): The single brand color. Used for primary CTA backgrounds, the wordmark, brand-claim headlines ("FUNDS ARE SAFU"), trust badges ("No.1 Trading Volume"), large stat numbers in `{component.stat-callout-card}`, and inline links.
 - **Binance Yellow Active** (`{colors.primary-active}` — #f0b90b): The press / hover-darker variant. Slightly more saturated yellow.
 - **Binance Yellow Disabled** (`{colors.primary-disabled}` — #3a3a1f): A desaturated dark-yellow used on disabled CTAs over dark canvas.
@@ -362,21 +364,25 @@ The product is **multi-theme**: marketing surfaces (homepage, smart-money, futur
 The system has two canvas modes that map to product context:
 
 **Dark mode (marketing default):**
+
 - **Canvas Dark** (`{colors.canvas-dark}` — #0b0e11): The primary page floor. Near-black with a slight warm tint — never pure black.
 - **Surface Card Dark** (`{colors.surface-card-dark}` — #1e2329): Cards, navigation dropdowns, secondary buttons over dark canvas, markets table.
 - **Surface Elevated Dark** (`{colors.surface-elevated-dark}` — #2b3139): One step lighter, used for nested cards, hovered nav items, and chart background panels.
 
 **Light mode (transactional):**
+
 - **Canvas Light** (`{colors.canvas-light}` — #ffffff): The page floor on transactional pages (buy crypto, deposit forms, account dialogs).
 - **Surface Soft Light** (`{colors.surface-soft-light}` — #fafafa): Footer surface and disabled states.
 - **Surface Strong Light** (`{colors.surface-strong-light}` — #f5f5f5): Form input backgrounds in muted contexts.
 
 ### Hairlines & Borders
+
 - **Hairline on Light** (`{colors.hairline-on-light}` — #eaecef): The 1px border tone on light surfaces. Dembrandt's frequency analysis confirms this as the highest-count token (1022 occurrences) — Binance uses hairlines liberally.
 - **Hairline on Dark** (`{colors.hairline-on-dark}` — #2b3139): The 1px border tone on dark surfaces. Same hex as `{colors.surface-elevated-dark}` — borders feel like surface steps, not ink lines.
 - **Border Strong** (`{colors.border-strong}` — #cdd1d6): A heavier border tone used on disabled secondary buttons.
 
 ### Text
+
 - **Ink** (`{colors.ink}` — #181a20): The strongest text on light surfaces. Display headlines on transactional pages.
 - **Body on Dark** (`{colors.body}` — #eaecef): Default running-text on dark canvas — deliberately not pure white, slightly cooler.
 - **Body on Light** (`{colors.body-on-light}` — #181a20): Same as ink — light-mode body text reuses the ink token.
@@ -386,18 +392,22 @@ The system has two canvas modes that map to product context:
 - **On Dark** (`{colors.on-dark}` — #ffffff): Pure white for high-contrast headlines on dark canvas.
 
 ### Trading Semantics
+
 - **Trading Up** (`{colors.trading-up}` — #0ecb81): Price-up green, used as text color in tables, charts, and inline ticker arrows. Never as a button background.
 - **Trading Down** (`{colors.trading-down}` — #f6465d): Price-down red. Same usage rules as trading-up.
 
 ### Info / Focus
+
 - **Info** (`{colors.info}` — #3b82f6): Inline info badges and the focus-ring base. The Tailwind `--tw-ring-color` token surfaced by dembrandt — used on input focus.
 
 ## Typography
 
 ### Font Family
+
 The system runs **BinanceNova** for display and body, and **BinancePlex** for numerical / financial data. Both are licensed Binance custom typefaces. The fallback stack walks `-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`.
 
 The split is functional, not decorative:
+
 - BinanceNova → editorial type (headlines, paragraphs, button labels, nav)
 - BinancePlex → tabular numerical type (prices, volumes, percentages, stat counters, prize pools)
 
@@ -405,35 +415,38 @@ Mixing them is not optional — BinanceNova on a price ticker would lose the tra
 
 ### Hierarchy
 
-| Token | Size | Weight | Line Height | Letter Spacing | Use |
-|---|---|---|---|---|---|
-| `{typography.hero-display}` | 64px | 700 | 1.1 | -1px | Homepage h1 ("316,258,026 USERS TRUST US") |
-| `{typography.display-lg}` | 48px | 700 | 1.1 | -0.5px | Brand-claim headlines ("FUNDS ARE SAFU"), prize-pool hero ("Futures Masters Arena") |
-| `{typography.display-md}` | 40px | 600 | 1.15 | -0.3px | Section heads on long-scroll pages |
-| `{typography.display-sm}` | 32px | 600 | 1.2 | 0 | CTA band headlines ("Secure, Low-Fee Trading on Binance") |
-| `{typography.title-lg}` | 24px | 600 | 1.3 | 0 | Sub-section titles |
-| `{typography.title-md}` | 20px | 600 | 1.35 | 0 | QR-promo cards, feature card titles |
-| `{typography.title-sm}` | 16px | 600 | 1.4 | 0 | Trust badges, FAQ rows, step labels |
-| `{typography.number-display}` | 40px | 700 | 1.1 | -0.3px | Big stat numbers (15,000 BTC, $429,423,449) — BinancePlex |
-| `{typography.number-md}` | 16px | 500 | 1.4 | 0 | Markets table prices, table cells — BinancePlex |
-| `{typography.number-sm}` | 14px | 500 | 1.4 | 0 | Inline prices, %  changes — BinancePlex |
-| `{typography.body-md}` | 14px | 400 | 1.5 | 0 | Default running-text — BinanceNova |
-| `{typography.body-sm}` | 13px | 400 | 1.5 | 0 | Cookie consent text, footer body |
-| `{typography.caption}` | 12px | 500 | 1.4 | 0 | Small meta labels |
-| `{typography.button}` | 14px | 600 | 1 | 0 | Standard CTA button labels |
-| `{typography.nav-link}` | 14px | 500 | 1.4 | 0 | Top nav menu items |
+| Token                         | Size | Weight | Line Height | Letter Spacing | Use                                                                                 |
+| ----------------------------- | ---- | ------ | ----------- | -------------- | ----------------------------------------------------------------------------------- |
+| `{typography.hero-display}`   | 64px | 700    | 1.1         | -1px           | Homepage h1 ("316,258,026 USERS TRUST US")                                          |
+| `{typography.display-lg}`     | 48px | 700    | 1.1         | -0.5px         | Brand-claim headlines ("FUNDS ARE SAFU"), prize-pool hero ("Futures Masters Arena") |
+| `{typography.display-md}`     | 40px | 600    | 1.15        | -0.3px         | Section heads on long-scroll pages                                                  |
+| `{typography.display-sm}`     | 32px | 600    | 1.2         | 0              | CTA band headlines ("Secure, Low-Fee Trading on Binance")                           |
+| `{typography.title-lg}`       | 24px | 600    | 1.3         | 0              | Sub-section titles                                                                  |
+| `{typography.title-md}`       | 20px | 600    | 1.35        | 0              | QR-promo cards, feature card titles                                                 |
+| `{typography.title-sm}`       | 16px | 600    | 1.4         | 0              | Trust badges, FAQ rows, step labels                                                 |
+| `{typography.number-display}` | 40px | 700    | 1.1         | -0.3px         | Big stat numbers (15,000 BTC, $429,423,449) — BinancePlex                           |
+| `{typography.number-md}`      | 16px | 500    | 1.4         | 0              | Markets table prices, table cells — BinancePlex                                     |
+| `{typography.number-sm}`      | 14px | 500    | 1.4         | 0              | Inline prices, % changes — BinancePlex                                              |
+| `{typography.body-md}`        | 14px | 400    | 1.5         | 0              | Default running-text — BinanceNova                                                  |
+| `{typography.body-sm}`        | 13px | 400    | 1.5         | 0              | Cookie consent text, footer body                                                    |
+| `{typography.caption}`        | 12px | 500    | 1.4         | 0              | Small meta labels                                                                   |
+| `{typography.button}`         | 14px | 600    | 1           | 0              | Standard CTA button labels                                                          |
+| `{typography.nav-link}`       | 14px | 500    | 1.4         | 0              | Top nav menu items                                                                  |
 
 ### Principles
+
 Display sizes use weight 700 — heavier than most marketing systems. This makes sense for a trading platform: numbers need to read at a glance, headlines need to compete with chart visualizations and dense data tables. The system will not soften display weight to 400 the way Airtable or Stripe does.
 
 `{typography.number-display}` and the smaller number variants always use **BinancePlex**, even when surrounding body type uses BinanceNova. Prices, volumes, and stat counters render in BinancePlex regardless of context — it is the system's "trustworthy number" voice.
 
 ### Note on Font Substitutes
+
 If BinanceNova and BinancePlex are unavailable, **Inter** is the closest open-source substitute for BinanceNova and **JetBrains Mono** or **IBM Plex Sans** is the closest substitute for BinancePlex (depending on whether tabular monospace fidelity matters more than humanist proportions). Adjust display headlines down by ~3% in line-height to match BinanceNova's tighter cap height.
 
 ## Layout
 
 ### Spacing System
+
 - **Base unit:** 4px.
 - **Tokens:** `{spacing.xxs}` 4px · `{spacing.xs}` 8px · `{spacing.sm}` 12px · `{spacing.md}` 16px · `{spacing.lg}` 24px · `{spacing.xl}` 32px · `{spacing.xxl}` 48px · `{spacing.section}` 80px.
 - **Section padding (vertical):** `{spacing.section}` (80px) — slightly tighter than airy marketing sites (96px) because Binance pages mix marketing bands with dense product surfaces (markets tables, FAQ accordions).
@@ -441,27 +454,30 @@ If BinanceNova and BinancePlex are unavailable, **Inter** is the closest open-so
 - **Gutters:** `{spacing.lg}` (24px) between cards in 3-up grids; `{spacing.md}` (16px) inside footer column gutters and dense FAQ lists.
 
 ### Grid & Container
+
 - **Max content width:** ~1280px centered on marketing pages; ~1440px on product surfaces (markets, smart-money tables) where horizontal density matters.
 - **Editorial body:** Single 12-column grid; product pages often use 8/4 split (main panel + side rail).
 - **Markets table:** 5-column header (Pair / Last Price / 24h Change / 24h Volume / Action), with the first column carrying coin icon + symbol pair.
 - **Footer:** 6-column link list at desktop, wrapping to 2-up at tablet and 1-up on mobile.
 
 ### Whitespace Philosophy
+
 Binance is denser than typical marketing sites — long-scroll pages mix hero bands with markets tables, FAQ accordions, and feature grids without much breathing room between them. The system trusts contrast (yellow vs. dark canvas, green vs. red price cells) to do the visual separation work, not whitespace. Where whitespace appears, it's always uniform — `{spacing.section}` between every major band.
 
 ## Elevation & Depth
 
-| Level | Treatment | Use |
-|---|---|---|
-| Flat | No shadow, no border | Body sections, top nav, hero bands, footer |
-| Soft hairline | 1px `{colors.hairline-on-dark}` or `{colors.hairline-on-light}` | Inputs, table dividers, FAQ row separators, secondary buttons |
-| Card surface | `{colors.surface-card-dark}` background on dark canvas, `{colors.canvas-light}` on light context — no shadow | All elevated cards (markets-table-card, QR-promo-card, feature-photo-card, trust-badges) |
-| Subtle drop shadow | Faint shadow visible only when a card sits over imagery | Used sparingly on the buy-crypto-amount-card on transactional pages |
-| Focus ring | `0 0 0 2px {colors.info-ring}` at 50% alpha | Input + button keyboard focus state |
+| Level              | Treatment                                                                                                    | Use                                                                                      |
+| ------------------ | ------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------- |
+| Flat               | No shadow, no border                                                                                         | Body sections, top nav, hero bands, footer                                               |
+| Soft hairline      | 1px `{colors.hairline-on-dark}` or `{colors.hairline-on-light}`                                              | Inputs, table dividers, FAQ row separators, secondary buttons                            |
+| Card surface       | `{colors.surface-card-dark}` background on dark canvas, `{colors.canvas-light}` on light context — no shadow | All elevated cards (markets-table-card, QR-promo-card, feature-photo-card, trust-badges) |
+| Subtle drop shadow | Faint shadow visible only when a card sits over imagery                                                      | Used sparingly on the buy-crypto-amount-card on transactional pages                      |
+| Focus ring         | `0 0 0 2px {colors.info-ring}` at 50% alpha                                                                  | Input + button keyboard focus state                                                      |
 
 The elevation philosophy is **flat surfaces with color-block separation**. Binance does not use heavy drop shadows or glassmorphism — depth comes from the contrast between `{colors.canvas-dark}` and `{colors.surface-card-dark}` (a 12-step lightness jump that reads as a clear elevation boundary).
 
 ### Decorative Depth
+
 - **Yellow → dark vertical gradient backdrop** on the Futures Arena hero: `{colors.primary}` fading down to `{colors.canvas-dark}`. This is a single-page treatment used for product-launch / event hero surfaces, not a system-wide signature.
 - **Coin-stack illustrations** flanking large stat blocks (3D rendered crypto coins, trophy icons). These are illustrations, not tokens — treat as content rather than design system surface.
 
@@ -469,19 +485,20 @@ The elevation philosophy is **flat surfaces with color-block separation**. Binan
 
 ### Border Radius Scale
 
-| Token | Value | Use |
-|---|---|---|
-| `{rounded.xs}` | 2px | Almost no use — reserved for very small badges |
-| `{rounded.sm}` | 4px | Small inline buttons (subscribe, trading-up / trading-down inline) |
-| `{rounded.md}` | 6px | Standard CTA buttons, primary buttons, primary input fields |
-| `{rounded.lg}` | 8px | Search input, content cards, trust badges, sub-cards |
-| `{rounded.xl}` | 12px | Elevated card containers (markets-table-card, QR-promo-card, CTA bands) |
-| `{rounded.pill}` | 9999px | Prominent feature CTAs ("Sign Up" pill on dark, futures-arena "Join Now") |
-| `{rounded.full}` | 9999px / 50% | Coin icons, avatars |
+| Token            | Value        | Use                                                                       |
+| ---------------- | ------------ | ------------------------------------------------------------------------- |
+| `{rounded.xs}`   | 2px          | Almost no use — reserved for very small badges                            |
+| `{rounded.sm}`   | 4px          | Small inline buttons (subscribe, trading-up / trading-down inline)        |
+| `{rounded.md}`   | 6px          | Standard CTA buttons, primary buttons, primary input fields               |
+| `{rounded.lg}`   | 8px          | Search input, content cards, trust badges, sub-cards                      |
+| `{rounded.xl}`   | 12px         | Elevated card containers (markets-table-card, QR-promo-card, CTA bands)   |
+| `{rounded.pill}` | 9999px       | Prominent feature CTAs ("Sign Up" pill on dark, futures-arena "Join Now") |
+| `{rounded.full}` | 9999px / 50% | Coin icons, avatars                                                       |
 
 Binance's radius hierarchy is tighter than typical marketing systems — most surfaces sit at 6-12px. The pill radius is a deliberate exception used to signal "this is a top-of-page action."
 
 ### Photography & Iconography
+
 - Coin icons render as 24×24 or 32×32 rounded glyphs (often 50% radius on circular outline + the coin's brand color inside).
 - 3D rendered coin stacks and trophy illustrations are full-color illustrations with a slight floor shadow — not flat icons.
 - Photographic content (people-using-the-app section) crops to `{rounded.xl}` (12px) corners, full-bleed on mobile.
@@ -571,6 +588,7 @@ Binance's radius hierarchy is tighter than typical marketing systems — most su
 ## Do's and Don'ts
 
 ### Do
+
 - Reserve `{colors.primary}` (Binance Yellow) for primary actions, brand-claim headlines, and the wordmark. Never use it for secondary or decorative purposes — yellow's scarcity is what makes it powerful.
 - Keep `{component.button-primary}` (yellow with black text) as the universal primary CTA across both dark and light modes. The same button appears identically on `{colors.canvas-dark}` and `{colors.canvas-light}`.
 - Use `{component.button-trading-up}` (green) and `{component.button-trading-down}` (red) only for explicit Buy/Sell or Long/Short actions. Never use them for general "confirm" or "cancel" because they carry semantic price-direction meaning.
@@ -579,6 +597,7 @@ Binance's radius hierarchy is tighter than typical marketing systems — most su
 - Anchor every editorial band with `{spacing.section}` (80px). Binance is denser than airy marketing sites — 80px is the right rhythm.
 
 ### Don't
+
 - Don't introduce a second brand color. The system has exactly one accent (`{colors.primary}`) and any expansion dilutes the brand identity. The turquoise on Smart Money is a single-product experiment, not a system token.
 - Don't use yellow for body text or large surface fills. It is for focal-point CTAs and headlines only.
 - Don't use `{colors.trading-up}` / `{colors.trading-down}` as background fills on cards. They are price-direction signals, expressed as text color or small badge fill — never as a card surface.
@@ -590,19 +609,21 @@ Binance's radius hierarchy is tighter than typical marketing systems — most su
 
 ### Breakpoints
 
-| Name | Width | Key Changes |
-|---|---|---|
-| Mobile | < 768px | Top nav collapses to hamburger; hero h1 drops from 64px to ~36px; markets table converts to a horizontally-scrollable card list; demo grids drop to 1-up; footer 6 columns wrap to 2 |
-| Tablet | 768–1024px | Top nav stays horizontal but tightens, secondary menu items hide behind a "More" dropdown; markets table 2-up; pricing/feature grids 2-up |
-| Desktop | 1024–1440px | Full top-nav with all primary menu items; 5-column markets table; trading dashboards in 8/4 split (chart + side rail) |
-| Wide | > 1440px | Same as desktop with more outer breathing room; max content width caps at 1280-1440px depending on surface |
+| Name    | Width       | Key Changes                                                                                                                                                                          |
+| ------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Mobile  | < 768px     | Top nav collapses to hamburger; hero h1 drops from 64px to ~36px; markets table converts to a horizontally-scrollable card list; demo grids drop to 1-up; footer 6 columns wrap to 2 |
+| Tablet  | 768–1024px  | Top nav stays horizontal but tightens, secondary menu items hide behind a "More" dropdown; markets table 2-up; pricing/feature grids 2-up                                            |
+| Desktop | 1024–1440px | Full top-nav with all primary menu items; 5-column markets table; trading dashboards in 8/4 split (chart + side rail)                                                                |
+| Wide    | > 1440px    | Same as desktop with more outer breathing room; max content width caps at 1280-1440px depending on surface                                                                           |
 
 ### Touch Targets
+
 - Primary CTAs render at minimum 40 × 40px (`{component.button-primary}` height + padding) — meets WCAG AAA's 44 × 44 with surrounding spacing.
 - Subscribe / inline action buttons are 28 × 28 — denser than ideal but matches industry trading platform norms.
 - Coin icons in markets tables are 32 × 32px, with the entire row tappable for 44px+ effective target.
 
 ### Collapsing Strategy
+
 - Top nav collapses to hamburger at < 768px; the menu opens as a full-screen sheet with the same yellow accent CTAs anchored to the bottom of the sheet.
 - Markets table reflows to a horizontally-scrollable single card per coin pair on mobile.
 - The hero stat numbers ("316M USERS") shrink proportionally rather than wrapping — Binance's biggest claim must always read as a single block.
@@ -610,6 +631,7 @@ Binance's radius hierarchy is tighter than typical marketing systems — most su
 - The light footer stays full-bleed at every breakpoint — it does not collapse to a separate dark variant.
 
 ### Image Behavior
+
 - Coin icons stay at fixed 24/32px sizes regardless of breakpoint.
 - Lifestyle photos in the "Trade on the go" section crop responsively — wider at desktop, taller (vertical) at mobile.
 - 3D coin-stack illustrations are fixed-aspect-ratio assets that scale uniformly without cropping.

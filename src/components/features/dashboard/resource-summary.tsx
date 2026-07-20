@@ -3,13 +3,7 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useLlamaStore } from "@/lib/llama-store";
 
 export function InstanceSummary() {
@@ -25,7 +19,9 @@ export function InstanceSummary() {
             <CardTitle className="text-sm">Instances</CardTitle>
             <CardDescription>Running servers</CardDescription>
           </div>
-          <Badge variant="secondary" className="text-xs">{running.length}</Badge>
+          <Badge variant="secondary" className="text-xs">
+            {running.length}
+          </Badge>
         </div>
       </CardHeader>
       <CardContent>
@@ -40,10 +36,14 @@ export function InstanceSummary() {
                 <div key={inst.id} className="flex items-center justify-between rounded-lg bg-muted/30 px-2.5 py-1.5">
                   <div className="min-w-0 flex-1">
                     <div className="truncate text-xs font-medium text-foreground">{inst.name}</div>
-                    <div className="text-[10px] text-muted-foreground">:{inst.port} · {inst.tokensPerSec.toFixed(1)} tok/s</div>
+                    <div className="text-[10px] text-muted-foreground">
+                      :{inst.port} · {inst.tokensPerSec.toFixed(1)} tok/s
+                    </div>
                   </div>
                   <div className="ml-2 text-right">
-                    <div className="font-mono text-xs font-semibold text-foreground">{Math.round(inst.memoryMb)} MB</div>
+                    <div className="font-mono text-xs font-semibold text-foreground">
+                      {Math.round(inst.memoryMb)} MB
+                    </div>
                     <div className="text-[10px] text-muted-foreground">{inst.requestsPerMin} req/min</div>
                   </div>
                 </div>
@@ -63,7 +63,9 @@ export function DownloadedModels() {
     <Card>
       <CardHeader>
         <CardTitle className="text-sm">Downloaded Models</CardTitle>
-        <CardDescription>{models.filter((m) => m.downloaded).length} of {models.length} ready</CardDescription>
+        <CardDescription>
+          {models.filter((m) => m.downloaded).length} of {models.length} ready
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="grid gap-1.5 sm:grid-cols-2">

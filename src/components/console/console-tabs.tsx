@@ -4,10 +4,7 @@
 
 "use client";
 
-import {
-  TerminalSquare,
-  Server,
-} from "lucide-react";
+import { TerminalSquare, Server } from "lucide-react";
 import type { LlamaInstance } from "@/lib/llama-store";
 import { SYSTEM_CONSOLE } from "@/lib/llama-store";
 
@@ -20,10 +17,7 @@ interface ConsoleTab {
   instance?: LlamaInstance;
 }
 
-export function buildConsoleTabs(
-  instances: LlamaInstance[],
-  logs: Record<string, string[]>,
-): ConsoleTab[] {
+export function buildConsoleTabs(instances: LlamaInstance[], logs: Record<string, string[]>): ConsoleTab[] {
   return [
     {
       id: SYSTEM_CONSOLE,

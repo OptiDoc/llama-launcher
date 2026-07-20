@@ -4,13 +4,7 @@
 
 "use client";
 
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { LiveIndicator } from "./dashboard-charts";
 import { Radio } from "lucide-react";
 

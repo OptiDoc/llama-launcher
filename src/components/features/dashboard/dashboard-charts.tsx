@@ -4,30 +4,10 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-  type ChartConfig,
-} from "@/components/ui/chart";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
 import { Cpu, Activity, Gauge, Radio } from "lucide-react";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  CartesianGrid,
-  Area,
-  AreaChart,
-} from "recharts";
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Area, AreaChart } from "recharts";
 
 // ---------- Chart configs ----------
 
@@ -84,9 +64,7 @@ function StatCard({
     <Card className="py-4">
       <CardContent className="flex items-center justify-between px-4">
         <span className="text-xs font-medium text-muted-foreground">{label}</span>
-        <span className={cn("grid size-7 place-items-center rounded-lg", `card-${color}`)}>
-          {icon}
-        </span>
+        <span className={cn("grid size-7 place-items-center rounded-lg", `card-${color}`)}>{icon}</span>
       </CardContent>
       <CardHeader className="px-4 pt-1 pb-0">
         <CardTitle className="text-2xl font-bold tracking-tight">{value}</CardTitle>
@@ -134,12 +112,4 @@ function MetricGauge({
   );
 }
 
-export {
-  cpuChartConfig,
-  tpsChartConfig,
-  utilChartConfig,
-  fmtClock,
-  StatCard,
-  LiveIndicator,
-  MetricGauge,
-};
+export { cpuChartConfig, tpsChartConfig, utilChartConfig, fmtClock, StatCard, LiveIndicator, MetricGauge };

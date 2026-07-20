@@ -18,14 +18,7 @@ import {
 } from "lucide-react";
 import { useLlamaStore } from "@/lib/llama-store";
 
-export type Page =
-  | "dashboard"
-  | "models"
-  | "profiles"
-  | "instances"
-  | "releases"
-  | "logs"
-  | "settings";
+export type Page = "dashboard" | "models" | "profiles" | "instances" | "releases" | "logs" | "settings";
 
 interface SidebarProps {
   collapsed: boolean;
@@ -76,7 +69,12 @@ export function Sidebar({ collapsed, activePage, onNavigate }: SidebarProps) {
           {navGroups.map((group, gi) => (
             <div key={gi} className={cn(gi > 0 && "mt-4")}>
               {group.label && (
-                <div className={cn("mb-1.5 px-2.5 pb-1 text-[10px] font-semibold uppercase tracking-[0.06em] text-muted-foreground/40 overflow-hidden whitespace-nowrap transition-opacity duration-200", collapsed ? "opacity-0 h-0 mb-0 pb-0" : "opacity-100")}>
+                <div
+                  className={cn(
+                    "mb-1.5 px-2.5 pb-1 text-[10px] font-semibold uppercase tracking-[0.06em] text-muted-foreground/40 overflow-hidden whitespace-nowrap transition-opacity duration-200",
+                    collapsed ? "opacity-0 h-0 mb-0 pb-0" : "opacity-100",
+                  )}
+                >
                   {group.label}
                 </div>
               )}
@@ -100,10 +98,20 @@ export function Sidebar({ collapsed, activePage, onNavigate }: SidebarProps) {
                       {active && (
                         <span className="absolute left-0 top-1/2 h-4 w-[3px] -translate-y-1/2 rounded-full bg-primary" />
                       )}
-                      <span className={cn("shrink-0 transition-colors", active ? "text-foreground" : "text-muted-foreground/70")}>
+                      <span
+                        className={cn(
+                          "shrink-0 transition-colors",
+                          active ? "text-foreground" : "text-muted-foreground/70",
+                        )}
+                      >
                         {icon}
                       </span>
-                      <span className={cn("flex-1 text-left overflow-hidden whitespace-nowrap transition-all duration-200", collapsed ? "w-0 opacity-0 ml-0" : "opacity-100")}>
+                      <span
+                        className={cn(
+                          "flex-1 text-left overflow-hidden whitespace-nowrap transition-all duration-200",
+                          collapsed ? "w-0 opacity-0 ml-0" : "opacity-100",
+                        )}
+                      >
                         {label}
                       </span>
                       {!collapsed && activeDownloads > 0 && page === "models" && (
@@ -135,15 +143,46 @@ export function Sidebar({ collapsed, activePage, onNavigate }: SidebarProps) {
               title={collapsed ? "Toggle console" : undefined}
             >
               <TerminalSquare className="size-[18px] shrink-0" />
-              <span className={cn("overflow-hidden whitespace-nowrap transition-all duration-200", collapsed ? "w-0 opacity-0" : "opacity-100")}>Console</span>
+              <span
+                className={cn(
+                  "overflow-hidden whitespace-nowrap transition-all duration-200",
+                  collapsed ? "w-0 opacity-0" : "opacity-100",
+                )}
+              >
+                Console
+              </span>
             </button>
-            <button className={cn("flex h-9 items-center gap-2.5 rounded-lg pl-2.5 text-[14px] font-medium text-muted-foreground/70 transition-colors hover:bg-card/50 hover:text-foreground", collapsed ? "w-9 pr-0" : "w-full pr-2.5")}>
+            <button
+              className={cn(
+                "flex h-9 items-center gap-2.5 rounded-lg pl-2.5 text-[14px] font-medium text-muted-foreground/70 transition-colors hover:bg-card/50 hover:text-foreground",
+                collapsed ? "w-9 pr-0" : "w-full pr-2.5",
+              )}
+            >
               <BookOpen className="size-[18px] shrink-0" />
-              <span className={cn("overflow-hidden whitespace-nowrap transition-all duration-200", collapsed ? "w-0 opacity-0" : "opacity-100")}>Docs</span>
+              <span
+                className={cn(
+                  "overflow-hidden whitespace-nowrap transition-all duration-200",
+                  collapsed ? "w-0 opacity-0" : "opacity-100",
+                )}
+              >
+                Docs
+              </span>
             </button>
-            <button className={cn("flex h-9 items-center gap-2.5 rounded-lg pl-2.5 text-[14px] font-medium text-muted-foreground/70 transition-colors hover:bg-card/50 hover:text-foreground", collapsed ? "w-9 pr-0" : "w-full pr-2.5")}>
+            <button
+              className={cn(
+                "flex h-9 items-center gap-2.5 rounded-lg pl-2.5 text-[14px] font-medium text-muted-foreground/70 transition-colors hover:bg-card/50 hover:text-foreground",
+                collapsed ? "w-9 pr-0" : "w-full pr-2.5",
+              )}
+            >
               <HelpCircle className="size-[18px] shrink-0" />
-              <span className={cn("overflow-hidden whitespace-nowrap transition-all duration-200", collapsed ? "w-0 opacity-0" : "opacity-100")}>Support</span>
+              <span
+                className={cn(
+                  "overflow-hidden whitespace-nowrap transition-all duration-200",
+                  collapsed ? "w-0 opacity-0" : "opacity-100",
+                )}
+              >
+                Support
+              </span>
             </button>
           </div>
         </div>

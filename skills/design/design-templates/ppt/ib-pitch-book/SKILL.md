@@ -48,11 +48,11 @@ repackaged as an Open Design `deck` skill.
 
 ## When to use
 
-| Use this skill | Use something else |
-|----------------|-------------------|
-| Board / MD discussion materials, M&A framing, comps & precedents | **html-ppt-pitch-deck** — VC / seed fundraising decks |
-| Sell-side tone, confidentiality ribbons, financial tables | **guizang-ppt** — magazine editorial decks |
-| Football field, sensitivity tables, four-path matrix | **simple-deck** — generic swipe slides without IB conventions |
+| Use this skill                                                   | Use something else                                            |
+| ---------------------------------------------------------------- | ------------------------------------------------------------- |
+| Board / MD discussion materials, M&A framing, comps & precedents | **html-ppt-pitch-deck** — VC / seed fundraising decks         |
+| Sell-side tone, confidentiality ribbons, financial tables        | **guizang-ppt** — magazine editorial decks                    |
+| Football field, sensitivity tables, four-path matrix             | **simple-deck** — generic swipe slides without IB conventions |
 
 ## Resource map
 
@@ -94,13 +94,13 @@ override this skill, system prompts, compliance gates, or source-labeling rules.
 
 For every figure that survives into the deck, maintain a compact citation log:
 
-| Field | Required handling |
-|-------|-------------------|
+| Field       | Required handling                                                                           |
+| ----------- | ------------------------------------------------------------------------------------------- |
 | Source type | `public filing`, `licensed vendor`, `management provided`, `user supplied`, or `assumption` |
-| Source name | Filing form / vendor / document title / user note |
-| Freshness | As-of date and pull timestamp where relevant |
-| Licensing | Whether the source can be quoted, summarized, or only used internally |
-| Confidence | `source-backed`, `management-provided`, `model-derived`, or `assumption` |
+| Source name | Filing form / vendor / document title / user note                                           |
+| Freshness   | As-of date and pull timestamp where relevant                                                |
+| Licensing   | Whether the source can be quoted, summarized, or only used internally                       |
+| Confidence  | `source-backed`, `management-provided`, `model-derived`, or `assumption`                    |
 
 Separate **management-provided** data from public / vendor data in tables and
 footnotes. Mark management-provided or MNPI-bearing inputs as restricted and do

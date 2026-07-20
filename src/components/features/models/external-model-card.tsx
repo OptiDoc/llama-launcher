@@ -7,7 +7,22 @@ import { CARD_COLORS } from "./model-card";
 import { fmtBytes } from "@/lib/llama-store";
 import { FolderOpen } from "lucide-react";
 
-export function ExternalModelCard({ dir, index }: { dir: any; index: number }) {
+export interface ExternalModelDir {
+  display_name: string;
+  model_count: number;
+  total_size_mb: number;
+  source: string;
+  path: string;
+  files: ExternalModelFile[];
+}
+
+export interface ExternalModelFile {
+  id: string;
+  filename: string;
+  size_mb: number;
+}
+
+export function ExternalModelCard({ dir, index }: { dir: ExternalModelDir; index: number }) {
   const color = CARD_COLORS[index % CARD_COLORS.length];
 
   return (
@@ -21,7 +36,7 @@ export function ExternalModelCard({ dir, index }: { dir: any; index: number }) {
             <div className="min-w-0">
               <h3 className="truncate text-sm font-semibold">{dir.display_name}</h3>
               <p className="text-xs text-foreground/70">
-                {dir.model_count} model{dir.model_count !== 1 && 's'} • {fmtBytes(dir.total_size_mb * 1024 * 1024)}
+                {dir.model_count} model{dir.model_count !== 1 && "s"} • {fmtBytes(dir.total_size_mb * 1024 * 1024)}
               </p>
             </div>
           </div>
@@ -35,7 +50,7 @@ export function ExternalModelCard({ dir, index }: { dir: any; index: number }) {
 
           {dir.files.length > 0 && (
             <div className="space-y-1">
-              {dir.files.slice(0, 3).map((file: any) => (
+              {dir.files.slice(0, 3).map((file: ExternalModelFile) => (
                 <div key={file.id} className="flex items-center justify-between text-[10px]">
                   <span className="truncate text-muted-foreground font-mono">{file.filename}</span>
                   <span className="text-muted-foreground">{fmtBytes(file.size_mb * 1024 * 1024)}</span>
@@ -43,7 +58,7 @@ export function ExternalModelCard({ dir, index }: { dir: any; index: number }) {
               ))}
               {dir.files.length > 3 && (
                 <div className="text-[10px] text-muted-foreground">
-                  +{dir.files.length - 3} more file{dir.files.length > 4 && 's'}
+                  +{dir.files.length - 3} more file{dir.files.length > 4 && "s"}
                 </div>
               )}
             </div>

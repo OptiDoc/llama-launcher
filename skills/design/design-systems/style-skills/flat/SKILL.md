@@ -7,6 +7,7 @@ metadata:
 ---
 
 <!-- TYPEUI_SH_MANAGED_START -->
+
 # Flat Design System Skill (Antigravity)
 
 ## Mission
@@ -24,7 +25,6 @@ a minimalist style characterized by two-dimensional elements, vibrant colors, an
 - Typography scale: 12/14/16/20/24/32 | Fonts: primary=Inter, display=Inter, mono=JetBrains Mono | weights=100, 200, 300, 400, 500, 600, 700, 800, 900
 - Color palette: primary, neutral, success, warning, danger | Tokens: primary=#F2673C, secondary=#8B5CF6, success=#16A34A, warning=#D97706, danger=#DC2626, surface=#FFFFFF, text=#111827
 - Spacing scale: 4/8/12/16/24/32
-
 
 ## Accessibility
 

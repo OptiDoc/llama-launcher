@@ -3,31 +3,11 @@
 import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Calendar,
-  ChevronDown,
-  ChevronRight,
-  GitCommit,
-  Rocket,
-} from "lucide-react";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Calendar, ChevronDown, ChevronRight, GitCommit, Rocket } from "lucide-react";
 import { type LlamaRelease, type ReleaseVariant } from "@/lib/llama-store";
-import {
-  InstalledBadge,
-  VariantBadge,
-  shortCommit,
-} from "./release-badge";
-import {
-  StatusCell,
-  ActionControl,
-} from "./release-status";
+import { InstalledBadge, VariantBadge, shortCommit } from "./release-badge";
+import { StatusCell, ActionControl } from "./release-status";
 
 // ---------- Types ----------
 
@@ -41,11 +21,7 @@ export interface TagGroup {
 
 // ---------- Table view ----------
 
-const VariantTableRow = React.memo(function VariantTableRow({
-  release,
-}: {
-  release: LlamaRelease;
-}) {
+const VariantTableRow = React.memo(function VariantTableRow({ release }: { release: LlamaRelease }) {
   return (
     <TableRow className="hover:bg-muted/40">
       <TableCell className="w-10 pl-4 text-muted-foreground/40">
@@ -54,12 +30,8 @@ const VariantTableRow = React.memo(function VariantTableRow({
       <TableCell>
         <VariantBadge variant={release.variant as ReleaseVariant} withCudaNote />
       </TableCell>
-      <TableCell className="whitespace-nowrap text-xs text-muted-foreground">
-        {release.publishedAt}
-      </TableCell>
-      <TableCell className="whitespace-nowrap font-mono text-xs text-muted-foreground">
-        {release.sizeMb} MB
-      </TableCell>
+      <TableCell className="whitespace-nowrap text-xs text-muted-foreground">{release.publishedAt}</TableCell>
+      <TableCell className="whitespace-nowrap font-mono text-xs text-muted-foreground">{release.sizeMb} MB</TableCell>
       <TableCell>
         <StatusCell release={release} />
       </TableCell>
@@ -104,9 +76,7 @@ function TagGroupBlock({
               <GitCommit className="size-3" />
               <span className="font-mono">{shortCommit(group.commit)}</span>
             </span>
-            <span className="min-w-0 flex-1 truncate text-xs text-foreground/70">
-              {group.notes}
-            </span>
+            <span className="min-w-0 flex-1 truncate text-xs text-foreground/70">{group.notes}</span>
             {hasSecondary && (
               <Button
                 variant="ghost"
@@ -114,11 +84,7 @@ function TagGroupBlock({
                 className="shrink-0 px-2 text-xs text-muted-foreground"
                 onClick={onToggleExpand}
               >
-                {expanded ? (
-                  <ChevronDown className="mr-1 size-3.5" />
-                ) : (
-                  <ChevronRight className="mr-1 size-3.5" />
-                )}
+                {expanded ? <ChevronDown className="mr-1 size-3.5" /> : <ChevronRight className="mr-1 size-3.5" />}
                 {expanded ? "Hide variants" : `Show all variants (${secondary.length})`}
               </Button>
             )}
@@ -179,13 +145,9 @@ export function EmptyState({ hasQuery }: { hasQuery: boolean }) {
           <Rocket className="size-6" />
         </div>
         <div>
-          <p className="text-sm font-medium">
-            {hasQuery ? "No releases match your search" : "No releases available"}
-          </p>
+          <p className="text-sm font-medium">{hasQuery ? "No releases match your search" : "No releases available"}</p>
           <p className="mt-1 text-xs text-muted-foreground">
-            {hasQuery
-              ? "Try a different tag, commit, or variant."
-              : "Releases will appear here once published."}
+            {hasQuery ? "Try a different tag, commit, or variant." : "Releases will appear here once published."}
           </p>
         </div>
       </CardContent>

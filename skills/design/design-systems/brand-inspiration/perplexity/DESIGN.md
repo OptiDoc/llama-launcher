@@ -9,6 +9,7 @@ typography:
   fonts: "Inter, JetBrains Mono, Helvetica or Arial as a substitute"
 note: "Frontmatter is auto-extracted; the prose body below is the authoritative source for full tokens, components, and rules."
 ---
+
 # Design System Inspired by Perplexity AI
 
 > Category: AI & LLM
@@ -26,33 +27,33 @@ All values are sampled from Perplexity's production interface and marketing site
 
 ### Dark surface (default)
 
-| Token | Hex | OKLch | Role |
-|---|---|---|---|
-| `--bg-base` | `#0f0f10` | `oklch(8% 0.004 280)` | Page background |
-| `--bg-surface` | `#19191a` | `oklch(12% 0.004 280)` | Card / sidebar surface |
-| `--bg-elevated` | `#232325` | `oklch(16% 0.005 280)` | Tooltip, popover, hover state |
-| `--border` | `#2e2e30` | `oklch(21% 0.005 280)` | Divider, input border |
-| `--text-primary` | `#f0f0f0` | `oklch(95% 0 0)` | Body copy, headings |
-| `--text-secondary` | `#9b9b9b` | `oklch(64% 0 0)` | Meta, captions, labels |
-| `--text-tertiary` | `#5c5c5e` | `oklch(42% 0 0)` | Placeholder, disabled |
-| `--accent` | `#a855f7` | `oklch(62% 0.22 307)` | Primary CTA, focus ring, active tab |
-| `--accent-hover` | `#c084fc` | `oklch(72% 0.20 307)` | Hover state on accent |
-| `--accent-subtle` | `#3b1f5e` | `oklch(22% 0.14 307)` | Accent tint background |
-| `--success` | `#22c55e` | `oklch(72% 0.19 145)` | Verified source badge |
-| `--warning` | `#f59e0b` | `oklch(74% 0.17 72)` | Caution |
-| `--error` | `#ef4444` | `oklch(63% 0.21 27)` | Error state |
+| Token              | Hex       | OKLch                  | Role                                |
+| ------------------ | --------- | ---------------------- | ----------------------------------- |
+| `--bg-base`        | `#0f0f10` | `oklch(8% 0.004 280)`  | Page background                     |
+| `--bg-surface`     | `#19191a` | `oklch(12% 0.004 280)` | Card / sidebar surface              |
+| `--bg-elevated`    | `#232325` | `oklch(16% 0.005 280)` | Tooltip, popover, hover state       |
+| `--border`         | `#2e2e30` | `oklch(21% 0.005 280)` | Divider, input border               |
+| `--text-primary`   | `#f0f0f0` | `oklch(95% 0 0)`       | Body copy, headings                 |
+| `--text-secondary` | `#9b9b9b` | `oklch(64% 0 0)`       | Meta, captions, labels              |
+| `--text-tertiary`  | `#5c5c5e` | `oklch(42% 0 0)`       | Placeholder, disabled               |
+| `--accent`         | `#a855f7` | `oklch(62% 0.22 307)`  | Primary CTA, focus ring, active tab |
+| `--accent-hover`   | `#c084fc` | `oklch(72% 0.20 307)`  | Hover state on accent               |
+| `--accent-subtle`  | `#3b1f5e` | `oklch(22% 0.14 307)`  | Accent tint background              |
+| `--success`        | `#22c55e` | `oklch(72% 0.19 145)`  | Verified source badge               |
+| `--warning`        | `#f59e0b` | `oklch(74% 0.17 72)`   | Caution                             |
+| `--error`          | `#ef4444` | `oklch(63% 0.21 27)`   | Error state                         |
 
 ### Light surface
 
-| Token | Hex | Role |
-|---|---|---|
-| `--bg-base` | `#ffffff` | Page background |
-| `--bg-surface` | `#f8f8f8` | Card surface |
-| `--bg-elevated` | `#f0f0f0` | Hover / elevated |
-| `--border` | `#e0e0e0` | Divider |
-| `--text-primary` | `#0f0f10` | Body copy |
-| `--text-secondary` | `#5c5c5e` | Meta |
-| `--accent` | `#7c3aed` |  Primary CTA, focus ring, active tab |
+| Token              | Hex       | Role                                |
+| ------------------ | --------- | ----------------------------------- |
+| `--bg-base`        | `#ffffff` | Page background                     |
+| `--bg-surface`     | `#f8f8f8` | Card surface                        |
+| `--bg-elevated`    | `#f0f0f0` | Hover / elevated                    |
+| `--border`         | `#e0e0e0` | Divider                             |
+| `--text-primary`   | `#0f0f10` | Body copy                           |
+| `--text-secondary` | `#5c5c5e` | Meta                                |
+| `--accent`         | `#7c3aed` | Primary CTA, focus ring, active tab |
 
 ### Usage rules
 
@@ -66,23 +67,23 @@ Perplexity uses a system-default sans-serif stack for UI elements and a clean ge
 
 ### Families
 
-| Role | Family | Fallback |
-|---|---|---|
-| UI / body | `"Inter"` | `ui-sans-serif, system-ui, -apple-system, sans-serif` |
-| Code / citations | `"JetBrains Mono"` | `ui-monospace, "Cascadia Code", monospace` |
-| Numeric data | `"Inter"` with tabular nums | feature: `tnum`, `ss01` |
+| Role             | Family                      | Fallback                                              |
+| ---------------- | --------------------------- | ----------------------------------------------------- |
+| UI / body        | `"Inter"`                   | `ui-sans-serif, system-ui, -apple-system, sans-serif` |
+| Code / citations | `"JetBrains Mono"`          | `ui-monospace, "Cascadia Code", monospace`            |
+| Numeric data     | `"Inter"` with tabular nums | feature: `tnum`, `ss01`                               |
 
 ### Scale
 
-| Label | Size | Line height | Weight | Usage |
-|---|---|---|---|---|
-| `display` | 2rem / 32px | 1.2 | 600 | Page title, hero answer headline |
-| `heading-l` | 1.375rem / 22px | 1.3 | 600 | Section heading |
-| `heading-m` | 1.125rem / 18px | 1.4 | 600 | Sub-section heading |
-| `body` | 0.9375rem / 15px | 1.65 | 400 | Primary reading copy |
-| `body-sm` | 0.8125rem / 13px | 1.55 | 400 | Secondary, meta |
-| `caption` | 0.6875rem / 11px | 1.4 | 400 | Source labels, timestamps |
-| `code` | 0.875rem / 14px | 1.6 | 400 | Inline code, citations |
+| Label       | Size             | Line height | Weight | Usage                            |
+| ----------- | ---------------- | ----------- | ------ | -------------------------------- |
+| `display`   | 2rem / 32px      | 1.2         | 600    | Page title, hero answer headline |
+| `heading-l` | 1.375rem / 22px  | 1.3         | 600    | Section heading                  |
+| `heading-m` | 1.125rem / 18px  | 1.4         | 600    | Sub-section heading              |
+| `body`      | 0.9375rem / 15px | 1.65        | 400    | Primary reading copy             |
+| `body-sm`   | 0.8125rem / 13px | 1.55        | 400    | Secondary, meta                  |
+| `caption`   | 0.6875rem / 11px | 1.4         | 400    | Source labels, timestamps        |
+| `code`      | 0.875rem / 14px  | 1.6         | 400    | Inline code, citations           |
 
 ### Rules
 
@@ -94,16 +95,16 @@ Perplexity uses a system-default sans-serif stack for UI elements and a clean ge
 
 Perplexity uses an **8px base unit** throughout.
 
-| Token | Value | Usage |
-|---|---|---|
-| `--space-1` | 4px | Icon gap, tight label padding |
-| `--space-2` | 8px | Inline padding, small element gap |
-| `--space-3` | 12px | Component internal padding |
-| `--space-4` | 16px | Card padding, section gap |
-| `--space-5` | 24px | Between-component spacing |
-| `--space-6` | 32px | Section divider gap |
-| `--space-7` | 48px | Page-level vertical rhythm |
-| `--space-8` | 64px | Hero / above-fold padding |
+| Token       | Value | Usage                             |
+| ----------- | ----- | --------------------------------- |
+| `--space-1` | 4px   | Icon gap, tight label padding     |
+| `--space-2` | 8px   | Inline padding, small element gap |
+| `--space-3` | 12px  | Component internal padding        |
+| `--space-4` | 16px  | Card padding, section gap         |
+| `--space-5` | 24px  | Between-component spacing         |
+| `--space-6` | 32px  | Section divider gap               |
+| `--space-7` | 48px  | Page-level vertical rhythm        |
+| `--space-8` | 64px  | Hero / above-fold padding         |
 
 ### Layout grid
 
@@ -114,13 +115,13 @@ Perplexity uses an **8px base unit** throughout.
 
 ### Border radius
 
-| Token | Value | Usage |
-|---|---|---|
-| `--radius-sm` | 4px | Inline badge, tag |
-| `--radius-md` | 8px | Input field, card |
-| `--radius-lg` | 12px | Modal, popover |
-| `--radius-xl` | 16px | Bottom sheet, floating panel |
-| `--radius-full` | 9999px | Pill button, avatar |
+| Token           | Value  | Usage                        |
+| --------------- | ------ | ---------------------------- |
+| `--radius-sm`   | 4px    | Inline badge, tag            |
+| `--radius-md`   | 8px    | Input field, card            |
+| `--radius-lg`   | 12px   | Modal, popover               |
+| `--radius-xl`   | 16px   | Bottom sheet, floating panel |
+| `--radius-full` | 9999px | Pill button, avatar          |
 
 ## 5. Layout & Composition
 
@@ -131,6 +132,7 @@ The primary layout is a centered single-column answer, flanked by a source sideb
 ### Source cards
 
 Sources appear as compact horizontal chips (favicon + domain + excerpt) stacked below the answer or in a right rail. Each chip has:
+
 - `--bg-surface` background
 - `--border` 1px stroke
 - `--radius-md` corners
@@ -165,9 +167,17 @@ border: none;
 cursor: pointer;
 transition: background 120ms ease;
 
-&:hover { background: var(--accent-hover); }
-&:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-&:disabled { opacity: 0.4; cursor: not-allowed; }
+&:hover {
+  background: var(--accent-hover);
+}
+&:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+&:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
 ```
 
 ### Ghost button
@@ -179,7 +189,9 @@ border: 1px solid var(--border);
 border-radius: var(--radius-md);
 padding: 9px 20px;
 
-&:hover { background: var(--bg-elevated); }
+&:hover {
+  background: var(--bg-elevated);
+}
 ```
 
 ### Source badge
@@ -218,7 +230,9 @@ font-size: 0.9375rem;
 color: var(--text-primary);
 outline: none;
 
-&:focus { border-color: var(--accent); }
+&:focus {
+  border-color: var(--accent);
+}
 ```
 
 ### Tab bar
@@ -228,12 +242,7 @@ Tabs use `--text-secondary` by default. Active tab: `--text-primary` + 2px botto
 ### Skeleton loader
 
 ```css
-background: linear-gradient(
-  90deg,
-  var(--bg-elevated) 25%,
-  var(--bg-surface)  50%,
-  var(--bg-elevated) 75%
-);
+background: linear-gradient(90deg, var(--bg-elevated) 25%, var(--bg-surface) 50%, var(--bg-elevated) 75%);
 background-size: 400% 100%;
 animation: skeleton-shimmer 1.4s ease infinite;
 border-radius: var(--radius-sm);
@@ -243,15 +252,16 @@ border-radius: var(--radius-sm);
 
 Perplexity's interactions are nearly imperceptible — the brand is anti-animation. Every transition exists to prevent jarring state jumps, not to delight.
 
-| Action | Duration | Easing |
-|---|---|---|
-| Hover state change | 120ms | `ease` |
-| Panel / sidebar open | 160ms | `ease-out` |
-| Modal appear | 200ms | `ease-out` |
-| Skeleton shimmer | 1400ms | `ease` infinite |
-| Accordion expand | 180ms | `ease-in-out` |
+| Action               | Duration | Easing          |
+| -------------------- | -------- | --------------- |
+| Hover state change   | 120ms    | `ease`          |
+| Panel / sidebar open | 160ms    | `ease-out`      |
+| Modal appear         | 200ms    | `ease-out`      |
+| Skeleton shimmer     | 1400ms   | `ease` infinite |
+| Accordion expand     | 180ms    | `ease-in-out`   |
 
 Rules:
+
 - No spring physics, no bounce, no overshoot.
 - `prefers-reduced-motion: reduce` → all transitions collapse to 0ms instant.
 - No entrance animations for content — the answer appears immediately, not with a fade-in sequence.
@@ -268,13 +278,13 @@ Rules:
 
 ### UI copy patterns
 
-| Context | Pattern |
-|---|---|
-| Empty state | `Ask anything.` — no emoji, no exclamation mark |
-| Loading | `Searching…` — ellipsis, no spinner label |
-| Error | `Something went wrong. Try again.` — direct, no apology |
-| Success | No toast — the result is the confirmation |
-| CTA | `Search`, `Ask`, `Summarize` — verb-only, no "Click to …" |
+| Context     | Pattern                                                   |
+| ----------- | --------------------------------------------------------- |
+| Empty state | `Ask anything.` — no emoji, no exclamation mark           |
+| Loading     | `Searching…` — ellipsis, no spinner label                 |
+| Error       | `Something went wrong. Try again.` — direct, no apology   |
+| Success     | No toast — the result is the confirmation                 |
+| CTA         | `Search`, `Ask`, `Summarize` — verb-only, no "Click to …" |
 
 ### What Perplexity is not
 

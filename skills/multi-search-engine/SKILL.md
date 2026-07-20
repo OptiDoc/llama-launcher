@@ -22,43 +22,43 @@ Integration of 8 domestic Chinese search engines for web crawling without API ke
 
 ```javascript
 // Basic search (Baidu)
-web_fetch({"url": "https://www.baidu.com/s?wd=python+tutorial"})
+web_fetch({ url: "https://www.baidu.com/s?wd=python+tutorial" });
 
 // Site-specific (Bing CN)
-web_fetch({"url": "https://cn.bing.com/search?q=site:github.com+react&ensearch=0"})
+web_fetch({ url: "https://cn.bing.com/search?q=site:github.com+react&ensearch=0" });
 
 // File type (Baidu)
-web_fetch({"url": "https://www.baidu.com/s?wd=machine+learning+filetype:pdf"})
+web_fetch({ url: "https://www.baidu.com/s?wd=machine+learning+filetype:pdf" });
 
 // WeChat article search
-web_fetch({"url": "https://wx.sogou.com/weixin?type=2&query=人工智能+最新进展"})
+web_fetch({ url: "https://wx.sogou.com/weixin?type=2&query=人工智能+最新进展" });
 
 // Toutiao search
-web_fetch({"url": "https://so.toutiao.com/search?keyword=新能源+政策"})
+web_fetch({ url: "https://so.toutiao.com/search?keyword=新能源+政策" });
 
 // Jisilu financial data
-web_fetch({"url": "https://www.jisilu.cn/explore/?keyword=REITs"})
+web_fetch({ url: "https://www.jisilu.cn/explore/?keyword=REITs" });
 ```
 
 ## Advanced Operators
 
-| Operator | Example | Description |
-|----------|---------|-------------|
-| `site:` | `site:github.com python` | Search within site |
-| `filetype:` | `filetype:pdf report` | Specific file type |
-| `""` | `"machine learning"` | Exact match |
-| `-` | `python -snake` | Exclude term |
-| `OR` | `cat OR dog` | Either term |
+| Operator    | Example                  | Description        |
+| ----------- | ------------------------ | ------------------ |
+| `site:`     | `site:github.com python` | Search within site |
+| `filetype:` | `filetype:pdf report`    | Specific file type |
+| `""`        | `"machine learning"`     | Exact match        |
+| `-`         | `python -snake`          | Exclude term       |
+| `OR`        | `cat OR dog`             | Either term        |
 
 ## Time Filters
 
-| Parameter | Description |
-|-----------|-------------|
-| `tbs=qdr:h` | Past hour |
-| `tbs=qdr:d` | Past day |
-| `tbs=qdr:w` | Past week |
-| `tbs=qdr:m` | Past month |
-| `tbs=qdr:y` | Past year |
+| Parameter   | Description |
+| ----------- | ----------- |
+| `tbs=qdr:h` | Past hour   |
+| `tbs=qdr:d` | Past day    |
+| `tbs=qdr:w` | Past week   |
+| `tbs=qdr:m` | Past month  |
+| `tbs=qdr:y` | Past year   |
 
 ## Search Engine Notes
 

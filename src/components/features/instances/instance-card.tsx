@@ -2,44 +2,19 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-} from "@/components/ui/card";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Card, CardContent } from "@/components/ui/card";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useLlamaStore, uptimeString, type LlamaInstance } from "@/lib/llama-store";
-import {
-  Server,
-  Play,
-  Square,
-  Trash2,
-  TerminalSquare,
-  Cpu,
-  MemoryStick,
-  Clock,
-  Network,
-  Zap,
-} from "lucide-react";
+import { Server, Play, Square, Trash2, TerminalSquare, Cpu, MemoryStick, Clock, Network, Zap } from "lucide-react";
 import { StatusBadge, CardStat } from "./instances-badges";
 
-function InstanceCard({
-  instance,
-  onSelect,
-}: {
-  instance: LlamaInstance;
-  onSelect: (id: string) => void;
-}) {
+function InstanceCard({ instance, onSelect }: { instance: LlamaInstance; onSelect: (id: string) => void }) {
   const stopInstance = useLlamaStore((s) => s.stopInstance);
   const startInstance = useLlamaStore((s) => s.startInstance);
   const removeInstance = useLlamaStore((s) => s.removeInstance);
   const setActiveConsole = useLlamaStore((s) => s.setActiveConsole);
 
-  const isRunning =
-    instance.status === "running" || instance.status === "starting";
+  const isRunning = instance.status === "running" || instance.status === "starting";
   const isStopped = instance.status === "stopped";
 
   const handleKey = (e: React.KeyboardEvent) => {
@@ -68,35 +43,17 @@ function InstanceCard({
             </div>
             <div className="min-w-0">
               <h3 className="truncate text-sm font-semibold">{instance.name}</h3>
-              <p className="truncate text-xs text-foreground/70">
-                {instance.model}
-              </p>
+              <p className="truncate text-xs text-foreground/70">{instance.model}</p>
             </div>
           </div>
           <StatusBadge status={instance.status} />
         </div>
 
         <div className="grid grid-cols-2 gap-2">
-          <CardStat
-            icon={<Network className="size-3.5" />}
-            label="Port"
-            value={`:${instance.port}`}
-          />
-          <CardStat
-            icon={<Clock className="size-3.5" />}
-            label="Uptime"
-            value={uptimeString(instance.startedAt)}
-          />
-          <CardStat
-            icon={<Zap className="size-3.5" />}
-            label="Tok/s"
-            value={instance.tokensPerSec.toFixed(1)}
-          />
-          <CardStat
-            icon={<Cpu className="size-3.5" />}
-            label="Req/min"
-            value={String(instance.requestsPerMin)}
-          />
+          <CardStat icon={<Network className="size-3.5" />} label="Port" value={`:${instance.port}`} />
+          <CardStat icon={<Clock className="size-3.5" />} label="Uptime" value={uptimeString(instance.startedAt)} />
+          <CardStat icon={<Zap className="size-3.5" />} label="Tok/s" value={instance.tokensPerSec.toFixed(1)} />
+          <CardStat icon={<Cpu className="size-3.5" />} label="Req/min" value={String(instance.requestsPerMin)} />
         </div>
 
         <div className="flex items-center justify-between rounded-lg bg-muted/40 px-2.5 py-1.5 text-[11px]">

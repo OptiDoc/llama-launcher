@@ -6,20 +6,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ScrollText, Filter, TerminalSquare, Server, Eraser } from "lucide-react";
-import {
-  useLlamaStore,
-  SYSTEM_CONSOLE,
-  type LogKind,
-  type ConsoleLine,
-} from "@/lib/llama-store";
+import { useLlamaStore, SYSTEM_CONSOLE, type LogKind, type ConsoleLine } from "@/lib/llama-store";
 
 const KINDS: { value: LogKind | "all"; label: string }[] = [
   { value: "all", label: "All levels" },

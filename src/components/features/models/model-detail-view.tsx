@@ -28,9 +28,15 @@ function MetaItem({ label, value, mono }: { label: string; value: React.ReactNod
 }
 
 export function ModelDetailView({
-  model, onBack, onEdit, onLoad,
+  model,
+  onBack,
+  onEdit,
+  onLoad,
 }: {
-  model: LlamaModel; onBack: () => void; onEdit: (m: LlamaModel) => void; onLoad: (m: LlamaModel) => void;
+  model: LlamaModel;
+  onBack: () => void;
+  onEdit: (m: LlamaModel) => void;
+  onLoad: (m: LlamaModel) => void;
 }) {
   const stats = React.useMemo(() => deriveModelStats(model), [model]);
 
@@ -41,11 +47,12 @@ export function ModelDetailView({
       {model.missing && (
         <Alert variant="destructive">
           <AlertTriangle className="size-4" />
-          <AlertTitle>Model file not found at <span className="font-mono text-xs">{model.path}</span></AlertTitle>
+          <AlertTitle>
+            Model file not found at <span className="font-mono text-xs">{model.path}</span>
+          </AlertTitle>
           <AlertDescription className="text-xs">
             The file may have been moved or deleted. Update the path to continue using this model.
-            <Button variant="outline" size="sm" className="ml-3"
-              onClick={() => onEdit(model)}>
+            <Button variant="outline" size="sm" className="ml-3" onClick={() => onEdit(model)}>
               <Pencil className="mr-1.5 size-3" /> Update path
             </Button>
           </AlertDescription>
@@ -90,13 +97,31 @@ export function ModelDetailView({
                 <Button size="sm" variant="outline" onClick={() => onEdit(model)}>
                   <Pencil className="mr-1.5 size-3.5" /> Edit
                 </Button>
-                <Button size="sm" variant="outline" onClick={() => { /* open folder */ }}>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    /* open folder */
+                  }}
+                >
                   <FolderOpen className="mr-1.5 size-3.5" /> Open folder
                 </Button>
-                <Button size="sm" variant="outline" onClick={() => { /* copy path */ }}>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    /* copy path */
+                  }}
+                >
                   <FileText className="mr-1.5 size-3.5" /> Copy path
                 </Button>
-                <Button size="sm" variant="outline" onClick={() => { /* delete */ }}>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    /* delete */
+                  }}
+                >
                   <Trash2 className="mr-1.5 size-3.5" /> Delete
                 </Button>
               </div>

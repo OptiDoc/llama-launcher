@@ -432,14 +432,11 @@ At completion, provide:
 
 Do not include a long recap unless the user asks.
 
-
-
 ## Chinese Typography Reference
 
 Use `horizontal-craft/chinese-typography.md` when the artifact contains substantial Chinese / Chinese / CJK text, Chinese editorial layout, public-account formatting, Xiaohongshu content, Chinese deck typography, Chinese UI labels, or print-design-inspired HTML.
 
 Translate print-design methods into HTML structure: 版心, 网格, 留白, 标题组, 图版, 边注, 章节 rhythm, and proper punctuation.
-
 
 ## Icon System Reference
 
@@ -447,14 +444,11 @@ Use `horizontal-craft/icon-system.md` when the artifact includes UI icons, navig
 
 Use one coherent icon family or one custom inline SVG style. Do not use emoji as icon substitutes. Do not use unknown low-quality open-source icon packs.
 
-
 ## Canvas / Device / Export Size Reference
 
 Use `canvas-and-device.md` when the artifact includes fixed canvases, device previews, phone frames, dashboard frames, deck canvases, social cards, long images, or image-export surfaces.
 
 Do not stretch device previews or export surfaces into arbitrary generic cards. Preserve the target viewport, aspect ratio, and export size.
-
-
 
 ## Source Quality Handling
 
@@ -465,9 +459,6 @@ If the user asks only to export, preserve the current artifact state.
 If the user asks to QA, clean up, polish, or prepare for delivery before export, apply `quality-gate.md` first and report or fix gate failures before packaging.
 
 If the source artifact contains fake proof, decorative emoji, dead links, missing data markers, or accessibility failures, do not pretend export fixed them.
-
-
-
 
 When substantial Chinese text is present, use `horizontal-craft/chinese-typography.md` Mandatory Runtime Baseline. Read deeper typography references only for typography-heavy tasks such as 版心、网格、模数、出版感、诊断 or formal report layout.
 

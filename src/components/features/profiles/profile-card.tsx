@@ -8,14 +8,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
-import {
-  Cpu, Gauge, Zap, Layers, Flashlight, Terminal, Sparkles, Wand2, Link2, Check,
-} from "lucide-react";
+import { Cpu, Gauge, Zap, Layers, Flashlight, Terminal, Sparkles, Wand2, Link2, Check } from "lucide-react";
 import { ScopeBadge, SharedBadge, StatPill } from "./profiles-badges";
 
-function ProfileCard({ profile, onSelect }: {
-  profile: LlamaProfile; onSelect: (id: string) => void;
-}) {
+function ProfileCard({ profile, onSelect }: { profile: LlamaProfile; onSelect: (id: string) => void }) {
   const shareProfile = useLlamaStore((s) => s.shareProfile);
   const calibrateProfile = useLlamaStore((s) => s.calibrateProfile);
   const models = useLlamaStore((s) => s.models);
@@ -26,7 +22,10 @@ function ProfileCard({ profile, onSelect }: {
   const onCalibrate = (e: React.MouseEvent) => {
     e.stopPropagation();
     setCalibrating(true);
-    setTimeout(() => { calibrateProfile(profile.id); setCalibrating(false); }, 1400);
+    setTimeout(() => {
+      calibrateProfile(profile.id);
+      setCalibrating(false);
+    }, 1400);
   };
   const onShare = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -44,7 +43,10 @@ function ProfileCard({ profile, onSelect }: {
       tabIndex={0}
       onClick={() => onSelect(profile.id)}
       onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onSelect(profile.id); }
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onSelect(profile.id);
+        }
       }}
       className="group cursor-pointer p-0 shadow-none transition-all hover:-translate-y-0.5 hover:shadow-md"
     >
@@ -75,7 +77,11 @@ function ProfileCard({ profile, onSelect }: {
           <StatPill icon={<Gauge className="size-3.5" />} label="Ctx size" value={profile.ctxSize.toLocaleString()} />
           <StatPill icon={<Zap className="size-3.5" />} label="Threads" value={String(profile.threads)} />
           <StatPill icon={<Layers className="size-3.5" />} label="GPU layers" value={String(profile.gpuLayers)} />
-          <StatPill icon={<Flashlight className="size-3.5" />} label="Flash attn" value={profile.flashAttention ? "Yes" : "No"} />
+          <StatPill
+            icon={<Flashlight className="size-3.5" />}
+            label="Flash attn"
+            value={profile.flashAttention ? "Yes" : "No"}
+          />
         </div>
 
         {profile.extraArgs && (
@@ -90,7 +96,9 @@ function ProfileCard({ profile, onSelect }: {
         {hasCalib && (
           <div className="space-y-1" onClick={stop}>
             <div className="flex items-center justify-between text-[10px] text-muted-foreground">
-              <span className="flex items-center gap-1"><Sparkles className="size-3" /> Auto-calibration</span>
+              <span className="flex items-center gap-1">
+                <Sparkles className="size-3" /> Auto-calibration
+              </span>
               <span className="font-mono font-semibold">{profile.calibrationScore}/100</span>
             </div>
             <Progress value={profile.calibrationScore} className="h-1.5" />
@@ -98,14 +106,17 @@ function ProfileCard({ profile, onSelect }: {
         )}
 
         <div className="flex items-center gap-2 pt-1" onClick={stop}>
-          <Button size="sm" variant="outline" className="flex-1 gap-1.5"
-            onClick={onCalibrate} disabled={calibrating}>
+          <Button size="sm" variant="outline" className="flex-1 gap-1.5" onClick={onCalibrate} disabled={calibrating}>
             <Wand2 className={cn("size-3.5", calibrating && "animate-spin")} />
             {calibrating ? "Calibrating…" : "Auto-calibrate"}
           </Button>
-          <Button size="sm" variant="outline" className="gap-1.5"
+          <Button
+            size="sm"
+            variant="outline"
+            className="gap-1.5"
             onClick={onShare}
-            title={profile.shared ? `Share ID: ${profile.shareId}` : "Share profile"}>
+            title={profile.shared ? `Share ID: ${profile.shareId}` : "Share profile"}
+          >
             {copied ? <Check className="size-3.5 text-emerald-500" /> : <Link2 className="size-3.5" />}
             {copied ? "Copied" : "Share"}
           </Button>

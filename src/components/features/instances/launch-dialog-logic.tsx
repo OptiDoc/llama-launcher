@@ -18,9 +18,9 @@ export interface LaunchDialogState {
   host: string;
   gpu: string;
   errors: { port?: string; host?: string };
-  downloaded: any[];
-  gpuOptions: any[];
-  selectedModel: any;
+  downloaded: unknown[];
+  gpuOptions: unknown[];
+  selectedModel: unknown;
   selectedModelMissing: boolean;
   overVram: boolean;
   overRam: boolean;
@@ -46,15 +46,9 @@ export function useLaunchDialogLogic() {
   const setActiveConsole = useLlamaStore((s) => s.setActiveConsole);
   const setConsoleOpen = useLlamaStore((s) => s.setConsoleOpen);
 
-  const downloaded = React.useMemo(
-    () => models.filter((m) => m.downloaded && !m.missing && !m.downloading),
-    [models],
-  );
+  const downloaded = React.useMemo(() => models.filter((m) => m.downloaded && !m.missing && !m.downloading), [models]);
 
-  const gpuOptions = React.useMemo(
-    () => buildGpuOptions(systemCapabilities),
-    [systemCapabilities],
-  );
+  const gpuOptions = React.useMemo(() => buildGpuOptions(systemCapabilities), [systemCapabilities]);
 
   React.useEffect(() => {
     if (!open) return;
@@ -64,21 +58,15 @@ export function useLaunchDialogLogic() {
     setErrors({});
     const caps = useLlamaStore.getState().systemCapabilities;
     setGpu(caps.gpu_name || "cpu");
-    const dl = useLlamaStore
-      .getState()
-      .models.filter((m) => m.downloaded && !m.missing && !m.downloading);
+    const dl = useLlamaStore.getState().models.filter((m) => m.downloaded && !m.missing && !m.downloading);
     setModelId(dl[0]?.id ?? "");
     setProfileId("");
   }, [open]);
 
   const selectedModel = models.find((m) => m.id === modelId);
   const selectedModelMissing = selectedModel?.missing === true;
-  const overVram = selectedModel
-    ? selectedModel.sizeGb > systemCapabilities.gpu_vram_gb
-    : false;
-  const overRam = selectedModel
-    ? selectedModel.sizeGb > systemCapabilities.ram_gb
-    : false;
+  const overVram = selectedModel ? selectedModel.sizeGb > systemCapabilities.gpu_vram_gb : false;
+  const overRam = selectedModel ? selectedModel.sizeGb > systemCapabilities.ram_gb : false;
 
   const profileOptions = React.useMemo(() => {
     const selectedModel = models.find((m) => m.id === modelId);
@@ -93,10 +81,7 @@ export function useLaunchDialogLogic() {
 
   React.useEffect(() => {
     if (!open) return;
-    if (
-      profileOptions.length > 0 &&
-      !profileOptions.some((p) => p.id === profileId)
-    ) {
+    if (profileOptions.length > 0 && !profileOptions.some((p) => p.id === profileId)) {
       setProfileId(profileOptions[0].id);
     }
   }, [open, profileOptions, profileId]);

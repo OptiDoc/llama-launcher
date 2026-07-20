@@ -38,15 +38,33 @@ describe("models-slice", () => {
 
   it("updates a model", () => {
     store.setState({
-      models: [{
-        id: "m1", name: "Test", family: "llama3", sizeGb: 4, quant: "Q4_K_M",
-        downloaded: true, missing: false, downloading: false, downloadProgress: 0,
-        path: "/models/test.gguf", workspaceId: "ws1",
-        builder: "default", architecture: "llama", contextLength: 8192,
-        parameterCount: "8B", quantizationBits: 4, license: "MIT",
-        description: "", uploadedAt: "2024-01-01", hfDownloads: 0,
-        tags: [], isMoe: false, addedAt: 0,
-      }],
+      models: [
+        {
+          id: "m1",
+          name: "Test",
+          family: "llama3",
+          sizeGb: 4,
+          quant: "Q4_K_M",
+          downloaded: true,
+          missing: false,
+          downloading: false,
+          downloadProgress: 0,
+          path: "/models/test.gguf",
+          workspaceId: "ws1",
+          builder: "default",
+          architecture: "llama",
+          contextLength: 8192,
+          parameterCount: "8B",
+          quantizationBits: 4,
+          license: "MIT",
+          description: "",
+          uploadedAt: "2024-01-01",
+          hfDownloads: 0,
+          tags: [],
+          isMoe: false,
+          addedAt: 0,
+        },
+      ],
     });
     store.getState().updateModel("m1", { name: "Updated" });
     expect(store.getState().models[0].name).toBe("Updated");
@@ -54,15 +72,33 @@ describe("models-slice", () => {
 
   it("deletes a model", () => {
     store.setState({
-      models: [{
-        id: "m1", name: "Test", family: "llama3", sizeGb: 4, quant: "Q4_K_M",
-        downloaded: true, missing: false, downloading: false, downloadProgress: 0,
-        path: "/models/test.gguf", workspaceId: "ws1",
-        builder: "default", architecture: "llama", contextLength: 8192,
-        parameterCount: "8B", quantizationBits: 4, license: "MIT",
-        description: "", uploadedAt: "2024-01-01", hfDownloads: 0,
-        tags: [], isMoe: false, addedAt: 0,
-      }],
+      models: [
+        {
+          id: "m1",
+          name: "Test",
+          family: "llama3",
+          sizeGb: 4,
+          quant: "Q4_K_M",
+          downloaded: true,
+          missing: false,
+          downloading: false,
+          downloadProgress: 0,
+          path: "/models/test.gguf",
+          workspaceId: "ws1",
+          builder: "default",
+          architecture: "llama",
+          contextLength: 8192,
+          parameterCount: "8B",
+          quantizationBits: 4,
+          license: "MIT",
+          description: "",
+          uploadedAt: "2024-01-01",
+          hfDownloads: 0,
+          tags: [],
+          isMoe: false,
+          addedAt: 0,
+        },
+      ],
     });
     store.getState().deleteModel("m1");
     expect(store.getState().models).toHaveLength(0);
@@ -70,15 +106,33 @@ describe("models-slice", () => {
 
   it("markModelMissing sets missing and clears downloaded", () => {
     store.setState({
-      models: [{
-        id: "m1", name: "Test", family: "llama3", sizeGb: 4, quant: "Q4_K_M",
-        downloaded: true, missing: false, downloading: false, downloadProgress: 0,
-        path: "/models/test.gguf", workspaceId: "ws1",
-        builder: "default", architecture: "llama", contextLength: 8192,
-        parameterCount: "8B", quantizationBits: 4, license: "MIT",
-        description: "", uploadedAt: "2024-01-01", hfDownloads: 0,
-        tags: [], isMoe: false, addedAt: 0,
-      }],
+      models: [
+        {
+          id: "m1",
+          name: "Test",
+          family: "llama3",
+          sizeGb: 4,
+          quant: "Q4_K_M",
+          downloaded: true,
+          missing: false,
+          downloading: false,
+          downloadProgress: 0,
+          path: "/models/test.gguf",
+          workspaceId: "ws1",
+          builder: "default",
+          architecture: "llama",
+          contextLength: 8192,
+          parameterCount: "8B",
+          quantizationBits: 4,
+          license: "MIT",
+          description: "",
+          uploadedAt: "2024-01-01",
+          hfDownloads: 0,
+          tags: [],
+          isMoe: false,
+          addedAt: 0,
+        },
+      ],
     });
     store.getState().markModelMissing("m1", true);
     expect(store.getState().models[0].missing).toBe(true);
@@ -87,15 +141,33 @@ describe("models-slice", () => {
 
   it("markModelMissing false restores downloaded", () => {
     store.setState({
-      models: [{
-        id: "m1", name: "Test", family: "llama3", sizeGb: 4, quant: "Q4_K_M",
-        downloaded: true, missing: true, downloading: false, downloadProgress: 0,
-        path: "/models/test.gguf", workspaceId: "ws1",
-        builder: "default", architecture: "llama", contextLength: 8192,
-        parameterCount: "8B", quantizationBits: 4, license: "MIT",
-        description: "", uploadedAt: "2024-01-01", hfDownloads: 0,
-        tags: [], isMoe: false, addedAt: 0,
-      }],
+      models: [
+        {
+          id: "m1",
+          name: "Test",
+          family: "llama3",
+          sizeGb: 4,
+          quant: "Q4_K_M",
+          downloaded: true,
+          missing: true,
+          downloading: false,
+          downloadProgress: 0,
+          path: "/models/test.gguf",
+          workspaceId: "ws1",
+          builder: "default",
+          architecture: "llama",
+          contextLength: 8192,
+          parameterCount: "8B",
+          quantizationBits: 4,
+          license: "MIT",
+          description: "",
+          uploadedAt: "2024-01-01",
+          hfDownloads: 0,
+          tags: [],
+          isMoe: false,
+          addedAt: 0,
+        },
+      ],
     });
     store.getState().markModelMissing("m1", false);
     expect(store.getState().models[0].missing).toBe(false);
@@ -104,15 +176,33 @@ describe("models-slice", () => {
 
   it("locateModel sets path, clears missing, marks downloaded", () => {
     store.setState({
-      models: [{
-        id: "m1", name: "Test", family: "llama3", sizeGb: 4, quant: "Q4_K_M",
-        downloaded: false, missing: true, downloading: false, downloadProgress: 0,
-        path: "/old/path.gguf", workspaceId: "ws1",
-        builder: "default", architecture: "llama", contextLength: 8192,
-        parameterCount: "8B", quantizationBits: 4, license: "MIT",
-        description: "", uploadedAt: "2024-01-01", hfDownloads: 0,
-        tags: [], isMoe: false, addedAt: 0,
-      }],
+      models: [
+        {
+          id: "m1",
+          name: "Test",
+          family: "llama3",
+          sizeGb: 4,
+          quant: "Q4_K_M",
+          downloaded: false,
+          missing: true,
+          downloading: false,
+          downloadProgress: 0,
+          path: "/old/path.gguf",
+          workspaceId: "ws1",
+          builder: "default",
+          architecture: "llama",
+          contextLength: 8192,
+          parameterCount: "8B",
+          quantizationBits: 4,
+          license: "MIT",
+          description: "",
+          uploadedAt: "2024-01-01",
+          hfDownloads: 0,
+          tags: [],
+          isMoe: false,
+          addedAt: 0,
+        },
+      ],
     });
     store.getState().locateModel("m1", "/new/path.gguf");
     const m = store.getState().models[0];

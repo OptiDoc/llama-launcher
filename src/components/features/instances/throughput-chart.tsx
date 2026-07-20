@@ -1,15 +1,7 @@
 "use client";
 import * as React from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  ResponsiveContainer,
-  Tooltip as RTooltip,
-} from "recharts";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip as RTooltip } from "recharts";
 import { useLlamaStore, type LlamaInstance } from "@/lib/llama-store";
 
 function ThroughputChart({ instance }: { instance: LlamaInstance }) {
@@ -27,24 +19,13 @@ function ThroughputChart({ instance }: { instance: LlamaInstance }) {
     <Card className="py-0">
       <CardContent className="p-5">
         <div className="mb-3 flex items-center justify-between">
-          <h3 className="text-[13px] font-semibold text-foreground">
-            Request throughput
-          </h3>
-          <span className="text-[11px] text-muted-foreground">
-            last 20 samples \u00b7 tok/s
-          </span>
+          <h3 className="text-[13px] font-semibold text-foreground">Request throughput</h3>
+          <span className="text-[11px] text-muted-foreground">last 20 samples \u00b7 tok/s</span>
         </div>
         <div className="h-44 w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart
-              data={throughput}
-              margin={{ top: 4, right: 8, left: -20, bottom: 0 }}
-            >
-              <CartesianGrid
-                strokeDasharray="3 3"
-                stroke="hsl(var(--border))"
-                vertical={false}
-              />
+            <LineChart data={throughput} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
               <XAxis
                 dataKey="idx"
                 tick={{
@@ -77,10 +58,7 @@ function ThroughputChart({ instance }: { instance: LlamaInstance }) {
                   fontSize: 11,
                 }}
                 labelFormatter={(l) => `sample ${l}`}
-                formatter={(v: number) => [
-                  `${v.toFixed(1)} tok/s`,
-                  "throughput",
-                ]}
+                formatter={(v: number) => [`${v.toFixed(1)} tok/s`, "throughput"]}
               />
               <Line
                 type="monotone"

@@ -42,15 +42,21 @@ export function useModelsPage() {
     try {
       const saved = localStorage.getItem(VIEW_STORAGE_KEY);
       if (saved === "grid" || saved === "table") setView(saved);
-    } catch { /* noop */ }
+    } catch {
+      /* noop */
+    }
   }, []);
 
   const handleViewChange = React.useCallback((v: ViewMode) => {
     setView(v);
-    try { localStorage.setItem(VIEW_STORAGE_KEY, v); } catch { /* noop */ }
+    try {
+      localStorage.setItem(VIEW_STORAGE_KEY, v);
+    } catch {
+      /* noop */
+    }
   }, []);
 
-  const selectedModel = selectedId ? workspaceModels.find((m) => m.id === selectedId) ?? null : null;
+  const selectedModel = selectedId ? (workspaceModels.find((m) => m.id === selectedId) ?? null) : null;
 
   const openHF = React.useCallback(() => {
     setHfPrefillRepo(undefined);
@@ -98,7 +104,7 @@ export function useModelsPage() {
       }, 1500);
       toast({
         title: "Import complete",
-        description: `${selectedImportFiles.length} model${selectedImportFiles.length !== 1 ? 's' : ''} imported`,
+        description: `${selectedImportFiles.length} model${selectedImportFiles.length !== 1 ? "s" : ""} imported`,
       });
     } catch (err) {
       setImportStatus("idle");
@@ -110,11 +116,14 @@ export function useModelsPage() {
     }
   }, [selectedImportFiles, importMoveMode]);
 
-  const handleFilesDrop = React.useCallback(async (files: FileList) => {
-    const ggufFiles = Array.from(files).filter((f) => f.name.toLowerCase().endsWith(".gguf"));
-    if (ggufFiles.length === 0) return;
-    handleOpenImportDialog();
-  }, [handleOpenImportDialog]);
+  const handleFilesDrop = React.useCallback(
+    async (files: FileList) => {
+      const ggufFiles = Array.from(files).filter((f) => f.name.toLowerCase().endsWith(".gguf"));
+      if (ggufFiles.length === 0) return;
+      handleOpenImportDialog();
+    },
+    [handleOpenImportDialog],
+  );
 
   const openEdit = React.useCallback((m: LlamaModel, focusPath = false) => {
     setEditModel(m);
@@ -135,13 +144,41 @@ export function useModelsPage() {
   };
 
   return {
-    workspaceModels, ready, view, mounted, selectedModel, externalModels,
-    systemCapabilities, scanningExternal, editModel, editOpen, editFocusPath,
-    launchModel, launchOpen, hfOpen, hfPrefillRepo, hfPrefillName,
-    importDialogOpen, selectedImportFiles, importMoveMode, importStatus,
-    setEditOpen, setLaunchOpen, setHfOpen, setImportDialogOpen,
-    setImportMoveMode, setSelectedImportFiles, handleViewChange,
-    handleScanExternalModels, handleOpenImportDialog, handleImportSelected,
-    handleFilesDrop, openEdit, handleLoad, openHF, actions, setSelectedId,
+    workspaceModels,
+    ready,
+    view,
+    mounted,
+    selectedModel,
+    externalModels,
+    systemCapabilities,
+    scanningExternal,
+    editModel,
+    editOpen,
+    editFocusPath,
+    launchModel,
+    launchOpen,
+    hfOpen,
+    hfPrefillRepo,
+    hfPrefillName,
+    importDialogOpen,
+    selectedImportFiles,
+    importMoveMode,
+    importStatus,
+    setEditOpen,
+    setLaunchOpen,
+    setHfOpen,
+    setImportDialogOpen,
+    setImportMoveMode,
+    setSelectedImportFiles,
+    handleViewChange,
+    handleScanExternalModels,
+    handleOpenImportDialog,
+    handleImportSelected,
+    handleFilesDrop,
+    openEdit,
+    handleLoad,
+    openHF,
+    actions,
+    setSelectedId,
   };
 }

@@ -1,13 +1,27 @@
 import { describe, it, expect, vi } from "vitest";
 
-const { HF_CATALOG, HF_QUANTS, RELEASE_VARIANTS, searchHFModels } = await vi.importActual<
-  {
-    HF_CATALOG: { builder: string; isMoe: boolean; expertCount?: number; repo: string; family: string; parameterCount: string; tags: string[]; baseSizeGb?: number; contextLength?: number; downloads?: number; architecture?: string }[];
-    HF_QUANTS: { id: string; sizeFactor?: number; bits?: number }[];
-    RELEASE_VARIANTS: { id: string; priority: boolean }[];
-    searchHFModels: (query: string) => Promise<{ repo: string; family: string; parameterCount: string; tags: string[]; builder: string; architecture?: string }[]>;
-  }
->("@/lib/catalog");
+const { HF_CATALOG, HF_QUANTS, RELEASE_VARIANTS, searchHFModels } = await vi.importActual<{
+  HF_CATALOG: {
+    builder: string;
+    isMoe: boolean;
+    expertCount?: number;
+    repo: string;
+    family: string;
+    parameterCount: string;
+    tags: string[];
+    baseSizeGb?: number;
+    contextLength?: number;
+    downloads?: number;
+    architecture?: string;
+  }[];
+  HF_QUANTS: { id: string; sizeFactor?: number; bits?: number }[];
+  RELEASE_VARIANTS: { id: string; priority: boolean }[];
+  searchHFModels: (
+    query: string,
+  ) => Promise<
+    { repo: string; family: string; parameterCount: string; tags: string[]; builder: string; architecture?: string }[]
+  >;
+}>("@/lib/catalog");
 
 describe("lib/catalog", () => {
   describe("HF_CATALOG", () => {

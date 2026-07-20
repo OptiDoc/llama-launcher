@@ -4,37 +4,15 @@ import * as React from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
-  Calendar,
-  GitCommit,
-  Info,
-  Package,
-} from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar, GitCommit, Info, Package } from "lucide-react";
 import { type LlamaRelease, type ReleaseVariant } from "@/lib/llama-store";
-import {
-  VariantBadge,
-  VARIANT_LABEL,
-  VARIANT_NOTE,
-  isCuda,
-  CUDA_NOTE,
-} from "./release-badge";
-import {
-  StatusCell,
-  ActionControl,
-} from "./release-status";
+import { VariantBadge, VARIANT_LABEL, VARIANT_NOTE, isCuda, CUDA_NOTE } from "./release-badge";
+import { StatusCell, ActionControl } from "./release-status";
 
 // ---------- Grid view ----------
 
-const ReleaseCard = React.memo(function ReleaseCard({
-  release,
-}: {
-  release: LlamaRelease;
-}) {
+const ReleaseCard = React.memo(function ReleaseCard({ release }: { release: LlamaRelease }) {
   return (
     <Card className="overflow-hidden transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lifted">
       <CardContent className="flex flex-col gap-3 p-4">
@@ -43,10 +21,7 @@ const ReleaseCard = React.memo(function ReleaseCard({
             <div className="flex items-center gap-2">
               <span className="font-mono text-sm font-bold">{release.tag}</span>
               {release.priority && (
-                <Badge
-                  variant="secondary"
-                  className="bg-primary/10 text-[9px] font-semibold uppercase text-primary"
-                >
+                <Badge variant="secondary" className="bg-primary/10 text-[9px] font-semibold uppercase text-primary">
                   Priority
                 </Badge>
               )}
@@ -77,9 +52,7 @@ const ReleaseCard = React.memo(function ReleaseCard({
                 </div>
                 <div className="text-muted-foreground">{VARIANT_NOTE[release.variant as ReleaseVariant]}</div>
                 {isCuda(release.variant as ReleaseVariant) && (
-                  <div className="rounded-md bg-primary/5 p-2 text-[11px] text-primary/80">
-                    {CUDA_NOTE}
-                  </div>
+                  <div className="rounded-md bg-primary/5 p-2 text-[11px] text-primary/80">{CUDA_NOTE}</div>
                 )}
               </div>
             </PopoverContent>

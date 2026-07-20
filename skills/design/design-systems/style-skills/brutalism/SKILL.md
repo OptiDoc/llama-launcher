@@ -7,6 +7,7 @@ metadata:
 ---
 
 <!-- TYPEUI_SH_MANAGED_START -->
+
 # Brutalism Design System Skill (Universal)
 
 ## Mission
@@ -24,7 +25,6 @@ a bold, "anti-design" style inspired by 1950s raw concrete architecture, priorit
 - Typography scale: desktop-first expressive scale | Fonts: primary=Darker Grotesque, display=Darker Grotesque, mono=JetBrains Mono | weights=100, 200, 300, 400, 500, 600, 700, 800, 900
 - Color palette: primary, secondary, neutral, success, warning, danger | Tokens: primary=#DD614C, secondary=#DAA144, success=#16A34A, warning=#D97706, danger=#DC2626, surface=#FFFFFF, text=#111827
 - Spacing scale: 4/8/12/16/24/32
-
 
 ## Accessibility
 

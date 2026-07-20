@@ -5,10 +5,7 @@
 "use client";
 
 import * as React from "react";
-import {
-  Dialog, DialogContent, DialogDescription, DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Download, Boxes } from "lucide-react";
@@ -84,11 +81,15 @@ export function HFDownloadDialog({ open, onOpenChange, prefillRepo, prefillModel
                   loadingQuants={dialog.loadingQuants}
                 />
 
-                <Label htmlFor="hf-name" className="mb-1 mt-3 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+                <Label
+                  htmlFor="hf-name"
+                  className="mb-1 mt-3 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground"
+                >
                   Model name
                 </Label>
                 <Input
-                  id="hf-name" value={dialog.modelName}
+                  id="hf-name"
+                  value={dialog.modelName}
                   onChange={(e) => dialog.setModelName(e.target.value)}
                   className="h-8 text-xs"
                 />

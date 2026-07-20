@@ -36,14 +36,14 @@ Before running any check, restate the following back to the user in 5–8 short 
 
 ```yaml
 quality_gate_inputs:
-  user_request:              # what the user actually asked for, one sentence
-  primary_artifact_skill:    # landing-page / portfolio / prototype / content-page / info-interactive / web-tool / social-card / deck / ...
-  output_target:             # web / mobile web / fixed canvas / PDF / image / slide ...
+  user_request: # what the user actually asked for, one sentence
+  primary_artifact_skill: # landing-page / portfolio / prototype / content-page / info-interactive / web-tool / social-card / deck / ...
+  output_target: # web / mobile web / fixed canvas / PDF / image / slide ...
   design_system_or_reference: none | name
-  template_or_seed:          none | name
+  template_or_seed: none | name
   relevant_horizontal_craft: # only the ones that actually apply, not the full list
     - ...
-  generated_artifact:        # path or identifier
+  generated_artifact: # path or identifier
 ```
 
 The `relevant_horizontal_craft` list drives §5. Choose from:
@@ -66,19 +66,19 @@ The `relevant_horizontal_craft` list drives §5. Choose from:
 
 ## Gate sequence
 
-| # | Check | Guards which stage of the pipeline |
-|---|---|---|
-| 1 | Brief Fit | Brief → Artifact |
-| 2 | Carrier / Artifact Structure | Artifact Skill → Artifact |
-| 3 | Template Adaptation | Template → Artifact |
-| 4 | Design System / Visual Consistency | Design System → Artifact |
-| 5 | Horizontal Craft Trigger | Craft → Artifact |
-| 6 | Interaction and State | Artifact (interactive surfaces) |
-| 7 | Visual Explanation | Artifact (charts / diagrams) |
-| 8 | Accessibility | Artifact (HTML / interactive) |
-| 9 | Truthfulness | Artifact → Delivery (links + data) |
-| 10 | Anti-AI Slop | Artifact → Delivery (final review) |
-| 11 | Editability & Compliance Markers | Artifact → Delivery (handoff metadata) |
+| #   | Check                              | Guards which stage of the pipeline     |
+| --- | ---------------------------------- | -------------------------------------- |
+| 1   | Brief Fit                          | Brief → Artifact                       |
+| 2   | Carrier / Artifact Structure       | Artifact Skill → Artifact              |
+| 3   | Template Adaptation                | Template → Artifact                    |
+| 4   | Design System / Visual Consistency | Design System → Artifact               |
+| 5   | Horizontal Craft Trigger           | Craft → Artifact                       |
+| 6   | Interaction and State              | Artifact (interactive surfaces)        |
+| 7   | Visual Explanation                 | Artifact (charts / diagrams)           |
+| 8   | Accessibility                      | Artifact (HTML / interactive)          |
+| 9   | Truthfulness                       | Artifact → Delivery (links + data)     |
+| 10  | Anti-AI Slop                       | Artifact → Delivery (final review)     |
+| 11  | Editability & Compliance Markers   | Artifact → Delivery (handoff metadata) |
 
 ---
 
@@ -151,21 +151,21 @@ Fail if the artifact looks like a random template collection.
 
 For each item in `relevant_horizontal_craft` from the inputs, open that craft file and confirm its rules are visibly applied. Do not load craft files that were not listed.
 
-| Condition | Required craft file |
-|---|---|
-| Final review (always) | `horizontal-craft/anti-ai-slop.md` |
-| Substantial Chinese text, including typography-led titles/covers/reports | `horizontal-craft/chinese-typography.md` (+ `horizontal-craft/reference/fonts.md` when font choice materially affects visual direction) |
-| Charts, diagrams, timelines, maps, explorable models | `horizontal-craft/visual-explanation.md` |
-| UI icons / pictograms / icon buttons | `horizontal-craft/icon-system.md` |
-| HTML / interactive / publish-ready surface | `horizontal-craft/accessibility.md` |
-| Forms / inputs / validation | `horizontal-craft/form-validation.md` |
-| Interactive states / dashboards / tools / prototypes | `horizontal-craft/state-coverage.md` |
-| Metrics / charts / tables / demo data / claims | `horizontal-craft/data-integrity.md` |
-| CTAs / links / proof claims / citations / logos | `horizontal-craft/link-and-proof.md` |
-| Unclear color direction / no design system | `horizontal-craft/color.md` |
-| Motion / transitions / animated charts | `horizontal-craft/animation-discipline.md` |
-| Pricing / onboarding / dashboards / H5 tools / conversion or interaction-heavy flows | `horizontal-craft/laws-of-ux.md` |
-| Advanced implementation beyond plain CSS/SVG | `horizontal-craft/technique-library.md` |
+| Condition                                                                            | Required craft file                                                                                                                     |
+| ------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------- |
+| Final review (always)                                                                | `horizontal-craft/anti-ai-slop.md`                                                                                                      |
+| Substantial Chinese text, including typography-led titles/covers/reports             | `horizontal-craft/chinese-typography.md` (+ `horizontal-craft/reference/fonts.md` when font choice materially affects visual direction) |
+| Charts, diagrams, timelines, maps, explorable models                                 | `horizontal-craft/visual-explanation.md`                                                                                                |
+| UI icons / pictograms / icon buttons                                                 | `horizontal-craft/icon-system.md`                                                                                                       |
+| HTML / interactive / publish-ready surface                                           | `horizontal-craft/accessibility.md`                                                                                                     |
+| Forms / inputs / validation                                                          | `horizontal-craft/form-validation.md`                                                                                                   |
+| Interactive states / dashboards / tools / prototypes                                 | `horizontal-craft/state-coverage.md`                                                                                                    |
+| Metrics / charts / tables / demo data / claims                                       | `horizontal-craft/data-integrity.md`                                                                                                    |
+| CTAs / links / proof claims / citations / logos                                      | `horizontal-craft/link-and-proof.md`                                                                                                    |
+| Unclear color direction / no design system                                           | `horizontal-craft/color.md`                                                                                                             |
+| Motion / transitions / animated charts                                               | `horizontal-craft/animation-discipline.md`                                                                                              |
+| Pricing / onboarding / dashboards / H5 tools / conversion or interaction-heavy flows | `horizontal-craft/laws-of-ux.md`                                                                                                        |
+| Advanced implementation beyond plain CSS/SVG                                         | `horizontal-craft/technique-library.md`                                                                                                 |
 
 Fail if a needed craft rule was skipped and the artifact visibly suffers.
 
@@ -232,7 +232,7 @@ Reference: `horizontal-craft/accessibility.md`.
 
 ## 9. Truthfulness
 
-Hard checks on links, data, and demo markers. This section covers *verifiable* failures. Stylistic/cliché failures (fake logos, invented testimonials) live in §10.
+Hard checks on links, data, and demo markers. This section covers _verifiable_ failures. Stylistic/cliché failures (fake logos, invented testimonials) live in §10.
 
 ```text
 [ ] no href="#" or javascript:void(0) unless visibly marked placeholder

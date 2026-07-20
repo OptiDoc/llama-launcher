@@ -41,7 +41,10 @@ async function invoke<T>(cmd: string, args?: Record<string, unknown>): Promise<T
     log.debug(`[TAURI] Command ${cmd} completed successfully`, { category: "tauri", context: { result } });
     return result;
   } catch (error) {
-    log.error(`[TAURI] Command ${cmd} failed: ${error instanceof Error ? error.message : String(error)}`, { category: "tauri", context: { error } });
+    log.error(`[TAURI] Command ${cmd} failed: ${error instanceof Error ? error.message : String(error)}`, {
+      category: "tauri",
+      context: { error },
+    });
     return null;
   }
 }

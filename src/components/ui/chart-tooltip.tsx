@@ -38,20 +38,14 @@ function ChartTooltipContent({
       return null;
     }
 
-    const [item] = payload as any[];
+    const [item] = payload as Array<Record<string, unknown>>;
     const key = `${labelKey || item?.dataKey || item?.name || "value"}`;
-    const itemConfig = getPayloadConfigFromPayload(config, item as any, key);
+    const itemConfig = getPayloadConfigFromPayload(config, item as Record<string, unknown>, key);
     const value =
-      !labelKey && typeof label === "string"
-        ? config[label as keyof typeof config]?.label || label
-        : itemConfig?.label;
+      !labelKey && typeof label === "string" ? config[label as keyof typeof config]?.label || label : itemConfig?.label;
 
     if (labelFormatter) {
-      return (
-        <div className={cn("font-medium", labelClassName)}>
-          {labelFormatter(value, payload)}
-        </div>
-      );
+      return <div className={cn("font-medium", labelClassName)}>{labelFormatter(value, payload)}</div>;
     }
 
     if (!value) {
@@ -59,15 +53,7 @@ function ChartTooltipContent({
     }
 
     return <div className={cn("font-medium", labelClassName)}>{value}</div>;
-  }, [
-    label,
-    labelFormatter,
-    payload,
-    hideLabel,
-    labelClassName,
-    config,
-    labelKey,
-  ]);
+  }, [label, labelFormatter, payload, hideLabel, labelClassName, config, labelKey]);
 
   if (!active || !payload?.length) {
     return null;
@@ -79,7 +65,7 @@ function ChartTooltipContent({
     <div
       className={cn(
         "border-border/50 bg-background grid min-w-[8rem] items-start gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs shadow-xl",
-        className
+        className,
       )}
     >
       {!nestLabel ? tooltipLabel : null}
@@ -94,7 +80,7 @@ function ChartTooltipContent({
               key={item.dataKey}
               className={cn(
                 "[&>svg]:text-muted-foreground flex w-full flex-wrap items-stretch gap-2 [&>svg]:h-2.5 [&>svg]:w-2.5",
-                indicator === "dot" && "items-center"
+                indicator === "dot" && "items-center",
               )}
             >
               {formatter && item?.value !== undefined && item.name ? (
@@ -111,10 +97,9 @@ function ChartTooltipContent({
                         {
                           "h-2.5 w-2.5": indicator === "dot",
                           "w-1": indicator === "line",
-                          "w-0 border-[1.5px] border-dashed bg-transparent":
-                            indicator === "dashed",
+                          "w-0 border-[1.5px] border-dashed bg-transparent": indicator === "dashed",
                           "my-0.5": nestLabel && indicator === "dashed",
-                        }
+                        },
                       )}
                       style={
                         {
@@ -125,16 +110,11 @@ function ChartTooltipContent({
                     />
                   ) : null}
                   <div
-                    className={cn(
-                      "flex flex-1 justify-between leading-none",
-                      nestLabel ? "items-end" : "items-center"
-                    )}
+                    className={cn("flex flex-1 justify-between leading-none", nestLabel ? "items-end" : "items-center")}
                   >
                     <div className="grid gap-1.5">
                       {nestLabel ? tooltipLabel : null}
-                      <span className="text-muted-foreground">
-                        {item.name ?? item.dataKey ?? "value"}
-                      </span>
+                      <span className="text-muted-foreground">{item.name ?? item.dataKey ?? "value"}</span>
                     </div>
                     {item.value && (
                       <span className="font-mono font-medium tabular-nums text-foreground">
