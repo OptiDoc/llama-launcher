@@ -19,6 +19,12 @@ pub struct AppState {
     pub process_manager: Arc<crate::processes::ProcessManager>,
 }
 
+impl Default for AppState {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl AppState {
     pub fn new() -> Self {
         crate::log_info!("[app] Creating AppState", "app");
@@ -48,6 +54,12 @@ pub struct CoreSystemMonitor {
     gpu_info: Vec<GpuInfo>,
     last_update: Instant,
     last_gpu_update: Instant,
+}
+
+impl Default for CoreSystemMonitor {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl CoreSystemMonitor {

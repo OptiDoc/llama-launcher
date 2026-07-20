@@ -48,7 +48,7 @@ pub async fn start_model(
         model_id: model.id.clone(),
         model_path: model.path.clone(),
         pid: Some(pid),
-        port: port,
+        port,
         status: ProcessStatus::Running,
         started_at: now,
         config: pc,
@@ -77,7 +77,7 @@ pub async fn start_model(
         id: process_id,
         model_id: model.id,
         pid: Some(pid),
-        port: port,
+        port,
         status: ProcessStatus::Running,
         started_at: now
             .duration_since(SystemTime::UNIX_EPOCH)

@@ -128,11 +128,11 @@ pub fn detect_intel_gpu() -> (String, f64) {
 pub fn detect_vulkan() -> bool {
     #[cfg(target_os = "windows")]
     {
-        return std::path::Path::new("C:\\Windows\\System32\\vulkan-1.dll").exists();
+        std::path::Path::new("C:\\Windows\\System32\\vulkan-1.dll").exists()
     }
     #[cfg(target_os = "macos")]
     {
-        return false;
+        false
     }
     #[cfg(target_os = "linux")]
     {

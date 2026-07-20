@@ -54,7 +54,7 @@ impl ProcessManager {
         let gpu_mem_map = self.query_gpu_memory_per_pid();
 
         let mut procs = self.processes.lock();
-        for (_, proc) in procs.iter_mut() {
+        for proc in procs.values_mut() {
             if proc.pid > 0 && matches!(proc.status, ProcessStatus::Running | ProcessStatus::Starting) {
                 if let Some(sys_proc) = sys.process(Pid::from_u32(proc.pid)) {
                     proc.metrics.cpu_memory_mb = sys_proc.memory() as f64 / 1024.0 / 1024.0;

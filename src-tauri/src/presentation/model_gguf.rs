@@ -101,14 +101,14 @@ pub fn parse_gguf_header(
         if pos > header.len() - 4 { break; }
     }
 
-    let quant = file_type.map(|ft| quant_name_from_file_type(ft));
+    let quant = file_type.map(quant_name_from_file_type);
 
     let params = if let (Some(blocks), Some(embed)) = (block_count, embedding_length) {
         if let Some(experts) = expert_count {
-            let total = blocks as u64 * embed as u64 * (experts + 1) * 3;
+            let total = blocks * embed * (experts + 1) * 3;
             Some(format_params(total))
         } else {
-            let total = blocks as u64 * embed as u64 * embed as u64 * 6 / 10;
+            let total = blocks * embed * embed * 6 / 10;
             Some(format_params(total))
         }
     } else {

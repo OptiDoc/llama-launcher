@@ -46,6 +46,12 @@ pub struct LoggerState {
     pub min_level: LogLevel,
 }
 
+impl Default for LoggerState {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl LoggerState {
     pub fn new() -> Self {
         Self {

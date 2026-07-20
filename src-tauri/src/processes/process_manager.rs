@@ -35,6 +35,12 @@ pub struct ProcessManager {
     llama_binary: parking_lot::RwLock<Option<PathBuf>>,
 }
 
+impl Default for ProcessManager {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ProcessManager {
     pub fn new() -> Self {
         Self {

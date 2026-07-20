@@ -121,6 +121,12 @@ pub struct ProcessRegistry {
     next_id: u64,
 }
 
+impl Default for ProcessRegistry {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ProcessRegistry {
     pub fn new() -> Self {
         Self {
