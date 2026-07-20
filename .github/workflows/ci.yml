@@ -100,6 +100,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Create frontend dist directory
+        run: mkdir -p out
+
       - name: Install system dependencies
         run: |
           sudo apt-get update

@@ -12,6 +12,10 @@ pub struct BenchmarkRunner {
     manager: Arc<ProcessManager>,
 }
 
+// SAFETY: BenchmarkRunner only holds Arc<ProcessManager> which is Send+Sync.
+unsafe impl Send for BenchmarkRunner {}
+unsafe impl Sync for BenchmarkRunner {}
+
 impl BenchmarkRunner {
     pub fn new(manager: Arc<ProcessManager>) -> Self {
         Self { manager }
