@@ -19,9 +19,7 @@ jobs:
           cache: 'pnpm'
 
       - name: Install pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 7
+        run: npm install -g pnpm@8
 
       - name: Install dependencies
         run: pnpm install
@@ -44,9 +42,7 @@ jobs:
           cache: 'pnpm'
 
       - name: Install pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 7
+        run: npm install -g pnpm@8
 
       - name: Install dependencies
         run: pnpm install
@@ -66,9 +62,7 @@ jobs:
           cache: 'pnpm'
 
       - name: Install pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 7
+        run: npm install -g pnpm@8
 
       - name: Install dependencies
         run: pnpm install
@@ -94,9 +88,7 @@ jobs:
           cache: 'pnpm'
 
       - name: Install pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 7
+        run: npm install -g pnpm@8
 
       - name: Install dependencies
         run: pnpm install
