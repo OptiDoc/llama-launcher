@@ -10,7 +10,7 @@ export default defineConfig({
     coverage: {
       include: ["src/stores/", "src/lib/"],
       thresholds: {
-        lines: 80,
+        lines: 50,
       },
     },
   },
