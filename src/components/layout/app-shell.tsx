@@ -3,7 +3,7 @@
 import * as React from "react";
 import { Sidebar, type Page } from "./sidebar";
 import { TopBar } from "./top-bar";
-import { BottomConsole, ConsoleShowPill } from "@/components/console/bottom-console";
+import { BottomConsole } from "@/components/console/bottom-console";
 
 interface AppShellProps {
   activePage: Page;
@@ -36,7 +36,6 @@ export function AppShell({ activePage, onNavigate, children }: AppShellProps) {
 
           {/* Console: absolute overlay, slides up from bottom */}
           <BottomConsole />
-          <ConsoleShowPill />
         </div>
       </div>
     </div>
