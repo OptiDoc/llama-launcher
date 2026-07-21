@@ -191,7 +191,9 @@ export function createStartHFDownloadSlice(
             downloads: patchDownload(st, dlId, { status: "failed" }),
             models: patchModel(st, modelId, { downloading: false, downloadProgress: 0, missing: true }),
           }));
-          get().addNotification?.(NOTIF_MESSAGES.modelDownloadFailed(modelName, `Download returned null: ${resolvedFilename}`));
+          get().addNotification?.(
+            NOTIF_MESSAGES.modelDownloadFailed(modelName, `Download returned null: ${resolvedFilename}`),
+          );
           return;
         }
 

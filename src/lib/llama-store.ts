@@ -119,7 +119,14 @@ if (typeof window !== "undefined") {
     startReleaseChecker();
     await listenForNotifications((backendNotif) => {
       useLlamaStore.getState().addNotification({
-        kind: backendNotif.level === "error" ? "error" : backendNotif.level === "warning" ? "warning" : backendNotif.level === "success" ? "success" : "info",
+        kind:
+          backendNotif.level === "error"
+            ? "error"
+            : backendNotif.level === "warning"
+              ? "warning"
+              : backendNotif.level === "success"
+                ? "success"
+                : "info",
         title: backendNotif.title,
         body: backendNotif.body,
         ...(backendNotif.action_label ? { actionLabel: backendNotif.action_label } : {}),

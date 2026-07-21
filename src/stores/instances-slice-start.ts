@@ -159,7 +159,9 @@ export function createStartInstanceSlice(
               instances: s.instances.map((i) => (i.id === placeholderId ? { ...i, status: "error" } : i)),
             }));
             emitLog(placeholderId, "error", `Failed to start llama-server. Check the binary path in Settings.`);
-            get().addNotification?.(NOTIF_MESSAGES.processFailed(name, "Failed to start llama-server. Check the binary path in Settings."));
+            get().addNotification?.(
+              NOTIF_MESSAGES.processFailed(name, "Failed to start llama-server. Check the binary path in Settings."),
+            );
           }
         })().catch((e) => {
           const errMsg = e instanceof Error ? e.message : String(e);

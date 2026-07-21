@@ -31,7 +31,9 @@ export function createActivitySlice(
           "info",
           `wake: activity detected — hot-reloading ${s.hibernatedInstanceIds.length} hibernated model(s)`,
         );
-        get().addNotification?.(NOTIF_MESSAGES.configUpdated(`Waking up — reloading ${s.hibernatedInstanceIds.length} model(s)`));
+        get().addNotification?.(
+          NOTIF_MESSAGES.configUpdated(`Waking up — reloading ${s.hibernatedInstanceIds.length} model(s)`),
+        );
         const hibernatedIds = [...s.hibernatedInstanceIds];
         set({ hibernatedInstanceIds: [] });
         if (typeof window !== "undefined") {

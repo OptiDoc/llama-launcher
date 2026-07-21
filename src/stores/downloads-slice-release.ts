@@ -101,7 +101,9 @@ export function createStartReleaseDownloadSlice(
           downloads: patchDownload(st, dlId, { status: "failed" }),
           releases: patchRelease(st, releaseId, { installing: false }),
         }));
-        get().addNotification?.(NOTIF_MESSAGES.systemError(`Unexpected error: ${rel.tag} (${rel.variant}) — ${errMsg}`));
+        get().addNotification?.(
+          NOTIF_MESSAGES.systemError(`Unexpected error: ${rel.tag} (${rel.variant}) — ${errMsg}`),
+        );
       });
 
       return dlId;

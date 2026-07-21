@@ -18,7 +18,7 @@ export interface BackendNotification {
 type NotificationListener = (n: BackendNotification) => void;
 type UnlistenFn = () => void;
 
-let listener: NotificationListener | null = null;
+const listener: NotificationListener | null = null;
 let unsubscribe: UnlistenFn | null = null;
 
 function mapLevel(level: BackendNotification["level"]): "info" | "success" | "warning" | "error" {
@@ -27,9 +27,15 @@ function mapLevel(level: BackendNotification["level"]): "info" | "success" | "wa
 
 function mapSource(source: string): "model" | "process" | "system" | "release" | "download" | "workspace" | "config" {
   const valid: Array<"model" | "process" | "system" | "release" | "download" | "workspace" | "config"> = [
-    "model", "process", "system", "release", "download", "workspace", "config",
+    "model",
+    "process",
+    "system",
+    "release",
+    "download",
+    "workspace",
+    "config",
   ];
-  return (valid.includes(source as typeof valid[number]) ? source : "system") as typeof valid[number];
+  return (valid.includes(source as (typeof valid)[number]) ? source : "system") as (typeof valid)[number];
 }
 
 export async function listenForNotifications(cb: NotificationListener): Promise<void> {
