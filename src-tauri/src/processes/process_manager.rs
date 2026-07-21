@@ -18,7 +18,7 @@ pub struct ManagedProcess {
     pub id: String,
     pub model_id: String,
     pub model_path: String,
-    pub child: Option<Arc<Mutex<tokio::process::Child>>>,
+    pub child: Option<tokio::process::Child>,
     pub pid: u32,
     pub port: u16,
     pub status: ProcessStatus,
@@ -149,7 +149,7 @@ impl ProcessManager {
             id: process_id.clone(),
             model_id: model_id.clone(),
             model_path: model_path.to_string_lossy().to_string(),
-            child: Some(Arc::new(Mutex::new(child))),
+            child: None,
             pid,
             port,
             status: ProcessStatus::Starting,
@@ -160,7 +160,7 @@ impl ProcessManager {
             stderr_buffer: Arc::new(Mutex::new(Vec::new())),
         };
 
-        self.spawn_monitors(process_id.clone(), managed.pid);
+        self.spawn_monitors(process_id.clone(), managed.pid, child);
 
         let info = ProcessInfo {
             id: process_id.clone(),
