@@ -11,4 +11,3 @@ target
 .idea
 .vscode
 *.tsbuildinfo
-src-tauri/gen
