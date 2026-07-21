@@ -3,6 +3,7 @@
  */
 
 import { invoke, invokeWithChannel, isTauri } from "./invoke";
+import type { LogEntry } from "./logger";
 import type {
   ModelInfo,
   ProcessConfig,
@@ -71,8 +72,7 @@ export const tauri = {
   listGithubReleases: () => invoke<GitHubRelease[]>("list_github_releases"),
 
   // Logs
-  writeFrontendLog: (entry: { level: string; category: string; message: string }) =>
-    invoke<null>("write_frontend_log", { entry }),
+  writeFrontendLog: (entry: LogEntry) => invoke<null>("write_frontend_log", { entry }),
 
   // File / dialog
   openModelFolder: () => invoke<null>("open_model_folder"),

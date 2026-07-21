@@ -1,9 +1,9 @@
-use std::time::{SystemTime, UNIX_EPOCH};
-
-use super::logger_types::{LogLevel, LogEntry};
+use super::logger_types::LogLevel;
 use super::logger_state::LOGGER_STATE;
+use super::logger_write::current_timestamp_ms;
 
-pub fn get_recent_logs(limit: usize) -> Vec<LogEntry> {
+#[tauri::command]
+pub fn get_recent_logs(limit: usize) -> Vec<super::logger_types::LogEntry> {
     let state = match LOGGER_STATE.lock() {
         Ok(s) => s,
         Err(e) => {
@@ -16,29 +16,19 @@ pub fn get_recent_logs(limit: usize) -> Vec<LogEntry> {
 
 #[tauri::command]
 pub fn clear_logs() {
-    let mut state = match LOGGER_STATE.lock() {
-        Ok(s) => s,
-        Err(e) => {
-            eprintln!("[LOGGER] Mutex poisoned in clear_logs: {}", e);
-            return;
-        }
-    };
-    state.logs.clear();
+    if let Ok(mut s) = LOGGER_STATE.lock() {
+        s.logs.clear();
+    }
 }
 
 #[tauri::command]
 pub fn clear_logs_by_level(level: LogLevel) {
-    let mut state = match LOGGER_STATE.lock() {
-        Ok(s) => s,
-        Err(e) => {
-            eprintln!("[LOGGER] Mutex poisoned in clear_logs_by_level: {}", e);
-            return;
-        }
-    };
-    state.logs.retain(|e| e.level != level);
+    if let Ok(mut s) = LOGGER_STATE.lock() {
+        s.logs.retain(|e| e.level != level);
+    }
 }
 
-#[tauri::command(rename = "export_logs_by_level")]
+#[tauri::command]
 pub fn export_logs_by_level(level: LogLevel) -> String {
     let state = match LOGGER_STATE.lock() {
         Ok(s) => s,
@@ -47,22 +37,22 @@ pub fn export_logs_by_level(level: LogLevel) -> String {
             return "{}".to_string();
         }
     };
-    let logs: Vec<serde_json::Value> = state.logs.iter().filter(|e| e.level == level).map(|entry| {
-        serde_json::to_value(entry).unwrap_or_default()
-    }).collect();
-    
-    let timestamp = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .unwrap_or_default()
-        .as_millis();
-    
+    let logs: Vec<serde_json::Value> = state
+        .logs
+        .iter()
+        .filter(|e| e.level == level)
+        .map(|entry| serde_json::to_value(entry).unwrap_or_default())
+        .collect();
+
+    let timestamp = current_timestamp_ms();
+
     let export = serde_json::json!({
-        "level": level,
+        "level": level.as_str(),
         "exported_at": timestamp,
         "count": logs.len(),
         "logs": logs,
     });
-    
+
     serde_json::to_string_pretty(&export).unwrap_or_default()
 }
 
@@ -74,19 +64,18 @@ pub fn export_logs() -> String {
             return "{}".to_string();
         }
     };
-    let logs: Vec<serde_json::Value> = state.logs.iter().map(|entry| {
-        serde_json::to_value(entry).unwrap_or_default()
-    }).collect();
-    
-    let timestamp = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .unwrap_or_default()
-        .as_millis();
-    
+    let logs: Vec<serde_json::Value> = state
+        .logs
+        .iter()
+        .map(|entry| serde_json::to_value(entry).unwrap_or_default())
+        .collect();
+
+    let timestamp = current_timestamp_ms();
+
     let export = serde_json::json!({
         "exported_at": timestamp,
         "logs": logs,
     });
-    
+
     serde_json::to_string_pretty(&export).unwrap_or_default()
 }

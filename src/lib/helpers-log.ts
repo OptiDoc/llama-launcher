@@ -3,7 +3,7 @@
  */
 
 import type { ConsoleLine } from "@/lib/types";
-import { persistToBackend } from "@/lib/logger";
+import { emitLog as logEmitLog } from "@/lib/logger";
 import { uid, nowTs } from "./helpers-utils";
 
 export const logSubscribers = new Set<(line: ConsoleLine) => void>();
@@ -17,7 +17,8 @@ export function emitLog(instanceId: string, kind: import("@/lib/types").LogKind,
     text,
   };
   logSubscribers.forEach((fn) => fn(line));
-  persistToBackend(kind, instanceId, text);
+  const mappedKind = kind === "system" ? "info" : kind;
+  logEmitLog(instanceId, mappedKind as "info" | "warn" | "error" | "debug", text);
   return line;
 }
 

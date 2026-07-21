@@ -10,7 +10,6 @@ pub mod processes;
 pub mod logger;
 
 pub use domain::*;
-use log::LevelFilter;
 use tauri::Manager;
 use tauri_plugin_store::StoreExt;
 use application::AppState;
@@ -19,17 +18,6 @@ pub fn run() {
     crate::log_info!(&format!("Starting llama-launcher v{}", env!("CARGO_PKG_VERSION")), "startup");
 
     tauri::Builder::default()
-        .plugin(
-            tauri_plugin_log::Builder::new()
-                .targets([
-                    tauri_plugin_log::Target::new(tauri_plugin_log::TargetKind::Stdout),
-                    tauri_plugin_log::Target::new(tauri_plugin_log::TargetKind::LogDir {
-                        file_name: Some("llama-launcher".into()),
-                    }),
-                ])
-                .level(LevelFilter::Info)
-                .build(),
-        )
         .plugin(tauri_plugin_store::Builder::new().build())
         .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
             if let Some(window) = app.get_webview_window("main") {
@@ -97,12 +85,13 @@ pub fn run() {
             logger::clear_logs,
             logger::clear_logs_by_level,
             logger::export_logs_by_level,
+            logger::get_recent_logs,
             logger::write_frontend_log,
         ])
         .setup(|app| {
-            logger::init_logger();
-
             let state = app.state::<AppState>();
+            crate::log_info!("Logger initialized", "startup");
+
             if let Ok(store) = app.store("config.json") {
                 if let Some(val) = store.get("config") {
                     if let Ok(saved_config) = serde_json::from_value::<AppConfig>(val.clone()) {

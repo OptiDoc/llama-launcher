@@ -46,7 +46,6 @@ default = [
   "process",
   "http",
   "updater",
-  "log-plugin",
   "sql",
   "store",
   "single-instance"
@@ -58,7 +57,6 @@ opener = ["tauri-plugin-opener"]
 process = ["tauri-plugin-process"]
 http = ["tauri-plugin-http"]
 updater = ["tauri-plugin-updater"]
-log-plugin = ["tauri-plugin-log"]
 sql = ["tauri-plugin-sql"]
 store = ["tauri-plugin-store"]
 single-instance = ["tauri-plugin-single-instance"]
@@ -72,11 +70,9 @@ tauri-plugin-opener = { version = "2", optional = true }
 tauri-plugin-process = { version = "2", optional = true }
 tauri-plugin-http = { version = "2", optional = true }
 tauri-plugin-updater = { version = "2", optional = true }
-tauri-plugin-log = { version = "2", features = ["tracing"], optional = true }
 tauri-plugin-single-instance = { version = "2", optional = true }
 tauri-plugin-store = { version = "2", optional = true }
 tauri-plugin-sql = { version = "2", features = ["sqlite"], optional = true }
-log = "0.4"
 rand = "0.8"
 
 # System utilities

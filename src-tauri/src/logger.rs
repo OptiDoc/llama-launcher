@@ -1,3 +1,4 @@
+mod correlation;
 mod logger_types;
 mod logger_state;
 mod logger_write;
@@ -6,6 +7,7 @@ mod logger_query;
 mod logger_frontend;
 mod logger_macros;
 
+pub use correlation::*;
 pub use logger_types::*;
 pub use logger_state::*;
 pub use logger_write::*;

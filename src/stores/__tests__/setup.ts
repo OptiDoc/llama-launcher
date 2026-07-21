@@ -58,9 +58,11 @@ vi.mock("@/lib/logger", () => ({
     warn: vi.fn(),
     error: vi.fn(),
     debug: vi.fn(),
-    success: vi.fn(),
   },
-  persistToBackend: vi.fn(),
+  measure: vi.fn(),
+  emitLog: vi.fn(),
+  setLogLevel: vi.fn(),
+  setCorrelationId: vi.fn(),
 }));
 
 vi.mock("@/lib/helpers", async () => {

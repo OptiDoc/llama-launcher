@@ -1,32 +1,49 @@
 /**
- * Simple logger for the frontend.
- * Uses console with structured format and level filtering.
- * Persists to disk via Tauri backend when available.
+ * Frontend logger — unified schema matching Rust backend.
+ * Uses console with structured format, level filtering, and buffered persistence.
  */
 
-export type LogKind = "info" | "success" | "warn" | "error" | "debug" | "system";
+export type LogKind = "debug" | "info" | "warn" | "error";
 
-interface LogEntry {
-  ts: number;
-  kind: LogKind;
+export interface LogEntry {
+  id: number;
+  timestamp: number;
+  level: LogKind;
   category: string;
   message: string;
   context?: Record<string, unknown>;
+  tag?: string;
+  stack?: string;
+  correlation_id?: string;
+}
+
+export interface MeasureEntry {
+  correlation_id?: string;
+  category: string;
+  duration_ms: number;
 }
 
 const LOG_LEVELS: Record<LogKind, number> = {
   debug: 0,
   info: 1,
-  success: 1,
   warn: 2,
   error: 3,
-  system: 1,
 };
 
 let currentLevel: LogKind = "debug";
+let currentCorrelationId: string | null = null;
+
+const LOG_QUEUE: LogEntry[] = [];
+const QUEUE_FLUSH_INTERVAL_MS = 500;
+const QUEUE_FLUSH_THRESHOLD = 50;
+let flushTimer: ReturnType<typeof setTimeout> | null = null;
 
 export function setLogLevel(level: LogKind) {
   currentLevel = level;
+}
+
+export function setCorrelationId(id: string | null) {
+  currentCorrelationId = id;
 }
 
 function shouldLog(kind: LogKind): boolean {
@@ -39,68 +56,133 @@ function format(kind: LogKind, category: string, message: string, context?: Reco
   return `[${timestamp}] [${kind.toUpperCase()}] [${category}] ${message}${ctx}`;
 }
 
-/** Persist a log entry to disk via the Rust backend. Fire-and-forget. */
-export function persistToBackend(kind: LogKind, category: string, message: string) {
-  if (typeof window === "undefined") return;
-  const tauriAvailable = Boolean(window.__TAURI_INTERNALS__ || window.__TAURI__?.core?.invoke);
-  if (!tauriAvailable) {
-    console.warn(`[LOGGER] persistToBackend: Tauri not available, skipping [${kind}] ${message}`);
-    return;
-  }
-  try {
-    const fn = window.__TAURI__?.core?.invoke;
-    if (!fn) {
-      console.warn(`[LOGGER] persistToBackend: invoke function not found, skipping [${kind}] ${message}`);
-      return;
-    }
-    fn("write_frontend_log", { entry: { level: kind, category, message } }).catch((e) => {
-      console.error(`[LOGGER] persistToBackend failed for [${kind}] ${message}:`, e);
-    });
-  } catch (e) {
-    console.error(`[LOGGER] persistToBackend invoke error:`, e);
+function enqueueEntry(entry: LogEntry) {
+  LOG_QUEUE.push(entry);
+  if (LOG_QUEUE.length >= QUEUE_FLUSH_THRESHOLD) {
+    flushQueue();
+  } else if (!flushTimer) {
+    flushTimer = setTimeout(flushQueue, QUEUE_FLUSH_INTERVAL_MS);
   }
 }
 
+async function flushQueue() {
+  if (flushTimer) {
+    clearTimeout(flushTimer);
+    flushTimer = null;
+  }
+  if (LOG_QUEUE.length === 0) return;
+
+  const batch = LOG_QUEUE.splice(0);
+  if (typeof window === "undefined") return;
+  const tauriAvailable = Boolean(window.__TAURI_INTERNALS__ || window.__TAURI__?.core?.invoke);
+  if (!tauriAvailable) return;
+
+  try {
+    const fn = window.__TAURI__?.core?.invoke;
+    if (!fn) return;
+    for (const entry of batch) {
+      await fn("write_frontend_log", { entry });
+    }
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    console.error(`[LOGGER] flushQueue failed: ${msg}`);
+  }
+}
+
+function buildEntry(
+  level: LogKind,
+  category: string,
+  message: string,
+  options?: {
+    context?: Record<string, unknown>;
+    tag?: string;
+    correlation_id?: string;
+    stack?: string;
+  },
+): LogEntry {
+  return {
+    id: 0,
+    timestamp: Date.now(),
+    level,
+    category,
+    message,
+    context: options?.context,
+    tag: options?.tag,
+    stack: options?.stack,
+    correlation_id: options?.correlation_id ?? currentCorrelationId ?? undefined,
+  };
+}
+
 export const log = {
-  debug: (message: string, options?: { category?: string; context?: Record<string, unknown> }) => {
+  debug: (
+    message: string,
+    options?: { category?: string; context?: Record<string, unknown>; correlation_id?: string },
+  ) => {
     const cat = options?.category ?? "app";
     if (shouldLog("debug")) {
       console.debug(format("debug", cat, message, options?.context));
     }
-    persistToBackend("debug", cat, message);
+    enqueueEntry(buildEntry("debug", cat, message, options));
   },
-  info: (message: string, options?: { category?: string; context?: Record<string, unknown> }) => {
+
+  info: (
+    message: string,
+    options?: { category?: string; context?: Record<string, unknown>; correlation_id?: string; tag?: string },
+  ) => {
     const cat = options?.category ?? "app";
     if (shouldLog("info")) {
       console.info(format("info", cat, message, options?.context));
     }
-    persistToBackend("info", cat, message);
+    enqueueEntry(buildEntry("info", cat, message, options));
   },
-  success: (message: string, options?: { category?: string; context?: Record<string, unknown> }) => {
-    const cat = options?.category ?? "app";
-    if (shouldLog("success")) {
-      console.log(format("success", cat, message, options?.context));
-    }
-    persistToBackend("success", cat, message);
-  },
-  warn: (message: string, options?: { category?: string; context?: Record<string, unknown> }) => {
+
+  warn: (
+    message: string,
+    options?: { category?: string; context?: Record<string, unknown>; correlation_id?: string },
+  ) => {
     const cat = options?.category ?? "app";
     if (shouldLog("warn")) {
       console.warn(format("warn", cat, message, options?.context));
     }
-    persistToBackend("warn", cat, message);
+    enqueueEntry(buildEntry("warn", cat, message, options));
   },
-  error: (message: string, options?: { category?: string; context?: Record<string, unknown> }) => {
+
+  error: (
+    message: string,
+    options?: {
+      category?: string;
+      context?: Record<string, unknown>;
+      correlation_id?: string;
+      stack?: string;
+    },
+  ) => {
     const cat = options?.category ?? "app";
+    const stack = options?.stack ?? new Error().stack ?? undefined;
     if (shouldLog("error")) {
       console.error(format("error", cat, message, options?.context));
     }
-    persistToBackend("error", cat, message);
+    enqueueEntry(buildEntry("error", cat, message, { ...options, stack }));
   },
 };
 
-/** Console logger for system messages (used by llama-store). Persists to disk. */
 export function emitLog(consoleId: string, kind: LogKind, message: string) {
   console.log(`[${new Date().toISOString()}] [${kind.toUpperCase()}] [${consoleId}] ${message}`);
-  persistToBackend(kind, consoleId, message);
+  enqueueEntry(buildEntry(kind, consoleId, message, { correlation_id: currentCorrelationId ?? undefined }));
+}
+
+export function measure<T>(message: string, category: string, f: () => T): T {
+  const start = Date.now();
+  const result = f();
+  const duration = Date.now() - start;
+  const entry: MeasureEntry = {
+    correlation_id: currentCorrelationId ?? undefined,
+    category,
+    duration_ms: duration,
+  };
+  log.info(`${message} - ${duration}ms`, {
+    category,
+    tag: "measure",
+    context: entry as unknown as Record<string, unknown>,
+  });
+  return result;
 }

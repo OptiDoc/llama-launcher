@@ -5,8 +5,6 @@
 import { log } from "./logger";
 import type { DownloadProgress } from "./types";
 
-// ---------- Tauri detection ----------
-
 declare global {
   interface Window {
     __TAURI_INTERNALS__?: unknown;
@@ -24,10 +22,10 @@ export function isTauri(): boolean {
 }
 
 async function invoke<T>(cmd: string, args?: Record<string, unknown>): Promise<T | null> {
-  log.debug(`[TAURI] Calling command: ${cmd}`, { category: "tauri", context: { args } });
+  console.debug(`[TAURI] Calling command: ${cmd}`);
 
   if (!isTauri()) {
-    log.debug(`[TAURI] Not in Tauri environment, returning null for ${cmd}`, { category: "tauri" });
+    console.debug(`[TAURI] Not in Tauri environment, returning null for ${cmd}`);
     return null;
   }
 
@@ -38,7 +36,7 @@ async function invoke<T>(cmd: string, args?: Record<string, unknown>): Promise<T
       return null;
     }
     const result = (await fn(cmd, args)) as T;
-    log.debug(`[TAURI] Command ${cmd} completed successfully`, { category: "tauri", context: { result } });
+    console.debug(`[TAURI] Command ${cmd} completed successfully`);
     return result;
   } catch (error) {
     log.error(`[TAURI] Command ${cmd} failed: ${error instanceof Error ? error.message : String(error)}`, {
