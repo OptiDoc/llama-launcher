@@ -1,25 +1,14 @@
 "use client";
 
 import * as React from "react";
-import { cn } from "@/lib/utils";
-import { Card, CardContent } from "@/components/ui/card";
+import { cn, fmtTime } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ScrollText, Filter, TerminalSquare, Server, Eraser } from "lucide-react";
-import {
-  useLlamaStore,
-  SYSTEM_CONSOLE,
-  type LogKind,
-  type ConsoleLine,
-} from "@/lib/llama-store";
+import { useLlamaStore, SYSTEM_CONSOLE, type LogKind, type ConsoleLine } from "@/lib/llama-store";
 
 const KINDS: { value: LogKind | "all"; label: string }[] = [
   { value: "all", label: "All levels" },
@@ -29,11 +18,6 @@ const KINDS: { value: LogKind | "all"; label: string }[] = [
   { value: "error", label: "Errors" },
   { value: "debug", label: "Debug" },
 ];
-
-function fmtTime(ts: number) {
-  const d = new Date(ts);
-  return d.toTimeString().slice(0, 8);
-}
 
 function instanceNameMap(instances: { id: string; name: string }[]) {
   const map = new Map<string, string>();
@@ -88,8 +72,8 @@ export function LogsPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Logs</h1>
-          <p className="text-sm text-muted-foreground">
+          <h1 className="text-lg font-bold tracking-tight text-foreground">Logs</h1>
+          <p className="text-[12px] text-muted-foreground">
             Aggregated log viewer across all instances. {allLines.length} lines total.
           </p>
         </div>
@@ -100,7 +84,7 @@ export function LogsPage() {
       </div>
 
       {/* Filter bar */}
-      <Card className="shadow-sm">
+      <Card className="py-0">
         <CardContent className="flex flex-wrap items-center gap-3 p-4">
           <div className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
             <Filter className="size-3.5" />
@@ -167,7 +151,7 @@ export function LogsPage() {
       </Card>
 
       {/* Log output */}
-      <Card className="overflow-hidden shadow-sm">
+      <Card className="overflow-hidden">
         <CardContent className="p-0">
           {filtered.length === 0 ? (
             <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
@@ -183,7 +167,7 @@ export function LogsPage() {
             </div>
           ) : (
             <ScrollArea className="h-[60vh] min-h-[320px]">
-              <div className="console-output px-4 py-3">
+              <div className="console-output px-4 py-3" role="log" aria-live="polite">
                 {filtered.map((l) => (
                   <div key={l.id} className={cn("log-line", `log-${l.kind}`)}>
                     <span className="log-time">{fmtTime(l.ts)}</span>

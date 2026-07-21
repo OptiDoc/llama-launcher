@@ -1,12 +1,15 @@
 import type { NextConfig } from "next";
 
+const isTauri = process.env.TAURI_BUILD === "true";
+
 const nextConfig: NextConfig = {
-  output: "standalone",
+  output: isTauri ? "export" : "standalone",
+  outputFileTracingRoot: isTauri ? undefined : process.cwd(),
   /* config options here */
-  typescript: {
-    ignoreBuildErrors: true,
+  reactStrictMode: true,
+  images: {
+    unoptimized: true,
   },
-  reactStrictMode: false,
 };
 
 export default nextConfig;
