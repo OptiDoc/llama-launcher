@@ -142,7 +142,7 @@ pub fn detect_vulkan() -> bool {
             "/usr/local/lib/libvulkan.so",
             "/usr/lib/libvulkan.so",
         ];
-        return paths.iter().any(|p| std::path::Path::new(p).exists());
+        paths.iter().any(|p| std::path::Path::new(p).exists())
     }
     #[cfg(not(any(target_os = "windows", target_os = "macos", target_os = "linux")))]
     {

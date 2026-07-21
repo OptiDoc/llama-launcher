@@ -25,8 +25,8 @@ impl ProcessManager {
             // Poll stdout and stderr concurrently
             let proc_id_stdout = proc_id.clone();
             let processes_stdout = processes_clone.clone();
-            let stdout_handle = if let Some(mut reader) = stdout_reader {
-                Some(tokio::spawn(async move {
+            let stdout_handle = stdout_reader.map(|mut reader| {
+                tokio::spawn(async move {
                     while let Ok(Some(line)) = reader.next_line().await {
                         log_debug!(&format!("[{}] stdout: {}", proc_id_stdout, line), "processes");
 
@@ -45,15 +45,13 @@ impl ProcessManager {
                             }
                         }
                     }
-                }))
-            } else {
-                None
-            };
+                })
+            });
 
             let proc_id_stderr = proc_id.clone();
             let processes_stderr = processes_clone.clone();
-            let stderr_handle = if let Some(mut reader) = stderr_reader {
-                Some(tokio::spawn(async move {
+            let stderr_handle = stderr_reader.map(|mut reader| {
+                tokio::spawn(async move {
                     while let Ok(Some(line)) = reader.next_line().await {
                         log_warn!(&format!("[{}] stderr: {}", proc_id_stderr, line), "processes");
 
@@ -64,10 +62,8 @@ impl ProcessManager {
                             }
                         }
                     }
-                }))
-            } else {
-                None
-            };
+                })
+            });
 
             // Wait for stdout and stderr readers to finish
             if let Some(h) = stdout_handle {
