@@ -19,8 +19,8 @@ impl ProcessManager {
 
         // Single task that owns the child and handles stdout, stderr, and wait
         tokio::spawn(async move {
-            let mut stdout_reader = stdout.map(BufReader::new).map(|r| r.lines());
-            let mut stderr_reader = stderr.map(BufReader::new).map(|r| r.lines());
+            let stdout_reader = stdout.map(BufReader::new).map(|r| r.lines());
+            let stderr_reader = stderr.map(BufReader::new).map(|r| r.lines());
 
             // Poll stdout and stderr concurrently
             let proc_id_stdout = proc_id.clone();
@@ -86,7 +86,6 @@ impl ProcessManager {
                     Ok(_) => ProcessStatus::Crashed,
                     Err(_) => ProcessStatus::Error,
                 };
-                proc.child = None;
                 proc.pid = 0;
             }
         });

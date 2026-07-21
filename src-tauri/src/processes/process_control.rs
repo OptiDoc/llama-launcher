@@ -5,39 +5,49 @@ use super::process_manager::ProcessManager;
 
 impl ProcessManager {
     pub async fn stop_model(&self, process_id: &str) -> Result<(), anyhow::Error> {
-        let mut procs = self.processes.lock();
-        if let Some(proc) = procs.get_mut(process_id) {
-            proc.status = ProcessStatus::Stopping;
-
-            if let Some(pid) = Some(proc.pid).filter(|&p| p > 0) {
-                #[cfg(target_os = "windows")]
-                {
-                    std::process::Command::new("taskkill")
-                        .args(["/F", "/PID", &pid.to_string()])
-                        .status()
-                        .ok();
-                }
-                #[cfg(not(target_os = "windows"))]
-                {
-                    std::process::Command::new("kill")
-                        .args(["-TERM", &pid.to_string()])
-                        .status()
-                        .ok();
-
-                    tokio::time::sleep(Duration::from_secs(2)).await;
-
-                    std::process::Command::new("kill")
-                        .args(["-KILL", &pid.to_string()])
-                        .status()
-                        .ok();
-                }
+        let (pid, port) = {
+            let mut procs = self.processes.lock();
+            if let Some(proc) = procs.get_mut(process_id) {
+                proc.status = ProcessStatus::Stopping;
+                (proc.pid, proc.port)
+            } else {
+                return Ok(());
             }
+        };
 
-            proc.status = ProcessStatus::Stopped;
-            proc.pid = 0;
+        if pid > 0 {
+            #[cfg(target_os = "windows")]
+            {
+                std::process::Command::new("taskkill")
+                    .args(["/F", "/PID", &pid.to_string()])
+                    .status()
+                    .ok();
+            }
+            #[cfg(not(target_os = "windows"))]
+            {
+                std::process::Command::new("kill")
+                    .args(["-TERM", &pid.to_string()])
+                    .status()
+                    .ok();
 
-            self.port_allocator.lock().release(proc.port);
+                tokio::time::sleep(Duration::from_secs(2)).await;
+
+                std::process::Command::new("kill")
+                    .args(["-KILL", &pid.to_string()])
+                    .status()
+                    .ok();
+            }
         }
+
+        {
+            let mut procs = self.processes.lock();
+            if let Some(proc) = procs.get_mut(process_id) {
+                proc.status = ProcessStatus::Stopped;
+                proc.pid = 0;
+            }
+        }
+        self.port_allocator.lock().release(port);
+
         Ok(())
     }
 
