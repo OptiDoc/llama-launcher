@@ -31,6 +31,7 @@ legacy_gen: true
 ## 何时触发
 
 用户说"做个工业风的产品落地页 / 克制之物风格的展品 / industrial-archive-gen ..."，并提供：
+
 - **产品描述**（必需）：一段散文，描述 1—N 件展品的名字、年代、产地、材料、来历
 - **图片 URL**（可选）：每件展品至少 1 张主图、最好 3—6 张细节图。没有也能跑（用 picsum 占位灰图）
 - **风格**（可选）：默认是冷调钢蓝灰，可换成 styles.md 里的预设
@@ -42,10 +43,12 @@ legacy_gen: true
 ## 两种运行模式
 
 ### 模式 A · Claude Code / 本地（有文件系统）
+
 - 输出：`~/Desktop/{slug}-archive.html`（**单文件**，所有图走 URL）
 - 如果用户给了本地图，建议告知用户改用 URL 或自己拷到同目录后写相对路径
 
 ### 模式 B · GLM / 在线对话（无文件系统）
+
 - **直接给一份完整 HTML 字符串**，包在 ` ```html ` 代码块里
 - 用户没给图 URL → 全用 `https://picsum.photos/seed/{slug}-{nn}/{w}/{h}?grayscale` 占位
 - 不要尝试访问本地文件
@@ -54,13 +57,13 @@ legacy_gen: true
 
 ## 文件分工
 
-| 文件 | 角色 | 怎么用 |
-|---|---|---|
-| `reference.html` | **完整成品参考** — "克制之物" 4 件北欧工业藏品 | 看：lead 怎么写、prose 语气、spec 用词、tagline 格式、maker 命名 |
-| `template.html` | **空骨架** — 同样的 CSS/JS/路由，2 件示例 + 17 个 SWAP 标记 | 在它的基础上改，输出最终 HTML |
-| `styles.md` | 风格预设库 | 用户指定风格时查这份 |
-| `README.md` | 用户视角的使用说明 | 模型不用看 |
-| `SKILL.md` | 给模型看的工作流（本文件） | **必读** |
+| 文件             | 角色                                                        | 怎么用                                                           |
+| ---------------- | ----------------------------------------------------------- | ---------------------------------------------------------------- |
+| `reference.html` | **完整成品参考** — "克制之物" 4 件北欧工业藏品              | 看：lead 怎么写、prose 语气、spec 用词、tagline 格式、maker 命名 |
+| `template.html`  | **空骨架** — 同样的 CSS/JS/路由，2 件示例 + 17 个 SWAP 标记 | 在它的基础上改，输出最终 HTML                                    |
+| `styles.md`      | 风格预设库                                                  | 用户指定风格时查这份                                             |
+| `README.md`      | 用户视角的使用说明                                          | 模型不用看                                                       |
+| `SKILL.md`       | 给模型看的工作流（本文件）                                  | **必读**                                                         |
 
 **核心规则**：所有改动基于 `template.html`；从 `reference.html` 学**怎么写**（语气、字数、词汇），但不要复制具体内容。
 
@@ -73,6 +76,7 @@ legacy_gen: true
 ## 工作步骤
 
 ### 1. 读两份 HTML
+
 - 先读 `reference.html` 体会"完整后长什么样"，特别是 `exhibits-data` JSON 的字段密度和 prose 语气（克制、具体、有时代背景）
 - 再读 `template.html` 找 17 个 SWAP 标记（搜 `SWAP-`）
 
@@ -82,6 +86,7 @@ SWAP 都在 HTML 文本和 JSON 数据里。
 ### 2. 解析用户输入抽信息
 
 #### 全站层级（17 个 SWAP 中的 1-15、17）
+
 - **COLLECTION_TITLE / COLLECTION_SUB** — 系列大标题 + 副标。如"克制之物 / 北欧工业典藏 1948—1988"。SWAP-1
 - **INTRO_VOLUME_TAG** — 进入页顶部的 tag，如"北欧工业典藏 · Vol.01"。SWAP-2
 - **INTRO_TITLE_HTML** — splash 页大标题，2-4 字 + 中间一个 `<span class="accent">·</span>` 分隔符。如 `克制<span class="accent">·</span>之物`。SWAP-3
@@ -97,6 +102,7 @@ SWAP 都在 HTML 文本和 JSON 数据里。
 - **TICKER_TAIL** — 跑马灯尾巴的总标语。SWAP-17
 
 #### 每件展品的字段（SWAP-16，最关键）
+
 ```json
 {
   "slug": "iron-kettle",
@@ -125,12 +131,12 @@ SWAP 都在 HTML 文本和 JSON 数据里。
   ],
   "cover": "https://example.com/kettle-cover.jpg 或 picsum URL",
   "gallery": [
-    {"src": "...", "layout": "f-3", "caption": "壶身正立面"},
-    {"src": "...", "layout": "f-2", "caption": "山毛榉木柄"},
-    {"src": "...", "layout": "f-2", "caption": "壶嘴细部"},
-    {"src": "...", "layout": "f-2", "caption": "底部砂模印"},
-    {"src": "...", "layout": "f-4", "caption": "工坊蓝图"},
-    {"src": "...", "layout": "f-6", "caption": "陈列剖面"}
+    { "src": "...", "layout": "f-3", "caption": "壶身正立面" },
+    { "src": "...", "layout": "f-2", "caption": "山毛榉木柄" },
+    { "src": "...", "layout": "f-2", "caption": "壶嘴细部" },
+    { "src": "...", "layout": "f-2", "caption": "底部砂模印" },
+    { "src": "...", "layout": "f-4", "caption": "工坊蓝图" },
+    { "src": "...", "layout": "f-6", "caption": "陈列剖面" }
   ]
 }
 ```
@@ -145,38 +151,48 @@ SWAP 都在 HTML 文本和 JSON 数据里。
 把 `<script id="exhibits-data" type="application/json">` 里那 2 个示例对象**整个替换**成 N 个真展品对象。
 
 #### 件数建议
+
 - 最少 1 件（单品落地页也行 — JS 已处理 N=1 时不自动轮播）
 - 最佳 3—6 件
 - 超过 8 件展品索引会拥挤，建议拆分
 
 #### 标题字数建议
+
 - `title` 中文 2-4 字最好看（"铸铁壶"、"轴承灯"、"测距仪"）。如果产品名长，用副标，如 `"title": "测距仪"`、`tagline: "MARITIME RANGEFINDER / 海事测距仪"`
 - `en` 全大写英文，2 词为佳
 
 #### tagline 格式
+
 固定：`英文短语 + 空格/空格 + 中文短语`，例：
+
 - `FORGED ESSENTIAL / 锻造的必需品`
 - `PIVOT & LIGHT / 旋转与光`
 - `FOUR LEGS, NO MORE / 四只脚，仅此而已`
 - `MEASURED HORIZON / 被丈量的地平线`
 
 #### lead 写法
+
 30—80 字。**必须在某一两个关键词上加 `<em>...</em>`**——CSS 会给这些字下面加一根钢蓝色细线。
 反例：`这是一只很好的水壶。` ← 没有 em，没有具体细节
 正例：`一只为<em>沉默与水的低温</em>而设计的容器——壶身的厚度，是为了让热停留得久一点。`
 
 #### prose 写法
+
 3 段，每段 80—160 字。语气：**博物馆 wall-text** — 克制、具体、有时代背景，不要 marketing 语言。
+
 - 段一：来源 / 语境（产地、年份、工坊、那个时代）
 - 段二：工艺 / 决定（关键设计、工艺细节、为什么要这么做）
 - 段三：呈现 / 影响（今天的现存数量、是否仍在用、对后来的影响）
 
 #### spec 写法
+
 4-6 行，每行一个键值对。
+
 - 第一行通常是 `["编号", "{年份} · {型号}"]`
 - 最后一行通常是产量/现存：`["产量", "限量 240 件 · 现存 31"]`（JS 会把最后一行的值显示在详情页的"现存 / EXTANT"块）
 
 #### gallery layout 必须四选一
+
 - `f-3` — 横图，16:10，占 1/2 宽（占 6 列中的 3 列）
 - `f-2` — 竖图，4:5，占 1/3 宽
 - `f-4` — 横图，16:9，占 2/3 宽
@@ -185,8 +201,10 @@ SWAP 都在 HTML 文本和 JSON 数据里。
 **节奏建议**：1 张 f-3 + 3 张 f-2 + 1 张 f-4 + 1 张 f-6 = 6 张，刚好两行半。
 
 #### 图片 URL
+
 模式 A 用户给 URL → 用 URL；
 模式 B 没给 → 用 picsum：`https://picsum.photos/seed/{slug}-{编号}/{w}/{h}?grayscale`
+
 - cover 推荐 `1600/1000`
 - f-3 推荐 `900/600`
 - f-2 推荐 `600/750`
@@ -195,14 +213,17 @@ SWAP 都在 HTML 文本和 JSON 数据里。
 - 加 `?grayscale` 让占位图也保持工业灰调
 
 ### 5. 风格变体（可选）
+
 如果用户指定风格，照 `styles.md` 改 `:root` 那 8 个 CSS 变量。默认是冷调钢蓝灰，最贴合"克制之物"原版。
 
 ### 6. 报告
 
 **模式 A**：一句话报告。
+
 > 已生成 `~/Desktop/{slug}-archive.html` — N 件展品，默认冷调钢蓝。双击打开，点击画框或底部 CTA 进入详情页。要换图把 cover/gallery 里的 picsum URL 换成你的图片地址。
 
 **模式 B**：直接给完整 HTML 代码块 + 一行说明。
+
 > 把上面这段保存成 `index.html` 双击打开。点画框看详情，键盘 ← → 切换展品。要换图把所有 picsum URL 换成你的图片地址。
 
 ## 强制保留（不能改）
@@ -238,6 +259,7 @@ SWAP 都在 HTML 文本和 JSON 数据里。
 ## 风格触发词速查
 
 用户说→你照哪个风格：
+
 - 没说 / "克制" / "北欧" / "工业" → 默认冷调钢蓝（已是 template 默认）
 - "暖" / "复古" / "棕调" / "皮革" → styles.md `warm-leather`
 - "暗" / "深色" / "夜色" → styles.md `night-iron`

@@ -13,6 +13,7 @@ shaders.com 是一个 shader 设计工具，使用 Nuxt.js + Three.js r183 TSL +
 ## 关键架构差异
 
 与 Unicorn Studio 完全不同：
+
 - **不使用 GLSL** — 使用 Three.js TSL (Three Shader Language) 节点系统
 - **87 种组件类型** — 每种有自己的 TSL `fragmentNode` 函数
 - **定义数据是 XOR + base64 编码的**
@@ -87,13 +88,13 @@ float dSdy = -(texture(tSDF, sdfUV - vec2(0, eps)).r - sdf) / eps;
 
 ## 组件类型速查
 
-| 类别 | 组件 | 复杂度 |
-|------|------|--------|
-| 纹理 | Plasma, Godrays, SimplexNoise, LinearGradient, RadialGradient | 中 |
-| 形状 | Glass, Blob, Circle, Ring, Star, RoundedRect, Polygon | 高（Glass 最复杂） |
-| 畸变 | WaveDistortion, ChromaticAberration, Liquify, Twirl, Bulge | 低-中 |
-| 风格化 | FilmGrain, Halftone, Ascii, Dither, Glow, Bloom | 低-中 |
-| 后处理 | Blur, ProgressiveBlur, BrightnessContrast, HueShift | 低 |
+| 类别   | 组件                                                          | 复杂度             |
+| ------ | ------------------------------------------------------------- | ------------------ |
+| 纹理   | Plasma, Godrays, SimplexNoise, LinearGradient, RadialGradient | 中                 |
+| 形状   | Glass, Blob, Circle, Ring, Star, RoundedRect, Polygon         | 高（Glass 最复杂） |
+| 畸变   | WaveDistortion, ChromaticAberration, Liquify, Twirl, Bulge    | 低-中              |
+| 风格化 | FilmGrain, Halftone, Ascii, Dither, Glow, Bloom               | 低-中              |
+| 后处理 | Blur, ProgressiveBlur, BrightnessContrast, HueShift           | 低                 |
 
 ## 渲染管线
 
@@ -118,12 +119,14 @@ Three.js r183 TSL 渲染器
 ## 颜色空间处理（关键）
 
 shaders.com 的 Three.js 渲染器全程在 **linear 空间** 工作：
+
 - 组件定义中的 hex 颜色（如 `#2c2c42`）是 **sRGB** 值
 - TSL 的 `color()` 函数自动将 sRGB→linear
 - 所有中间 FBO 均存储 linear 值
 - 最终由渲染器做 linear→sRGB 输出编码
 
 移植时：
+
 ```glsl
 // 1. 颜色定义时：sRGB hex → linear
 vec3 colorA = pow(vec3(0.173, 0.173, 0.259), vec3(2.2));  // #2c2c42
@@ -148,6 +151,7 @@ SDF gradient eps = 0.01     → 不能改为 0.005
 ```
 
 如果视觉效果不匹配，应检查：
+
 1. 颜色空间是否正确（sRGB/linear 混乱是最常见原因）
 2. 噪声函数实现差异（Perlin 实现 vs `mx_noise_float`）
 3. 时间基准是否正确
@@ -161,30 +165,30 @@ SDF gradient eps = 0.01     → 不能改为 0.005
 
 然后 shader 内部再乘自己的系数：
 
-| 组件 | speed 参数 | shader 内部乘数 | 实际速率/秒 |
-|------|-----------|----------------|------------|
-| Plasma | 2 | × 0.125 | 0.25 |
-| Godrays | 0.7 | × 0.2 | 0.14 |
-| WaveDistortion | 0.8 | × 0.5 | 0.4 |
-| FilmGrain | — | 无时间（静态） | 0 |
+| 组件           | speed 参数 | shader 内部乘数 | 实际速率/秒 |
+| -------------- | ---------- | --------------- | ----------- |
+| Plasma         | 2          | × 0.125         | 0.25        |
+| Godrays        | 0.7        | × 0.2           | 0.14        |
+| WaveDistortion | 0.8        | × 0.5           | 0.4         |
+| FilmGrain      | —          | 无时间（静态）  | 0           |
 
 ## TSL→GLSL 标识符映射（SPCVwBqR.js）
 
 常用映射（随构建版本变化，需动态提取）：
 
-| 本地名 | TSL 函数 | GLSL |
-|--------|---------|------|
-| C / z | vec4() | vec4 |
-| x / D | vec2() | vec2 |
-| q / N | vec3() | vec3 |
-| P / J | resolution | u_resolution |
-| A / $ | uv | vUv |
-| se / Oe | sin() | sin() |
-| W / I | cos() | cos() |
-| ne | mix() | mix() |
-| D | smoothstep() | smoothstep() |
-| fe | clamp() | clamp() |
-| ar | mx_noise_float() | perlinNoise3D() |
-| dr / Gt | timerLocal() | u_time × speed |
-| Me / wt | rtt() | FBO pass |
-| Ce | renderOutput() | fragColor |
+| 本地名  | TSL 函数         | GLSL            |
+| ------- | ---------------- | --------------- |
+| C / z   | vec4()           | vec4            |
+| x / D   | vec2()           | vec2            |
+| q / N   | vec3()           | vec3            |
+| P / J   | resolution       | u_resolution    |
+| A / $   | uv               | vUv             |
+| se / Oe | sin()            | sin()           |
+| W / I   | cos()            | cos()           |
+| ne      | mix()            | mix()           |
+| D       | smoothstep()     | smoothstep()    |
+| fe      | clamp()          | clamp()         |
+| ar      | mx_noise_float() | perlinNoise3D() |
+| dr / Gt | timerLocal()     | u_time × speed  |
+| Me / wt | rtt()            | FBO pass        |
+| Ce      | renderOutput()   | fragColor       |

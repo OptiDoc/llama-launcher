@@ -9,6 +9,7 @@ typography:
   fonts: "Roboto"
 note: "Frontmatter is auto-extracted; the prose body below is the authoritative source for full tokens, components, and rules."
 ---
+
 # Design System Inspired by xAI
 
 > Category: AI & LLM
@@ -23,6 +24,7 @@ The typographic system is split between two carefully chosen typefaces. `GeistMo
 The spacing system operates on an 8px base grid with values concentrated at the small end (4px, 8px, 24px, 48px), reflecting a dense, information-focused layout philosophy. Border radius is minimal -- the site barely rounds anything, maintaining sharp, architectural edges. There are no decorative shadows, no gradients, no layered elevation. Depth is communicated purely through contrast and whitespace.
 
 **Key Characteristics:**
+
 - Pure dark theme: `#1f2228` background with `#ffffff` text -- no gray middle ground
 - GeistMono at extreme display sizes (320px, weight 300) -- monospace as luxury
 - Uppercase monospace buttons with 1.4px letter-spacing -- technical, commanding
@@ -35,22 +37,26 @@ The spacing system operates on an 8px base grid with values concentrated at the 
 ## 2. Color Palette & Roles
 
 ### Primary
+
 - **Pure White** (`#ffffff`): The singular text color, link color, and all foreground elements. In xAI's system, white is not a background -- it is the voice.
 - **Dark Background** (`#1f2228`): The canvas. A warm near-black with a subtle blue undertone (not pure black, not neutral gray). This specific hue prevents the harsh eye strain of `#000000` while maintaining deep darkness.
 
 ### Interactive
+
 - **White Default** (`#ffffff`): Link and interactive element color in default state.
 - **White Muted** (`rgba(255, 255, 255, 0.5)`): Hover state for links -- a deliberate dimming rather than brightening, which is unusual and distinctive.
 - **White Subtle** (`rgba(255, 255, 255, 0.2)`): Borders, dividers, and subtle surface treatments.
 - **Ring Blue** (`rgb(59, 130, 246) / 0.5`): Tailwind's default focus ring color (`--tw-ring-color`), used for keyboard accessibility focus states.
 
 ### Surface & Borders
+
 - **Surface Elevated** (`rgba(255, 255, 255, 0.05)`): Subtle card backgrounds and hover surfaces -- barely visible lift.
 - **Surface Hover** (`rgba(255, 255, 255, 0.08)`): Slightly more visible hover state for interactive containers.
 - **Border Default** (`rgba(255, 255, 255, 0.1)`): Standard border for cards, dividers, and containers.
 - **Border Strong** (`rgba(255, 255, 255, 0.2)`): Emphasized borders for active states and button outlines.
 
 ### Functional
+
 - **Text Primary** (`#ffffff`): All headings, body text, labels.
 - **Text Secondary** (`rgba(255, 255, 255, 0.7)`): Descriptions, captions, supporting text.
 - **Text Tertiary** (`rgba(255, 255, 255, 0.5)`): Muted labels, placeholder text, timestamps.
@@ -59,21 +65,23 @@ The spacing system operates on an 8px base grid with values concentrated at the 
 ## 3. Typography Rules
 
 ### Font Family
+
 - **Display / Buttons**: `GeistMono`, with fallback: `ui-monospace, SFMono-Regular, Roboto Mono, Menlo, Monaco, Liberation Mono, DejaVu Sans Mono, Courier New`
 - **Body / Headings**: `universalSans`, with fallback: `universalSans Fallback`
 
 ### Hierarchy
 
-| Role | Font | Size | Weight | Line Height | Letter Spacing | Transform | Notes |
-|------|------|------|--------|-------------|----------------|-----------|-------|
-| Display Hero | GeistMono | 320px (20rem) | 300 | 1.50 | normal | none | Extreme scale, monospace luxury |
-| Section Heading | universalSans | 30px (1.88rem) | 400 | 1.20 (tight) | normal | none | Clean sans-serif contrast |
-| Body | universalSans | 16px (1rem) | 400 | 1.50 | normal | none | Standard reading text |
-| Button | GeistMono | 14px (0.88rem) | 400 | 1.43 | 1.4px | uppercase | Tracked monospace, commanding |
-| Label / Caption | universalSans | 14px (0.88rem) | 400 | 1.50 | normal | none | Supporting text |
-| Small / Meta | universalSans | 12px (0.75rem) | 400 | 1.50 | normal | none | Timestamps, footnotes |
+| Role            | Font          | Size           | Weight | Line Height  | Letter Spacing | Transform | Notes                           |
+| --------------- | ------------- | -------------- | ------ | ------------ | -------------- | --------- | ------------------------------- |
+| Display Hero    | GeistMono     | 320px (20rem)  | 300    | 1.50         | normal         | none      | Extreme scale, monospace luxury |
+| Section Heading | universalSans | 30px (1.88rem) | 400    | 1.20 (tight) | normal         | none      | Clean sans-serif contrast       |
+| Body            | universalSans | 16px (1rem)    | 400    | 1.50         | normal         | none      | Standard reading text           |
+| Button          | GeistMono     | 14px (0.88rem) | 400    | 1.43         | 1.4px          | uppercase | Tracked monospace, commanding   |
+| Label / Caption | universalSans | 14px (0.88rem) | 400    | 1.50         | normal         | none      | Supporting text                 |
+| Small / Meta    | universalSans | 12px (0.75rem) | 400    | 1.50         | normal         | none      | Timestamps, footnotes           |
 
 ### Principles
+
 - **Monospace as display**: GeistMono at 320px is not a gimmick -- it is the brand statement. The fixed-width characters at extreme scale create a rhythmic, architectural quality that no proportional font can achieve.
 - **Light weight at scale**: Weight 300 for the 320px headline prevents the monospace from feeling heavy or brutish at extreme sizes. It reads as precise, not overwhelming.
 - **Uppercase buttons**: All button text is uppercase GeistMono with 1.4px letter-spacing. This creates a distinctly technical, almost command-line aesthetic for interactive elements.
@@ -85,6 +93,7 @@ The spacing system operates on an 8px base grid with values concentrated at the 
 ### Buttons
 
 **Primary (White on Dark)**
+
 - Background: `#ffffff`
 - Text: `#1f2228`
 - Padding: 12px 24px
@@ -94,6 +103,7 @@ The spacing system operates on an 8px base grid with values concentrated at the 
 - Use: Primary CTA ("TRY GROK", "GET STARTED")
 
 **Ghost / Outlined**
+
 - Background: transparent
 - Text: `#ffffff`
 - Padding: 12px 24px
@@ -104,6 +114,7 @@ The spacing system operates on an 8px base grid with values concentrated at the 
 - Use: Secondary actions ("LEARN MORE", "VIEW API")
 
 **Text Link**
+
 - Background: none
 - Text: `#ffffff`
 - Font: universalSans 16px weight 400
@@ -111,6 +122,7 @@ The spacing system operates on an 8px base grid with values concentrated at the 
 - Use: Inline links, navigation items
 
 ### Cards & Containers
+
 - Background: `rgba(255, 255, 255, 0.03)` or transparent
 - Border: `1px solid rgba(255, 255, 255, 0.1)`
 - Radius: 0px (sharp) or 4px (subtle)
@@ -118,6 +130,7 @@ The spacing system operates on an 8px base grid with values concentrated at the 
 - Hover: border shifts to `rgba(255, 255, 255, 0.2)`
 
 ### Navigation
+
 - Dark background matching page (`#1f2228`)
 - Brand logotype: white text, left-aligned
 - Links: universalSans 14px weight 400, `#ffffff` text
@@ -126,7 +139,9 @@ The spacing system operates on an 8px base grid with values concentrated at the 
 - Mobile: hamburger toggle
 
 ### Badges / Tags
+
 **Monospace Tag**
+
 - Background: transparent
 - Text: `#ffffff`
 - Padding: 4px 8px
@@ -135,6 +150,7 @@ The spacing system operates on an 8px base grid with values concentrated at the 
 - Font: GeistMono 12px uppercase, letter-spacing 1px
 
 ### Inputs & Forms
+
 - Background: transparent or `rgba(255, 255, 255, 0.05)`
 - Border: `1px solid rgba(255, 255, 255, 0.2)`
 - Radius: 0px
@@ -146,11 +162,13 @@ The spacing system operates on an 8px base grid with values concentrated at the 
 ## 5. Layout Principles
 
 ### Spacing System
+
 - Base unit: 8px
 - Scale: 4px, 8px, 24px, 48px
 - The scale is deliberately sparse -- xAI avoids granular spacing distinctions, preferring large jumps that create clear visual hierarchy through whitespace alone
 
 ### Grid & Container
+
 - Max content width: approximately 1200px
 - Hero: full-viewport height with massive centered monospace headline
 - Feature sections: simple vertical stacking with generous section padding (48px-96px)
@@ -158,34 +176,38 @@ The spacing system operates on an 8px base grid with values concentrated at the 
 - Full-width dark sections maintain the single dark background throughout
 
 ### Whitespace Philosophy
+
 - **Extreme generosity**: xAI uses vast amounts of whitespace. The 320px headline with 48px+ surrounding padding creates a sense of emptiness that is itself a design statement -- the content is so important it needs room to breathe.
 - **Vertical rhythm over horizontal density**: Content stacks vertically with large gaps between sections rather than packing horizontally. This creates a scroll-driven experience that feels deliberate and cinematic.
 - **No visual noise**: The absence of decorative elements, borders between sections, and color variety means whitespace is the primary structural tool.
 
 ### Breakpoints
+
 - 2000px, 1536px, 1280px, 1024px, 1000px, 768px, 640px
 - Tailwind responsive modifiers drive breakpoint behavior
 
 ### Border Radius Scale
+
 - Sharp (0px): Primary treatment for buttons, cards, inputs -- the default
 - Subtle (4px): Occasional softening on secondary containers
 - The near-zero radius philosophy is core to the brand's brutalist identity
 
 ## 6. Depth & Elevation
 
-| Level | Treatment | Use |
-|-------|-----------|-----|
-| Flat (Level 0) | No shadow, no border | Page background, body content |
-| Surface (Level 1) | `rgba(255,255,255,0.03)` background | Subtle card surfaces |
-| Bordered (Level 2) | `1px solid rgba(255,255,255,0.1)` border | Cards, containers, dividers |
-| Active (Level 3) | `1px solid rgba(255,255,255,0.2)` border | Hover states, active elements |
-| Focus (Accessibility) | `ring` with `rgb(59,130,246)/0.5` | Keyboard focus indicator |
+| Level                 | Treatment                                | Use                           |
+| --------------------- | ---------------------------------------- | ----------------------------- |
+| Flat (Level 0)        | No shadow, no border                     | Page background, body content |
+| Surface (Level 1)     | `rgba(255,255,255,0.03)` background      | Subtle card surfaces          |
+| Bordered (Level 2)    | `1px solid rgba(255,255,255,0.1)` border | Cards, containers, dividers   |
+| Active (Level 3)      | `1px solid rgba(255,255,255,0.2)` border | Hover states, active elements |
+| Focus (Accessibility) | `ring` with `rgb(59,130,246)/0.5`        | Keyboard focus indicator      |
 
 **Elevation Philosophy**: xAI rejects the conventional shadow-based elevation system entirely. There are no box-shadows anywhere on the site. Instead, depth is communicated through three mechanisms: (1) opacity-based borders that brighten on interaction, creating a sense of elements "activating" rather than lifting; (2) extremely subtle background opacity shifts (`0.03` to `0.08`) that create barely-perceptible surface differentiation; and (3) the massive scale contrast between the 320px display type and 16px body text, which creates typographic depth. This is elevation through contrast and opacity, not through simulated light and shadow.
 
 ## 7. Do's and Don'ts
 
 ### Do
+
 - Use `#1f2228` as the universal background -- never pure black `#000000`
 - Use GeistMono for all display headlines and button text -- monospace IS the brand
 - Apply uppercase + 1.4px letter-spacing to all button labels
@@ -196,6 +218,7 @@ The spacing system operates on an 8px base grid with values concentrated at the 
 - Use universalSans for all body and reading text at 16px/1.5
 
 ### Don't
+
 - Don't use box-shadows -- xAI has zero shadow elevation
 - Don't introduce color accents beyond white and the dark background -- the monochromatic palette is sacred
 - Don't use large border-radius (8px+, pill shapes) -- the sharp edge is intentional
@@ -208,23 +231,26 @@ The spacing system operates on an 8px base grid with values concentrated at the 
 ## 8. Responsive Behavior
 
 ### Breakpoints
-| Name | Width | Key Changes |
-|------|-------|-------------|
-| Mobile | <640px | Single column, hero headline scales dramatically down |
-| Small Tablet | 640-768px | Slight increase in padding |
-| Tablet | 768-1024px | Two-column layouts begin, heading sizes increase |
-| Desktop | 1024-1280px | Full layout, generous whitespace |
-| Large | 1280-1536px | Wider containers, more breathing room |
-| Extra Large | 1536-2000px | Maximum content width, centered |
-| Ultra | >2000px | Content stays centered, extreme margins |
+
+| Name         | Width       | Key Changes                                           |
+| ------------ | ----------- | ----------------------------------------------------- |
+| Mobile       | <640px      | Single column, hero headline scales dramatically down |
+| Small Tablet | 640-768px   | Slight increase in padding                            |
+| Tablet       | 768-1024px  | Two-column layouts begin, heading sizes increase      |
+| Desktop      | 1024-1280px | Full layout, generous whitespace                      |
+| Large        | 1280-1536px | Wider containers, more breathing room                 |
+| Extra Large  | 1536-2000px | Maximum content width, centered                       |
+| Ultra        | >2000px     | Content stays centered, extreme margins               |
 
 ### Touch Targets
+
 - Buttons use 12px 24px padding for comfortable touch
 - Navigation links spaced with 24px gaps
 - Minimum tap target: 44px height
 - Mobile: full-width buttons for easy thumb reach
 
 ### Collapsing Strategy
+
 - Hero: 320px monospace headline scales down dramatically (to ~48px-64px on mobile)
 - Navigation: horizontal links collapse to hamburger menu
 - Feature sections: two-column to single-column stacking
@@ -232,6 +258,7 @@ The spacing system operates on an 8px base grid with values concentrated at the 
 - Massive display type is the first thing to resize -- it must remain impactful but not overflow
 
 ### Image Behavior
+
 - Minimal imagery -- the site relies on typography and whitespace
 - Any product screenshots maintain sharp corners
 - Full-width media scales proportionally with viewport
@@ -239,6 +266,7 @@ The spacing system operates on an 8px base grid with values concentrated at the 
 ## 9. Agent Prompt Guide
 
 ### Quick Color Reference
+
 - Background: Dark (`#1f2228`)
 - Text Primary: White (`#ffffff`)
 - Text Secondary: White 70% (`rgba(255, 255, 255, 0.7)`)
@@ -252,6 +280,7 @@ The spacing system operates on an 8px base grid with values concentrated at the 
 - Button Primary BG: White (`#ffffff`), text Dark (`#1f2228`)
 
 ### Example Component Prompts
+
 - "Create a hero section on #1f2228 background. Headline in GeistMono at 72px weight 300, color #ffffff, centered. Subtitle in universalSans 18px weight 400, rgba(255,255,255,0.7), max-width 600px centered. Two buttons: primary (white bg, #1f2228 text, 0px radius, GeistMono 14px uppercase, 1.4px letter-spacing, 12px 24px padding) and ghost (transparent bg, 1px solid rgba(255,255,255,0.2), white text, same font treatment)."
 - "Design a card: transparent or rgba(255,255,255,0.03) background, 1px solid rgba(255,255,255,0.1) border, 0px radius, 24px padding. No shadow. Title in universalSans 22px weight 400, #ffffff. Body in universalSans 16px weight 400, rgba(255,255,255,0.7), line-height 1.5. Hover: border changes to rgba(255,255,255,0.2)."
 - "Build navigation: #1f2228 background, full-width. Brand text left (GeistMono 14px uppercase). Links in universalSans 14px #ffffff with hover to rgba(255,255,255,0.5). White primary button right-aligned (GeistMono 14px uppercase, 1.4px letter-spacing)."
@@ -259,6 +288,7 @@ The spacing system operates on an 8px base grid with values concentrated at the 
 - "Design a monospace tag/badge: transparent bg, 1px solid rgba(255,255,255,0.2), 0px radius, GeistMono 12px uppercase, 1px letter-spacing, white text, 4px 8px padding."
 
 ### Iteration Guide
+
 1. Always start with `#1f2228` background -- never use pure black or gray backgrounds
 2. GeistMono for display and buttons, universalSans for everything else -- never mix these roles
 3. All buttons must be GeistMono uppercase with 1.4px letter-spacing -- this is non-negotiable

@@ -42,15 +42,15 @@ Pick six values before writing the markup. Treat this like the M16 cover decisio
 
 ### 1. `r-*` ratio (required, matches slot)
 
-| Class      | Use                                                       |
-| ---------- | --------------------------------------------------------- |
-| `r-16x10`  | Default for app / web shots, looks like a real window     |
-| `r-16x9`   | Landscape video / dashboard / wide chart                  |
-| `r-4x3`    | Classic desktop window, legacy app                        |
-| `r-3x2`    | DSLR-style — only if the source is photographic UI mockup |
-| `r-1x1`    | App icon / square widget                                  |
-| `r-3x4`    | Mobile portrait shot (pair with `.device-phone`)          |
-| `r-21x9`   | Multi-monitor / ultra-wide / WeChat hero                  |
+| Class     | Use                                                       |
+| --------- | --------------------------------------------------------- |
+| `r-16x10` | Default for app / web shots, looks like a real window     |
+| `r-16x9`  | Landscape video / dashboard / wide chart                  |
+| `r-4x3`   | Classic desktop window, legacy app                        |
+| `r-3x2`   | DSLR-style — only if the source is photographic UI mockup |
+| `r-1x1`   | App icon / square widget                                  |
+| `r-3x4`   | Mobile portrait shot (pair with `.device-phone`)          |
+| `r-21x9`  | Multi-monitor / ultra-wide / WeChat hero                  |
 
 ### 2. `corners-*` (style-locked default)
 
@@ -66,14 +66,14 @@ Never go above 14 px — anything bigger reads as iOS marketing.
 
 ### 4. `bg-*` (the screenshot "stage")
 
-| Token        | Swiss role          | Editorial role         |
-| ------------ | ------------------- | ---------------------- |
-| `bg-paper`   | Default plain stage | Same                   |
-| `bg-paper-2` | n/a                 | Default warm stage     |
-| `bg-grey-1`  | Default plain stage | n/a                    |
+| Token        | Swiss role          | Editorial role          |
+| ------------ | ------------------- | ----------------------- |
+| `bg-paper`   | Default plain stage | Same                    |
+| `bg-paper-2` | n/a                 | Default warm stage      |
+| `bg-grey-1`  | Default plain stage | n/a                     |
 | `bg-grid`    | Engineering / data  | Field-notes engineering |
-| `bg-dot`     | Subtle structure    | Subtle structure       |
-| `bg-ink`     | Dark-mode UI shot   | Dark-mode UI shot      |
+| `bg-dot`     | Subtle structure    | Subtle structure        |
+| `bg-ink`     | Dark-mode UI shot   | Dark-mode UI shot       |
 
 Backgrounds are **never** accent-coloured. If the screenshot needs an accent emphasis, add a `.t-cat` chip or `.kicker` next to it — don't tint the stage.
 
@@ -83,22 +83,22 @@ The tokens above are **CSS-generated solids** — flat tones, fast, no asset dep
 
 Editorial assets (`assets/screenshot-backgrounds/style-a/`):
 
-| Class                       | Tone               | Best for                                          |
-| --------------------------- | ------------------ | ------------------------------------------------- |
-| `bg-asset-dune`             | Warm sand          | Travel / outdoor app shots, lifestyle products    |
-| `bg-asset-forest-ink`       | Deep forest green  | Dark-mode UI on Editorial — pairs with `ink-classic` |
-| `bg-asset-indigo-porcelain` | Cool porcelain     | Reading / writing apps, design tools              |
-| `bg-asset-kraft-paper`      | Kraft brown        | Notes / journaling / handwritten apps             |
-| `bg-asset-monocle-classic`  | Cream paper        | Default warm hero — most magazine-like            |
+| Class                       | Tone              | Best for                                             |
+| --------------------------- | ----------------- | ---------------------------------------------------- |
+| `bg-asset-dune`             | Warm sand         | Travel / outdoor app shots, lifestyle products       |
+| `bg-asset-forest-ink`       | Deep forest green | Dark-mode UI on Editorial — pairs with `ink-classic` |
+| `bg-asset-indigo-porcelain` | Cool porcelain    | Reading / writing apps, design tools                 |
+| `bg-asset-kraft-paper`      | Kraft brown       | Notes / journaling / handwritten apps                |
+| `bg-asset-monocle-classic`  | Cream paper       | Default warm hero — most magazine-like               |
 
 Swiss assets (`assets/screenshot-backgrounds/style-b/`):
 
-| Class                      | Accent            | Use only when current accent matches             |
-| -------------------------- | ----------------- | ------------------------------------------------ |
-| `bg-asset-ikb-dot`         | IKB Klein Blue    | `data-accent="ikb"` decks only                   |
-| `bg-asset-lemon-green-dot` | Lemon-green       | `data-accent="lemon-green"` decks only           |
-| `bg-asset-lemon-grid`      | Lemon-yellow      | `data-accent="lemon"` decks only                 |
-| `bg-asset-safety-orange`   | Safety orange     | `data-accent="safety-orange"` decks only         |
+| Class                      | Accent         | Use only when current accent matches     |
+| -------------------------- | -------------- | ---------------------------------------- |
+| `bg-asset-ikb-dot`         | IKB Klein Blue | `data-accent="ikb"` decks only           |
+| `bg-asset-lemon-green-dot` | Lemon-green    | `data-accent="lemon-green"` decks only   |
+| `bg-asset-lemon-grid`      | Lemon-yellow   | `data-accent="lemon"` decks only         |
+| `bg-asset-safety-orange`   | Safety orange  | `data-accent="safety-orange"` decks only |
 
 **Rules of thumb**
 
@@ -118,6 +118,7 @@ Swiss assets (`assets/screenshot-backgrounds/style-b/`):
 ### 6. `fit-cover` (override)
 
 Default is `object-fit: contain` — this is the whole point of `.frame-shot`. **Only** add `.fit-cover` when:
+
 - The slot is a hero where exact pixels of the source don't matter (e.g. a code shot used as a background pattern).
 - The user explicitly says they want the shot cropped.
 
@@ -132,7 +133,7 @@ Adds a 32–36 px chrome bar with traffic-light dots. Use for web / desktop app 
 ```html
 <div class="device-browser">
   <div class="frame-shot r-16x10 bg-paper inset-none">
-    <img src="assets/website.png" alt="Linear inbox">
+    <img src="assets/website.png" alt="Linear inbox" />
   </div>
 </div>
 ```
@@ -146,7 +147,7 @@ Wraps a 3:4 or 16:10 shot in an ink-coloured bezel with 18-24 px rounded inner c
 ```html
 <div class="device-phone">
   <div class="frame-shot r-3x4 bg-paper inset-none">
-    <img src="assets/app.png" alt="WeChat detail">
+    <img src="assets/app.png" alt="WeChat detail" />
   </div>
 </div>
 ```
@@ -168,21 +169,25 @@ If you can't crop ahead of time, use `object-position: center 6%` to bias the vi
 Two recipes that cover 80% of cases.
 
 **Swiss product demo** — pure stage, no shadow:
+
 ```
 .frame-shot.r-16x10.corners-sq.shadow-none.bg-grey-1.inset-bal
 ```
 
 **Editorial deep-dive** — desk-photo warmth:
+
 ```
 .frame-shot.r-16x10.corners-sm.shadow-soft.bg-paper-2.inset-sub
 ```
 
 **Editorial hero with real texture** — magazine-grade stage:
+
 ```
 .frame-shot.r-16x10.corners-sm.shadow-soft.bg-asset-monocle-classic.inset-bal
 ```
 
 **Swiss hero with brand-aligned stage** — only when accent matches asset:
+
 ```
 .frame-shot.r-16x10.corners-sq.shadow-none.bg-asset-ikb-dot.inset-bal
 ```

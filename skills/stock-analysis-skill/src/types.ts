@@ -87,15 +87,15 @@ export interface DividendAnalysis {
   ticker: string;
   name: string;
   currentPrice: number | null;
-  dividendYield: number | null;        // %
+  dividendYield: number | null; // %
   annualDividend: number | null;
-  payoutRatio: number | null;          // %
+  payoutRatio: number | null; // %
   payoutStatus: PayoutStatus;
-  dividendGrowth5y: number | null;     // CAGR %
+  dividendGrowth5y: number | null; // CAGR %
   consecutiveYears: number | null;
   exDividendDate: string | null;
   paymentFrequency: string | null;
-  safetyScore: number;                 // 0-100
+  safetyScore: number; // 0-100
   safetyFactors: string[];
   incomeRating: IncomeRating;
   dividendHistory: { year: number; total: number }[];
@@ -108,10 +108,10 @@ export type RumorType = "ma" | "insider" | "analyst" | "regulatory" | "earnings"
 
 export interface RumorItem {
   type: RumorType;
-  ticker: string | null;        // 相关股票代码（可能为 null）
+  ticker: string | null; // 相关股票代码（可能为 null）
   headline: string;
   source: string;
-  impactScore: number;          // 1-10
+  impactScore: number; // 1-10
   impactReason: string;
   sentiment: "positive" | "negative" | "neutral";
   date: string;
@@ -120,7 +120,7 @@ export interface RumorItem {
 export interface RumorScanResult {
   scannedAt: string;
   rumors: RumorItem[];
-  topTickers: { ticker: string; count: number }[];  // 最受关注的股票
+  topTickers: { ticker: string; count: number }[]; // 最受关注的股票
   summary: string;
 }
 

@@ -9,6 +9,7 @@ typography:
   fonts: "Helvetica Neue, Helvetica"
 note: "Frontmatter is auto-extracted; the prose body below is the authoritative source for full tokens, components, and rules."
 ---
+
 # Design System Inspired by Discord
 
 > Category: Productivity & SaaS
@@ -23,6 +24,7 @@ Typography is **gg sans** (Discord's custom Whitney-replacement) for prose and c
 The shape language is rounded but not balloon-soft: 8px radii on cards, 4px on inputs, full pills on status badges and tags. Servers are rounded-square avatars at 48px that morph to circles on hover — a tiny piece of motion that has become part of the brand's identity.
 
 **Key Characteristics:**
+
 - Dark-first surfaces: `#1e1f22` / `#2b2d31` / `#313338` (3-step depth)
 - Blurple `#5865f2` as the only saturated accent in the chat surface
 - gg sans (Whitney-style) for all text — friendly, geometric, neutral
@@ -34,11 +36,13 @@ The shape language is rounded but not balloon-soft: 8px radii on cards, 4px on i
 ## 2. Color Palette & Roles
 
 ### Primary
+
 - **Blurple** (`#5865f2`): Brand primary, primary CTA, mention highlight.
 - **Blurple Hover** (`#4752c4`): Hover/active for blurple.
 - **Blurple Soft** (`#7289da`): Legacy blurple, secondary accent in marketing.
 
 ### Surface (Dark Theme — default)
+
 - **Background Tertiary** (`#1e1f22`): Server list rail, deepest background.
 - **Background Secondary** (`#2b2d31`): Channel sidebar, settings sidebar.
 - **Background Primary** (`#313338`): Chat surface, message column.
@@ -47,11 +51,13 @@ The shape language is rounded but not balloon-soft: 8px radii on cards, 4px on i
 - **Background Modifier Selected** (`rgba(78, 80, 88, 0.6)`): Active row.
 
 ### Surface (Light Theme)
+
 - **Light Bg Primary** (`#ffffff`): Chat surface in light theme.
 - **Light Bg Secondary** (`#f2f3f5`): Sidebar in light theme.
 - **Light Bg Tertiary** (`#e3e5e8`): Deepest light surface.
 
 ### Text
+
 - **Header Primary** (`#f2f3f5`): Channel headers, modal titles in dark theme.
 - **Header Secondary** (`#b5bac1`): Muted headers.
 - **Text Normal** (`#dbdee1`): Body text in dark theme — slightly cooler than pure white.
@@ -60,6 +66,7 @@ The shape language is rounded but not balloon-soft: 8px radii on cards, 4px on i
 - **Channels Default** (`#80848e`): Inactive channel name in sidebar.
 
 ### Status & Semantic
+
 - **Status Online** (`#23a55a`): Online dot, success states.
 - **Status Idle** (`#f0b232`): Idle dot, away.
 - **Status DND** (`#f23f43`): Do-not-disturb, also serves as destructive red.
@@ -68,33 +75,36 @@ The shape language is rounded but not balloon-soft: 8px radii on cards, 4px on i
 - **Mention Highlight** (`rgba(88, 101, 242, 0.1)`): Soft blurple wash on @mention rows.
 
 ### Border & Divider
+
 - **Background Modifier Accent** (`rgba(255, 255, 255, 0.06)`): Standard divider in dark.
 - **Border Subtle** (`#3f4147`): Solid divider for cards.
 
 ## 3. Typography Rules
 
 ### Font Family
+
 - **Body / UI / Headings**: `gg sans`, with fallback: `"Helvetica Neue", Helvetica, Arial, sans-serif`
 - **Display (legacy / Whitney)**: `Whitney`, with fallback: `gg sans`
 - **Code / Mono**: `"gg mono"`, with fallback: `Consolas, Andale Mono, Courier New, Courier, monospace`
 
 ### Hierarchy
 
-| Role | Font | Size | Weight | Line Height | Letter Spacing | Notes |
-|------|------|------|--------|-------------|----------------|-------|
-| Display Hero | gg sans | 56px (3.5rem) | 800 | 1.1 | -0.02em | Marketing hero |
-| Page Heading | gg sans | 24px (1.5rem) | 700 | 1.25 | normal | Settings/profile titles |
-| Channel Name | gg sans | 16px (1rem) | 600 | 1.25 | normal | `#general`, channel header |
-| Message Body | gg sans | 16px (1rem) | 400 | 1.375 | normal | Standard chat text |
-| Username | gg sans | 16px (1rem) | 500 | 1.25 | normal | Author of a message |
-| Timestamp | gg sans | 12px (0.75rem) | 500 | 1.25 | normal | "Today at 4:32 PM" |
-| Sidebar Channel | gg sans | 16px (1rem) | 500 | 1.25 | normal | Channel list rows |
-| Server Name | gg sans | 16px (1rem) | 600 | 1.25 | normal | Server header |
-| Caption / Meta | gg sans | 12px (0.75rem) | 400 | 1.3 | 0.02em | Status text, edited tag |
-| Code Inline | gg mono | 0.875em | 400 | inherit | normal | Inline `code` |
-| Code Block | gg mono | 14px (0.875rem) | 400 | 1.5 | normal | ```triple-fenced``` block |
+| Role            | Font    | Size            | Weight | Line Height | Letter Spacing | Notes                      |
+| --------------- | ------- | --------------- | ------ | ----------- | -------------- | -------------------------- |
+| Display Hero    | gg sans | 56px (3.5rem)   | 800    | 1.1         | -0.02em        | Marketing hero             |
+| Page Heading    | gg sans | 24px (1.5rem)   | 700    | 1.25        | normal         | Settings/profile titles    |
+| Channel Name    | gg sans | 16px (1rem)     | 600    | 1.25        | normal         | `#general`, channel header |
+| Message Body    | gg sans | 16px (1rem)     | 400    | 1.375       | normal         | Standard chat text         |
+| Username        | gg sans | 16px (1rem)     | 500    | 1.25        | normal         | Author of a message        |
+| Timestamp       | gg sans | 12px (0.75rem)  | 500    | 1.25        | normal         | "Today at 4:32 PM"         |
+| Sidebar Channel | gg sans | 16px (1rem)     | 500    | 1.25        | normal         | Channel list rows          |
+| Server Name     | gg sans | 16px (1rem)     | 600    | 1.25        | normal         | Server header              |
+| Caption / Meta  | gg sans | 12px (0.75rem)  | 400    | 1.3         | 0.02em         | Status text, edited tag    |
+| Code Inline     | gg mono | 0.875em         | 400    | inherit     | normal         | Inline `code`              |
+| Code Block      | gg mono | 14px (0.875rem) | 400    | 1.5         | normal         | `triple-fenced` block      |
 
 ### Principles
+
 - **Friendly geometry**: gg sans replaces Whitney with rounded terminals on a/g/s — the brand wants warmth without breaking legibility.
 - **Weight contrast over color contrast**: hierarchy comes from 400→500→600→700→800 weight steps; the surface stays neutral.
 - **16px body**: chat messages do not shrink below 16px. Density comes from line-height (1.375), not font size.
@@ -104,6 +114,7 @@ The shape language is rounded but not balloon-soft: 8px radii on cards, 4px on i
 ### Buttons
 
 **Primary**
+
 - Background: `#5865f2`
 - Text: `#ffffff`
 - Padding: 8px 16px
@@ -112,6 +123,7 @@ The shape language is rounded but not balloon-soft: 8px radii on cards, 4px on i
 - Use: Primary CTAs, "Continue", "Join Server"
 
 **Secondary**
+
 - Background: `#4e5058`
 - Text: `#ffffff`
 - Padding: 8px 16px
@@ -119,16 +131,19 @@ The shape language is rounded but not balloon-soft: 8px radii on cards, 4px on i
 - Hover: `#6d6f78`
 
 **Tertiary / Subtle (Link-style)**
+
 - Background: transparent
 - Text: `#dbdee1`
 - Hover: text underlined, no background change
 
 **Danger**
+
 - Background: `#da373c`
 - Text: `#ffffff`
 - Hover: `#a12d2f`
 
 ### Inputs
+
 - Background: `#1e1f22`
 - Text: `#dbdee1`
 - Border: 1px solid `#1e1f22`
@@ -137,22 +152,26 @@ The shape language is rounded but not balloon-soft: 8px radii on cards, 4px on i
 - Focus: border `#5865f2`
 
 ### Server Avatars
+
 - Size: 48×48px
 - Radius: 16px (rounded square) by default; transitions to 50% on hover and active.
 - Active state: 4px white pill on the left edge of the icon column.
 
 ### Status Dots
+
 - Size: 10×10px
 - Border: 3px solid background-tertiary (creates the "notch" effect)
 - Position: bottom-right of avatar.
 
 ### Cards / Embeds
+
 - Background: `#2b2d31` (dark) or `#f2f3f5` (light)
 - Left border: 4px solid embed accent color.
 - Radius: 4px
 - Padding: 8px 16px
 
 ### Mention Pill
+
 - Background: `rgba(88, 101, 242, 0.3)`
 - Text: `#c9cdfb`
 - Padding: 0 2px

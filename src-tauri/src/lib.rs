@@ -3,35 +3,21 @@
     windows_subsystem = "windows"
 )]
 
-pub mod core;
-pub mod commands;
-pub mod llama;
-pub mod models;
+pub mod domain;
+pub mod application;
+pub mod presentation;
 pub mod processes;
-pub mod system;
-pub mod updater;
-pub mod workspaces;
-pub mod releases;
+pub mod logger;
 
-pub use core::*;
-use log::LevelFilter;
+pub use domain::*;
 use tauri::Manager;
+use tauri_plugin_store::StoreExt;
+use application::AppState;
 
 pub fn run() {
-    tracing::info!("Starting llama-launcher v{}", env!("CARGO_PKG_VERSION"));
+    crate::log_info!(&format!("Starting llama-launcher v{}", env!("CARGO_PKG_VERSION")), "startup");
 
     tauri::Builder::default()
-        .plugin(
-            tauri_plugin_log::Builder::new()
-                .targets([
-                    tauri_plugin_log::Target::new(tauri_plugin_log::TargetKind::Stdout),
-                    tauri_plugin_log::Target::new(tauri_plugin_log::TargetKind::LogDir {
-                        file_name: Some("llama-launcher".into()),
-                    }),
-                ])
-                .level(LevelFilter::Info)
-                .build(),
-        )
         .plugin(tauri_plugin_store::Builder::new().build())
         .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
             if let Some(window) = app.get_webview_window("main") {
@@ -49,48 +35,75 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .plugin(
             tauri_plugin_sql::Builder::default()
-                .add_migrations("sqlite:llama-launcher.db", core::get_migrations())
+                .add_migrations("sqlite:llama-launcher.db", application::get_migrations())
                 .build(),
         )
+        .manage(AppState::new())
         .invoke_handler(tauri::generate_handler![
-            commands::scan_models,
-            commands::get_model_info,
-            commands::delete_model,
-            commands::download_model,
-            commands::verify_model,
-            commands::start_model,
-            commands::stop_model,
-            commands::restart_model,
-            commands::get_process_status,
-            commands::list_processes,
-            commands::get_process_metrics,
-            commands::get_system_info,
-            commands::get_gpu_info,
-            commands::detect_llama_binary,
-            commands::get_config,
-            commands::update_config,
-            commands::run_benchmark,
-            commands::open_model_folder,
-            commands::select_model_file,
-            commands::serve_model_file,
-            commands::serve_asset_file,
-            // Workspace management
-            workspaces::list_workspaces,
-            workspaces::create_workspace,
-            workspaces::update_workspace,
-            workspaces::delete_workspace,
-            workspaces::get_active_workspace,
-            workspaces::set_active_workspace,
-            workspaces::get_workspace_settings,
-            workspaces::update_workspace_settings,
-            // Releases & system capabilities
-            releases::list_release_variants,
-            releases::list_github_releases,
-            releases::get_system_capabilities,
-            // Process console output
-            commands::get_process_stdout,
+            presentation::scan_models,
+            presentation::get_model_info,
+            presentation::delete_model,
+            presentation::download_model,
+            presentation::verify_model,
+            presentation::start_model,
+            presentation::stop_model,
+            presentation::restart_model,
+            presentation::get_process_status,
+            presentation::list_processes,
+            presentation::get_process_metrics,
+            presentation::get_system_info,
+            presentation::get_gpu_info,
+            presentation::detect_llama_binary,
+            presentation::get_config,
+            presentation::update_config,
+            presentation::run_benchmark,
+            presentation::open_model_folder,
+            presentation::select_model_file,
+            presentation::serve_model_file,
+            presentation::serve_asset_file,
+            presentation::select_directory,
+            presentation::list_workspaces,
+            presentation::create_workspace,
+            presentation::update_workspace,
+            presentation::delete_workspace,
+            presentation::get_active_workspace,
+            presentation::set_active_workspace,
+            presentation::get_workspace_settings,
+            presentation::update_workspace_settings,
+            presentation::list_release_variants,
+            presentation::list_github_releases,
+            presentation::get_system_capabilities,
+            presentation::get_process_stdout,
+            presentation::ensure_app_dir,
+            presentation::download_file,
+            presentation::cancel_download,
+            presentation::install_release,
+            presentation::extract_zip,
+            presentation::download_cuda_libs,
+            presentation::scan_external_models,
+            presentation::sync_external_models,
+            presentation::get_notifications,
+            presentation::clear_notifications,
+            logger::clear_logs,
+            logger::clear_logs_by_level,
+            logger::export_logs_by_level,
+            logger::get_recent_logs,
+            logger::write_frontend_log,
         ])
         .setup(|app| {
+            let state = app.state::<AppState>();
+            let notification_service = application::NotificationService::new(app.handle().clone());
+            app.manage(notification_service);
+            crate::log_info!("Logger initialized", "startup");
+
+            if let Ok(store) = app.store("config.json") {
+                if let Some(val) = store.get("config") {
+                    if let Ok(saved_config) = serde_json::from_value::<AppConfig>(val.clone()) {
+                        *state.config.write() = saved_config;
+                    }
+                }
+            }
+
             if let Some(window) = app.get_webview_window("main") {
                 let handle = window.clone();
                 window.on_window_event(move |event| {
@@ -103,11 +116,11 @@ pub fn run() {
                 let _ = window.set_focus();
             }
 
-            // System tray with Quit menu item
             use tauri::tray::TrayIconBuilder;
             let _tray = TrayIconBuilder::new()
                 .icon(app.default_window_icon().cloned().unwrap_or_else(|| {
-                    todo!("No default icon")
+                    log_warn!("No default window icon found — tray icon will be empty", "startup");
+                    tauri::image::Image::new_owned(vec![0u8; 4], 1, 1)
                 }))
                 .menu(&tauri::menu::MenuBuilder::new(app)
                     .item(&tauri::menu::MenuItemBuilder::new("Quit")
@@ -134,13 +147,12 @@ pub fn run() {
                 .build(app)
                 .unwrap();
 
-            // Start background metrics updater — refreshes CPU/memory for
-            // all running llama-server processes every 2 seconds.
+            let pm = app.state::<AppState>().inner().process_manager.clone();
             tauri::async_runtime::spawn(async move {
                 loop {
                     tokio::time::sleep(std::time::Duration::from_secs(2)).await;
-                    crate::processes::process_manager().update_metrics();
-                    crate::processes::process_manager().cleanup();
+                    pm.update_metrics();
+                    pm.cleanup();
                 }
             });
 

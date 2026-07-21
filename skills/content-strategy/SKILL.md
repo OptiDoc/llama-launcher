@@ -6,6 +6,7 @@ description: Build and execute a content marketing strategy for a solopreneur bu
 # Content Strategy
 
 ## Overview
+
 Content marketing is how solopreneurs build authority, attract customers, and grow without paid ads. But random content doesn't work — you need a strategy. This playbook builds a repeatable system for creating content that actually drives business results, not just likes.
 
 ---
@@ -15,6 +16,7 @@ Content marketing is how solopreneurs build authority, attract customers, and gr
 Content without a goal is just noise. Before you create anything, answer: what is this content supposed to DO?
 
 **Common solopreneur content goals:**
+
 - **Generate awareness** (new people discover you exist)
 - **Build trust** (people see you as credible and knowledgeable)
 - **Drive leads** (people give you their email or book a call)
@@ -50,11 +52,13 @@ Great content solves a specific problem for a specific person. Bad content talks
 Content pillars are 3-5 broad topic areas that all your content falls under. They keep you focused and prevent random one-off content that doesn't build momentum.
 
 **How to define pillars:**
+
 - Each pillar should map to a core problem your product/service solves or a key interest area of your ICP.
 - Pillars should be broad enough to generate dozens of pieces of content but specific enough to be relevant.
 - Aim for 3-5 pillars max. More than that dilutes focus.
 
 **Example (for an n8n automation consultant):**
+
 ```
 Pillar 1: Workflow Automation Fundamentals
 Pillar 2: No-Code Tool Comparisons
@@ -71,22 +75,25 @@ Every piece of content you create should fit under one of these pillars. If it d
 Solopreneurs can't do everything. Pick 1-2 primary formats and 1-2 primary channels. Go deep, not wide.
 
 **Content formats:**
-| Format | Best For | Time Investment | Longevity |
-|---|---|---|---|
-| **Blog posts** | SEO, teaching, depth | 2-4 hrs/post | High (evergreen) |
-| **Videos (YouTube)** | Visual topics, personality-driven brands | 3-6 hrs/video | High (evergreen) |
-| **Podcasts** | Thought leadership, interviews | 2-3 hrs/episode | Medium |
-| **Twitter/X threads** | Quick insights, community building | 30 min/thread | Low (24-48hr shelf life) |
-| **LinkedIn posts** | B2B, professional content | 30-60 min/post | Low-medium |
-| **Email newsletters** | Relationship building, owned audience | 1-2 hrs/newsletter | Medium (subscribers keep it) |
-| **Short-form video (TikTok, Reels)** | Viral potential, younger demos | 1-2 hrs/video | Low (algorithmic churn) |
+
+| Format                               | Best For                                 | Time Investment    | Longevity                    |
+| ------------------------------------ | ---------------------------------------- | ------------------ | ---------------------------- |
+| **Blog posts**                       | SEO, teaching, depth                     | 2-4 hrs/post       | High (evergreen)             |
+| **Videos (YouTube)**                 | Visual topics, personality-driven brands | 3-6 hrs/video      | High (evergreen)             |
+| **Podcasts**                         | Thought leadership, interviews           | 2-3 hrs/episode    | Medium                       |
+| **Twitter/X threads**                | Quick insights, community building       | 30 min/thread      | Low (24-48hr shelf life)     |
+| **LinkedIn posts**                   | B2B, professional content                | 30-60 min/post     | Low-medium                   |
+| **Email newsletters**                | Relationship building, owned audience    | 1-2 hrs/newsletter | Medium (subscribers keep it) |
+| **Short-form video (TikTok, Reels)** | Viral potential, younger demos           | 1-2 hrs/video      | Low (algorithmic churn)      |
 
 **Selection criteria:**
+
 - Where does your ICP hang out? (B2B = LinkedIn. Developers = Twitter. Visual products = Instagram.)
 - What format do you NOT hate creating? (If you hate being on camera, don't pick YouTube.)
 - What has the best ROI for your goals? (Lead gen = blog + email. Brand building = Twitter + LinkedIn.)
 
 **Recommended solopreneur starting stack:**
+
 - **Primary format:** Blog posts or long-form LinkedIn posts (depending on B2B vs B2C)
 - **Secondary format:** Email newsletter (this is your owned channel — never skip this)
 
@@ -97,11 +104,13 @@ Solopreneurs can't do everything. Pick 1-2 primary formats and 1-2 primary chann
 A content calendar prevents the "what should I post today?" panic. Plan 2-4 weeks ahead.
 
 **Calendar structure:**
+
 ```
 DATE | PILLAR | TOPIC | FORMAT | CHANNEL | CTA | STATUS
 ```
 
 **Example:**
+
 ```
 Feb 10 | Automation | "5 n8n workflows every SaaS founder needs" | Blog | Website + LinkedIn | Email signup | Draft
 Feb 13 | Case Study | "How we saved Client X 20hrs/week" | LinkedIn post | LinkedIn | Book a call | Scheduled
@@ -109,6 +118,7 @@ Feb 17 | Tool Comparison | "Zapier vs n8n: Which is right for you?" | Blog | Web
 ```
 
 **Cadence recommendations:**
+
 - Blog: 1-2x/week (minimum 2x/month to maintain SEO momentum)
 - Newsletter: 1x/week or biweekly (consistency matters more than frequency)
 - Social (LinkedIn/Twitter): 3-5x/week
@@ -122,6 +132,7 @@ Feb 17 | Tool Comparison | "Zapier vs n8n: Which is right for you?" | Blog | Web
 Creating content is 30% of the work. Distribution is the other 70%.
 
 **Distribution checklist for every piece:**
+
 - [ ] Publish on primary channel (blog, YouTube, etc.)
 - [ ] Share on 2-3 social channels with unique captions per platform (don't just copy-paste the same message)
 - [ ] Send to email list (if it's a high-value piece)
@@ -138,6 +149,7 @@ Creating content is 30% of the work. Distribution is the other 70%.
 One piece of long-form content can become 5-10 smaller pieces. This is how solopreneurs produce high volume without burning out.
 
 **Repurposing workflow (example: one blog post):**
+
 1. Original: 1,500-word blog post
 2. Repurpose into: LinkedIn post (first 3 paragraphs + a hook)
 3. Repurpose into: Twitter thread (key points broken into 8-10 tweets)
@@ -155,14 +167,15 @@ Track content performance so you can double down on what works and stop doing wh
 
 **Metrics by goal:**
 
-| Goal | Metrics to Track |
-|---|---|
-| Awareness | Impressions, reach, new visitors, social followers |
-| Trust | Engagement rate (comments, shares), time on page, repeat visitors |
-| Lead generation | Email signups, CTA clicks, lead magnet downloads |
+| Goal             | Metrics to Track                                                                                      |
+| ---------------- | ----------------------------------------------------------------------------------------------------- |
+| Awareness        | Impressions, reach, new visitors, social followers                                                    |
+| Trust            | Engagement rate (comments, shares), time on page, repeat visitors                                     |
+| Lead generation  | Email signups, CTA clicks, lead magnet downloads                                                      |
 | Sales enablement | Content assists (how many deals involved this content?), proposal open rates (if content is attached) |
 
 **Dashboard (monthly check-in):**
+
 - Top 5 performing pieces (by traffic or engagement)
 - Traffic source breakdown (organic, social, direct, referral)
 - Conversion rate (visitors → email signups or leads)
@@ -173,6 +186,7 @@ Track content performance so you can double down on what works and stop doing wh
 ---
 
 ## Content Strategy Mistakes to Avoid
+
 - Creating content without a goal. Every piece should have a purpose tied to a business outcome.
 - Not researching what your audience actually wants. Your assumptions are often wrong — validate with real data.
 - Trying to be on every platform. Pick 1-2 and dominate them before expanding.

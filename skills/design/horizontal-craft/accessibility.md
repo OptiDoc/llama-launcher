@@ -30,12 +30,12 @@ Target **WCAG 2.2 AA** as the practical working baseline unless the user specifi
 
 Minimums:
 
-| Pair | Minimum |
-|---|---:|
-| Normal text | 4.5:1 |
-| Large text | 3:1 |
-| Non-text UI and graphical objects | 3:1 |
-| Focus indicator vs adjacent state | 3:1 |
+| Pair                              | Minimum |
+| --------------------------------- | ------: |
+| Normal text                       |   4.5:1 |
+| Large text                        |     3:1 |
+| Non-text UI and graphical objects |     3:1 |
+| Focus indicator vs adjacent state |     3:1 |
 
 Do not round up. `2.99:1` fails a `3:1` check.
 
@@ -74,7 +74,7 @@ Recommended field pattern:
 
 ```html
 <label for="email">Email</label>
-<input id="email" type="email" required aria-describedby="email-hint email-error" aria-invalid="true">
+<input id="email" type="email" required aria-describedby="email-hint email-error" aria-invalid="true" />
 <span id="email-hint">Used for receipts only.</span>
 <span id="email-error" role="alert">Email must include @ and a domain.</span>
 ```

@@ -5,6 +5,7 @@ Reference for executing multi-step implementations.
 ## Recommended Flow
 
 When user approves a step:
+
 1. Execute that step
 2. Verify it works
 3. Report completion to user
@@ -13,6 +14,7 @@ When user approves a step:
 ## Progress Tracking
 
 Show user the current state:
+
 ```
 - [DONE] Step 1 (completed)
 - [WIP] Step 2 <- awaiting user approval
@@ -30,6 +32,7 @@ Show user the current state:
 ## Error Handling
 
 If an error occurs:
+
 1. Report the error to user
 2. Suggest possible fixes
 3. Wait for user decision on how to proceed

@@ -22,18 +22,23 @@ This skill transforms your device into a personal meditation coach. It guides yo
 ## Usage
 
 ### Start Meditation
+
 Initiate a guided meditation session. Choose your meditation type and duration, then follow along with step-by-step guidance.
 
 ### Quick Mindfulness
+
 Take a 2-5 minute breathing pause. Perfect for stressful moments or transitions between tasks. No commitment, just presence.
 
 ### Check Streak
+
 View your current meditation streak and session history. See weekly/monthly breakdowns of your practice consistency and total minutes logged.
 
 ### Set Reminders
+
 Configure daily or custom mindfulness reminders. Get gentle notifications to pause, breathe, and check in with yourself.
 
 ### Session Log
+
 Review detailed logs of past sessions: type, duration, date, and personal notes. Export your practice data for reflection or sharing.
 
 ## Meditation Types

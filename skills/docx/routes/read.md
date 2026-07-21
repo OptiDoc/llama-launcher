@@ -103,12 +103,12 @@ print(f"Tables: {len(doc.tables)}")
 
 ## Choosing the Right Method
 
-| Need | Method |
-|------|--------|
-| Quick text content | pandoc |
-| Document structure/outline | pandoc → markdown |
-| Formatting details | Raw XML |
-| Table data extraction | python-docx |
-| Visual appearance | Convert to images |
-| Style analysis | Raw XML (styles.xml) |
-| Word/character count | pandoc → plain → wc |
+| Need                       | Method               |
+| -------------------------- | -------------------- |
+| Quick text content         | pandoc               |
+| Document structure/outline | pandoc → markdown    |
+| Formatting details         | Raw XML              |
+| Table data extraction      | python-docx          |
+| Visual appearance          | Convert to images    |
+| Style analysis             | Raw XML (styles.xml) |
+| Word/character count       | pandoc → plain → wc  |

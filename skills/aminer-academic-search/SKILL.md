@@ -19,6 +19,7 @@ gateway.
 
 Any academic/scholarly query — papers, citations, scholars, institutions,
 venues, patents. Covers:
+
 - Scholar full profile (bio, education, honors, papers, patents, projects)
 - Paper deep dive (full abstract, keywords, authors, citation chain)
 - Multi-condition or semantic paper search
@@ -29,6 +30,7 @@ venues, patents. Covers:
 ## Config
 
 Script reads `.z-ai-config`, in order:
+
 1. `./.z-ai-config`
 2. `~/.z-ai-config`
 3. `/etc/.z-ai-config`
@@ -73,39 +75,40 @@ expect a JSON-encoded value, e.g. `--ids '["abc","def"]'`.
 
 ## 27 APIs (quick reference)
 
-| Action | Method | Purpose |
-|---|---|---|
-| paper_search | GET | Locate paper_id by title |
-| paper_search_pro | GET | Multi-condition paper search |
-| paper_qa_search | POST | Natural-language / topic Q&A |
-| paper_info | POST | Batch paper info by IDs |
-| paper_detail | GET | Full paper details |
-| paper_relation | GET | Citation chain |
-| paper_list_by_keywords | GET | Batch thematic retrieval |
-| paper_detail_by_condition | GET | Year + venue dimension |
-| person_search | POST | Locate person_id |
-| person_detail | GET | Scholar bio/education/honors |
-| person_figure | GET | Interests + work history |
-| person_paper_relation | GET | Scholar's papers |
-| person_patent_relation | GET | Scholar's patents |
-| person_project | GET | Funded projects |
-| org_search | POST | Locate org by name |
-| org_detail | POST | Org description/type |
-| org_person_relation | GET | Affiliated scholars |
-| org_paper_relation | GET | Org papers |
-| org_patent_relation | GET | Org patents |
-| org_disambiguate | POST | Normalize org string |
-| org_disambiguate_pro | POST | Extract org IDs |
-| venue_search | POST | Locate venue_id |
-| venue_detail | POST | ISSN/type/abbreviation |
-| venue_paper_relation | POST | Papers by venue (+ year filter) |
-| patent_search | POST | Patent keyword search |
-| patent_info | GET | Basic patent info |
-| patent_detail | GET | Full patent details (IPC/claims) |
+| Action                    | Method | Purpose                          |
+| ------------------------- | ------ | -------------------------------- |
+| paper_search              | GET    | Locate paper_id by title         |
+| paper_search_pro          | GET    | Multi-condition paper search     |
+| paper_qa_search           | POST   | Natural-language / topic Q&A     |
+| paper_info                | POST   | Batch paper info by IDs          |
+| paper_detail              | GET    | Full paper details               |
+| paper_relation            | GET    | Citation chain                   |
+| paper_list_by_keywords    | GET    | Batch thematic retrieval         |
+| paper_detail_by_condition | GET    | Year + venue dimension           |
+| person_search             | POST   | Locate person_id                 |
+| person_detail             | GET    | Scholar bio/education/honors     |
+| person_figure             | GET    | Interests + work history         |
+| person_paper_relation     | GET    | Scholar's papers                 |
+| person_patent_relation    | GET    | Scholar's patents                |
+| person_project            | GET    | Funded projects                  |
+| org_search                | POST   | Locate org by name               |
+| org_detail                | POST   | Org description/type             |
+| org_person_relation       | GET    | Affiliated scholars              |
+| org_paper_relation        | GET    | Org papers                       |
+| org_patent_relation       | GET    | Org patents                      |
+| org_disambiguate          | POST   | Normalize org string             |
+| org_disambiguate_pro      | POST   | Extract org IDs                  |
+| venue_search              | POST   | Locate venue_id                  |
+| venue_detail              | POST   | ISSN/type/abbreviation           |
+| venue_paper_relation      | POST   | Papers by venue (+ year filter)  |
+| patent_search             | POST   | Patent keyword search            |
+| patent_info               | GET    | Basic patent info                |
+| patent_detail             | GET    | Full patent details (IPC/claims) |
 
 ## 5 Workflows (orchestrate via multiple calls)
 
 ### Scholar Profile
+
 ```
 person_search → person_detail
               → person_figure
@@ -115,26 +118,32 @@ person_search → person_detail
 ```
 
 ### Paper Deep Dive
+
 ```
 paper_search → paper_detail → paper_relation → paper_info
 ```
+
 If `paper_search` is empty, fall back to `paper_search_pro`.
 
 ### Org Analysis
+
 ```
 org_disambiguate_pro → org_detail
                      → org_person_relation
                      → org_paper_relation
                      → org_patent_relation
 ```
+
 If `org_disambiguate_pro` returns no ID, fall back to `org_search`.
 
 ### Venue Papers
+
 ```
 venue_search → venue_detail (optional) → venue_paper_relation
 ```
 
 ### Patent Analysis
+
 ```
 patent_search → patent_info / patent_detail
 ```

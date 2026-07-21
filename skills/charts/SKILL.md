@@ -40,10 +40,10 @@ Make every chart and diagram look professionally designed, not AI-generated.
 
 ## Architecture
 
-| Module | File | When to Load |
-|--------|------|-------------|
-| **Routing + Core Rules** | This file | Always read first |
-| **Framework Templates** | `references/` by framework | After choosing framework, read the corresponding file |
+| Module                   | File                       | When to Load                                          |
+| ------------------------ | -------------------------- | ----------------------------------------------------- |
+| **Routing + Core Rules** | This file                  | Always read first                                     |
+| **Framework Templates**  | `references/` by framework | After choosing framework, read the corresponding file |
 
 **Loading order: Read this file → choose framework → read template file → start coding.**
 
@@ -57,27 +57,32 @@ Each template file contains its own framework-specific rules (spacing, connector
 
 **When the user specifies an output format/tool, you MUST comply. Never substitute.**
 
-| User Says | You Must Do | Forbidden |
-|-----------|------------|-----------|
-| "use mermaid code" / "用Mermaid格式输出" / "转化为mermaid" / "mermaid流程" | ① Output Mermaid code block (```mermaid ... ```) ② Also provide a rendered image preview | ❌ Cannot only give image without code; ❌ Cannot screenshot raw code text as image |
-| "use markdown code" | Output markdown-formatted hierarchy | ❌ Cannot switch to HTML/CSS |
-| "via mermaid or markdown code" | Choose one of the two, output code text | ❌ Cannot switch to any non-specified format |
-| "flowchart" / "mind map" (no format specified) | Free to choose the best approach | - |
-| "use echarts/d3" | Must use the specified framework | ❌ Cannot switch |
+| User Says                                                                  | You Must Do                                                                          | Forbidden                                                                           |
+| -------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------- |
+| "use mermaid code" / "用Mermaid格式输出" / "转化为mermaid" / "mermaid流程" | ① Output Mermaid code block (`mermaid ... `) ② Also provide a rendered image preview | ❌ Cannot only give image without code; ❌ Cannot screenshot raw code text as image |
+| "use markdown code"                                                        | Output markdown-formatted hierarchy                                                  | ❌ Cannot switch to HTML/CSS                                                        |
+| "via mermaid or markdown code"                                             | Choose one of the two, output code text                                              | ❌ Cannot switch to any non-specified format                                        |
+| "flowchart" / "mind map" (no format specified)                             | Free to choose the best approach                                                     | -                                                                                   |
+| "use echarts/d3"                                                           | Must use the specified framework                                                     | ❌ Cannot switch                                                                    |
 
 ### 🚫 FORBIDDEN: Mermaid Code Screenshot
+
 **NEVER take a screenshot of raw Mermaid source code and deliver it as the "diagram image".** This is the worst possible outcome — the user gets neither usable code nor a visual diagram. When the user requests Mermaid format:
+
 1. **MUST** output the Mermaid code in a fenced code block (````mermaid`)
 2. **SHOULD** also render the code into a visual diagram image (via mermaid-cli or Playwright + mermaid.js)
 3. If rendering fails, deliver the code block and tell the user to paste it into mermaid.live
 
 ### Format Specified vs Auto-Upgrade Conflict
+
 When the user specifies Mermaid but content triggers auto-upgrade conditions (>8 nodes, CJK-heavy, etc.):
+
 1. **User choice wins** — still use Mermaid, deliver code block + rendered image
 2. **Proactively guide** — after delivery, suggest the user try without specifying Mermaid for better layout quality
 3. **Never silently switch** to Playwright+CSS when user explicitly asked for Mermaid
 
 When a specified tool hits rendering difficulties (e.g., mermaid CDN fails):
+
 - ✅ Output raw mermaid code text, tell user to view at mermaid.live
 - ❌ Secretly switch to another framework
 - ❌ Screenshot the code text as an "image"
@@ -95,11 +100,13 @@ When a specified tool hits rendering difficulties (e.g., mermaid CDN fails):
 This is because nearly all real-world processes (manufacturing, legal proceedings, project management, business operations, cooking recipes, etc.) have natural phases/stages. Layout C produces the most professional, readable result.
 
 **Flowchart routing priority:**
+
 1. **User specified Mermaid/markdown** → follow user choice (Format Constraint Rule)
 2. **≤6 nodes AND no phases AND short text** → Mermaid (simple flowchart)
 3. **Everything else** → **Playwright + CSS, Layout C (Phased Vertical)** → `references/playwright-css.md`
 
 **Phase detection — treat as "has phases" when ANY is true:**
+
 - Content has numbered sections (一、二、三 or 1. 2. 3. or Phase 1/Stage 1)
 - Process can be grouped by time/stage/role (e.g., "preparation → execution → review")
 - Total steps ≥ 5 (almost always groupable into 2+ phases)
@@ -109,6 +116,7 @@ This is because nearly all real-world processes (manufacturing, legal proceeding
 **⚠️ When in doubt, default to Layout C.** A phased layout with only 1 phase still looks professional. A Grid layout with phases looks like a mess.
 
 #### Other Structural Diagrams
+
 - Simple flowchart (≤6 nodes, truly flat, no phases): **Mermaid**
 - Complex flowchart (>6 nodes / CJK-heavy / branches / phases): **Playwright + CSS Layout C** → `references/playwright-css.md`
 - Mind map / tree / org chart: **Playwright + CSS** → `references/mindmap-css.md`
@@ -116,27 +124,30 @@ This is because nearly all real-world processes (manufacturing, legal proceeding
 - Center-radial analysis (SWOT / BSC / Porter's Five Forces / PEST): **Playwright + CSS** → `references/radial-grid.md`
 
 ### 2. Data Charts (matplotlib / seaborn)
+
 - Standard bar/line/scatter/heatmap/radar/pie: **matplotlib**
 - Regression/distribution/boxplot: **Seaborn**
 
 ### 3. Interactive Charts / Dashboards
+
 - Data dashboard / candlestick / real-time: **ECharts**
 - Fully custom interactive: **D3.js**
 
 ### Default Strategy
+
 **One scene, one tool — don't hesitate:**
 
-| Scene | Tool | Template |
-|-------|------|----------|
-| Data chart (bar/line/scatter/pie/radar) | matplotlib | `references/matplotlib.md` |
-| Statistical (regression/box/dist) | Seaborn | `references/seaborn.md` |
-| Mind map / tree / org chart | Playwright + CSS | `references/mindmap-css.md` |
-| Center-radial (SWOT/BSC/PEST/Five Forces) | Playwright + CSS | `references/radial-grid.md` |
-| **Any flowchart (default)** | **Playwright + CSS Layout C** | **`references/playwright-css.md`** |
-| Simple flowchart (≤6 nodes, truly flat) | Mermaid | `references/mermaid.md` |
-| Relationship / force-directed | ECharts graph | `references/echarts.md` |
-| Data dashboard | ECharts | `references/echarts.md` |
-| Academic paper figures | matplotlib | `references/matplotlib.md` |
+| Scene                                     | Tool                          | Template                           |
+| ----------------------------------------- | ----------------------------- | ---------------------------------- |
+| Data chart (bar/line/scatter/pie/radar)   | matplotlib                    | `references/matplotlib.md`         |
+| Statistical (regression/box/dist)         | Seaborn                       | `references/seaborn.md`            |
+| Mind map / tree / org chart               | Playwright + CSS              | `references/mindmap-css.md`        |
+| Center-radial (SWOT/BSC/PEST/Five Forces) | Playwright + CSS              | `references/radial-grid.md`        |
+| **Any flowchart (default)**               | **Playwright + CSS Layout C** | **`references/playwright-css.md`** |
+| Simple flowchart (≤6 nodes, truly flat)   | Mermaid                       | `references/mermaid.md`            |
+| Relationship / force-directed             | ECharts graph                 | `references/echarts.md`            |
+| Data dashboard                            | ECharts                       | `references/echarts.md`            |
+| Academic paper figures                    | matplotlib                    | `references/matplotlib.md`         |
 
 ---
 
@@ -144,15 +155,15 @@ This is because nearly all real-world processes (manufacturing, legal proceeding
 
 Mermaid's dagre/elk layout estimates CJK widths incorrectly. **Auto-switch to Playwright+CSS when ANY condition is met:**
 
-| Trigger | Action |
-|---------|--------|
-| Total nodes > **6** | → CSS flowchart (Layout C) |
-| Any node text > **12 Chinese characters** | → CSS flowchart |
-| More than **3 parallel branches** | → CSS flowchart |
-| Nested subgraphs > **2 levels** | → CSS flowchart |
-| Connector crossings > **2** | → CSS flowchart |
-| **Side annotations / dashed note boxes** | → CSS flowchart |
-| **Loop-back / cycle arrows** | → CSS flowchart |
+| Trigger                                    | Action                     |
+| ------------------------------------------ | -------------------------- |
+| Total nodes > **6**                        | → CSS flowchart (Layout C) |
+| Any node text > **12 Chinese characters**  | → CSS flowchart            |
+| More than **3 parallel branches**          | → CSS flowchart            |
+| Nested subgraphs > **2 levels**            | → CSS flowchart            |
+| Connector crossings > **2**                | → CSS flowchart            |
+| **Side annotations / dashed note boxes**   | → CSS flowchart            |
+| **Loop-back / cycle arrows**               | → CSS flowchart            |
 | **Process has identifiable phases/stages** | → CSS flowchart (Layout C) |
 
 **If staying with Mermaid**: `padding: 32`, `nodeSpacing: 80`, `rankSpacing: 80`. Node text ≤ 10 CJK chars/line, wrap with `<br>`, quote all text `A["text"]`.
@@ -161,12 +172,12 @@ Mermaid's dagre/elk layout estimates CJK widths incorrectly. **Auto-switch to Pl
 
 ## Large Dataset Rendering
 
-| Data Size | Approach |
-|-----------|----------|
-| < 1,000 points | matplotlib / any |
-| 1,000 - 10,000 | matplotlib (no markers) or ECharts |
-| 10,000 - 100,000 | ECharts (Canvas mode) |
-| > 100,000 | ECharts (`large: true`) or WebGL |
+| Data Size        | Approach                           |
+| ---------------- | ---------------------------------- |
+| < 1,000 points   | matplotlib / any                   |
+| 1,000 - 10,000   | matplotlib (no markers) or ECharts |
+| 10,000 - 100,000 | ECharts (Canvas mode)              |
+| > 100,000        | ECharts (`large: true`) or WebGL   |
 
 ---
 
@@ -187,14 +198,17 @@ These rules apply to ALL charts regardless of framework. Framework-specific rule
 5. **Label clarity over label method.** The goal is zero overlap — choose the method that achieves it for each chart type. Direct labels, legends, and leader lines are all valid; what matters is that nothing overlaps.
 
 ### 🚫 FORBIDDEN: Any Text Overlapping Any Other Element
+
 **No label, legend, annotation, or title may overlap any other visual element.** This is the single most common matplotlib defect. Both direct labels AND legends can cause overlap — neither is inherently safe.
 
 **Anti-overlap decision tree:**
+
 1. **Check if direct labels fit** — if all labels have enough space (bar tops, line endpoints, large pie slices), label directly. No legend needed.
 2. **If some labels would collide** (small pie slices, dense scatter points, clustered bars) → use legend outside plot area instead of forcing labels into tight spaces.
 3. **Mixed approach** — label the major items directly, group small items into "其他" or use leader lines + legend for the small ones.
 
 **Pie chart specific (the worst offender):**
+
 - Slices < 5%: MUST use leader lines (`wedgeprops + texts` manual repositioning, or `matplotlib.patches.ConnectionPatch`) to pull labels outside. Do NOT rely on `autopct` alone — it places text inside/near the slice.
 - Multiple small adjacent slices: use `bbox_to_anchor` legend outside, NOT direct labels
 - `labeldistance=1.25` minimum to keep labels outside the pie
@@ -202,6 +216,7 @@ These rules apply to ALL charts regardless of framework. Framework-specific rule
 - Use `adjustText` library to auto-resolve label collisions when available
 
 **Legend placement (when legend is needed):**
+
 - Place legend **outside** the plot area using `bbox_to_anchor`
 - Suggested starting positions:
   - Bar/line/scatter: right side outside (`bbox_to_anchor=(1.02, 1), loc='upper left'`)
@@ -210,6 +225,7 @@ These rules apply to ALL charts regardless of framework. Framework-specific rule
   - Heatmap: no legend needed (colorbar suffices)
 
 **🔧 Mandatory: auto-adjust legend to prevent overlap.** Copy this snippet after placing any legend:
+
 ```python
 # ── Auto-adjust legend position to prevent overlap ──
 fig.canvas.draw()  # must render first to get bboxes
@@ -239,9 +255,11 @@ if legend:
             legend.set_bbox_to_anchor((x0 + 0.08, y0), transform=ax.transAxes)
         fig.canvas.draw()
 ```
+
 - **After placing legend**: always call `plt.tight_layout()` or `fig.subplots_adjust()` to ensure legend is not clipped
 
 🚫 FORBIDDEN:
+
 - `loc='best'` — matplotlib's "best" frequently overlaps data
 - `loc='upper right'` / `loc='lower right'` on line/bar charts — high collision risk
 - Direct labels on pie slices < 5% without leader lines
@@ -257,44 +275,47 @@ if legend:
 
 ### Recommended Palettes
 
-| Palette | Text | Background | Block Fill | Accent |
-|---------|------|------------|------------|--------|
-| Business Cool | `#243447` | `#F8FAFC` | `#E9EEF3` | `#4C6EF5` |
-| Tech Cyan-Gray | `#1F2937` | `#F5F7FA` | `#E6ECF2` | `#3AAFA9` |
-| Morandi Warm | `#4B4A45` | `#FAF8F4` | `#EAE4DB` | `#C6866A` |
-| Invisible Precision | `#37352F` | `#FFFFFF` | `#F7F7F7` | `#2383E2` |
+| Palette             | Text      | Background | Block Fill | Accent    |
+| ------------------- | --------- | ---------- | ---------- | --------- |
+| Business Cool       | `#243447` | `#F8FAFC`  | `#E9EEF3`  | `#4C6EF5` |
+| Tech Cyan-Gray      | `#1F2937` | `#F5F7FA`  | `#E6ECF2`  | `#3AAFA9` |
+| Morandi Warm        | `#4B4A45` | `#FAF8F4`  | `#EAE4DB`  | `#C6866A` |
+| Invisible Precision | `#37352F` | `#FFFFFF`  | `#F7F7F7`  | `#2383E2` |
 
 ### 🚫 Forbidden Background Colors
 
-| Color | Forbidden Hex Values |
-|-------|---------------------|
-| Pure blue | `#3B82F6`, `#2563EB`, `#1D4ED8` |
-| Pure green | `#10B981`, `#059669`, `#22C55E` |
-| Pure red | `#EF4444`, `#DC2626`, `#F87171` |
+| Color       | Forbidden Hex Values            |
+| ----------- | ------------------------------- |
+| Pure blue   | `#3B82F6`, `#2563EB`, `#1D4ED8` |
+| Pure green  | `#10B981`, `#059669`, `#22C55E` |
+| Pure red    | `#EF4444`, `#DC2626`, `#F87171` |
 | Pure purple | `#8B5CF6`, `#7C3AED`, `#A855F7` |
-| Pure amber | `#F59E0B`, `#D97706`, `#FB923C` |
+| Pure amber  | `#F59E0B`, `#D97706`, `#FB923C` |
 
 ### ✅ Allowed Background Colors
 
-| Color | Hex Values |
-|-------|------------|
-| Ice blue | `#EFF6FF`, `#DBEAFE` |
-| Mint green | `#F0FDF4`, `#D1FAE5` |
+| Color       | Hex Values           |
+| ----------- | -------------------- |
+| Ice blue    | `#EFF6FF`, `#DBEAFE` |
+| Mint green  | `#F0FDF4`, `#D1FAE5` |
 | Light amber | `#FFF7ED`, `#FEF3C7` |
-| Lavender | `#F5F3FF`, `#EDE9FE` |
-| Light gray | `#F8FAFC`, `#F1F5F9` |
+| Lavender    | `#F5F3FF`, `#EDE9FE` |
+| Light gray  | `#F8FAFC`, `#F1F5F9` |
 
 ### Functional Color (states only, not decoration)
+
 - Active/Selected: brand accent or `2px` accent line
 - Error: `#EF4444`
 - Success: `#10B981`
 - Tags: light bg + dark text, never high-sat pills
 
 ### Colorblind-Safe
+
 Don't rely on color alone — pair with shape, line style, or direct labels.
 Paul Tol palette: `['#0077BB', '#33BBEE', '#009988', '#EE7733', '#CC3311', '#EE3377']`
 
 ### Dark Theme
+
 - Background: `#0F172A` (not pure black)
 - Text: `#F1F5F9` (not pure white)
 - Grid: `#1E293B`, low alpha
@@ -311,10 +332,12 @@ Paul Tol palette: `['#0077BB', '#33BBEE', '#009988', '#EE7733', '#CC3311', '#EE3
 - Never use 3D (distorts proportions)
 
 ### Playwright Screenshot
+
 Default `device_scale_factor=2`. Large mind maps (3000px+): 1.5. PDF embed: 1-1.5. Print: 3.
 After render, read `bounding_box()` and resize viewport to fit. Min viewport: 800px single-col, 1200px multi-col.
 
 ### 🚫 FORBIDDEN: `max-width` on Mermaid/SVG Containers
+
 Mermaid's dagre engine produces SVGs with unpredictable width (especially with subgraphs, CJK text, or parallel branches). **NEVER set `max-width` on the Mermaid container element.** Use `width: fit-content; min-width: 800px;` instead.
 
 **Root cause**: Mermaid SVGs overflow their CSS container silently. `bounding_box()` (Playwright) returns the CSS box model size, NOT the SVG's actual rendered size. So auto-resize viewport based on `bounding_box()` alone will still produce clipped screenshots.
@@ -322,6 +345,7 @@ Mermaid's dagre engine produces SVGs with unpredictable width (especially with s
 **Fix**: Always read the **SVG element's own `getBoundingClientRect()`** via `page.evaluate()`, then use `max(css_size, svg_size) + padding` for viewport dimensions. See `references/mermaid.md` for the corrected screenshot script.
 
 ### Aspect Ratio Preservation (embedding)
+
 **MUST read actual image dimensions and calculate height proportionally. NEVER hardcode both width and height.**
 
 ---
@@ -331,6 +355,7 @@ Mermaid's dagre engine produces SVGs with unpredictable width (especially with s
 These apply when routing to matplotlib/seaborn:
 
 ### Layout & Overlap
+
 - Prefer `constrained_layout=True` over `tight_layout()`
 - Use `adjustText` library for automatic label repositioning — **this is the most reliable anti-overlap tool for matplotlib.** Install: `pip install adjustText`. Usage: `from adjustText import adjust_text; adjust_text(texts)`
 - Max 4 subplots per canvas. More → split images or `figsize=(20, 16)` minimum
@@ -340,6 +365,7 @@ These apply when routing to matplotlib/seaborn:
 - Long X labels → horizontal bar chart or show every N-th label
 
 ### Radar / Spider Charts
+
 - **Every `fill()` MUST have `alpha=0.25`** (max 0.3). Omitting alpha = opaque = hides underlying series.
 - Legend: place outside chart with `bbox_to_anchor`, start with `(0.5, -0.15), loc='upper center'`. If dimension labels are long or dimensions > 8, increase offset (e.g., `-0.25` or `-0.3`). Also FORBIDDEN: `loc='lower right'` (collides with radar dimension labels).
 - Dimension label padding: `set_rlim(0, max_value * 1.2)`
@@ -347,6 +373,7 @@ These apply when routing to matplotlib/seaborn:
 - `figsize=(8, 8)` mandatory (square)
 
 ### One Color, Gray the Rest
+
 5 lines → color only the key one, others `#D1D5DB`. 8 bars → accent only the highlight, rest `#E5E7EB`.
 
 ---
@@ -385,34 +412,34 @@ Before delivery, verify:
 
 ## Anti-Pattern Quick Reference
 
-| ❌ Don't | ✅ Do This Instead |
-|----------|-------------------|
-| matplotlib default blue `#1f77b4` | Use this skill's palette |
-| 3D bar/pie | Always 2D |
-| Rainbow colormap (jet/rainbow) | Single-hue gradient or diverging |
-| Thick black grid lines | `alpha=0.08` or remove |
-| Different color per bar | Same series same color, highlight only key |
-| 45° tilted X labels | Horizontal bar chart or shorten |
-| 8+ subplots in one canvas | Split to 2-3 images, max 4 each |
-| `tight_layout()` alone | `constrained_layout=True` or `GridSpec` |
-| Labels overflowing chart | `ylim` with 18-25% headroom |
-| Mind map: all levels same style | Root+L1 get boxes, leaves plain text |
-| Mind map: image too tall | Left-right layout for ≥5 branches |
-| Mind map: invisible connectors | Lines ≥ `#94A3B8`, root→L1 `#64748B` 2.5px |
-| Mind map: unbalanced sides | Alternate large/small branches across sides |
-| Flowchart: high-sat node fills | Low-sat bg (`#EFF6FF`) + sat border (`#3B82F6`) |
-| Flowchart: dark bg + dark text | Dark bg → white text. Light bg → dark text |
-| Flowchart: arrows between every step | Arrows ONLY between phases, steps use indent |
-| Flowchart: cross-layer lines through nodes | Connect adjacent layers only |
-| Flowchart: Grid layout for phased process | **Always use Layout C (Phased Vertical)** |
-| Flowchart: phase titles as floating labels | Phase titles MUST be inside group cards |
-| Flowchart: nodes scattered without grouping | Group nodes into phase cards with `.phase-group` |
-| Flowchart: rainbow phase colors (blue→green→amber→purple) | Same-hue blue-gray progression for all phases |
-| Multiple arrows to same entry point | Merge-then-enter pattern |
-| Legend inside plot obscuring data | `bbox_to_anchor` outside plot area |
-| Radar fill without alpha | `alpha=0.25` mandatory |
-| Decorative icons/emoji | Let the data speak |
-| Grid lines where whitespace suffices | Background contrast or spacing instead |
+| ❌ Don't                                                  | ✅ Do This Instead                               |
+| --------------------------------------------------------- | ------------------------------------------------ |
+| matplotlib default blue `#1f77b4`                         | Use this skill's palette                         |
+| 3D bar/pie                                                | Always 2D                                        |
+| Rainbow colormap (jet/rainbow)                            | Single-hue gradient or diverging                 |
+| Thick black grid lines                                    | `alpha=0.08` or remove                           |
+| Different color per bar                                   | Same series same color, highlight only key       |
+| 45° tilted X labels                                       | Horizontal bar chart or shorten                  |
+| 8+ subplots in one canvas                                 | Split to 2-3 images, max 4 each                  |
+| `tight_layout()` alone                                    | `constrained_layout=True` or `GridSpec`          |
+| Labels overflowing chart                                  | `ylim` with 18-25% headroom                      |
+| Mind map: all levels same style                           | Root+L1 get boxes, leaves plain text             |
+| Mind map: image too tall                                  | Left-right layout for ≥5 branches                |
+| Mind map: invisible connectors                            | Lines ≥ `#94A3B8`, root→L1 `#64748B` 2.5px       |
+| Mind map: unbalanced sides                                | Alternate large/small branches across sides      |
+| Flowchart: high-sat node fills                            | Low-sat bg (`#EFF6FF`) + sat border (`#3B82F6`)  |
+| Flowchart: dark bg + dark text                            | Dark bg → white text. Light bg → dark text       |
+| Flowchart: arrows between every step                      | Arrows ONLY between phases, steps use indent     |
+| Flowchart: cross-layer lines through nodes                | Connect adjacent layers only                     |
+| Flowchart: Grid layout for phased process                 | **Always use Layout C (Phased Vertical)**        |
+| Flowchart: phase titles as floating labels                | Phase titles MUST be inside group cards          |
+| Flowchart: nodes scattered without grouping               | Group nodes into phase cards with `.phase-group` |
+| Flowchart: rainbow phase colors (blue→green→amber→purple) | Same-hue blue-gray progression for all phases    |
+| Multiple arrows to same entry point                       | Merge-then-enter pattern                         |
+| Legend inside plot obscuring data                         | `bbox_to_anchor` outside plot area               |
+| Radar fill without alpha                                  | `alpha=0.25` mandatory                           |
+| Decorative icons/emoji                                    | Let the data speak                               |
+| Grid lines where whitespace suffices                      | Background contrast or spacing instead           |
 
 ---
 

@@ -6,13 +6,13 @@
 
 Think of a 1080x1440 Rednote image as five zones:
 
-| Zone | Typical Height | Role |
-| --- | --- | --- |
-| Header/meta | 56-90px | issue label, category, page |
-| Title/lead | 240-420px | hook and claim |
-| Evidence/body | 520-760px | image, ledger, diagram, comparison |
-| Bottom strip | 90-180px | captions, checklist, summary |
-| Footer | 52-86px | issue/page metadata |
+| Zone          | Typical Height | Role                               |
+| ------------- | -------------- | ---------------------------------- |
+| Header/meta   | 56-90px        | issue label, category, page        |
+| Title/lead    | 240-420px      | hook and claim                     |
+| Evidence/body | 520-760px      | image, ledger, diagram, comparison |
+| Bottom strip  | 90-180px       | captions, checklist, summary       |
+| Footer        | 52-86px        | issue/page metadata                |
 
 Not every page needs all five, but every page needs an intentional vertical composition.
 

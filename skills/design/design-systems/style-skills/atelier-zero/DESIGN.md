@@ -33,9 +33,9 @@ X", consult this map before changing tokens:
   monospace coordinates and SHA stamps, the international metadata
   strip ("Filed under …"), the small ★ in the nav.
 - **Apartamento:** surreal collage composition (plaster + architecture
-  + small human figure), torn-edge textures inside the imagery, the
-  rotated side notes, and the willingness to leave generous negative
-  space around an image.
+  - small human figure), torn-edge textures inside the imagery, the
+    rotated side notes, and the willingness to leave generous negative
+    space around an image.
 - **IDEA:** Roman-numeral section walks (I → VIII), oversized
   italic-serif words mixed inline with bold sans (Playfair Italic 500
   inside Inter Tight 800), hairline rules threading through method
@@ -71,7 +71,7 @@ All values are tokens. Do not invent new hex.
 
 ### Why single-accent (not multi-accent)
 
-Multi-accent editorial systems (e.g. *The New Yorker* using red for
+Multi-accent editorial systems (e.g. _The New Yorker_ using red for
 Opinion and teal for Culture) work when the publication has stable
 content categories and a long-term reader who learns the code. A
 single-shot studio landing page does not have that runway. One coral
@@ -305,8 +305,8 @@ When generating against this design system:
   reaching for a second coral element in the same viewport, use
   ink-faint or mustard instead.
 - Italic serif words inside display headlines should always be
-  emotional nouns: *intelligence*, *taste*, *memorable*, *open*,
-  *visually*. Never verbs, never adjectives.
+  emotional nouns: _intelligence_, _taste_, _memorable_, _open_,
+  _visually_. Never verbs, never adjectives.
 - If asked for "more dramatic," the lever is **typography size**
   (clamp top to 90–110px) and **image height** (push to 100vh - nav).
   Do not reach for color.

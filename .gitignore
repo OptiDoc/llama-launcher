@@ -16,6 +16,7 @@ node_modules
 # next.js
 /.next/
 /out/
+/dist/
 
 # production
 /build
@@ -51,4 +52,32 @@ prompt
 
 server.log
 # Skills directory
-/skills/src-tauri/target/
+/skills/
+/.idea/
+/.kilo/
+/.mimocode/
+/.playwright-mcp/
+/.zscripts/
+
+# Rust build artifacts
+src-tauri/target/
+
+# Prettier
+.prettierrc
+.prettierignore
+
+# ESLint
+.eslintcache
+
+# Generated Tauri schemas
+src-tauri/gen/
+
+# Debug output / temporary files
+errors*.txt
+lint-output*.txt
+
+# AI agent docs (not project docs)
+AGENTS.md
+
+# Bun lock (project uses pnpm)
+bun.lock

@@ -104,6 +104,7 @@ z-ai function \
 ### Search Result Structure
 
 Each result contains:
+
 - `url`: Full URL of the result
 - `name`: Title of the page
 - `snippet`: Preview text/description
@@ -115,12 +116,14 @@ Each result contains:
 ### When to Use CLI vs SDK
 
 **Use CLI for:**
+
 - Quick information lookups
 - Testing search queries
 - Simple automation scripts
 - One-off research tasks
 
 **Use SDK for:**
+
 - Dynamic search in applications
 - Multi-step search workflows
 - Custom result processing and filtering
@@ -132,13 +135,13 @@ Each search result is a `SearchFunctionResultItem` with the following structure:
 
 ```typescript
 interface SearchFunctionResultItem {
-  url: string;          // Full URL of the result
-  name: string;         // Title of the page
-  snippet: string;      // Preview text/description
-  host_name: string;    // Domain name
-  rank: number;         // Result ranking
-  date: string;         // Publication/update date
-  favicon: string;      // Favicon URL
+  url: string; // Full URL of the result
+  name: string; // Title of the page
+  snippet: string; // Preview text/description
+  host_name: string; // Domain name
+  rank: number; // Result ranking
+  date: string; // Publication/update date
+  favicon: string; // Favicon URL
 }
 ```
 
@@ -147,58 +150,58 @@ interface SearchFunctionResultItem {
 ### Simple Search Query
 
 ```javascript
-import ZAI from 'z-ai-web-dev-sdk';
+import ZAI from "z-ai-web-dev-sdk";
 
 async function searchWeb(query) {
   const zai = await ZAI.create();
 
-  const results = await zai.functions.invoke('web_search', {
+  const results = await zai.functions.invoke("web_search", {
     query: query,
-    num: 10
+    num: 10,
   });
 
   return results;
 }
 
 // Usage
-const searchResults = await searchWeb('What is the capital of France?');
-console.log('Search Results:', searchResults);
+const searchResults = await searchWeb("What is the capital of France?");
+console.log("Search Results:", searchResults);
 ```
 
 ### Search with Custom Result Count
 
 ```javascript
-import ZAI from 'z-ai-web-dev-sdk';
+import ZAI from "z-ai-web-dev-sdk";
 
 async function searchWithLimit(query, numberOfResults) {
   const zai = await ZAI.create();
 
-  const results = await zai.functions.invoke('web_search', {
+  const results = await zai.functions.invoke("web_search", {
     query: query,
-    num: numberOfResults
+    num: numberOfResults,
   });
 
   return results;
 }
 
 // Usage - Get top 5 results
-const topResults = await searchWithLimit('artificial intelligence news', 5);
+const topResults = await searchWithLimit("artificial intelligence news", 5);
 
 // Usage - Get top 20 results
-const moreResults = await searchWithLimit('JavaScript frameworks', 20);
+const moreResults = await searchWithLimit("JavaScript frameworks", 20);
 ```
 
 ### Formatted Search Results
 
 ```javascript
-import ZAI from 'z-ai-web-dev-sdk';
+import ZAI from "z-ai-web-dev-sdk";
 
 async function getFormattedResults(query) {
   const zai = await ZAI.create();
 
-  const results = await zai.functions.invoke('web_search', {
+  const results = await zai.functions.invoke("web_search", {
     query: query,
-    num: 10
+    num: 10,
   });
 
   // Format results for display
@@ -208,19 +211,19 @@ async function getFormattedResults(query) {
     url: item.url,
     description: item.snippet,
     domain: item.host_name,
-    publishDate: item.date
+    publishDate: item.date,
   }));
 
   return formatted;
 }
 
 // Usage
-const results = await getFormattedResults('climate change solutions');
-results.forEach(result => {
+const results = await getFormattedResults("climate change solutions");
+results.forEach((result) => {
   console.log(`${result.position}. ${result.title}`);
   console.log(`   ${result.url}`);
   console.log(`   ${result.description}`);
-  console.log('');
+  console.log("");
 });
 ```
 
@@ -229,7 +232,7 @@ results.forEach(result => {
 ### Search with Result Processing
 
 ```javascript
-import ZAI from 'z-ai-web-dev-sdk';
+import ZAI from "z-ai-web-dev-sdk";
 
 class SearchProcessor {
   constructor() {
@@ -241,43 +244,35 @@ class SearchProcessor {
   }
 
   async search(query, options = {}) {
-    const {
-      num = 10,
-      filterDomain = null,
-      minSnippetLength = 0
-    } = options;
+    const { num = 10, filterDomain = null, minSnippetLength = 0 } = options;
 
-    const results = await this.zai.functions.invoke('web_search', {
+    const results = await this.zai.functions.invoke("web_search", {
       query: query,
-      num: num
+      num: num,
     });
 
     // Filter results
     let filtered = results;
 
     if (filterDomain) {
-      filtered = filtered.filter(item => 
-        item.host_name.includes(filterDomain)
-      );
+      filtered = filtered.filter((item) => item.host_name.includes(filterDomain));
     }
 
     if (minSnippetLength > 0) {
-      filtered = filtered.filter(item => 
-        item.snippet.length >= minSnippetLength
-      );
+      filtered = filtered.filter((item) => item.snippet.length >= minSnippetLength);
     }
 
     return filtered;
   }
 
   extractDomains(results) {
-    return [...new Set(results.map(item => item.host_name))];
+    return [...new Set(results.map((item) => item.host_name))];
   }
 
   groupByDomain(results) {
     const grouped = {};
-    
-    results.forEach(item => {
+
+    results.forEach((item) => {
       if (!grouped[item.host_name]) {
         grouped[item.host_name] = [];
       }
@@ -300,37 +295,37 @@ class SearchProcessor {
 const processor = new SearchProcessor();
 await processor.initialize();
 
-const results = await processor.search('machine learning tutorials', {
+const results = await processor.search("machine learning tutorials", {
   num: 15,
-  minSnippetLength: 50
+  minSnippetLength: 50,
 });
 
-console.log('Domains found:', processor.extractDomains(results));
-console.log('Grouped by domain:', processor.groupByDomain(results));
-console.log('Sorted by date:', processor.sortByDate(results));
+console.log("Domains found:", processor.extractDomains(results));
+console.log("Grouped by domain:", processor.groupByDomain(results));
+console.log("Sorted by date:", processor.sortByDate(results));
 ```
 
 ### News Search
 
 ```javascript
-import ZAI from 'z-ai-web-dev-sdk';
+import ZAI from "z-ai-web-dev-sdk";
 
-async function searchNews(topic, timeframe = 'recent') {
+async function searchNews(topic, timeframe = "recent") {
   const zai = await ZAI.create();
 
   // Add time-based keywords to query
   const timeKeywords = {
-    recent: 'latest news',
-    today: 'today news',
-    week: 'this week news',
-    month: 'this month news'
+    recent: "latest news",
+    today: "today news",
+    week: "this week news",
+    month: "this month news",
   };
 
   const query = `${topic} ${timeKeywords[timeframe] || timeKeywords.recent}`;
 
-  const results = await zai.functions.invoke('web_search', {
+  const results = await zai.functions.invoke("web_search", {
     query: query,
-    num: 10
+    num: 10,
   });
 
   // Sort by date (most recent first)
@@ -342,11 +337,11 @@ async function searchNews(topic, timeframe = 'recent') {
 }
 
 // Usage
-const aiNews = await searchNews('artificial intelligence', 'today');
-const techNews = await searchNews('technology', 'week');
+const aiNews = await searchNews("artificial intelligence", "today");
+const techNews = await searchNews("technology", "week");
 
-console.log('Latest AI News:');
-aiNews.forEach(item => {
+console.log("Latest AI News:");
+aiNews.forEach((item) => {
   console.log(`${item.name} (${item.date})`);
   console.log(`${item.snippet}\n`);
 });
@@ -355,7 +350,7 @@ aiNews.forEach(item => {
 ### Research Assistant
 
 ```javascript
-import ZAI from 'z-ai-web-dev-sdk';
+import ZAI from "z-ai-web-dev-sdk";
 
 class ResearchAssistant {
   constructor() {
@@ -366,16 +361,16 @@ class ResearchAssistant {
     this.zai = await ZAI.create();
   }
 
-  async researchTopic(topic, depth = 'standard') {
+  async researchTopic(topic, depth = "standard") {
     const numResults = {
       quick: 5,
       standard: 10,
-      deep: 20
+      deep: 20,
     };
 
-    const results = await this.zai.functions.invoke('web_search', {
+    const results = await this.zai.functions.invoke("web_search", {
       query: topic,
-      num: numResults[depth] || 10
+      num: numResults[depth] || 10,
     });
 
     // Analyze results
@@ -383,12 +378,12 @@ class ResearchAssistant {
       topic: topic,
       totalResults: results.length,
       sources: this.extractDomains(results),
-      topResults: results.slice(0, 5).map(r => ({
+      topResults: results.slice(0, 5).map((r) => ({
         title: r.name,
         url: r.url,
-        summary: r.snippet
+        summary: r.snippet,
       })),
-      dateRange: this.getDateRange(results)
+      dateRange: this.getDateRange(results),
     };
 
     return analysis;
@@ -396,48 +391,46 @@ class ResearchAssistant {
 
   extractDomains(results) {
     const domains = {};
-    results.forEach(item => {
+    results.forEach((item) => {
       domains[item.host_name] = (domains[item.host_name] || 0) + 1;
     });
     return domains;
   }
 
   getDateRange(results) {
-    const dates = results
-      .map(r => new Date(r.date))
-      .filter(d => !isNaN(d));
+    const dates = results.map((r) => new Date(r.date)).filter((d) => !isNaN(d));
 
     if (dates.length === 0) return null;
 
     return {
       earliest: new Date(Math.min(...dates)),
-      latest: new Date(Math.max(...dates))
+      latest: new Date(Math.max(...dates)),
     };
   }
 
   async compareTopics(topic1, topic2) {
     const [results1, results2] = await Promise.all([
-      this.zai.functions.invoke('web_search', { query: topic1, num: 10 }),
-      this.zai.functions.invoke('web_search', { query: topic2, num: 10 })
+      this.zai.functions.invoke("web_search", { query: topic1, num: 10 }),
+      this.zai.functions.invoke("web_search", { query: topic2, num: 10 }),
     ]);
 
-    const domains1 = new Set(results1.map(r => r.host_name));
-    const domains2 = new Set(results2.map(r => r.host_name));
+    const domains1 = new Set(results1.map((r) => r.host_name));
+    const domains2 = new Set(results2.map((r) => r.host_name));
 
-    const commonDomains = [...domains1].filter(d => domains2.has(d));
+    const commonDomains = [...domains1].filter((d) => domains2.has(d));
 
     return {
       topic1: {
         name: topic1,
         results: results1.length,
-        uniqueDomains: domains1.size
+        uniqueDomains: domains1.size,
       },
       topic2: {
         name: topic2,
         results: results2.length,
-        uniqueDomains: domains2.size
+        uniqueDomains: domains2.size,
       },
-      commonDomains: commonDomains
+      commonDomains: commonDomains,
     };
   }
 }
@@ -446,31 +439,28 @@ class ResearchAssistant {
 const assistant = new ResearchAssistant();
 await assistant.initialize();
 
-const research = await assistant.researchTopic('quantum computing', 'deep');
-console.log('Research Analysis:', research);
+const research = await assistant.researchTopic("quantum computing", "deep");
+console.log("Research Analysis:", research);
 
-const comparison = await assistant.compareTopics(
-  'renewable energy',
-  'solar power'
-);
-console.log('Topic Comparison:', comparison);
+const comparison = await assistant.compareTopics("renewable energy", "solar power");
+console.log("Topic Comparison:", comparison);
 ```
 
 ### Search Result Validation
 
 ```javascript
-import ZAI from 'z-ai-web-dev-sdk';
+import ZAI from "z-ai-web-dev-sdk";
 
 async function validateSearchResults(query) {
   const zai = await ZAI.create();
 
-  const results = await zai.functions.invoke('web_search', {
+  const results = await zai.functions.invoke("web_search", {
     query: query,
-    num: 10
+    num: 10,
   });
 
   // Validate and score results
-  const validated = results.map(item => {
+  const validated = results.map((item) => {
     let score = 0;
     let flags = [];
 
@@ -478,14 +468,14 @@ async function validateSearchResults(query) {
     if (item.snippet && item.snippet.length > 50) {
       score += 20;
     } else {
-      flags.push('short_snippet');
+      flags.push("short_snippet");
     }
 
     // Check date availability
-    if (item.date && item.date !== 'N/A') {
+    if (item.date && item.date !== "N/A") {
       score += 20;
     } else {
-      flags.push('no_date');
+      flags.push("no_date");
     }
 
     // Check URL validity
@@ -493,29 +483,28 @@ async function validateSearchResults(query) {
       new URL(item.url);
       score += 20;
     } catch (e) {
-      flags.push('invalid_url');
+      flags.push("invalid_url");
     }
 
     // Check domain quality (not perfect, but basic check)
-    if (!item.host_name.includes('spam') && 
-        !item.host_name.includes('ads')) {
+    if (!item.host_name.includes("spam") && !item.host_name.includes("ads")) {
       score += 20;
     } else {
-      flags.push('suspicious_domain');
+      flags.push("suspicious_domain");
     }
 
     // Check title quality
     if (item.name && item.name.length > 10) {
       score += 20;
     } else {
-      flags.push('short_title');
+      flags.push("short_title");
     }
 
     return {
       ...item,
       qualityScore: score,
       validationFlags: flags,
-      isHighQuality: score >= 80
+      isHighQuality: score >= 80,
     };
   });
 
@@ -524,10 +513,8 @@ async function validateSearchResults(query) {
 }
 
 // Usage
-const validated = await validateSearchResults('best programming practices');
-console.log('High quality results:', 
-  validated.filter(r => r.isHighQuality).length
-);
+const validated = await validateSearchResults("best programming practices");
+console.log("High quality results:", validated.filter((r) => r.isHighQuality).length);
 ```
 
 ## Best Practices
@@ -536,19 +523,19 @@ console.log('High quality results:',
 
 ```javascript
 // Bad: Too vague
-const bad = await searchWeb('information');
+const bad = await searchWeb("information");
 
 // Good: Specific and targeted
-const good = await searchWeb('JavaScript async/await best practices 2024');
+const good = await searchWeb("JavaScript async/await best practices 2024");
 
 // Good: Include context
-const goodWithContext = await searchWeb('React hooks tutorial for beginners');
+const goodWithContext = await searchWeb("React hooks tutorial for beginners");
 ```
 
 ### 2. Error Handling
 
 ```javascript
-import ZAI from 'z-ai-web-dev-sdk';
+import ZAI from "z-ai-web-dev-sdk";
 
 async function safeSearch(query, retries = 3) {
   let lastError;
@@ -557,19 +544,19 @@ async function safeSearch(query, retries = 3) {
     try {
       const zai = await ZAI.create();
 
-      const results = await zai.functions.invoke('web_search', {
+      const results = await zai.functions.invoke("web_search", {
         query: query,
-        num: 10
+        num: 10,
       });
 
       if (!Array.isArray(results) || results.length === 0) {
-        throw new Error('No results found or invalid response');
+        throw new Error("No results found or invalid response");
       }
 
       return {
         success: true,
         results: results,
-        attempts: attempt
+        attempts: attempt,
       };
     } catch (error) {
       lastError = error;
@@ -577,7 +564,7 @@ async function safeSearch(query, retries = 3) {
 
       if (attempt < retries) {
         // Wait before retry (exponential backoff)
-        await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+        await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
       }
     }
   }
@@ -585,7 +572,7 @@ async function safeSearch(query, retries = 3) {
   return {
     success: false,
     error: lastError.message,
-    attempts: retries
+    attempts: retries,
   };
 }
 ```
@@ -593,10 +580,11 @@ async function safeSearch(query, retries = 3) {
 ### 3. Result Caching
 
 ```javascript
-import ZAI from 'z-ai-web-dev-sdk';
+import ZAI from "z-ai-web-dev-sdk";
 
 class CachedSearch {
-  constructor(cacheDuration = 3600000) { // 1 hour default
+  constructor(cacheDuration = 3600000) {
+    // 1 hour default
     this.cache = new Map();
     this.cacheDuration = cacheDuration;
     this.zai = null;
@@ -616,28 +604,28 @@ class CachedSearch {
 
     // Check if cached and not expired
     if (cached && Date.now() - cached.timestamp < this.cacheDuration) {
-      console.log('Returning cached results');
+      console.log("Returning cached results");
       return {
         ...cached.data,
-        cached: true
+        cached: true,
       };
     }
 
     // Perform fresh search
-    const results = await this.zai.functions.invoke('web_search', {
+    const results = await this.zai.functions.invoke("web_search", {
       query: query,
-      num: num
+      num: num,
     });
 
     // Cache results
     this.cache.set(cacheKey, {
       data: results,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
 
     return {
       results: results,
-      cached: false
+      cached: false,
     };
   }
 
@@ -654,11 +642,11 @@ class CachedSearch {
 const search = new CachedSearch(1800000); // 30 minutes cache
 await search.initialize();
 
-const result1 = await search.search('TypeScript tutorial');
-console.log('Cached:', result1.cached); // false
+const result1 = await search.search("TypeScript tutorial");
+console.log("Cached:", result1.cached); // false
 
-const result2 = await search.search('TypeScript tutorial');
-console.log('Cached:', result2.cached); // true
+const result2 = await search.search("TypeScript tutorial");
+console.log("Cached:", result2.cached); // true
 ```
 
 ### 4. Rate Limiting
@@ -678,9 +666,9 @@ class RateLimitedSearch {
   async search(query, num = 10) {
     await this.checkRateLimit();
 
-    const results = await this.zai.functions.invoke('web_search', {
+    const results = await this.zai.functions.invoke("web_search", {
       query: query,
-      num: num
+      num: num,
     });
 
     this.requests.push(Date.now());
@@ -692,15 +680,15 @@ class RateLimitedSearch {
     const oneMinuteAgo = now - 60000;
 
     // Remove requests older than 1 minute
-    this.requests = this.requests.filter(time => time > oneMinuteAgo);
+    this.requests = this.requests.filter((time) => time > oneMinuteAgo);
 
     if (this.requests.length >= this.requestsPerMinute) {
       const oldestRequest = this.requests[0];
       const waitTime = 60000 - (now - oldestRequest);
-      
+
       console.log(`Rate limit reached. Waiting ${waitTime}ms`);
-      await new Promise(resolve => setTimeout(resolve, waitTime));
-      
+      await new Promise((resolve) => setTimeout(resolve, waitTime));
+
       // Recheck after waiting
       return this.checkRateLimit();
     }
@@ -724,8 +712,8 @@ class RateLimitedSearch {
 ### Express.js Search API
 
 ```javascript
-import express from 'express';
-import ZAI from 'z-ai-web-dev-sdk';
+import express from "express";
+import ZAI from "z-ai-web-dev-sdk";
 
 const app = express();
 app.use(express.json());
@@ -736,7 +724,7 @@ async function initZAI() {
   zaiInstance = await ZAI.create();
 }
 
-app.get('/api/search', async (req, res) => {
+app.get("/api/search", async (req, res) => {
   try {
     const { q: query, num = 10 } = req.query;
 
@@ -746,44 +734,44 @@ app.get('/api/search', async (req, res) => {
 
     const numResults = Math.min(parseInt(num) || 10, 20);
 
-    const results = await zaiInstance.functions.invoke('web_search', {
+    const results = await zaiInstance.functions.invoke("web_search", {
       query: query,
-      num: numResults
+      num: numResults,
     });
 
     res.json({
       success: true,
       query: query,
       totalResults: results.length,
-      results: results
+      results: results,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 });
 
-app.get('/api/search/news', async (req, res) => {
+app.get("/api/search/news", async (req, res) => {
   try {
-    const { topic, timeframe = 'recent' } = req.query;
+    const { topic, timeframe = "recent" } = req.query;
 
     if (!topic) {
-      return res.status(400).json({ error: 'Topic parameter is required' });
+      return res.status(400).json({ error: "Topic parameter is required" });
     }
 
     const timeKeywords = {
-      recent: 'latest news',
-      today: 'today news',
-      week: 'this week news'
+      recent: "latest news",
+      today: "today news",
+      week: "this week news",
     };
 
     const query = `${topic} ${timeKeywords[timeframe] || timeKeywords.recent}`;
 
-    const results = await zaiInstance.functions.invoke('web_search', {
+    const results = await zaiInstance.functions.invoke("web_search", {
       query: query,
-      num: 15
+      num: 15,
     });
 
     // Sort by date
@@ -795,19 +783,19 @@ app.get('/api/search/news', async (req, res) => {
       success: true,
       topic: topic,
       timeframe: timeframe,
-      results: sortedResults
+      results: sortedResults,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 });
 
 initZAI().then(() => {
   app.listen(3000, () => {
-    console.log('Search API running on port 3000');
+    console.log("Search API running on port 3000");
   });
 });
 ```
@@ -815,35 +803,35 @@ initZAI().then(() => {
 ### Search with AI Summary
 
 ```javascript
-import ZAI from 'z-ai-web-dev-sdk';
+import ZAI from "z-ai-web-dev-sdk";
 
 async function searchAndSummarize(query) {
   const zai = await ZAI.create();
 
   // Step 1: Search the web
-  const searchResults = await zai.functions.invoke('web_search', {
+  const searchResults = await zai.functions.invoke("web_search", {
     query: query,
-    num: 10
+    num: 10,
   });
 
   // Step 2: Create summary using chat completions
   const searchContext = searchResults
     .slice(0, 5)
     .map((r, i) => `${i + 1}. ${r.name}\n${r.snippet}`)
-    .join('\n\n');
+    .join("\n\n");
 
   const completion = await zai.chat.completions.create({
     messages: [
       {
-        role: 'assistant',
-        content: 'You are a research assistant. Summarize search results clearly and concisely.'
+        role: "assistant",
+        content: "You are a research assistant. Summarize search results clearly and concisely.",
       },
       {
-        role: 'user',
-        content: `Query: "${query}"\n\nSearch Results:\n${searchContext}\n\nProvide a comprehensive summary of these results.`
-      }
+        role: "user",
+        content: `Query: "${query}"\n\nSearch Results:\n${searchContext}\n\nProvide a comprehensive summary of these results.`,
+      },
     ],
-    thinking: { type: 'disabled' }
+    thinking: { type: "disabled" },
   });
 
   const summary = completion.choices[0]?.message?.content;
@@ -851,35 +839,40 @@ async function searchAndSummarize(query) {
   return {
     query: query,
     summary: summary,
-    sources: searchResults.slice(0, 5).map(r => ({
+    sources: searchResults.slice(0, 5).map((r) => ({
       title: r.name,
-      url: r.url
+      url: r.url,
     })),
-    totalResults: searchResults.length
+    totalResults: searchResults.length,
   };
 }
 
 // Usage
-const result = await searchAndSummarize('benefits of renewable energy');
-console.log('Summary:', result.summary);
-console.log('Sources:', result.sources);
+const result = await searchAndSummarize("benefits of renewable energy");
+console.log("Summary:", result.summary);
+console.log("Sources:", result.sources);
 ```
 
 ## Troubleshooting
 
 **Issue**: "SDK must be used in backend"
+
 - **Solution**: Ensure z-ai-web-dev-sdk is only imported and used in server-side code
 
 **Issue**: Empty or no results returned
+
 - **Solution**: Try different query terms, check internet connectivity, verify API status
 
 **Issue**: Unexpected response format
+
 - **Solution**: Verify the response is an array, check for API changes, add type validation
 
 **Issue**: Rate limiting errors
+
 - **Solution**: Implement request throttling, add delays between searches, use caching
 
 **Issue**: Low quality search results
+
 - **Solution**: Refine query terms, filter results by domain or date, validate result quality
 
 ## Performance Tips

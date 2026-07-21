@@ -5,6 +5,7 @@ Reference for when to save user preferences to `~/code/memory.md`.
 ## When to Save (User Must Request)
 
 Save only when user explicitly asks:
+
 - "Remember that I prefer X"
 - "Always do Y from now on"
 - "Save this preference"
@@ -20,11 +21,13 @@ Save only when user explicitly asks:
 ## What to Save
 
 **Preferences:**
+
 - Coding style preferences user stated
 - Tools or frameworks user prefers
 - Patterns user explicitly likes
 
 **Things to avoid:**
+
 - Approaches user explicitly dislikes
 - Patterns user asked not to repeat
 
@@ -32,11 +35,13 @@ Save only when user explicitly asks:
 
 ```markdown
 ## Preferences
+
 - prefers TypeScript over JavaScript
 - likes detailed comments
 - wants tests for all functions
 
 ## Never
+
 - no class-based React components
 - avoid inline styles
 ```

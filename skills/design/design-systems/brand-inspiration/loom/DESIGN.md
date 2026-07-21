@@ -16,6 +16,7 @@ typography:
   fonts: "Inter, Helvetica"
 note: "Frontmatter is auto-extracted; the prose body below is the authoritative source for full tokens, components, and rules."
 ---
+
 # Loom Design System
 
 > Category: Themed & Unique
@@ -33,23 +34,23 @@ A friendly, fast video-first async communication tool. Loom's design feels like 
 
 ### Surface Palette
 
-| Token | Hex | Usage |
-|-------|-----|-------|
-| Background | `#FFFFFF` | Primary canvas |
-| Surface | `#F7F7F8` | Cards, sidebars, elevated panels |
-| Border | `#E4E4E7` | Dividers, input borders |
+| Token      | Hex       | Usage                            |
+| ---------- | --------- | -------------------------------- |
+| Background | `#FFFFFF` | Primary canvas                   |
+| Surface    | `#F7F7F8` | Cards, sidebars, elevated panels |
+| Border     | `#E4E4E7` | Dividers, input borders          |
 
 ### Data Palette
 
-| Token | Hex | Usage |
-|-------|-----|-------|
-| Primary | `#625DF5` | CTAs, active states, video progress |
-| Primary Hover | `#5048E5` | Button hover state |
-| Text | `#1F1F23` | All text |
-| Text Secondary | `#6B6D76` | Timestamps, metadata, captions |
-| Text Tertiary | `#9B9CA3` | Placeholders, disabled states |
-| Error | `#D64770` | Error states |
-| Recording | `#EF440C` | Active recording indicator |
+| Token          | Hex       | Usage                               |
+| -------------- | --------- | ----------------------------------- |
+| Primary        | `#625DF5` | CTAs, active states, video progress |
+| Primary Hover  | `#5048E5` | Button hover state                  |
+| Text           | `#1F1F23` | All text                            |
+| Text Secondary | `#6B6D76` | Timestamps, metadata, captions      |
+| Text Tertiary  | `#9B9CA3` | Placeholders, disabled states       |
+| Error          | `#D64770` | Error states                        |
+| Recording      | `#EF440C` | Active recording indicator          |
 
 ### Light Mode
 
@@ -57,16 +58,16 @@ Default. A content-first tool used in bright office environments.
 
 ```css
 :root {
-  --color-bg: #FFFFFF;
-  --color-surface: #F7F7F8;
-  --color-border: #E4E4E7;
-  --color-primary: #625DF5;
-  --color-primary-hover: #5048E5;
-  --color-text: #1F1F23;
-  --color-text-secondary: #6B6D76;
-  --color-text-tertiary: #9B9CA3;
-  --color-error: #D64770;
-  --color-recording: #EF440C;
+  --color-bg: #ffffff;
+  --color-surface: #f7f7f8;
+  --color-border: #e4e4e7;
+  --color-primary: #625df5;
+  --color-primary-hover: #5048e5;
+  --color-text: #1f1f23;
+  --color-text-secondary: #6b6d76;
+  --color-text-tertiary: #9b9ca3;
+  --color-error: #d64770;
+  --color-recording: #ef440c;
   --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
   --shadow-card: 0 1px 3px rgba(31, 31, 35, 0.08), 0 4px 12px rgba(31, 31, 35, 0.04);
@@ -83,16 +84,16 @@ Default. A content-first tool used in bright office environments.
 
 ## 3. Typography Rules
 
-| Role | Size | Weight | Line Height |
-|------|------|--------|-------------|
-| Display | 28px | 700 | 1.2 |
-| H1 | 22px | 600 | 1.3 |
-| H2 | 18px | 600 | 1.4 |
-| Body | 14px | 400 | 1.5 |
-| Body Small | 13px | 400 | 1.5 |
-| Caption | 12px | 400 | 1.4 |
-| Button | 14px | 500 | 1.2 |
-| Micro | 11px | 500 | 1.2 |
+| Role       | Size | Weight | Line Height |
+| ---------- | ---- | ------ | ----------- |
+| Display    | 28px | 700    | 1.2         |
+| H1         | 22px | 600    | 1.3         |
+| H2         | 18px | 600    | 1.4         |
+| Body       | 14px | 400    | 1.5         |
+| Body Small | 13px | 400    | 1.5         |
+| Caption    | 12px | 400    | 1.4         |
+| Button     | 14px | 500    | 1.2         |
+| Micro      | 11px | 500    | 1.2         |
 
 **Font labels for catalog extraction:**
 
@@ -118,7 +119,9 @@ Mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
   overflow: hidden;
-  transition: transform var(--transition-base), box-shadow var(--transition-base);
+  transition:
+    transform var(--transition-base),
+    box-shadow var(--transition-base);
 }
 
 .thumbnail-card:hover {
@@ -136,8 +139,13 @@ Mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace
 
 ```css
 @keyframes recording-pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
 }
 .recording-dot {
   width: 10px;
@@ -175,7 +183,7 @@ Mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace
 ```css
 .btn-primary {
   background: var(--color-primary);
-  color: #FFFFFF;
+  color: #ffffff;
   border-radius: var(--radius-md);
   padding: 10px 20px;
   font-size: 14px;
@@ -211,6 +219,7 @@ Video-first responsive layout. At narrower breakpoints, the video thumbnail stac
 ## 9. Agent Prompt Guide
 
 When generating a Loom-style interface, prompt the model to:
+
 - Use Inter for all UI text; ui-monospace for code snippets
 - Apply `--radius-lg` (8px) to cards, `--radius-md` (6px) to buttons, `--radius-sm` (4px) to inputs
 - Use 200ms ease-out for card hover transitions, 100ms for button press

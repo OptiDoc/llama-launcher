@@ -38,11 +38,11 @@ grep -oE '(codeToComponent|codeToProp)' /tmp/bundle.js
 
 ## 密钥来源
 
-| 框架 | 位置 |
-|------|------|
+| 框架    | 位置                                    |
+| ------- | --------------------------------------- |
 | Nuxt.js | `public:{obfuscationKey:"..."}` in HTML |
-| Next.js | `__NEXT_DATA__` 的 runtimeConfig |
-| SPA | bundle 常量或 `window.__CONFIG__` |
+| Next.js | `__NEXT_DATA__` 的 runtimeConfig        |
+| SPA     | bundle 常量或 `window.__CONFIG__`       |
 
 ## 查找解码函数
 

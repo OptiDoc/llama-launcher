@@ -13,33 +13,39 @@ description: Analyze resumes and design interview strategies using evidence-base
 
 Dynamically summon the most matching **best minds** into the war room based on **candidate's role attributes**:
 
-*   **Geoff Smart (Who)**: Responsible for **Define & Verify**.
-    *   *Principle*: Scorecard First. Before looking at any resume, clarify what the standard for an "A Player" is.
-*   **Lou Adler (Performance-based)**: Responsible for **Predict**.
-    *   *Principle*: Past performance predicts future performance *only if* the context is similar. Must design simulations for future scenarios.
-*   **Daniel Kahneman (Bias Control)**: Responsible for **De-bias**.
-    *   *Principle*: Beware of "confirmation bias." If concerns are found, also seek counter-evidence; if highlights are found, verify their replicability.
-*   **Domain Expert**: Responsible for **Depth**.
+- **Geoff Smart (Who)**: Responsible for **Define & Verify**.
+  - _Principle_: Scorecard First. Before looking at any resume, clarify what the standard for an "A Player" is.
+- **Lou Adler (Performance-based)**: Responsible for **Predict**.
+  - _Principle_: Past performance predicts future performance _only if_ the context is similar. Must design simulations for future scenarios.
+- **Daniel Kahneman (Bias Control)**: Responsible for **De-bias**.
+  - _Principle_: Beware of "confirmation bias." If concerns are found, also seek counter-evidence; if highlights are found, verify their replicability.
+- **Domain Expert**: Responsible for **Depth**.
 
 ## 2. Core Execution Workflow
 
-### Step 1: Scorecard Definition - *Smart's Priority*
+### Step 1: Scorecard Definition - _Smart's Priority_
+
 **Don't look at the resume first!** Based on JD or role requirements, define A Player standards for this position:
-*   **Mission**: One sentence - why does this role exist?
-*   **Outcomes**: 3-5 specific, measurable results that must be achieved within 12 months.
-*   **Competencies**: Hard/soft skills required to achieve the above outcomes.
 
-### Step 2: Forensic Resume Scan - *Smart's Forensic*
+- **Mission**: One sentence - why does this role exist?
+- **Outcomes**: 3-5 specific, measurable results that must be achieved within 12 months.
+- **Competencies**: Hard/soft skills required to achieve the above outcomes.
+
+### Step 2: Forensic Resume Scan - _Smart's Forensic_
+
 Use Step 1 standards to scan the resume, looking for **Gaps (discrepancies)** and **High Points (highlights)**:
-*   **The "Too Good To Be True" Heuristic**: Logical gaps behind perfect data.
-*   **The "Passenger vs Driver" Heuristic**: Individual's true contributions under big company halo.
-*   **The "First Principles" Heuristic**: Principle understanding behind technical jargon.
 
-### Step 3: Pressure Test & Future Simulation - *Adler's Prediction*
+- **The "Too Good To Be True" Heuristic**: Logical gaps behind perfect data.
+- **The "Passenger vs Driver" Heuristic**: Individual's true contributions under big company halo.
+- **The "First Principles" Heuristic**: Principle understanding behind technical jargon.
+
+### Step 3: Pressure Test & Future Simulation - _Adler's Prediction_
+
 Design two types of questions:
+
 1.  **Pressure Test Scripts (for past)**: Design Forensic STAR follow-ups targeting Step 2 concerns (originally "torpedo questions," but more objective).
 2.  **Future Simulation (for future)**: Design a specific Performance Problem.
-    *   *Example*: "We're entering this new market next year, and the biggest obstacle is X. If you join, how would you analyze this problem in your first week?"
+    - _Example_: "We're entering this new market next year, and the biggest obstacle is X. If you join, how would you analyze this problem in your first week?"
 
 ## 3. Question Design Principles
 

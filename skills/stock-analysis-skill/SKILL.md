@@ -16,24 +16,25 @@ description: "Comprehensive stock market analysis skill covering A-share (China)
 
 ## Commands & Triggers
 
-| 命令 | 触发词示例 |
-|------|-----------|
-| 个股分析 | 分析600519 / AAPL值不值得买 / 帮我看看腾讯 |
-| 带持仓分析 | 我持仓成本1450分析茅台 / AAPL我170买的现在怎样 |
-| 股息分析 | JNJ股息怎么样 / 帮我分析这几只股的股息 KO PG JNJ |
-| 传闻扫描 | 今日有什么并购传闻 / 扫描一下市场早期信号 |
-| 添加自选股 | 关注AAPL / 把600519加入自选，目标价1600止损1350 |
-| 查看自选股 | 我的自选股列表 / 看一下我关注的股票 |
-| 检查提醒 | 检查自选股提醒 / 有没有触发止损 |
-| 删除自选股 | 从自选股删除TSLA |
-| K线图分析 | （上传图片）帮我分析这个K线图 |
-| 大盘复盘 | 附带大盘复盘分析600519 |
+| 命令       | 触发词示例                                       |
+| ---------- | ------------------------------------------------ |
+| 个股分析   | 分析600519 / AAPL值不值得买 / 帮我看看腾讯       |
+| 带持仓分析 | 我持仓成本1450分析茅台 / AAPL我170买的现在怎样   |
+| 股息分析   | JNJ股息怎么样 / 帮我分析这几只股的股息 KO PG JNJ |
+| 传闻扫描   | 今日有什么并购传闻 / 扫描一下市场早期信号        |
+| 添加自选股 | 关注AAPL / 把600519加入自选，目标价1600止损1350  |
+| 查看自选股 | 我的自选股列表 / 看一下我关注的股票              |
+| 检查提醒   | 检查自选股提醒 / 有没有触发止损                  |
+| 删除自选股 | 从自选股删除TSLA                                 |
+| K线图分析  | （上传图片）帮我分析这个K线图                    |
+| 大盘复盘   | 附带大盘复盘分析600519                           |
 
 ---
 
 ## Input Schemas
 
 ### 个股分析
+
 ```typescript
 {
   stocks: (string | { code: string; position?: { status: "empty"|"holding"; cost?: number; shares?: number } })[],
@@ -46,16 +47,19 @@ description: "Comprehensive stock market analysis skill covering A-share (China)
 ```
 
 ### 股息分析
+
 ```typescript
 runDividend(tickers: string | string[])
 ```
 
 ### 传闻扫描
+
 ```typescript
-runRumorScan()  // 无需参数，自动扫描今日信号
+runRumorScan(); // 无需参数，自动扫描今日信号
 ```
 
 ### 自选股管理
+
 ```typescript
 runWatchlistAdd(ticker, { targetPrice?, stopPrice?, alertOnSignal?, notes? })
 runWatchlistRemove(ticker)
@@ -86,35 +90,35 @@ runWatchlistCheck()  // 检查是否触发价格/信号提醒
 
 ## Dividend Analysis Metrics
 
-| 指标 | 说明 |
-|------|------|
-| 安全评分 | 0-100，综合派息率/增长/连续年数 |
-| 收入评级 | excellent/good/moderate/poor |
-| 派息率状态 | safe(<40%)/moderate/high/unsustainable |
-| 5年CAGR | 股息复合增长率 |
-| 连续增长年数 | 25年以上为股息贵族 |
+| 指标         | 说明                                   |
+| ------------ | -------------------------------------- |
+| 安全评分     | 0-100，综合派息率/增长/连续年数        |
+| 收入评级     | excellent/good/moderate/poor           |
+| 派息率状态   | safe(<40%)/moderate/high/unsustainable |
+| 5年CAGR      | 股息复合增长率                         |
+| 连续增长年数 | 25年以上为股息贵族                     |
 
 ---
 
 ## Rumor Scanner Signal Types
 
-| 类型 | 冲击分 | 说明 |
-|------|--------|------|
-| 并购传闻 (ma) | +5 | M&A/收购/要约 |
-| 内部人动态 (insider) | +4 | CEO/董事买卖 |
-| 分析师调整 (analyst) | +3 | 评级上调/下调/目标价变动 |
-| 监管动态 (regulatory) | +3 | SEC调查/合规风险 |
-| 业绩预期 (earnings) | +2 | 盈利预警/上调 |
+| 类型                  | 冲击分 | 说明                     |
+| --------------------- | ------ | ------------------------ |
+| 并购传闻 (ma)         | +5     | M&A/收购/要约            |
+| 内部人动态 (insider)  | +4     | CEO/董事买卖             |
+| 分析师调整 (analyst)  | +3     | 评级上调/下调/目标价变动 |
+| 监管动态 (regulatory) | +3     | SEC调查/合规风险         |
+| 业绩预期 (earnings)   | +2     | 盈利预警/上调            |
 
 ---
 
 ## Watchlist Alert Types
 
-| 提醒类型 | 触发条件 |
-|---------|---------|
-| 🎯 目标价 | 当前价 ≥ targetPrice |
-| 🛑 止损价 | 当前价 ≤ stopPrice |
-| 📊 信号变化 | 本次结论 ≠ 上次结论 |
+| 提醒类型    | 触发条件             |
+| ----------- | -------------------- |
+| 🎯 目标价   | 当前价 ≥ targetPrice |
+| 🛑 止损价   | 当前价 ≤ stopPrice   |
+| 📊 信号变化 | 本次结论 ≠ 上次结论  |
 
 ---
 

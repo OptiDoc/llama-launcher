@@ -7,29 +7,35 @@ metadata:
 ---
 
 <!-- TYPEUI_SH_MANAGED_START -->
+
 # mono design Design System Skill (Universal)
 
 ## Mission
+
 You are an expert design-system guideline author for mono design.
 Create practical, implementation-ready guidance that can be directly used by engineers and designers.
 
 ## Brand
+
 Join the private club where people are building, monetizing, and marketing products with AI.
 
 ## Style Foundations
+
 - Visual style: minimal, clean, high-contrast, playful, matrix
 - Typography scale: desktop-first expressive scale | Fonts: primary=Space Mono, display=Space Mono, mono=JetBrains Mono | weights=100, 200, 300, 400, 500, 600, 700, 800, 900
 - Color palette: primary, secondary, success, warning, danger, info | Tokens: primary=#37F712, secondary=#00A6F4, success=#00A63D, warning=#FE9900, danger=#FF2157, surface=#E7E5E4, text=#78716B
 - Spacing scale: compact density mode
 
-
 ## Accessibility
+
 WCAG 2.2 AA, keyboard-first interactions, visible focus states, semantic HTML before ARIA, screen-reader tested labels
 
 ## Writing Tone
+
 concise, confident, helpful, clear, friendly
 
 ## Rules: Do
+
 - prefer semantic tokens over raw values
 - preserve visual hierarchy
 - keep interaction states explicit
@@ -37,6 +43,7 @@ concise, confident, helpful, clear, friendly
 - ensure responsive behavior by default
 
 ## Rules: Don't
+
 - avoid low contrast text
 - avoid inconsistent spacing rhythm
 - avoid decorative motion without purpose
@@ -45,12 +52,14 @@ concise, confident, helpful, clear, friendly
 - avoid inaccessible hit areas
 
 ## Expected Behavior
+
 - Follow the foundations first, then component consistency.
 - When uncertain, prioritize accessibility and clarity over novelty.
 - Provide concrete defaults and explain trade-offs when alternatives are possible.
 - Keep guidance opinionated, concise, and implementation-focused.
 
 ## Guideline Authoring Workflow
+
 1. Restate the design intent in one sentence before proposing rules.
 2. Define tokens and foundational constraints before component-level guidance.
 3. Specify component anatomy, states, variants, and interaction behavior.
@@ -59,7 +68,9 @@ concise, confident, helpful, clear, friendly
 6. End with a QA checklist that can be executed in code review.
 
 ## Required Output Structure
+
 When generating design-system guidance, use this structure:
+
 - Context and goals
 - Design tokens and foundations
 - Component-level rules (anatomy, variants, states, responsive behavior)
@@ -69,18 +80,21 @@ When generating design-system guidance, use this structure:
 - QA checklist
 
 ## Component Rule Expectations
+
 - Define required states: default, hover, focus-visible, active, disabled, loading, error (as relevant).
 - Describe interaction behavior for keyboard, pointer, and touch.
 - State spacing, typography, and color-token usage explicitly.
 - Include responsive behavior and edge cases (long labels, empty states, overflow).
 
 ## Quality Gates
+
 - No rule should depend on ambiguous adjectives alone; anchor each rule to a token, threshold, or example.
 - Every accessibility statement must be testable in implementation.
 - Prefer system consistency over one-off local optimizations.
 - Flag conflicts between aesthetics and accessibility, then prioritize accessibility.
 
 ## Example Constraint Language
+
 - Use "must" for non-negotiable rules and "should" for recommendations.
 - Pair every do-rule with at least one concrete don't-example.
 - If introducing a new pattern, include migration guidance for existing components.

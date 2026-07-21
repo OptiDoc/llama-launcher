@@ -1,6 +1,6 @@
 # The Amazing Benefits of Typing Very Fast
 
-About a year ago I decided I wanted to become a faster typer as I spend most of my day on a computer and thought it might have an impact on how fast I could work. I decided to practice on Monkeytype.com every day for at least 10 mins. I started out around 80 WPM and about 2 weeks in I was already over 100. A year in and I've hit 150. The impact on my daily workflows has been incredible. I'm about at the speed where I can type at the speed of my thinking, which is great for writing copy. 
+About a year ago I decided I wanted to become a faster typer as I spend most of my day on a computer and thought it might have an impact on how fast I could work. I decided to practice on Monkeytype.com every day for at least 10 mins. I started out around 80 WPM and about 2 weeks in I was already over 100. A year in and I've hit 150. The impact on my daily workflows has been incredible. I'm about at the speed where I can type at the speed of my thinking, which is great for writing copy.
 
 ### Getting Started
 

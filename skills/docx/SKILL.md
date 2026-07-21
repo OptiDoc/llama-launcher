@@ -58,27 +58,27 @@ if DOCX_SCRIPTS not in sys.path:
 
 ### Task Router
 
-| User Intent | Route | Files to Load |
-|-------------|-------|---------------|
-| Create/write/generate (no attachment) | **Create** | `routes/create.md` + `references/docx-js-core.md` |
-| Edit/modify/revise (has attachment) | **Edit** | `routes/edit.md` + `references/ooxml.md` |
-| Format/layout/font/margin | **Format** | `routes/format.md` |
-| Comment/annotate/review | **Comment** | `routes/comment.md` |
-| Read/analyze/extract | **Read** | `routes/read.md` |
+| User Intent                           | Route       | Files to Load                                     |
+| ------------------------------------- | ----------- | ------------------------------------------------- |
+| Create/write/generate (no attachment) | **Create**  | `routes/create.md` + `references/docx-js-core.md` |
+| Edit/modify/revise (has attachment)   | **Edit**    | `routes/edit.md` + `references/ooxml.md`          |
+| Format/layout/font/margin             | **Format**  | `routes/format.md`                                |
+| Comment/annotate/review               | **Comment** | `routes/comment.md`                               |
+| Read/analyze/extract                  | **Read**    | `routes/read.md`                                  |
 
 ### Scene Router (Optional — load after route)
 
-| User Keywords | Scene | File |
-|---------------|-------|------|
-| thesis, academic, research, paper, dissertation, abstract, journal | Academic | `scenes/academic.md` |
-| report, analysis, experiment, testing, survey, review, summary, proposal, feasibility, competitor, industry, operations | Report | `scenes/report.md` |
-| contract, agreement, terms, transfer, NDA, confidential, framework, cooperation, service terms, user agreement, procurement | Contract | `scenes/contract.md` |
-| resume, CV, job application | Resume | `scenes/resume.md` |
-| exam, test, quiz, paper (exam context), lesson plan | Exam | `scenes/exam.md` |
-| official document, notice, letter, reply, minutes, red header, government, issuance | Official | `scenes/official-doc.md` |
-| broadcast script, product copy, livestream, speech, presentation script, video script | Copywriting | `scenes/copywriting.md` |
-| plan, proposal (if not report context) | Report | `scenes/report.md` |
-| policy, regulation, standard, management rules | Official | `scenes/official-doc.md` |
+| User Keywords                                                                                                               | Scene       | File                     |
+| --------------------------------------------------------------------------------------------------------------------------- | ----------- | ------------------------ |
+| thesis, academic, research, paper, dissertation, abstract, journal                                                          | Academic    | `scenes/academic.md`     |
+| report, analysis, experiment, testing, survey, review, summary, proposal, feasibility, competitor, industry, operations     | Report      | `scenes/report.md`       |
+| contract, agreement, terms, transfer, NDA, confidential, framework, cooperation, service terms, user agreement, procurement | Contract    | `scenes/contract.md`     |
+| resume, CV, job application                                                                                                 | Resume      | `scenes/resume.md`       |
+| exam, test, quiz, paper (exam context), lesson plan                                                                         | Exam        | `scenes/exam.md`         |
+| official document, notice, letter, reply, minutes, red header, government, issuance                                         | Official    | `scenes/official-doc.md` |
+| broadcast script, product copy, livestream, speech, presentation script, video script                                       | Copywriting | `scenes/copywriting.md`  |
+| plan, proposal (if not report context)                                                                                      | Report      | `scenes/report.md`       |
+| policy, regulation, standard, management rules                                                                              | Official    | `scenes/official-doc.md` |
 
 **If no scene matches**, use default design rules from `references/design-system.md` and `references/common-rules.md`.
 
@@ -87,6 +87,7 @@ if DOCX_SCRIPTS not in sys.path:
 → See `references/common-rules.md` for full font profiles, spacing, indent, and layout rules.
 
 **Key rules (quick reference):**
+
 - **Line spacing**: 1.3x (`line: 312`) — MANDATORY. Exceptions: resume 1.15x, official doc 28pt fixed, copywriting `400`, contract 1.5x
 - **CJK body**: Justified + 2-char indent (`firstLine: 480` SimSun / `420` YaHei)
 - **Tables**: `margins` set, `ShadingType.CLEAR`, `tableHeader: true`, `cantSplit: true`, title `keepNext: true`
@@ -95,12 +96,12 @@ if DOCX_SCRIPTS not in sys.path:
 
 ## Unit Quick Reference
 
-| Unit | Value |
-|------|-------|
-| 1 cm | 567 twips |
-| 1 inch | 1440 twips |
-| 1 pt | 20 half-points |
-| A4 | 11906 × 16838 twips |
+| Unit   | Value               |
+| ------ | ------------------- |
+| 1 cm   | 567 twips           |
+| 1 inch | 1440 twips          |
+| 1 pt   | 20 half-points      |
+| A4     | 11906 × 16838 twips |
 
 For Chinese font size table and common margins, see `references/common-rules.md`.
 
@@ -109,6 +110,7 @@ For Chinese font size table and common margins, see `references/common-rules.md`
 ### Layer 1: Manual Checklist (self-check during generation)
 
 #### Basic Format
+
 - [ ] Line spacing is 1.3x (`line: 312`) or scene-specific override
 - [ ] CJK body has 2-char indent (`firstLine: 480` or `420`)
 - [ ] Tables have margins set
@@ -121,10 +123,12 @@ For Chinese font size table and common margins, see `references/common-rules.md`
 - [ ] Header/footer present (unless scene says otherwise)
 
 #### Heading Styles
+
 - [ ] All body chapter headings use `heading: HeadingLevel.HEADING_X` (never simulate with bold + large font)
 - [ ] Cover title may skip Heading style (not in TOC), but body headings MUST use Heading style
 
 #### Page Break & Blank Page Prevention
+
 - [ ] Cover/content in separate sections
 - [ ] Three rules to prevent blank pages:
   - ① When using section(NEXT_PAGE), previous section must NOT end with PageBreak (double break = blank page)
@@ -134,7 +138,9 @@ For Chinese font size table and common margins, see `references/common-rules.md`
 - [ ] No unwanted blank pages (check each section ending)
 
 #### TOC
+
 → See `references/toc.md` for the complete TOC reference and checklist.
+
 - [ ] If TOC title exists → `TableOfContents` element must be present
 - [ ] **⚠️ MANDATORY PageBreak after TableOfContents** — a Paragraph containing PageBreak MUST immediately follow the `TableOfContents` element; without it, TOC and body content will render on the same page. This is the #1 TOC formatting failure — never omit it
 - [ ] `add_toc_placeholders.py --auto` runs after generation; exit code = 0
@@ -146,11 +152,13 @@ For Chinese font size table and common margins, see `references/common-rules.md`
 - [ ] **⚠️ TOC Refresh Hint MANDATORY** — between `TableOfContents` element and the PageBreak, MUST add an italic gray note paragraph telling users to right-click TOC → "Update Field" to refresh page numbers (see toc.md § TOC Refresh Hint)
 
 #### Table Cross-Page
+
 - [ ] Header rows: `tableHeader: true`
 - [ ] All rows: `cantSplit: true`
 - [ ] Title paragraph: `keepNext: true`
 
 #### Cover
+
 - [ ] **Cover MUST use a validated recipe (R1–R7)** from `design-system.md` — free-form cover code is forbidden
 - [ ] Cover recipe matches document type (per `selectCoverRecipe()` in `design-system.md`)
 - [ ] Cover uses the 16838 outer wrapper table with `allNoBorders` (all recipes provide this)

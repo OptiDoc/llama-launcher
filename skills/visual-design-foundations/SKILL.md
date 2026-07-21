@@ -39,11 +39,12 @@ Build cohesive, accessible visual systems using typography, color, spacing, and 
 ```
 
 **Line Height Guidelines**:
+
 | Text Type | Line Height |
-|-----------|-------------|
-| Headings | 1.1 - 1.3 |
-| Body text | 1.5 - 1.7 |
-| UI labels | 1.2 - 1.4 |
+| --------- | ----------- |
+| Headings  | 1.1 - 1.3   |
+| Body text | 1.5 - 1.7   |
+| UI labels | 1.2 - 1.4   |
 
 ### 2. Spacing System
 

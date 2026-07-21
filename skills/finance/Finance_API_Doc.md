@@ -9,23 +9,25 @@ Finance API provides comprehensive financial data access interfaces, including r
 **This API is accessed through the web-dev-ai-gateway unified proxy service.**
 
 **Gateway Configuration:**
+
 - **Gateway Base URL:** `GATEWAY_URL` (e.g., `https://internal-api.z.ai`)
 - **API Path Prefix:** `API_PREFIX` (e.g., `/external/finance`)
 - **Authentication:** Automatic (gateway injects `x-rapidapi-host` and `x-rapidapi-key`)
 - **Required Header:** `X-Z-AI-From: Z`
 
 **URL Structure:**
+
 ```
 {GATEWAY_URL}{API_PREFIX}/{endpoint}
 ```
 
 **Example:**
+
 - Full URL: `https://internal-api.z.ai/external/finance/v1/markets/search?search=Apple`
 - Breakdown:
   - `https://internal-api.z.ai` - Gateway base URL (`GATEWAY_URL`)
   - `/external/finance` - API path prefix (`API_PREFIX`)
   - `/v1/markets/search` - API endpoint path
-
 
 ### Quick Start
 
@@ -35,12 +37,12 @@ curl -X GET "{GATEWAY_URL}{API_PREFIX}/v1/markets/quote?ticker=AAPL&type=STOCKS"
   -H "X-Z-AI-From: Z"
 ```
 
-
 ## 1. Market Data API
 
 ### 1.1 GET v2/markets/tickers - Get All Available Market Tickers
 
 **Parameters:**
+
 - `page` (optional, Number): Page number, default value is 1
 - `type` (required, String): Asset type, optional values:
   - `STOCKS` - Stocks
@@ -48,6 +50,7 @@ curl -X GET "{GATEWAY_URL}{API_PREFIX}/v1/markets/quote?ticker=AAPL&type=STOCKS"
   - `MUTUALFUNDS` - Mutual Funds
 
 **curl example (via Gateway):**
+
 ```bash
 curl -X GET "{GATEWAY_URL}{API_PREFIX}/v2/markets/tickers?page=1&type=STOCKS" \
   -H "X-Z-AI-From: Z"
@@ -58,9 +61,11 @@ curl -X GET "{GATEWAY_URL}{API_PREFIX}/v2/markets/tickers?page=1&type=STOCKS" \
 ### 1.2 GET v1/markets/search - Search Stocks
 
 **Parameters:**
+
 - `search` (required, String): Search keyword (company name or stock symbol)
 
 **curl example (via Gateway):**
+
 ```bash
 curl -X GET "{GATEWAY_URL}{API_PREFIX}/v1/markets/search?search=Apple" \
   -H "X-Z-AI-From: Z"
@@ -73,6 +78,7 @@ curl -X GET "{GATEWAY_URL}{API_PREFIX}/v1/markets/search?search=Apple" \
 ### 1.3 GET v1/markets/quote (real-time) - Real-time Quotes
 
 **Parameters:**
+
 - `ticker` (required, String): Stock symbol (only one can be entered)
 - `type` (required, String): Asset type
   - `STOCKS` - Stocks
@@ -80,6 +86,7 @@ curl -X GET "{GATEWAY_URL}{API_PREFIX}/v1/markets/search?search=Apple" \
   - `MUTUALFUNDS` - Mutual Funds
 
 **curl example (via Gateway):**
+
 ```bash
 curl -X GET "{GATEWAY_URL}{API_PREFIX}/v1/markets/quote?ticker=AAPL&type=STOCKS" \
   -H "X-Z-AI-From: Z"
@@ -90,9 +97,11 @@ curl -X GET "{GATEWAY_URL}{API_PREFIX}/v1/markets/quote?ticker=AAPL&type=STOCKS"
 ### 1.4 GET v1/markets/stock/quotes (snapshots) - Snapshot Quotes
 
 **Parameters:**
+
 - `ticker` (required, String): Stock symbols, separated by commas
 
 **curl example:**
+
 ```bash
 curl --request GET \
   --url '{GATEWAY_URL}{API_PREFIX}/v1/markets/stock/quotes?ticker=AAPL%2CMSFT%2C%5ESPX%2C%5ENYA%2CGAZP.ME%2CSIBN.ME%2CGEECEE.NS'
@@ -102,12 +111,12 @@ curl --request GET \
 
 ---
 
-
 ## 2. Historical Data API
 
 ### 2.1 GET v1/markets/stock/history - Stock Historical Data
 
 **Parameters:**
+
 - `symbol` (required, String): Stock symbol
 - `interval` (required, String): Time interval
   - `5m` - 5 minutes
@@ -123,6 +132,7 @@ curl --request GET \
   - `false` - Exclude (default)
 
 **curl example:**
+
 ```bash
 curl --request GET \
   --url '{GATEWAY_URL}{API_PREFIX}/v1/markets/stock/history?symbol=AAPL&interval=1d&diffandsplits=false'
@@ -135,6 +145,7 @@ curl --request GET \
 ### 2.2 GET v2/markets/stock/history - Stock Historical Data V2
 
 **Parameters:**
+
 - `symbol` (required, String): Stock symbol
 - `interval` (optional, String): Time interval
   - `1m`, `2m`, `3m`, `4m`, `5m`, `15m`, `30m`
@@ -143,6 +154,7 @@ curl --request GET \
 - `dividend` (optional, String): Include dividend data (`true` or `false`)
 
 **curl example:**
+
 ```bash
 curl --request GET \
   --url '{GATEWAY_URL}{API_PREFIX}/v2/markets/stock/history?symbol=AAPL&interval=1m&limit=640'
@@ -157,9 +169,11 @@ curl --request GET \
 ### 3.1 GET v1/markets/news - Market News
 
 **Parameters:**
+
 - `ticker` (optional, String): Stock symbols, comma-separated for multiple stocks
 
 **curl example:**
+
 ```bash
 # Get general market news
 curl --request GET \
@@ -177,10 +191,12 @@ curl --request GET \
 ### 3.2 GET v2/markets/news - Market News V2
 
 **Parameters:**
+
 - `ticker` (optional, String): Stock symbol
 - `type` (optional, String): News type (`ALL`, `VIDEO`, `PRESS-RELEASE`)
 
 **curl example:**
+
 ```bash
 curl --request GET \
   --url '{GATEWAY_URL}{API_PREFIX}/v2/markets/news?ticker=AAPL&type=ALL'
@@ -195,9 +211,11 @@ curl --request GET \
 ### 5.1 GET v1/markets/stock/modules (asset-profile) - Company Profile
 
 **Parameters:**
+
 - `ticker` (required, String): Stock symbol
 
 **curl example:**
+
 ```bash
 curl --request GET \
   --url '{GATEWAY_URL}{API_PREFIX}/v1/markets/stock/modules?ticker=AAPL&module=asset-profile'
@@ -210,6 +228,7 @@ curl --request GET \
 ### 5.2 GET v1/stock/modules - Stock Module Data
 
 **Parameters:**
+
 - `ticker` (required, String): Stock symbol
 - `module` (required, String): Module name (one per request)
   - Acceptable values: `profile`, `income-statement`, `balance-sheet`, `cashflow-statement`,
@@ -220,6 +239,7 @@ curl --request GET \
     `index-trend`, `sector-trend`
 
 **curl example:**
+
 ```bash
 # Get specific module
 curl --request GET \
@@ -233,9 +253,11 @@ curl --request GET \
 ### 5.3 GET v1/markets/stock/modules (statistics) - Stock Statistics
 
 **Parameters:**
+
 - `ticker` (required, String): Stock symbol
 
 **curl example:**
+
 ```bash
 curl --request GET \
   --url '{GATEWAY_URL}{API_PREFIX}/v1/markets/stock/modules?ticker=AAPL&module=statistics'
@@ -248,10 +270,12 @@ curl --request GET \
 ### 5.4 GET v1/markets/stock/modules (financial-data) - Get Financial Data
 
 **Parameters:**
+
 - `ticker` (required, String): Stock symbol
 - `module` (required, String): `financial-data`
 
 **curl example:**
+
 ```bash
 curl --request GET \
   --url '{GATEWAY_URL}{API_PREFIX}/v1/markets/stock/modules?ticker=AAPL&module=financial-data'
@@ -264,10 +288,12 @@ curl --request GET \
 ### 5.5 GET v1/markets/stock/modules (sec-filings) - Get SEC Filings
 
 **Parameters:**
+
 - `ticker` (required, String): Stock symbol
 - `module` (required, String): `sec-filings`
 
 **curl example:**
+
 ```bash
 curl --request GET \
   --url '{GATEWAY_URL}{API_PREFIX}/v1/markets/stock/modules?ticker=AAPL&module=sec-filings'
@@ -280,9 +306,11 @@ curl --request GET \
 ### 5.6 GET v1/markets/stock/modules (earnings) - Earnings Data
 
 **Parameters:**
+
 - `ticker` (required, String): Stock symbol
 
 **curl example:**
+
 ```bash
 curl --request GET \
   --url '{GATEWAY_URL}{API_PREFIX}/v1/markets/stock/modules?ticker=AAPL&module=earnings'
@@ -295,10 +323,12 @@ curl --request GET \
 ### 5.7 GET v1/markets/stock/modules (calendar-events) - Get Calendar Events
 
 **Parameters:**
+
 - `ticker` (required, String): Stock symbol
 - `module` (required, String): `calendar-events`
 
 **curl example:**
+
 ```bash
 curl --request GET \
   --url '{GATEWAY_URL}{API_PREFIX}/v1/markets/stock/modules?ticker=AAPL&module=calendar-events'
@@ -313,9 +343,11 @@ curl --request GET \
 ### 7.1 GET v1/markets/stock/modules (balance-sheet) - Balance Sheet
 
 **Parameters:**
+
 - `ticker` (required, String): Stock symbol
 
 **curl example:**
+
 ```bash
 curl --request GET \
   --url '{GATEWAY_URL}{API_PREFIX}/v1/markets/stock/modules?ticker=AAPL&module=balance-sheet'
@@ -328,9 +360,11 @@ curl --request GET \
 ### 7.3 GET v1/markets/stock/modules (income-statement) - Income Statement
 
 **Parameters:**
+
 - `ticker` (required, String): Stock symbol
 
 **curl example:**
+
 ```bash
 curl --request GET \
   --url '{GATEWAY_URL}{API_PREFIX}/v1/markets/stock/modules?ticker=AAPL&module=income-statement'
@@ -343,9 +377,11 @@ curl --request GET \
 ### 7.4 GET v1/markets/stock/modules (cashflow-statement) - Cash Flow Statement
 
 **Parameters:**
+
 - `ticker` (required, String): Stock symbol
 
 **curl example:**
+
 ```bash
 curl --request GET \
   --url '{GATEWAY_URL}{API_PREFIX}/v1/markets/stock/modules?ticker=AAPL&module=cashflow-statement'
@@ -385,6 +421,7 @@ GET /v1/markets/stock/modules?ticker=AAPL&module=earnings
 ## Usage Tips
 
 ### 1. Batch Query Optimization
+
 ```bash
 # Get data for multiple stocks at once (snapshots endpoint) via Gateway
 curl -X GET "{GATEWAY_URL}{API_PREFIX}/v1/markets/stock/quotes?ticker=AAPL,MSFT,GOOGL,AMZN,TSLA" \
@@ -392,6 +429,7 @@ curl -X GET "{GATEWAY_URL}{API_PREFIX}/v1/markets/stock/quotes?ticker=AAPL,MSFT,
 ```
 
 ### 2. Time Range Query
+
 ```bash
 # Get historical data with specific interval via Gateway
 curl -X GET "{GATEWAY_URL}{API_PREFIX}/v1/markets/stock/history?symbol=AAPL&interval=1d&diffandsplits=false" \
@@ -399,9 +437,11 @@ curl -X GET "{GATEWAY_URL}{API_PREFIX}/v1/markets/stock/history?symbol=AAPL&inte
 ```
 
 ### 3. Combined Query Example
+
 ### 3. Combined Query Example
 
 **Python example (via Gateway):**
+
 ```python
 import requests
 
@@ -422,7 +462,6 @@ profile = requests.get(f'{gateway_url}/markets/stock/modules?ticker={symbol}&mod
 # Get financial data
 financials = requests.get(f'{gateway_url}/markets/stock/modules?ticker={symbol}&module=financial-data', headers=headers)
 ```
-
 
 ---
 

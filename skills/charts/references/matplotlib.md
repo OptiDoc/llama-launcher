@@ -2,7 +2,6 @@
 
 > **⚠️ Before writing any code, read [`_rules.md`](references/_rules.md) — three non-negotiable rules on overlap, hierarchy, and color.**
 
-
 ## Environment Initialization (Must Execute Before Each Plot)
 
 ```python
@@ -161,17 +160,17 @@ adjust_text(texts, ax=ax,
 **Scenario**: Emphasize outstanding performance of one data item. Gray out others, highlight the focus.
 
 ```python
-def insight_bar(labels, values, highlight_idx, title, 
+def insight_bar(labels, values, highlight_idx, title,
                 highlight_color=C_BLUE, save_path='insight_bar.png'):
     fig, ax = plt.subplots(figsize=(10, 6))
-    
+
     colors = [G200] * len(labels)
     colors[highlight_idx] = highlight_color
-    
+
     bars = ax.bar(labels, values, color=colors, width=0.6,
                   zorder=3, edgecolor='white', linewidth=0.5)
     add_value_labels(ax, bars, values, highlight_idx)
-    
+
     ax.set_title(title, loc='left')
     # ⚠️ add_value_labels already sets ylim automatically, no need to repeat here
     clean_axis(ax)
@@ -250,27 +249,27 @@ def grouped_bar(labels, datasets, series_names, title,
 def ranking_bar(labels, values, title, top_n=3,
                 color=C_BLUE, save_path='ranking.png'):
     from matplotlib.colors import to_rgba
-    
+
     sorted_pairs = sorted(zip(labels, values), key=lambda x: x[1])
     labels_s, values_s = zip(*sorted_pairs)
-    
+
     fig, ax = plt.subplots(figsize=(10, max(6, len(labels)*0.45)))
-    
+
     bar_colors = [G200] * len(labels_s)
     for i in range(len(labels_s) - top_n, len(labels_s)):
         progress = (i - (len(labels_s) - top_n)) / max(top_n - 1, 1)
         bar_colors[i] = to_rgba(color, 0.35 + 0.65 * progress)
-    
+
     bars = ax.barh(range(len(labels_s)), values_s, color=bar_colors,
                    height=0.6, zorder=3, edgecolor='white', linewidth=0.3)
-    
+
     for i, (bar, val) in enumerate(zip(bars, values_s)):
         is_top = i >= len(labels_s) - top_n
         ax.text(bar.get_width() + max(values_s)*0.01,
                 bar.get_y() + bar.get_height()/2,
                 f'{val:,.0f}', va='center', fontsize=9,
                 color=G900 if is_top else G400)
-    
+
     ax.set_yticks(range(len(labels_s)))
     ax.set_yticklabels(labels_s)
     ax.set_title(title, loc='left')
@@ -290,22 +289,22 @@ def donut(labels, values, title, center_text=None,
           colors=None, save_path='donut.png'):
     if colors is None:
         colors = COOL[:len(labels)]
-    
+
     fig, ax = plt.subplots(figsize=(8, 8))
     wedges, _, autotexts = ax.pie(
         values, labels=None, colors=colors, autopct='%1.0f%%',
         startangle=90, pctdistance=0.78,
         wedgeprops=dict(width=0.35, edgecolor='white', linewidth=2))
-    
+
     for t in autotexts:
         t.set_fontsize(10)
         t.set_fontweight('bold')
-    
+
     if center_text:
         ax.text(0, 0.06, str(center_text), ha='center', va='center',
                 fontsize=28, fontweight='bold', color=G900)
         ax.text(0, -0.1, '总计', ha='center', va='center', fontsize=11, color=G500)
-    
+
     ax.legend(wedges, labels, loc='center left',
               bbox_to_anchor=(1, 0.5), fontsize=10)
     ax.set_title(title, loc='center', pad=20)
@@ -322,17 +321,17 @@ def donut(labels, values, title, center_text=None,
 def scatter_trend(x, y, title, xlabel, ylabel,
                   color=C_BLUE, save_path='scatter.png'):
     fig, ax = plt.subplots(figsize=(10, 7))
-    
+
     ax.scatter(x, y, c=color, s=50, alpha=0.6,
                edgecolors='white', linewidth=1, zorder=3)
-    
+
     # Trend line
     z = np.polyfit(x, y, 1)
     p = np.poly1d(z)
     x_line = np.linspace(min(x), max(x), 100)
     ax.plot(x_line, p(x_line), color=G400, linewidth=1.5,
             linestyle='--', zorder=2, alpha=0.7)
-    
+
     ax.set_title(title, loc='left')
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
@@ -351,14 +350,14 @@ def scatter_trend(x, y, title, xlabel, ylabel,
 def heatmap(data, row_labels, col_labels, title,
             cmap_color=C_BLUE, save_path='heatmap.png'):
     from matplotlib.colors import LinearSegmentedColormap
-    
+
     cmap = LinearSegmentedColormap.from_list('bc', ['#FFFFFF', cmap_color])
     fig, ax = plt.subplots(
         figsize=(max(8, len(col_labels)*1.2), max(6, len(row_labels)*0.6)))
-    
+
     arr = np.array(data)
     im = ax.imshow(arr, cmap=cmap, aspect='auto')
-    
+
     vmax = arr.max()
     for i in range(len(row_labels)):
         for j in range(len(col_labels)):
@@ -366,17 +365,17 @@ def heatmap(data, row_labels, col_labels, title,
             color = 'white' if val > vmax * 0.6 else G700
             ax.text(j, i, f'{val:.1f}', ha='center', va='center',
                     fontsize=9, color=color)
-    
+
     ax.set_xticks(range(len(col_labels)))
     ax.set_yticks(range(len(row_labels)))
     ax.set_xticklabels(col_labels)
     ax.set_yticklabels(row_labels)
     ax.set_title(title, loc='left', pad=16)
-    
+
     cbar = fig.colorbar(im, ax=ax, fraction=0.03, pad=0.08, shrink=0.8)
     cbar.outline.set_visible(False)
     cbar.ax.tick_params(labelsize=8)  # colorbar ticks should not be too large
-    
+
     for spine in ax.spines.values():
         spine.set_visible(True)
         spine.set_color(G200)
@@ -392,34 +391,34 @@ def heatmap(data, row_labels, col_labels, title,
 ```python
 def kpi_cards(metrics, save_path='kpi.png'):
     """
-    metrics: [{'label': '总收入', 'value': '12.8M', 
+    metrics: [{'label': '总收入', 'value': '12.8M',
                'change': '+23%', 'positive': True}, ...]
     """
     from matplotlib.patches import FancyBboxPatch
-    
+
     n = len(metrics)
     fig, axes = plt.subplots(1, n, figsize=(3.8*n, 2.8))
     if n == 1: axes = [axes]
-    
+
     for ax, m in zip(axes, metrics):
         ax.set_xlim(0, 1); ax.set_ylim(0, 1); ax.axis('off')
-        
+
         bg = FancyBboxPatch((0.05, 0.05), 0.9, 0.9,
             boxstyle='round,pad=0.05', facecolor=G50, edgecolor=G200, linewidth=0.8)
         ax.add_patch(bg)
-        
+
         ax.text(0.5, 0.75, m['label'], ha='center', va='center',
                 fontsize=10, color=G500)
         ax.text(0.5, 0.45, m['value'], ha='center', va='center',
                 fontsize=24, fontweight='bold', color=G900)
-        
+
         if 'change' in m:
             is_pos = m.get('positive', True)
             ax.text(0.5, 0.18,
                     f'{"↑" if is_pos else "↓"} {m["change"]}',
                     ha='center', va='center', fontsize=11,
                     color=POS if is_pos else NEG, fontweight='bold')
-    
+
     save(fig, save_path)
 ```
 
@@ -434,28 +433,28 @@ def radar(categories, datasets, series_names, title,
           colors=None, save_path='radar.png'):
     if colors is None:
         colors = COOL[:len(datasets)]
-    
+
     N = len(categories)
     angles = np.linspace(0, 2*np.pi, N, endpoint=False).tolist()
     angles += angles[:1]  # Close the polygon
-    
+
     fig, ax = plt.subplots(figsize=(8, 8), subplot_kw=dict(polar=True))
     ax.set_theta_offset(np.pi / 2)
     ax.set_theta_direction(-1)
-    
+
     ax.set_xticks(angles[:-1])
     ax.set_xticklabels(categories, fontsize=10)
     ax.yaxis.set_visible(False)
-    
+
     # Grid beautification
     ax.spines['polar'].set_color(G200)
     ax.grid(color=G200, linewidth=0.5, alpha=0.5)
-    
+
     for data, name, color in zip(datasets, series_names, colors):
         vals = data + data[:1]  # Close the polygon
         ax.plot(angles, vals, color=color, linewidth=2, label=name)
         ax.fill(angles, vals, color=color, alpha=0.08)
-    
+
     ax.legend(loc='upper right', bbox_to_anchor=(1.3, 1.1))
     ax.set_title(title, pad=30, fontsize=16, fontweight='bold')
     save(fig, save_path)
@@ -471,11 +470,11 @@ def radar(categories, datasets, series_names, title,
 def waterfall(labels, values, title, save_path='waterfall.png'):
     """labels and values correspond, positive=increase negative=decrease, last item auto-treated as total"""
     fig, ax = plt.subplots(figsize=(12, 6))
-    
+
     cumulative = [0]
     for v in values[:-1]:
         cumulative.append(cumulative[-1] + v)
-    
+
     bar_colors = []
     for i, v in enumerate(values):
         if i == len(values) - 1:
@@ -484,7 +483,7 @@ def waterfall(labels, values, title, save_path='waterfall.png'):
             bar_colors.append(POS)          # Increase
         else:
             bar_colors.append(NEG)          # Decrease
-    
+
     bottoms = []
     for i, v in enumerate(values):
         if i == len(values) - 1:
@@ -493,15 +492,15 @@ def waterfall(labels, values, title, save_path='waterfall.png'):
             bottoms.append(cumulative[i])
         else:
             bottoms.append(cumulative[i] + v)
-    
+
     bars = ax.bar(labels, [abs(v) for v in values], bottom=bottoms,
                   color=bar_colors, width=0.6, edgecolor='white', linewidth=0.5, zorder=3)
-    
+
     # Connecting lines
     for i in range(len(values) - 2):
         y = cumulative[i+1]
         ax.plot([i+0.3, i+0.7], [y, y], color=G300, linewidth=0.8, zorder=2)
-    
+
     # Value labels
     for i, (bar, val) in enumerate(zip(bars, values)):
         y_pos = bar.get_y() + bar.get_height() + max(abs(v) for v in values)*0.01
@@ -509,7 +508,7 @@ def waterfall(labels, values, title, save_path='waterfall.png'):
         ax.text(bar.get_x()+bar.get_width()/2, y_pos,
                 f'{prefix}{val:,.0f}', ha='center', va='bottom',
                 fontsize=9, color=G700)
-    
+
     ax.set_title(title, loc='left')
     clean_axis(ax)
     save(fig, save_path)
@@ -534,52 +533,52 @@ def dashboard(data_dict, title, save_path='dashboard.png'):
     # ⚠️ Use constrained_layout instead of tight_layout
     fig = plt.figure(figsize=(16, 12), constrained_layout=True)
     fig.suptitle(title, fontsize=20, fontweight='bold', y=0.98)
-    
+
     # GridSpec: precise spacing control
     gs = gridspec.GridSpec(2, 2, figure=fig,
                            wspace=0.35,  # Column spacing (at least 0.3)
                            hspace=0.35,  # Row spacing (at least 0.3)
                            left=0.08, right=0.92,
                            top=0.92, bottom=0.08)
-    
+
     # ─── Top-left: bar chart ───
     ax1 = fig.add_subplot(gs[0, 0])
     ax1.set_title('Quarterly Revenue', loc='left', fontsize=13, fontweight='bold')
     # ... binddata ...
     clean_axis(ax1)
-    
+
     # ─── Top-right: line chart ───
     ax2 = fig.add_subplot(gs[0, 1])
     ax2.set_title('Monthly Trend', loc='left', fontsize=13, fontweight='bold')
     # ... bind data ...
     clean_axis(ax2)
-    
+
     # ─── Bottom-left: pie chart ───
     ax3 = fig.add_subplot(gs[1, 0])
     ax3.set_title('Category Share', loc='left', fontsize=13, fontweight='bold')
     # ... bind data ...
-    
+
     # ─── Bottom-right: scatter plot ───
     ax4 = fig.add_subplot(gs[1, 1])
     ax4.set_title('Conversion Analysis', loc='left', fontsize=13, fontweight='bold')
     # ... bind data ...
     clean_axis(ax4)
-    
+
     fig.savefig(save_path, dpi=200, facecolor='white', bbox_inches='tight')
     plt.close(fig)
 ```
 
 ### Dashboard Layout Golden Rules
 
-| Rule | Description |
-|------|-------------|
-| **Max 4 subplots** | Split into multiple charts if exceeded |
-| **Use `constrained_layout=True`** | Smarter than `tight_layout()`, auto-avoids labels |
-| **`wspace/hspace ≥ 0.3`** | Subplot spacing too small causes overlap |
-| **Independent title per subplot** | Use `ax.set_title()` instead of `fig.suptitle()` |
-| **Consistent font sizes** | Subtitle 13px, axis labels 10px, data labels 9px |
-| **Colorbar in separate column** | If a subplot needs colorbar, allocate `gs[0, 2]` separately |
-| **Don't mix legend and direct labels** | Use either all legends or all direct labels in a dashboard |
+| Rule                                   | Description                                                 |
+| -------------------------------------- | ----------------------------------------------------------- |
+| **Max 4 subplots**                     | Split into multiple charts if exceeded                      |
+| **Use `constrained_layout=True`**      | Smarter than `tight_layout()`, auto-avoids labels           |
+| **`wspace/hspace ≥ 0.3`**              | Subplot spacing too small causes overlap                    |
+| **Independent title per subplot**      | Use `ax.set_title()` instead of `fig.suptitle()`            |
+| **Consistent font sizes**              | Subtitle 13px, axis labels 10px, data labels 9px            |
+| **Colorbar in separate column**        | If a subplot needs colorbar, allocate `gs[0, 2]` separately |
+| **Don't mix legend and direct labels** | Use either all legends or all direct labels in a dashboard  |
 
 ### Safe Layout with Colorbar
 

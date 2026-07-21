@@ -50,55 +50,51 @@ The z-ai-web-dev-sdk package is already installed. Import it as shown in the exa
 ### Simple Image Transformation
 
 ```javascript
-import ZAI from 'z-ai-web-dev-sdk';
-import fs from 'fs';
+import ZAI from "z-ai-web-dev-sdk";
+import fs from "fs";
 
-async function editImage(imageSource, editPrompt, outputPath, size = '1024x1024') {
+async function editImage(imageSource, editPrompt, outputPath, size = "1024x1024") {
   const zai = await ZAI.create();
 
   const response = await zai.images.generations.edit({
     prompt: editPrompt,
-    images: [{ url: imageSource }],  // Array of objects with url property
-    size: size
+    images: [{ url: imageSource }], // Array of objects with url property
+    size: size,
   });
 
   const imageBase64 = response.data[0].base64;
-  
+
   // Save edited image
-  const buffer = Buffer.from(imageBase64, 'base64');
+  const buffer = Buffer.from(imageBase64, "base64");
   fs.writeFileSync(outputPath, buffer);
-  
+
   console.log(`Edited image saved to ${outputPath}`);
   return outputPath;
 }
 
 // Usage - Using remote image URL
 await editImage(
-  'https://example.com/landscape.jpg',
-  'Transform this landscape into a night scene with stars and moon',
-  './landscape_night.png'
+  "https://example.com/landscape.jpg",
+  "Transform this landscape into a night scene with stars and moon",
+  "./landscape_night.png",
 );
 
 // Usage - Using local image converted to base64
-import { readFileSync } from 'fs';
-const imageBuffer = readFileSync('./photo.jpg');
-const base64Image = imageBuffer.toString('base64');
+import { readFileSync } from "fs";
+const imageBuffer = readFileSync("./photo.jpg");
+const base64Image = imageBuffer.toString("base64");
 const dataUrl = `data:image/jpeg;base64,${base64Image}`;
 
-await editImage(
-  dataUrl,
-  'Change the cat to a dog, keep everything else the same',
-  './dog_version.png'
-);
+await editImage(dataUrl, "Change the cat to a dog, keep everything else the same", "./dog_version.png");
 ```
 
 ### Create Image Variations
 
 ```javascript
-import ZAI from 'z-ai-web-dev-sdk';
-import fs from 'fs';
+import ZAI from "z-ai-web-dev-sdk";
+import fs from "fs";
 
-async function createVariation(imageSource, baseDescription, variation, outputPath, size = '1024x1024') {
+async function createVariation(imageSource, baseDescription, variation, outputPath, size = "1024x1024") {
   const zai = await ZAI.create();
 
   // Combine base description with variation request
@@ -107,56 +103,56 @@ async function createVariation(imageSource, baseDescription, variation, outputPa
   const response = await zai.images.generations.edit({
     prompt: prompt,
     images: [{ url: imageSource }],
-    size: size
+    size: size,
   });
 
   const imageBase64 = response.data[0].base64;
-  const buffer = Buffer.from(imageBase64, 'base64');
+  const buffer = Buffer.from(imageBase64, "base64");
   fs.writeFileSync(outputPath, buffer);
 
   return {
     path: outputPath,
     prompt: prompt,
-    variation: variation
+    variation: variation,
   };
 }
 
 // Usage - Create variations from original image
 await createVariation(
-  'https://example.com/headshot.jpg',
-  'Professional headshot photo',
-  'with blue background instead of gray',
-  './headshot_blue.png'
+  "https://example.com/headshot.jpg",
+  "Professional headshot photo",
+  "with blue background instead of gray",
+  "./headshot_blue.png",
 );
 
 await createVariation(
-  './smartphone.png',
-  'Product photo of smartphone',
-  'on wooden table instead of white background',
-  './product_wood.png'
+  "./smartphone.png",
+  "Product photo of smartphone",
+  "on wooden table instead of white background",
+  "./product_wood.png",
 );
 ```
 
 ### Multiple Image Sizes for Editing
 
 ```javascript
-import ZAI from 'z-ai-web-dev-sdk';
-import fs from 'fs';
+import ZAI from "z-ai-web-dev-sdk";
+import fs from "fs";
 
 // Supported sizes
 const SUPPORTED_SIZES = [
-  '1024x1024',  // Square
-  '768x1344',   // Portrait
-  '864x1152',   // Portrait
-  '1344x768',   // Landscape
-  '1152x864',   // Landscape
-  '1440x720',   // Wide landscape
-  '720x1440'    // Tall portrait
+  "1024x1024", // Square
+  "768x1344", // Portrait
+  "864x1152", // Portrait
+  "1344x768", // Landscape
+  "1152x864", // Landscape
+  "1440x720", // Wide landscape
+  "720x1440", // Tall portrait
 ];
 
 async function editImageWithSize(imageSource, editPrompt, size, outputPath) {
   if (!SUPPORTED_SIZES.includes(size)) {
-    throw new Error(`Unsupported size: ${size}. Use one of: ${SUPPORTED_SIZES.join(', ')}`);
+    throw new Error(`Unsupported size: ${size}. Use one of: ${SUPPORTED_SIZES.join(", ")}`);
   }
 
   const zai = await ZAI.create();
@@ -164,33 +160,33 @@ async function editImageWithSize(imageSource, editPrompt, size, outputPath) {
   const response = await zai.images.generations.edit({
     prompt: editPrompt,
     images: [{ url: imageSource }],
-    size: size
+    size: size,
   });
 
   const imageBase64 = response.data[0].base64;
-  const buffer = Buffer.from(imageBase64, 'base64');
+  const buffer = Buffer.from(imageBase64, "base64");
   fs.writeFileSync(outputPath, buffer);
 
   return {
     path: outputPath,
     size: size,
-    fileSize: buffer.length
+    fileSize: buffer.length,
   };
 }
 
 // Usage - Edit with different aspect ratios
 await editImageWithSize(
-  './logo.png',
-  'Redesign the logo to be more modern and minimalist',
-  '1024x1024',
-  './logo_redesigned.png'
+  "./logo.png",
+  "Redesign the logo to be more modern and minimalist",
+  "1024x1024",
+  "./logo_redesigned.png",
 );
 
 await editImageWithSize(
-  'https://example.com/portrait.jpg',
-  'Transform the portrait to landscape orientation, sunset lighting',
-  '1344x768',
-  './portrait_landscape.png'
+  "https://example.com/portrait.jpg",
+  "Transform the portrait to landscape orientation, sunset lighting",
+  "1344x768",
+  "./portrait_landscape.png",
 );
 ```
 
@@ -259,11 +255,11 @@ z-ai image-edit -p "Add a hat to the person" -i "https://example.com/photo.png" 
 ### Batch Image Editing
 
 ```javascript
-import ZAI from 'z-ai-web-dev-sdk';
-import fs from 'fs';
-import path from 'path';
+import ZAI from "z-ai-web-dev-sdk";
+import fs from "fs";
+import path from "path";
 
-async function batchEditImages(editInstructions, outputDir, size = '1024x1024') {
+async function batchEditImages(editInstructions, outputDir, size = "1024x1024") {
   const zai = await ZAI.create();
 
   // Ensure output directory exists
@@ -282,18 +278,18 @@ async function batchEditImages(editInstructions, outputDir, size = '1024x1024') 
       const response = await zai.images.generations.edit({
         prompt: instruction.prompt,
         images: [{ url: instruction.imageSource }],
-        size: size
+        size: size,
       });
 
       const imageBase64 = response.data[0].base64;
-      const buffer = Buffer.from(imageBase64, 'base64');
+      const buffer = Buffer.from(imageBase64, "base64");
       fs.writeFileSync(outputPath, buffer);
 
       results.push({
         success: true,
         instruction: instruction.prompt,
         path: outputPath,
-        size: buffer.length
+        size: buffer.length,
       });
 
       console.log(`✓ Edited: ${filename}`);
@@ -301,7 +297,7 @@ async function batchEditImages(editInstructions, outputDir, size = '1024x1024') 
       results.push({
         success: false,
         instruction: editInstructions[i].prompt,
-        error: error.message
+        error: error.message,
       });
 
       console.error(`✗ Failed: ${editInstructions[i].prompt} - ${error.message}`);
@@ -313,34 +309,34 @@ async function batchEditImages(editInstructions, outputDir, size = '1024x1024') 
 
 // Usage - Create multiple variations from the same image
 const editInstructions = [
-  { 
-    imageSource: './original.jpg',
-    prompt: 'Change background to blue gradient' 
+  {
+    imageSource: "./original.jpg",
+    prompt: "Change background to blue gradient",
   },
-  { 
-    imageSource: './original.jpg',
-    prompt: 'Transform to black and white, high contrast' 
+  {
+    imageSource: "./original.jpg",
+    prompt: "Transform to black and white, high contrast",
   },
-  { 
-    imageSource: './original.jpg',
-    prompt: 'Add sunset lighting effects' 
-  }
+  {
+    imageSource: "./original.jpg",
+    prompt: "Add sunset lighting effects",
+  },
 ];
 
-const results = await batchEditImages(editInstructions, './edited-images');
-console.log(`Edited ${results.filter(r => r.success).length} images`);
+const results = await batchEditImages(editInstructions, "./edited-images");
+console.log(`Edited ${results.filter((r) => r.success).length} images`);
 ```
 
 ### Image Editing Service
 
 ```javascript
-import ZAI from 'z-ai-web-dev-sdk';
-import fs from 'fs';
-import path from 'path';
-import crypto from 'crypto';
+import ZAI from "z-ai-web-dev-sdk";
+import fs from "fs";
+import path from "path";
+import crypto from "crypto";
 
 class ImageEditingService {
-  constructor(outputDir = './edited-images') {
+  constructor(outputDir = "./edited-images") {
     this.outputDir = outputDir;
     this.zai = null;
     this.editHistory = [];
@@ -348,37 +344,29 @@ class ImageEditingService {
 
   async initialize() {
     this.zai = await ZAI.create();
-    
+
     if (!fs.existsSync(this.outputDir)) {
       fs.mkdirSync(this.outputDir, { recursive: true });
     }
   }
 
   generateFilename(editPrompt) {
-    const hash = crypto
-      .createHash('md5')
-      .update(`${editPrompt}-${Date.now()}`)
-      .digest('hex')
-      .substring(0, 8);
-    
+    const hash = crypto.createHash("md5").update(`${editPrompt}-${Date.now()}`).digest("hex").substring(0, 8);
+
     return `edited_${hash}.png`;
   }
 
   async edit(imageSource, editPrompt, options = {}) {
-    const {
-      size = '1024x1024',
-      saveToHistory = true,
-      filename = null
-    } = options;
+    const { size = "1024x1024", saveToHistory = true, filename = null } = options;
 
     const response = await this.zai.images.generations.edit({
       prompt: editPrompt,
       images: [{ url: imageSource }],
-      size: size
+      size: size,
     });
 
     const imageBase64 = response.data[0].base64;
-    const buffer = Buffer.from(imageBase64, 'base64');
+    const buffer = Buffer.from(imageBase64, "base64");
 
     // Determine output path
     const outputFilename = filename || this.generateFilename(editPrompt);
@@ -392,7 +380,7 @@ class ImageEditingService {
       editPrompt: editPrompt,
       size: size,
       fileSize: buffer.length,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
 
     // Save to history
@@ -405,7 +393,7 @@ class ImageEditingService {
 
   async createVariations(imageSource, basePrompt, variations, options = {}) {
     const results = [];
-    
+
     for (const variation of variations) {
       const fullPrompt = `${basePrompt}, ${variation}`;
       const result = await this.edit(imageSource, fullPrompt, options);
@@ -430,33 +418,25 @@ const service = new ImageEditingService();
 await service.initialize();
 
 // Single edit
-const edited = await service.edit(
-  './original.jpg',
-  'Transform to watercolor painting style',
-  { size: '1024x1024' }
-);
+const edited = await service.edit("./original.jpg", "Transform to watercolor painting style", { size: "1024x1024" });
 
 // Multiple variations from the same image
-const variations = await service.createVariations(
-  'https://example.com/product.png',
-  'Professional product photo',
-  [
-    'with blue background',
-    'with wooden surface',
-    'with dramatic lighting'
-  ]
-);
+const variations = await service.createVariations("https://example.com/product.png", "Professional product photo", [
+  "with blue background",
+  "with wooden surface",
+  "with dramatic lighting",
+]);
 
-console.log('Edit history:', service.getEditHistory());
+console.log("Edit history:", service.getEditHistory());
 ```
 
 ### Style Transfer and Transformation
 
 ```javascript
-import ZAI from 'z-ai-web-dev-sdk';
-import fs from 'fs';
+import ZAI from "z-ai-web-dev-sdk";
+import fs from "fs";
 
-async function applyStyleTransfer(imageSource, content, style, outputPath, size = '1024x1024') {
+async function applyStyleTransfer(imageSource, content, style, outputPath, size = "1024x1024") {
   const zai = await ZAI.create();
 
   const prompt = `${content} transformed into ${style} style, maintain composition and subject`;
@@ -464,50 +444,35 @@ async function applyStyleTransfer(imageSource, content, style, outputPath, size 
   const response = await zai.images.generations.edit({
     prompt: prompt,
     images: [{ url: imageSource }],
-    size: size
+    size: size,
   });
 
   const imageBase64 = response.data[0].base64;
-  const buffer = Buffer.from(imageBase64, 'base64');
+  const buffer = Buffer.from(imageBase64, "base64");
   fs.writeFileSync(outputPath, buffer);
 
   return {
     path: outputPath,
     content: content,
-    style: style
+    style: style,
   };
 }
 
 // Usage - Apply different styles to the same image
-await applyStyleTransfer(
-  './portrait.jpg',
-  'Portrait photograph',
-  'oil painting',
-  './portrait_oil.png'
-);
+await applyStyleTransfer("./portrait.jpg", "Portrait photograph", "oil painting", "./portrait_oil.png");
 
-await applyStyleTransfer(
-  'https://example.com/city.jpg',
-  'City landscape',
-  'watercolor',
-  './city_watercolor.png'
-);
+await applyStyleTransfer("https://example.com/city.jpg", "City landscape", "watercolor", "./city_watercolor.png");
 
-await applyStyleTransfer(
-  './product.png',
-  'Product photo',
-  'minimalist illustration',
-  './product_minimal.png'
-);
+await applyStyleTransfer("./product.png", "Product photo", "minimalist illustration", "./product_minimal.png");
 ```
 
 ### Element Replacement
 
 ```javascript
-import ZAI from 'z-ai-web-dev-sdk';
-import fs from 'fs';
+import ZAI from "z-ai-web-dev-sdk";
+import fs from "fs";
 
-async function replaceElement(imageSource, baseScene, replaceWhat, replaceWith, outputPath, size = '1024x1024') {
+async function replaceElement(imageSource, baseScene, replaceWhat, replaceWith, outputPath, size = "1024x1024") {
   const zai = await ZAI.create();
 
   const prompt = `${baseScene}, replace ${replaceWhat} with ${replaceWith}, keep everything else identical`;
@@ -515,34 +480,34 @@ async function replaceElement(imageSource, baseScene, replaceWhat, replaceWith, 
   const response = await zai.images.generations.edit({
     prompt: prompt,
     images: [{ url: imageSource }],
-    size: size
+    size: size,
   });
 
   const imageBase64 = response.data[0].base64;
-  const buffer = Buffer.from(imageBase64, 'base64');
+  const buffer = Buffer.from(imageBase64, "base64");
   fs.writeFileSync(outputPath, buffer);
 
   return {
     path: outputPath,
-    modification: `${replaceWhat} → ${replaceWith}`
+    modification: `${replaceWhat} → ${replaceWith}`,
   };
 }
 
 // Usage
 await replaceElement(
-  './workspace.jpg',
-  'Office workspace with laptop',
-  'laptop',
-  'desktop computer with dual monitors',
-  './workspace_desktop.png'
+  "./workspace.jpg",
+  "Office workspace with laptop",
+  "laptop",
+  "desktop computer with dual monitors",
+  "./workspace_desktop.png",
 );
 
 await replaceElement(
-  'https://example.com/living-room.jpg',
-  'Living room interior with sofa',
-  'blue sofa',
-  'brown leather sofa',
-  './living_room_leather.png'
+  "https://example.com/living-room.jpg",
+  "Living room interior with sofa",
+  "blue sofa",
+  "brown leather sofa",
+  "./living_room_leather.png",
 );
 ```
 
@@ -552,26 +517,23 @@ await replaceElement(
 
 ```javascript
 function buildEditPrompt(baseDescription, modification, preserveElements = []) {
-  const components = [
-    baseDescription,
-    modification
-  ];
+  const components = [baseDescription, modification];
 
   if (preserveElements.length > 0) {
-    components.push(`keep ${preserveElements.join(', ')} unchanged`);
+    components.push(`keep ${preserveElements.join(", ")} unchanged`);
   }
 
-  components.push('maintain overall composition');
+  components.push("maintain overall composition");
 
-  return components.filter(Boolean).join(', ');
+  return components.filter(Boolean).join(", ");
 }
 
 // Usage
-const editPrompt = buildEditPrompt(
-  'Professional headshot photo',
-  'change background to modern office',
-  ['lighting', 'pose', 'expression']
-);
+const editPrompt = buildEditPrompt("Professional headshot photo", "change background to modern office", [
+  "lighting",
+  "pose",
+  "expression",
+]);
 
 // Result: "Professional headshot photo, change background to modern office, keep lighting, pose, expression unchanged, maintain overall composition"
 ```
@@ -581,28 +543,28 @@ const editPrompt = buildEditPrompt(
 ```javascript
 function selectSizeForEdit(editType) {
   const sizeMap = {
-    'background-change': '1440x720',
-    'style-transfer': '1024x1024',
-    'color-adjustment': '1024x1024',
-    'element-replacement': '1344x768',
-    'composition-change': '1152x864',
-    'portrait-edit': '768x1344',
-    'landscape-edit': '1344x768'
+    "background-change": "1440x720",
+    "style-transfer": "1024x1024",
+    "color-adjustment": "1024x1024",
+    "element-replacement": "1344x768",
+    "composition-change": "1152x864",
+    "portrait-edit": "768x1344",
+    "landscape-edit": "1344x768",
   };
 
-  return sizeMap[editType] || '1024x1024';
+  return sizeMap[editType] || "1024x1024";
 }
 
 // Usage
-const size = selectSizeForEdit('background-change');
-await editImage('Replace background with beach scene', './beach_bg.png', size);
+const size = selectSizeForEdit("background-change");
+await editImage("Replace background with beach scene", "./beach_bg.png", size);
 ```
 
 ### 3. Error Handling with Retry
 
 ```javascript
-import ZAI from 'z-ai-web-dev-sdk';
-import fs from 'fs';
+import ZAI from "z-ai-web-dev-sdk";
+import fs from "fs";
 
 async function safeEditImage(imageSource, editPrompt, size, outputPath, retries = 3) {
   let lastError;
@@ -614,21 +576,21 @@ async function safeEditImage(imageSource, editPrompt, size, outputPath, retries 
       const response = await zai.images.generations.edit({
         prompt: editPrompt,
         images: [{ url: imageSource }],
-        size: size
+        size: size,
       });
 
       if (!response.data || !response.data[0] || !response.data[0].base64) {
-        throw new Error('Invalid response from image editing API');
+        throw new Error("Invalid response from image editing API");
       }
 
       const imageBase64 = response.data[0].base64;
-      const buffer = Buffer.from(imageBase64, 'base64');
+      const buffer = Buffer.from(imageBase64, "base64");
       fs.writeFileSync(outputPath, buffer);
 
       return {
         success: true,
         path: outputPath,
-        attempts: attempt
+        attempts: attempt,
       };
     } catch (error) {
       lastError = error;
@@ -636,7 +598,7 @@ async function safeEditImage(imageSource, editPrompt, size, outputPath, retries 
 
       if (attempt < retries) {
         // Wait before retry (exponential backoff)
-        await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+        await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
       }
     }
   }
@@ -644,7 +606,7 @@ async function safeEditImage(imageSource, editPrompt, size, outputPath, retries 
   return {
     success: false,
     error: lastError.message,
-    attempts: retries
+    attempts: retries,
   };
 }
 ```
@@ -667,17 +629,17 @@ async function safeEditImage(imageSource, editPrompt, size, outputPath, retries 
 ### Express.js API Endpoint
 
 ```javascript
-import express from 'express';
-import ZAI from 'z-ai-web-dev-sdk';
-import fs from 'fs';
-import path from 'path';
+import express from "express";
+import ZAI from "z-ai-web-dev-sdk";
+import fs from "fs";
+import path from "path";
 
 const app = express();
 app.use(express.json());
-app.use('/edited-images', express.static('edited-images'));
+app.use("/edited-images", express.static("edited-images"));
 
 let zaiInstance;
-const outputDir = './edited-images';
+const outputDir = "./edited-images";
 
 async function initZAI() {
   zaiInstance = await ZAI.create();
@@ -686,35 +648,33 @@ async function initZAI() {
   }
 }
 
-app.post('/api/edit-image', async (req, res) => {
+app.post("/api/edit-image", async (req, res) => {
   try {
-    const { 
-      imageSource,           // URL or base64 data URL
-      editPrompt, 
-      size = '1024x1024', 
-      baseDescription = '' 
+    const {
+      imageSource, // URL or base64 data URL
+      editPrompt,
+      size = "1024x1024",
+      baseDescription = "",
     } = req.body;
 
     if (!imageSource || !editPrompt) {
-      return res.status(400).json({ 
-        error: 'imageSource and editPrompt are required' 
+      return res.status(400).json({
+        error: "imageSource and editPrompt are required",
       });
     }
 
     // Combine base description with edit instruction
-    const fullPrompt = baseDescription 
-      ? `${baseDescription}, ${editPrompt}`
-      : editPrompt;
+    const fullPrompt = baseDescription ? `${baseDescription}, ${editPrompt}` : editPrompt;
 
     const response = await zaiInstance.images.generations.edit({
       prompt: fullPrompt,
       images: [{ url: imageSource }],
-      size: size
+      size: size,
     });
 
     const imageBase64 = response.data[0].base64;
-    const buffer = Buffer.from(imageBase64, 'base64');
-    
+    const buffer = Buffer.from(imageBase64, "base64");
+
     const filename = `edited_${Date.now()}.png`;
     const filepath = path.join(outputDir, filename);
     fs.writeFileSync(filepath, buffer);
@@ -723,28 +683,28 @@ app.post('/api/edit-image', async (req, res) => {
       success: true,
       imageUrl: `/edited-images/${filename}`,
       editPrompt: fullPrompt,
-      size: size
+      size: size,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 });
 
-app.post('/api/create-variations', async (req, res) => {
+app.post("/api/create-variations", async (req, res) => {
   try {
-    const { 
-      imageSource,      // URL or base64 data URL
-      baseDescription, 
-      variations, 
-      size = '1024x1024' 
+    const {
+      imageSource, // URL or base64 data URL
+      baseDescription,
+      variations,
+      size = "1024x1024",
     } = req.body;
 
     if (!imageSource || !baseDescription || !variations || !Array.isArray(variations)) {
-      return res.status(400).json({ 
-        error: 'imageSource, baseDescription and variations array are required' 
+      return res.status(400).json({
+        error: "imageSource, baseDescription and variations array are required",
       });
     }
 
@@ -756,37 +716,37 @@ app.post('/api/create-variations', async (req, res) => {
       const response = await zaiInstance.images.generations.edit({
         prompt: fullPrompt,
         images: [{ url: imageSource }],
-        size: size
+        size: size,
       });
 
       const imageBase64 = response.data[0].base64;
-      const buffer = Buffer.from(imageBase64, 'base64');
-      
+      const buffer = Buffer.from(imageBase64, "base64");
+
       const filename = `variation_${Date.now()}_${Math.random().toString(36).substr(2, 9)}.png`;
       const filepath = path.join(outputDir, filename);
       fs.writeFileSync(filepath, buffer);
 
       results.push({
         variation: variation,
-        imageUrl: `/edited-images/${filename}`
+        imageUrl: `/edited-images/${filename}`,
       });
     }
 
     res.json({
       success: true,
-      results: results
+      results: results,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 });
 
 initZAI().then(() => {
   app.listen(3000, () => {
-    console.log('Image editing API running on port 3000');
+    console.log("Image editing API running on port 3000");
   });
 });
 ```
@@ -814,37 +774,46 @@ echo "Variations created successfully!"
 ## Troubleshooting
 
 **Issue**: "SDK must be used in backend"
+
 - **Solution**: Ensure z-ai-web-dev-sdk is only used in server-side code
 
 **Issue**: Invalid size parameter
+
 - **Solution**: Use only supported sizes: 1024x1024, 768x1344, 864x1152, 1344x768, 1152x864, 1440x720, 720x1440
 
 **Issue**: Edited image doesn't match intention
+
 - **Solution**: Be more specific in edit prompts. Include what to change AND what to preserve
 
 **Issue**: CLI command not found
+
 - **Solution**: Ensure z-ai CLI is properly installed and in PATH
 
 **Issue**: Image quality loss after editing
+
 - **Solution**: Use larger size options and include quality terms in prompts
 
 **Issue**: Inconsistent results across variations
+
 - **Solution**: Include more specific base description and detailed modification instructions
 
 ## Edit Prompt Engineering Tips
 
 ### Good Edit Prompts
+
 - ✓ "Change background to modern office, keep subject and lighting identical"
 - ✓ "Transform to watercolor style, maintain composition and colors"
 - ✓ "Replace red car with blue motorcycle, keep road and scenery unchanged"
 - ✓ "Adjust to golden hour lighting, preserve all elements"
 
 ### Poor Edit Prompts
+
 - ✗ "make it better"
 - ✗ "change something"
 - ✗ "different version"
 
 ### Edit Prompt Components
+
 1. **Base Context**: What the image currently represents
 2. **Modification**: What specific changes to make
 3. **Preservation**: What elements to keep unchanged
@@ -853,21 +822,25 @@ echo "Variations created successfully!"
 ### Effective Edit Patterns
 
 **Background Changes:**
+
 ```
 "[Subject description], replace background with [new background], maintain subject lighting and pose"
 ```
 
 **Style Transfers:**
+
 ```
 "[Current description] transformed into [style name] style, preserve composition and key elements"
 ```
 
 **Element Replacement:**
+
 ```
 "[Scene description], replace [element A] with [element B], keep everything else identical"
 ```
 
 **Color Adjustments:**
+
 ```
 "[Image description], change color scheme to [colors], maintain contrast and composition"
 ```

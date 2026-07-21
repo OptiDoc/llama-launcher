@@ -240,17 +240,17 @@ Allowed:
 
 ## Over-addition decision table
 
-| Tempted to add… | Default decision |
-|---|---|
-| gradient | probably not; use solid field or grounded palette |
-| emoji | no; use inline SVG, type, or nothing |
-| rounded card + left-border accent | no; use hierarchy or divider |
-| blob / hand-drawn hero illustration | no unless the visual direction needs it |
-| testimonial quote | only with real user-provided quote |
-| icon feature row | only if icons clarify information |
-| bento grid | only if information is genuinely modular |
-| hero + 3 cards + CTA | redesign from actual content |
-| scroll reveal on everything | no; use one choreographed motion if any |
+| Tempted to add…                     | Default decision                                  |
+| ----------------------------------- | ------------------------------------------------- |
+| gradient                            | probably not; use solid field or grounded palette |
+| emoji                               | no; use inline SVG, type, or nothing              |
+| rounded card + left-border accent   | no; use hierarchy or divider                      |
+| blob / hand-drawn hero illustration | no unless the visual direction needs it           |
+| testimonial quote                   | only with real user-provided quote                |
+| icon feature row                    | only if icons clarify information                 |
+| bento grid                          | only if information is genuinely modular          |
+| hero + 3 cards + CTA                | redesign from actual content                      |
+| scroll reveal on everything         | no; use one choreographed motion if any           |
 
 Rule of thumb: if you are unsure whether to add it, do not add it.
 

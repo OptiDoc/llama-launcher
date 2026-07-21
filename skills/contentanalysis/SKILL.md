@@ -9,6 +9,6 @@ Unified skill for content extraction and analysis workflows.
 
 ## Workflow Routing
 
-| Request Pattern | Route To |
-|---|---|
+| Request Pattern                                                   | Route To                 |
+| ----------------------------------------------------------------- | ------------------------ |
 | Extract wisdom, content analysis, insight report, analyze content | `ExtractWisdom/SKILL.md` |

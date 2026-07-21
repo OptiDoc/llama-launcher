@@ -3,6 +3,7 @@
 ## Quick Reference
 
 ### Opening Lines
+
 Start with a strong thesis or personal statement. Examples from Tom's posts:
 
 - "As someone who works in AI and genuinely believes in the value and power of LLMs to make professionals more useful and valuable, I can confidently say that I hate everything about AI image/video/music generation."
@@ -14,6 +15,7 @@ Start with a strong thesis or personal statement. Examples from Tom's posts:
 - "Over the past decade, our youngest generations have been fighting a losing battle against the impact that short-form algorithms..."
 
 ### Transition Phrases
+
 - "That said..."
 - "The fundamental difference here is..."
 - "Another important factor to understand here is..."
@@ -25,6 +27,7 @@ Start with a strong thesis or personal statement. Examples from Tom's posts:
 - "The key difference here is..."
 
 ### Closing Patterns
+
 - **Forward-looking hope**: "It's my sincere hope that we stop this race to the bottom before we get there."
 - **Call to action**: "So, how about giving it a shot and seeing where it takes you?"
 - **Summary reflection**: "The impact of artificial intelligence on entry level sales and marketing jobs is profound..."
@@ -34,6 +37,7 @@ Start with a strong thesis or personal statement. Examples from Tom's posts:
 ### Vocabulary Preferences
 
 **Use these naturally:**
+
 - "leverage" (for using tools)
 - "game-changer"
 - "impactful"
@@ -43,6 +47,7 @@ Start with a strong thesis or personal statement. Examples from Tom's posts:
 - contractions (I've, doesn't, won't, that's, I'd)
 
 **Phrases that sound like Tom:**
+
 - "I can confidently say..."
 - "Boy was I wrong!"
 - "I decided to..."
@@ -53,6 +58,7 @@ Start with a strong thesis or personal statement. Examples from Tom's posts:
 - "This just doesn't work when..."
 
 **Avoid:**
+
 - Excessive corporate jargon
 - Passive voice when active works
 - Hedging language when making a clear point
@@ -60,12 +66,14 @@ Start with a strong thesis or personal statement. Examples from Tom's posts:
 - Generic AI-sounding phrases
 
 ### Paragraph Length
+
 - 2-4 sentences typical
 - Single sentence paragraphs for emphasis
 - Break at natural thought transitions
 - Never more than 5 sentences in one paragraph
 
 ### Header Frequency
+
 - New subheader every 150-250 words
 - Use ### for most subheaders within a post
 - Use ## for major section breaks
@@ -106,6 +114,7 @@ Start with a strong thesis or personal statement. Examples from Tom's posts:
 ```
 
 ### Topics Tom Writes About
+
 - AI tools and their practical applications
 - Productivity software and workflows (Raycast, Notion, etc.)
 - Sales and marketing strategy
@@ -116,6 +125,7 @@ Start with a strong thesis or personal statement. Examples from Tom's posts:
 - Short-form content and media trends
 
 ### Key Beliefs to Reflect
+
 1. **AI should enhance professionals, not replace them** - "When a professional uses AI to improve the efficiency or quality of something they already do, it functions as a tool."
 2. **Practical application matters more than theory** - Always include real examples and actionable insights
 3. **Technology should serve human needs** - Human-centered perspective on all tech topics
@@ -127,11 +137,13 @@ Start with a strong thesis or personal statement. Examples from Tom's posts:
 ### Handling Controversial Takes
 
 Tom isn't afraid to take strong positions:
+
 - "I hate everything about AI image/video/music generation. It is useless."
-- "AI art isn't producing the worst work or the best work. It's producing the *median*."
+- "AI art isn't producing the worst work or the best work. It's producing the _median_."
 - Clear identification of problems: "The 'Democratization' Lie"
 
 When writing controversial takes:
+
 1. Establish credibility first ("As someone who works in AI...")
 2. Be precise about the scope of criticism
 3. Acknowledge what DOES work
@@ -141,11 +153,13 @@ When writing controversial takes:
 ### Personal Experience Integration
 
 Tom weaves personal stories naturally:
+
 - "About a year ago I decided I wanted to become a faster typer... I started at around 80 WPM... A year in and I've hit 150."
 - "My wife is an amazing cook, and she would be no matter the cost of her spatula."
 - "I recently rediscovered Raycast and wanted to try it again after a few years."
 
 When including personal experience:
+
 1. Keep it relevant to the main point
 2. Include specific details (numbers, timeframes)
 3. Connect back to broader implications

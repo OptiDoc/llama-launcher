@@ -211,6 +211,7 @@ The system runs **three custom Bugatti typefaces**: **Bugatti Display** (display
 Display sizes use weight 400 (regular) — never bold. Visual emphasis comes from **size and tracking**, not weight. Letter-spacing on the wordmark is 6px; on display headlines 2-4px; on uppercase labels 2-2.5px. Tight tracking is a brand violation. The wide spacing creates the "engineered precision" feel that no other luxury maker matches.
 
 **Key Characteristics:**
+
 - Pure black canvas (`{colors.canvas}` — #000000) with white type. The system does not have a light mode.
 - Three custom Bugatti typefaces: **Display** (uppercase headlines + wordmark), **Text Regular** (body serif), **Monospace** (buttons, captions, nav).
 - All display headlines are UPPERCASE with wide letter-spacing (2-4px). Body copy stays sentence-case at standard tracking.
@@ -222,10 +223,12 @@ Display sizes use weight 400 (regular) — never bold. Visual emphasis comes fro
 ## Colors
 
 ### Brand & Accent
+
 - **Primary** (`{colors.primary}` — #ffffff): The single brand color. White type and white CTA outlines on the black canvas.
 - **Link** (`{colors.link}` — #c3d9f3): The only non-monochrome color in the system — a desaturated ice-blue used on inline anchor links and rarely on focus states. Bugatti's brand discipline is so tight that this single token is essentially the entire chromatic vocabulary outside black-and-white.
 
 ### Surface
+
 - **Canvas** (`{colors.canvas}` — #000000): The default page floor across every surface. Pure black.
 - **Surface Soft** (`{colors.surface-soft}` — #0d0d0d): A barely-different-from-black tone used for spec table rows and dense data sections.
 - **Surface Card** (`{colors.surface-card}` — #141414): Cards (career callout, newsroom article container, occasional content cards). Even card surfaces stay nearly-black — no contrast jump.
@@ -234,6 +237,7 @@ Display sizes use weight 400 (regular) — never bold. Visual emphasis comes fro
 - **Hairline Strong** (`{colors.hairline-strong}` — #3a3a3a): A heavier divider used on the underside of input fields (input fields have no border — only an underline hairline).
 
 ### Text
+
 - **Ink / On Dark** (`{colors.on-dark}` — #ffffff): All headline and primary text on dark canvas.
 - **Body** (`{colors.body}` — #cccccc): Default running-text color (slightly cooler than pure white). Used in body paragraphs.
 - **Body Strong** (`{colors.body-strong}` — #e6e6e6): Emphasized body / lead paragraph.
@@ -241,13 +245,16 @@ Display sizes use weight 400 (regular) — never bold. Visual emphasis comes fro
 - **Muted Soft** (`{colors.muted-soft}` — #666666): A second-tier muted for very-secondary text (legal disclaimer, copyright line).
 
 ### Semantic
+
 - **Warning** (`{colors.warning}` — #d4a017): Reserved for technical-warning callouts (specifications, recall notices). Almost never appears on marketing surfaces.
 - **Success** (`{colors.success}` — #5fa657): Order confirmation states (rare on marketing pages).
 
 ## Typography
 
 ### Font Family
+
 The system runs **three custom Bugatti typefaces** as a rigid trinity:
+
 1. **Bugatti Display** — All display headlines (h1, h2, h3), the "BUGATTI" wordmark, model name plates. Uppercase, wide-tracked. The default for any visual emphasis.
 2. **Bugatti Text Regular** — A serif text face used exclusively for running body copy, lead paragraphs, model descriptions. Standard sentence-case, no letter-spacing.
 3. **Bugatti Monospace** — Button labels, navigation, captions, dates, monospace-precision contexts. Always uppercase with 2-2.5px tracking.
@@ -258,23 +265,25 @@ The fallback stack walks `-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
 
 ### Hierarchy
 
-| Token | Size | Weight | Line Height | Letter Spacing | Use |
-|---|---|---|---|---|---|
-| `{typography.display-xl}` | 64px | 400 | 1.1 | 4px | Hero h1 ("THE BUGATTI F.K.P. HOMMAGE", "TOURBILLON") — Bugatti Display, uppercase, wide-tracked |
-| `{typography.display-lg}` | 48px | 400 | 1.15 | 3px | Section heads — Bugatti Display, uppercase |
-| `{typography.display-md}` | 32px | 400 | 1.2 | 2px | Sub-section heads, model names — Bugatti Display |
-| `{typography.display-sm}` | 24px | 400 | 1.3 | 1.5px | Card titles — Bugatti Display |
-| `{typography.wordmark}` | 14px | 400 | 1.0 | 6px | The "BUGATTI" brand wordmark in the top nav — Bugatti Display, the widest tracking in the system |
-| `{typography.title-md}` | 20px | 400 | 1.3 | 1px | Career listing titles, intro paragraphs — Bugatti Display |
-| `{typography.title-sm}` | 16px | 400 | 1.3 | 1.5px | Mid-tier headlines, callout cards |
-| `{typography.caption-uppercase}` | 11px | 400 | 1.4 | 2px | Photo captions, metadata, "EXPLORE OUR OPPORTUNITIES" — Bugatti Monospace, uppercase |
-| `{typography.body-md}` | 16px | 400 | 1.5 | 0 | Default body — Bugatti Text Regular (a serif face), sentence case, no tracking |
-| `{typography.body-sm}` | 14px | 400 | 1.5 | 0 | Footer body, fine-print legal — Bugatti Text Regular |
-| `{typography.button}` | 14px | 400 | 1.0 | 2.5px | All button labels — Bugatti Monospace, uppercase, 2.5px tracking |
-| `{typography.nav-link}` | 12px | 400 | 1.4 | 2px | Top-nav menu items ("MENU", "STORE") — Bugatti Monospace |
+| Token                            | Size | Weight | Line Height | Letter Spacing | Use                                                                                              |
+| -------------------------------- | ---- | ------ | ----------- | -------------- | ------------------------------------------------------------------------------------------------ |
+| `{typography.display-xl}`        | 64px | 400    | 1.1         | 4px            | Hero h1 ("THE BUGATTI F.K.P. HOMMAGE", "TOURBILLON") — Bugatti Display, uppercase, wide-tracked  |
+| `{typography.display-lg}`        | 48px | 400    | 1.15        | 3px            | Section heads — Bugatti Display, uppercase                                                       |
+| `{typography.display-md}`        | 32px | 400    | 1.2         | 2px            | Sub-section heads, model names — Bugatti Display                                                 |
+| `{typography.display-sm}`        | 24px | 400    | 1.3         | 1.5px          | Card titles — Bugatti Display                                                                    |
+| `{typography.wordmark}`          | 14px | 400    | 1.0         | 6px            | The "BUGATTI" brand wordmark in the top nav — Bugatti Display, the widest tracking in the system |
+| `{typography.title-md}`          | 20px | 400    | 1.3         | 1px            | Career listing titles, intro paragraphs — Bugatti Display                                        |
+| `{typography.title-sm}`          | 16px | 400    | 1.3         | 1.5px          | Mid-tier headlines, callout cards                                                                |
+| `{typography.caption-uppercase}` | 11px | 400    | 1.4         | 2px            | Photo captions, metadata, "EXPLORE OUR OPPORTUNITIES" — Bugatti Monospace, uppercase             |
+| `{typography.body-md}`           | 16px | 400    | 1.5         | 0              | Default body — Bugatti Text Regular (a serif face), sentence case, no tracking                   |
+| `{typography.body-sm}`           | 14px | 400    | 1.5         | 0              | Footer body, fine-print legal — Bugatti Text Regular                                             |
+| `{typography.button}`            | 14px | 400    | 1.0         | 2.5px          | All button labels — Bugatti Monospace, uppercase, 2.5px tracking                                 |
+| `{typography.nav-link}`          | 12px | 400    | 1.4         | 2px            | Top-nav menu items ("MENU", "STORE") — Bugatti Monospace                                         |
 
 ### Principles
+
 The system NEVER uses bold weight. Every Bugatti typeface is set at weight 400 (regular). Visual emphasis comes from:
+
 1. **Size** — 64px hero vs 16px body is a 4× hierarchy
 2. **Letter-spacing** — 6px wordmark vs 0px body
 3. **Case** — Uppercase display vs sentence-case body
@@ -285,7 +294,9 @@ Going to weight 700 anywhere would break the "modest engineering" feel and make 
 The serif Bugatti Text Regular sets the brand apart from the all-sans luxury crowd (BMW, Aston Martin, Lamborghini all use sans-serif body type). Bugatti's serif body voice signals literary, considered, slow-reading prose — which is the brand's editorial philosophy.
 
 ### Note on Font Substitutes
+
 If Bugatti Display, Bugatti Text Regular, and Bugatti Monospace are unavailable, the closest open-source substitutes are:
+
 - **Bugatti Display** → **Saira Condensed** (variable, weight 400) at +0.05em letter-spacing
 - **Bugatti Text Regular** → **Cormorant Garamond** (regular) or **EB Garamond**
 - **Bugatti Monospace** → **JetBrains Mono** or **IBM Plex Mono** (regular weight)
@@ -295,6 +306,7 @@ The substitution preserves the three-family split, which is more important than 
 ## Layout
 
 ### Spacing System
+
 - **Base unit:** 4px.
 - **Tokens:** `{spacing.xxs}` 4px · `{spacing.xs}` 8px · `{spacing.sm}` 12px · `{spacing.md}` 16px · `{spacing.lg}` 24px · `{spacing.xl}` 40px · `{spacing.xxl}` 64px · `{spacing.section}` 120px.
 - **Section padding:** `{spacing.section}` (120px) — longer than most marketing sites because Bugatti's bands are mostly photography with minimal text. The empty space frames the cars.
@@ -302,41 +314,45 @@ The substitution preserves the three-family split, which is more important than 
 - **Gutters:** `{spacing.xl}` (40px) between cards in 2-up grids — wider than typical because Bugatti's grids are sparse.
 
 ### Grid & Container
+
 - **Max content width:** ~1280px centered. Hero photo bands bleed full-width with no max.
 - **Editorial body:** Single 12-column grid; photo bands are full-bleed.
 - **Newsroom layout:** 2-up article grid at desktop, 1-up at tablet+mobile.
 - **Career listings:** Single column with 80px row spacing.
 
 ### Whitespace Philosophy
+
 Bugatti uses whitespace more aggressively than any luxury-auto competitor. The homepage hero is mostly photography + huge whitespace + a single sentence + a single button. The empty black space below the photograph is intentional — it lets the car breathe. Compressing the whitespace to "fit more content" breaks the brand's fundamental contract: that less is more.
 
 ## Elevation & Depth
 
-| Level | Treatment | Use |
-|---|---|---|
-| Flat | No shadow, no border | Body, top nav, footer, photo bands |
-| Soft hairline | 1px `{colors.hairline}` border | Section dividers, table rows |
-| Card surface | `{colors.surface-card}` background — no shadow | Career callout, newsroom article container |
-| Photographic depth | Full-bleed photography with edge-to-edge crop | Hero bands, model showcases — depth via subject + lens, not chrome |
+| Level              | Treatment                                      | Use                                                                |
+| ------------------ | ---------------------------------------------- | ------------------------------------------------------------------ |
+| Flat               | No shadow, no border                           | Body, top nav, footer, photo bands                                 |
+| Soft hairline      | 1px `{colors.hairline}` border                 | Section dividers, table rows                                       |
+| Card surface       | `{colors.surface-card}` background — no shadow | Career callout, newsroom article container                         |
+| Photographic depth | Full-bleed photography with edge-to-edge crop  | Hero bands, model showcases — depth via subject + lens, not chrome |
 
 The system uses no shadows, no glassmorphism, no gradients. Depth comes entirely from photography (lighting, lens, subject framing) and from the contrast between black canvas and minimally-elevated `{colors.surface-card}`.
 
 ### Decorative Depth
+
 - None. Bugatti is the only luxury-auto brand without a single decorative element. There is no stripe, no badge, no heritage emblem on the marketing site outside the wordmark itself.
 
 ## Shapes
 
 ### Border Radius Scale
 
-| Token | Value | Use |
-|---|---|---|
-| `{rounded.none}` | 0px | All cards, photo containers, inputs, spec cells — the dominant radius |
-| `{rounded.pill}` | 9999px | All buttons (the only rounded element in the system) |
-| `{rounded.full}` | 9999px / 50% | Circular icon buttons, avatar surfaces |
+| Token            | Value        | Use                                                                   |
+| ---------------- | ------------ | --------------------------------------------------------------------- |
+| `{rounded.none}` | 0px          | All cards, photo containers, inputs, spec cells — the dominant radius |
+| `{rounded.pill}` | 9999px       | All buttons (the only rounded element in the system)                  |
+| `{rounded.full}` | 9999px / 50% | Circular icon buttons, avatar surfaces                                |
 
 The radius hierarchy is binary: rectangular for everything except buttons, which are pills. No 4px, no 8px, no 12px in between — those would feel "designed" rather than "engineered."
 
 ### Photography Geometry
+
 Hero photography fills full-width with no rounding. Photo cards inside grids retain `{rounded.none}` (0px) corners, edge-to-edge images. Model detail shots use 16:9 or wider cinema-aspect ratios. Newsroom thumbnails use 16:9 with 0px corners. There are no avatars or rounded photo crops anywhere on the marketing site.
 
 ## Components
@@ -388,6 +404,7 @@ Hero photography fills full-width with no rounding. Photo cards inside grids ret
 ## Do's and Don'ts
 
 ### Do
+
 - Anchor every page with full-bleed automotive photography. The cars are the brand voltage; chrome backs off entirely.
 - Keep all display headlines in UPPERCASE Bugatti Display with 2-4px letter-spacing. The wordmark gets 6px.
 - Use Bugatti Display for headlines, Bugatti Text Regular (serif!) for body, Bugatti Monospace for buttons + captions + nav. The trinity is unbreakable.
@@ -397,6 +414,7 @@ Hero photography fills full-width with no rounding. Photo cards inside grids ret
 - Reserve `{colors.link}` (#c3d9f3) for inline anchor links only. It's the system's only non-monochrome color.
 
 ### Don't
+
 - Don't introduce any accent color outside `{colors.link}`. Bugatti's brand discipline is total monochrome + photography. Adding a brand-blue or brand-red breaks the contract.
 - Don't bold any type. The system has no bold weight — every typeface stays at 400.
 - Don't fill primary buttons. Transparent + outline only. A solid white button reads as off-brand.
@@ -409,20 +427,22 @@ Hero photography fills full-width with no rounding. Photo cards inside grids ret
 
 ### Breakpoints
 
-| Name | Width | Key Changes |
-|---|---|---|
-| Mobile | < 768px | Hamburger nav; hero h1 64→32px; career callout card hides; photo bands stay full-bleed; footer 4 cols → 1 |
-| Tablet | 768–1024px | Top nav stays minimal (MENU + wordmark + STORE); 2-up newsroom grid; career rows full-width |
-| Desktop | 1024–1440px | Full minimal top-nav; 2-up newsroom grid; spec tables 4-up |
-| Wide | > 1440px | Same as desktop with more breathing room; max content 1280px |
+| Name    | Width       | Key Changes                                                                                               |
+| ------- | ----------- | --------------------------------------------------------------------------------------------------------- |
+| Mobile  | < 768px     | Hamburger nav; hero h1 64→32px; career callout card hides; photo bands stay full-bleed; footer 4 cols → 1 |
+| Tablet  | 768–1024px  | Top nav stays minimal (MENU + wordmark + STORE); 2-up newsroom grid; career rows full-width               |
+| Desktop | 1024–1440px | Full minimal top-nav; 2-up newsroom grid; spec tables 4-up                                                |
+| Wide    | > 1440px    | Same as desktop with more breathing room; max content 1280px                                              |
 
 ### Touch Targets
+
 - `{component.button-primary}` renders at minimum 44 × 44px (matches WCAG AAA).
 - `{component.button-icon}` is exactly 40 × 40px.
 - `{component.text-input}` height is 44px.
 - Career listing rows have 24px vertical padding; effective tap area meets 44px+ with surrounding spacing.
 
 ### Collapsing Strategy
+
 - Top nav stays minimal at all breakpoints (MENU label + wordmark + STORE label). On mobile the labels hide behind a hamburger but the wordmark stays centered.
 - Hero photography stays full-bleed at every breakpoint. Photo crops adjust — wider crops at desktop, vertical crops on mobile.
 - The career callout card on the homepage hides at < 768px (it's a desktop-only floating element).
@@ -430,6 +450,7 @@ Hero photography fills full-width with no rounding. Photo cards inside grids ret
 - Spec cells reflow from 4-up to 2-up to 1-up; values stay at the same display size regardless of column count.
 
 ### Image Behavior
+
 - Hero photography crops responsively — wider crops at desktop, vertical crops on mobile. Bugatti cars are always shown in motion or at-angle (never flat profiles).
 - Newsroom thumbnails retain 16:9 ratio and 0px corners.
 

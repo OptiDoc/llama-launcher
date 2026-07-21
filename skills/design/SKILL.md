@@ -108,6 +108,7 @@ USER REQUEST
 Why priority-fill matters: it loads constraints **only when a dimension is actually empty** —
 you read the icon constraint only if nothing supplied icons, the color constraint only if
 nothing supplied color. That keeps the skill light instead of dumping every rule every time.
+
 ### Mature System Fallback
 
 For **interface / restrained** scenes (product prototypes, dashboards, admin panels, web tools, settings/forms/onboarding/checkout, data-heavy interfaces, generic corporate/notice pages), lean on a mature system instead of freeform taste — whether or not the user gave a vibe word. Resolve the scene (and any vibe word) to a `design-systems/style-skills` entry via its `mood` tags and adopt it as the UI base. Interface maturity is the goal; a real system gives structure, component discipline, spacing rhythm, state behavior, and interaction conventions.
@@ -120,7 +121,7 @@ Do NOT apply this to **creative / expressive** scenes:
 - `portfolio.md`
 - `landing-page.md` and expressive brand/story/lifestyle pages
 
-For those, design from the artifact skill's own visual judgment + horizontal craft + Creative Context. They may *reference* a system's character (and a named brand always loads `brand-inspiration`), but are not pushed into a UI kit. It should not make every artifact look like a generic UI kit.
+For those, design from the artifact skill's own visual judgment + horizontal craft + Creative Context. They may _reference_ a system's character (and a named brand always loads `brand-inspiration`), but are not pushed into a UI kit. It should not make every artifact look like a generic UI kit.
 
 ---
 
@@ -248,7 +249,6 @@ A fully centered, symmetric, static page with no dominant element is the default
 
 "做一个 GLM-5.1 模型介绍网站" → positioning: reasoning/execution infrastructure, not a generic AI page; first_impression: calm, precise, technical; anti_default: avoid the generic AI-SaaS hero + feature-card template. Scene: expressive → hero_subject: "GLM-5.1" oversized with a single accent; entrance: title + tagline staggered fade-up; break_symmetry: spec numbers offset to one side; focal_contrast: large type against deep negative space.
 
-
 ## First-Stage Product Assumptions
 
 Assume most users give no advanced design context — **not** a Figma file/MCP, mature design system, tokens, component library, brand guideline, or structured requirements.
@@ -328,16 +328,16 @@ skill_bundle:
 
 Pick exactly one primary artifact skill for a concrete design artifact. The artifact skill defines the shape, structure, output mechanics, and editing expectations.
 
-| Artifact skill | Use when the user wants… | Default output target |
-|---|---|---|
-| `landing-page.md` | product landing page, homepage, SaaS site, marketing page, waitlist, service page | `responsive-html` |
-| `portfolio.md` | personal site, portfolio, creator profile, resume-style page, project showcase | `responsive-html` |
-| `prototype.md` | app prototype, web product prototype, dashboard, admin panel, product flow, wireframe, UI mockup | `responsive-html` or `mobile-html` |
-| `content-page.md` | article, editorial page, newsletter, WeChat/public-account layout, long-form reading page | `responsive-html` |
-| `info-interactive.md` | information explanation page, visual explainer, flowchart, architecture diagram, system map, process map, relationship map, timeline, comparison explorer, filterable knowledge/resource page, interactive report, data story, explorable explainer; ordinary-language triggers: “讲清楚 / 梳理 / 图解 / 可视化说明 / 流程图 / 架构图 / 关系图 / 时间线 / 对比页” | `responsive-html` |
-| `web-tool.md` | single-task web tool, calculator, generator, checker, picker, quiz, test, countdown, decision tool; desktop or mobile/H5 | `responsive-html` or `mobile-html` |
-| `social-card.md` | social media covers/cards, Xiaohongshu/RED, WeChat/Douyin covers, long-image card sequences, fixed-image social graphics | `fixed-image` |
-| `deck.md` | slide deck, presentation, pitch deck, report deck, strategy deck, workshop deck, teaching deck | `html-slide-deck` |
+| Artifact skill        | Use when the user wants…                                                                                                                                                                                                                                                                                                                                          | Default output target              |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
+| `landing-page.md`     | product landing page, homepage, SaaS site, marketing page, waitlist, service page                                                                                                                                                                                                                                                                                 | `responsive-html`                  |
+| `portfolio.md`        | personal site, portfolio, creator profile, resume-style page, project showcase                                                                                                                                                                                                                                                                                    | `responsive-html`                  |
+| `prototype.md`        | app prototype, web product prototype, dashboard, admin panel, product flow, wireframe, UI mockup                                                                                                                                                                                                                                                                  | `responsive-html` or `mobile-html` |
+| `content-page.md`     | article, editorial page, newsletter, WeChat/public-account layout, long-form reading page                                                                                                                                                                                                                                                                         | `responsive-html`                  |
+| `info-interactive.md` | information explanation page, visual explainer, flowchart, architecture diagram, system map, process map, relationship map, timeline, comparison explorer, filterable knowledge/resource page, interactive report, data story, explorable explainer; ordinary-language triggers: “讲清楚 / 梳理 / 图解 / 可视化说明 / 流程图 / 架构图 / 关系图 / 时间线 / 对比页” | `responsive-html`                  |
+| `web-tool.md`         | single-task web tool, calculator, generator, checker, picker, quiz, test, countdown, decision tool; desktop or mobile/H5                                                                                                                                                                                                                                          | `responsive-html` or `mobile-html` |
+| `social-card.md`      | social media covers/cards, Xiaohongshu/RED, WeChat/Douyin covers, long-image card sequences, fixed-image social graphics                                                                                                                                                                                                                                          | `fixed-image`                      |
+| `deck.md`             | slide deck, presentation, pitch deck, report deck, strategy deck, workshop deck, teaching deck                                                                                                                                                                                                                                                                    | `html-slide-deck`                  |
 
 Legacy routing: `xiaohongshu-card.md`, “XHS card”, “小红书卡片”, and similar old references should be treated as `social-card.md`. Old references to `web-tool.md` / H5 tool should be treated as `web-tool.md`.
 
@@ -347,14 +347,14 @@ Legacy routing: `xiaohongshu-card.md`, “XHS card”, “小红书卡片”, an
 
 Use it to decide technical surface, sizing, export behavior, and supporting references:
 
-| Output target | Meaning | Common supporting references |
-|---|---|---|
-| `responsive-html` | scrollable or interactive browser page | `canvas-and-device.md`, `horizontal-craft/accessibility.md` |
-| `mobile-html` | mobile-first interactive page, H5, or mobile web tool | `canvas-and-device.md`, `horizontal-craft/state-coverage.md`, `horizontal-craft/form-validation.md` |
-| `html-slide-deck` | one-screen-at-a-time HTML presentation | `deck.md`, `design-templates/`, `canvas-and-device.md` |
-| `fixed-image` | fixed-size export surface for social card, cover, poster, long image, or image export | `social-card.md`, `canvas-and-device.md` |
-| `design-system-spec` | reusable `DESIGN.md` / tokens / component rules | `design-system-generation.md` |
-| `package` | ZIP/PDF/PPTX/image/export handoff | `export.md` |
+| Output target        | Meaning                                                                               | Common supporting references                                                                        |
+| -------------------- | ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| `responsive-html`    | scrollable or interactive browser page                                                | `canvas-and-device.md`, `horizontal-craft/accessibility.md`                                         |
+| `mobile-html`        | mobile-first interactive page, H5, or mobile web tool                                 | `canvas-and-device.md`, `horizontal-craft/state-coverage.md`, `horizontal-craft/form-validation.md` |
+| `html-slide-deck`    | one-screen-at-a-time HTML presentation                                                | `deck.md`, `design-templates/`, `canvas-and-device.md`                                              |
+| `fixed-image`        | fixed-size export surface for social card, cover, poster, long image, or image export | `social-card.md`, `canvas-and-device.md`                                                            |
+| `design-system-spec` | reusable `DESIGN.md` / tokens / component rules                                       | `design-system-generation.md`                                                                       |
+| `package`            | ZIP/PDF/PPTX/image/export handoff                                                     | `export.md`                                                                                         |
 
 Do not create a separate canvas, web-page, or slide-runtime route file. Use the artifact skill plus `output_target`.
 
@@ -366,14 +366,14 @@ A request often carries a style cue. Before reaching for a reference library, cl
 — most cues are NOT a reference lookup. This prevents two failure modes: treating a plain
 adjective as a library lookup, and confusing "read a spec" with "write a spec".
 
-| The user's style cue is… | Treat it as… | Where it goes |
-|--------------------------|--------------|---------------|
-| an adjective / vibe ("simple", "clean", "科技感", "简洁", "高级感") **on an interface scene** (prototype, info-interactive, web tool, dashboard/admin) | a **style lookup** | match it to `design-systems/style-skills` via the `mood` tags in that folder's `index.json`, and adopt the closest style skill as the UI base — interface scenes should lean on a mature UI system, not freeform taste |
-| an adjective / vibe **on a creative scene** (landing, portfolio, campaign, social card, content) | a **creative direction** | feed it into Creative Context / Design Read; design original. May *reference* a library system's character, but is not required to adopt one (see Design Read source line) |
-| a named brand ("Apple style", "like Stripe", "苹果风格") — **any scene** | a **brand reference** | `skills/design/design-system-reference.md` → `design-systems/brand-inspiration/` (website/brand-level; read that brand's DESIGN.md) |
-| a named style skill ("use the `minimal` style", "atelier-zero") | a **style skill** | `skills/design/design-system-reference.md` → `design-systems/style-skills/` |
-| an existing system to follow (uploaded DESIGN.md, screenshots, prior artifact, "match our product") | a **provided reference** | `skills/design/design-system-reference.md` (consistency with the given source) |
-| "extract / define / produce a reusable DESIGN.md" | a **generation task** | `design-system-generation.md` |
+| The user's style cue is…                                                                                                                               | Treat it as…             | Where it goes                                                                                                                                                                                                          |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| an adjective / vibe ("simple", "clean", "科技感", "简洁", "高级感") **on an interface scene** (prototype, info-interactive, web tool, dashboard/admin) | a **style lookup**       | match it to `design-systems/style-skills` via the `mood` tags in that folder's `index.json`, and adopt the closest style skill as the UI base — interface scenes should lean on a mature UI system, not freeform taste |
+| an adjective / vibe **on a creative scene** (landing, portfolio, campaign, social card, content)                                                       | a **creative direction** | feed it into Creative Context / Design Read; design original. May _reference_ a library system's character, but is not required to adopt one (see Design Read source line)                                             |
+| a named brand ("Apple style", "like Stripe", "苹果风格") — **any scene**                                                                               | a **brand reference**    | `skills/design/design-system-reference.md` → `design-systems/brand-inspiration/` (website/brand-level; read that brand's DESIGN.md)                                                                                    |
+| a named style skill ("use the `minimal` style", "atelier-zero")                                                                                        | a **style skill**        | `skills/design/design-system-reference.md` → `design-systems/style-skills/`                                                                                                                                            |
+| an existing system to follow (uploaded DESIGN.md, screenshots, prior artifact, "match our product")                                                    | a **provided reference** | `skills/design/design-system-reference.md` (consistency with the given source)                                                                                                                                         |
+| "extract / define / produce a reusable DESIGN.md"                                                                                                      | a **generation task**    | `design-system-generation.md`                                                                                                                                                                                          |
 
 Key distinctions:
 
@@ -391,6 +391,7 @@ Key distinctions:
 A style cue never changes the primary artifact skill: "an Apple-style landing page" is still `landing-page.md`, with Apple as a reference.
 
 Scene-based default when the cue is just a vibe word (not a brand, not a named system):
+
 - **Interface scene** (prototype / interactive / tool / dashboard) → resolve it to a `style-skills` entry via mood tags; lean on that UI system.
 - **Creative scene** (landing / portfolio / campaign / card / content) → treat as creative direction; design original, optionally referencing a system's character.
 - **No cue at all + interface/restrained scene** → still don't leave it to freeform taste: pick a `style-skills` baseline via the Mature System Fallback rather than inventing UI from scratch.
@@ -404,9 +405,9 @@ goal. Only the cross-skill boundaries that the table can't show are noted here:
 
 - **prototype.md** absorbs dashboards/admin (with a dashboard focus) and apps
   (`platform: mobile`, usually `mobile-html`) until dedicated skills exist.
-- **social-card.md vs content-page.md** — social cards, covers, fixed-image cards, Xiaohongshu/RED, WeChat/Douyin covers, screenshot explainer cards, KPI cards, quote cards, and long-image card sequences go to `social-card.md`. `content-page.md` is for linear reading pages. Only do both if the request explicitly asks for a reading page *and* a social cover/card.
+- **social-card.md vs content-page.md** — social cards, covers, fixed-image cards, Xiaohongshu/RED, WeChat/Douyin covers, screenshot explainer cards, KPI cards, quote cards, and long-image card sequences go to `social-card.md`. `content-page.md` is for linear reading pages. Only do both if the request explicitly asks for a reading page _and_ a social cover/card.
 - **content-page.md vs info-interactive.md** — reading → `content-page.md`; understanding / mapping / explaining / comparing / filtering / visualizing → `info-interactive.md`. If the user says “梳理一下”, “做成图解”, “讲清楚”, “做个流程图”, “架构图”, “关系图”, “时间线”, “对比页”, or asks to explore/filter a fixed body of information, prefer `info-interactive.md`, even when the final artifact is mostly static HTML/SVG rather than heavily interactive.
-- **info-interactive.md boundaries** — vs prototype: explains *information* rather than demonstrating a *product*; vs dashboard: a fixed body of information rather than live/system data; vs deck/social-card: if the carrier is explicitly slides or social images, use that carrier skill plus `horizontal-craft/visual-explanation.md`.
+- **info-interactive.md boundaries** — vs prototype: explains _information_ rather than demonstrating a _product_; vs dashboard: a fixed body of information rather than live/system data; vs deck/social-card: if the carrier is explicitly slides or social images, use that carrier skill plus `horizontal-craft/visual-explanation.md`.
 
 ## Other Design Scenarios
 
@@ -429,7 +430,7 @@ If the exact artifact skill is missing, use the closest available one; note the 
 
 ## Execution essentials
 
-The top-of-file flow covers *what to do*. This adds the three things it doesn't spell out: which references to load, the delivery checks, and web-project delivery.
+The top-of-file flow covers _what to do_. This adds the three things it doesn't spell out: which references to load, the delivery checks, and web-project delivery.
 
 ### Load a reference only when its trigger is present
 
@@ -457,6 +458,7 @@ horizontal-craft/link-and-proof.md           → links, CTAs, citations, client 
 horizontal-craft/visual-explanation.md       → flowcharts, architecture/system maps, timelines, relationship diagrams, process diagrams, comparison visuals, charts, maps, explorable models, or any visual explanation component
 horizontal-craft/technique-library.md        → an effect beyond plain CSS would serve the goal (motion / 3D / data-viz)
 ```
+
 Reading a reference is not enough — the rules must actually change the artifact. Don't claim a
 gate was applied unless the HTML/CSS/JS really contains the implementation.
 
@@ -468,6 +470,7 @@ gate was applied unless the HTML/CSS/JS really contains the implementation.
 [ ] required data markers / Design Compliance comment present and matching the real code
 [ ] no fake proof, emoji-as-icons, dead links, placeholder logic, or missing assets
 ```
+
 If a gate can't pass, fix the artifact or explicitly flag the unresolved issue — never silently ignore it.
 
 ### Web entry handoff
@@ -487,9 +490,13 @@ Use `canvas-and-device.md` when sizing, viewport, export ratio, or device-frame 
 Structure generated HTML for future edits — stable section ids / data attributes:
 
 ```html
-<section id="hero" data-section="hero">      <!-- pages: hero/work/about/contact -->
-<section class="slide" data-slide="cover">   <!-- decks -->
-<section data-screen="dashboard">            <!-- prototypes: + data-state, data-component -->
+<section id="hero" data-section="hero">
+  <!-- pages: hero/work/about/contact -->
+  <section class="slide" data-slide="cover">
+    <!-- decks -->
+    <section data-screen="dashboard"><!-- prototypes: + data-state, data-component --></section>
+  </section>
+</section>
 ```
 
 - keep sections / slides / screens / components / states identifiable for selected-region edits

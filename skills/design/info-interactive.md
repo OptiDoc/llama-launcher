@@ -64,9 +64,9 @@ If the artifact mixes information exploration with a small utility, lead with th
 
 ## Core Principle
 
-**This skill's job is to express information visually and structurally so the reader understands it by *seeing the structure*, instead of reading prose and rebuilding the structure in their head.** When the information has a shape — a process, a comparison, a hierarchy, a set of relationships, a trend, a distribution — represent that shape directly (flow, matrix, tree, node map, chart, timeline). Default assumption: **structured/visual presentation beats a wall of text** for this kind of content. Lead with the structure, not with paragraphs.
+**This skill's job is to express information visually and structurally so the reader understands it by _seeing the structure_, instead of reading prose and rebuilding the structure in their head.** When the information has a shape — a process, a comparison, a hierarchy, a set of relationships, a trend, a distribution — represent that shape directly (flow, matrix, tree, node map, chart, timeline). Default assumption: **structured/visual presentation beats a wall of text** for this kind of content. Lead with the structure, not with paragraphs.
 
-The one limit on this: only structure information that genuinely *has* structure. Content that is fundamentally linear narrative or argument is better written well (→ `content-page.md`) than chopped into a disconnected infographic. So: actively look for structure and visualize it — but don't manufacture fake structure just to have a diagram.
+The one limit on this: only structure information that genuinely _has_ structure. Content that is fundamentally linear narrative or argument is better written well (→ `content-page.md`) than chopped into a disconnected infographic. So: actively look for structure and visualize it — but don't manufacture fake structure just to have a diagram.
 
 The chosen form must make the information easier to understand than plain text would. Use interactivity only when it adds comprehension value; a clear static SVG/HTML diagram is valid when interaction would add friction.
 
@@ -86,7 +86,7 @@ If interaction only adds motion, novelty, or UI chrome, remove it.
 
 **But don't under-deliver on interaction either.** For explore-class artifacts (interactive
 reports, data stories, comparison tools, explorable models, relationship/architecture explorers),
-"click to expand" or "click to show more" is the *lowest* tier and usually not enough. Push to
+"click to expand" or "click to show more" is the _lowest_ tier and usually not enough. Push to
 real interactive visualization — linked highlighting, filter-and-recompose, draggable/zoomable
 graphs, slider-driven models that recompute live. See the interaction-complexity ladder and the
 paste-ready skeletons in `horizontal-craft/technique-library.md` (Interactive diagrams), and match
@@ -103,18 +103,18 @@ The push for richer interaction is for explore-class artifacts, not for "draw me
 
 Before designing layout or interaction, identify the shape of the information.
 
-| Information shape | Good artifact pattern |
-|---|---|
-| Hierarchy / taxonomy | collapsible outline, nested cards, knowledge tree |
-| Collection / resource set | searchable/filterable grid, facets, detail drawer |
-| Sequence / process | stepper, timeline, flow, state machine |
-| Comparison / trade-off | matrix, before/after, toggle compare, side-by-side explorer |
-| Quantity / metric | chart, KPI explanation, ranking, small multiples |
-| Relationship / dependency | node map, dependency graph, linked cards |
+| Information shape               | Good artifact pattern                                        |
+| ------------------------------- | ------------------------------------------------------------ |
+| Hierarchy / taxonomy            | collapsible outline, nested cards, knowledge tree            |
+| Collection / resource set       | searchable/filterable grid, facets, detail drawer            |
+| Sequence / process              | stepper, timeline, flow, state machine                       |
+| Comparison / trade-off          | matrix, before/after, toggle compare, side-by-side explorer  |
+| Quantity / metric               | chart, KPI explanation, ranking, small multiples             |
+| Relationship / dependency       | node map, dependency graph, linked cards                     |
 | System inventory / architecture | architecture diagram, responsibility map, layered system map |
-| Geography / route | map, schematic route, region comparison |
-| Argument / evidence chain | claim → evidence → implication path |
-| Model / sensitivity | adjustable input → updated explanation/result |
+| Geography / route               | map, schematic route, region comparison                      |
+| Argument / evidence chain       | claim → evidence → implication path                          |
+| Model / sensitivity             | adjustable input → updated explanation/result                |
 
 Use the smallest number of patterns that clarifies the information. One strong pattern is usually better than five weak ones.
 

@@ -27,10 +27,12 @@ Text-to-Speech allows you to build applications that generate spoken audio from 
 Before implementing TTS functionality, be aware of these important limitations:
 
 ### Input Text Constraints
+
 - **Maximum length**: 1024 characters per request
 - Text exceeding this limit must be split into smaller chunks
 
 ### Audio Parameters
+
 - **Speed range**: 0.5 to 2.0
   - 0.5 = half speed (slower)
   - 1.0 = normal speed (default)
@@ -40,17 +42,19 @@ Before implementing TTS functionality, be aware of these important limitations:
   - Values must be greater than 0 (exclusive) and up to 10 (inclusive)
 
 ### Format and Streaming
+
 - **Streaming limitation**: When `stream: true` is enabled, only `pcm` format is supported
 - **Non-streaming**: Supports `wav`, `pcm`, and `mp3` formats
 - **Sample rate**: 24000 Hz (recommended)
 
 ### Best Practice for Long Text
+
 ```javascript
 function splitTextIntoChunks(text, maxLength = 1000) {
   const chunks = [];
   const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
-  
-  let currentChunk = '';
+
+  let currentChunk = "";
   for (const sentence of sentences) {
     if ((currentChunk + sentence).length <= maxLength) {
       currentChunk += sentence;
@@ -60,7 +64,7 @@ function splitTextIntoChunks(text, maxLength = 1000) {
     }
   }
   if (currentChunk) chunks.push(currentChunk.trim());
-  
+
   return chunks;
 }
 ```
@@ -128,12 +132,14 @@ z-ai tts -i "This is a longer text that will be streamed" -o ./stream.wav --stre
 ### When to Use CLI vs SDK
 
 **Use CLI for:**
+
 - Quick text-to-speech conversions
 - Testing different voices and speeds
 - Simple batch audio generation
 - Command-line automation scripts
 
 **Use SDK for:**
+
 - Dynamic audio generation in applications
 - Integration with web services
 - Custom audio processing pipelines
@@ -144,18 +150,18 @@ z-ai tts -i "This is a longer text that will be streamed" -o ./stream.wav --stre
 ### Simple Text to Speech
 
 ```javascript
-import ZAI from 'z-ai-web-dev-sdk';
-import fs from 'fs';
+import ZAI from "z-ai-web-dev-sdk";
+import fs from "fs";
 
 async function textToSpeech(text, outputPath) {
   const zai = await ZAI.create();
 
   const response = await zai.audio.tts.create({
     input: text,
-    voice: 'tongtong',
+    voice: "tongtong",
     speed: 1.0,
-    response_format: 'wav',
-    stream: false
+    response_format: "wav",
+    stream: false,
   });
 
   // Get array buffer from Response object
@@ -168,14 +174,14 @@ async function textToSpeech(text, outputPath) {
 }
 
 // Usage
-await textToSpeech('Hello, world!', './output.wav');
+await textToSpeech("Hello, world!", "./output.wav");
 ```
 
 ### Multiple Voice Options
 
 ```javascript
-import ZAI from 'z-ai-web-dev-sdk';
-import fs from 'fs';
+import ZAI from "z-ai-web-dev-sdk";
+import fs from "fs";
 
 async function generateWithVoice(text, voice, outputPath) {
   const zai = await ZAI.create();
@@ -184,8 +190,8 @@ async function generateWithVoice(text, voice, outputPath) {
     input: text,
     voice: voice, // Available voices: tongtong, chuichui, xiaochen, jam, kazi, douji, luodo
     speed: 1.0,
-    response_format: 'wav',
-    stream: false
+    response_format: "wav",
+    stream: false,
   });
 
   // Get array buffer from Response object
@@ -197,14 +203,14 @@ async function generateWithVoice(text, voice, outputPath) {
 }
 
 // Usage
-await generateWithVoice('Welcome to our service', 'tongtong', './welcome.wav');
+await generateWithVoice("Welcome to our service", "tongtong", "./welcome.wav");
 ```
 
 ### Adjustable Speed
 
 ```javascript
-import ZAI from 'z-ai-web-dev-sdk';
-import fs from 'fs';
+import ZAI from "z-ai-web-dev-sdk";
+import fs from "fs";
 
 async function generateWithSpeed(text, speed, outputPath) {
   const zai = await ZAI.create();
@@ -217,10 +223,10 @@ async function generateWithSpeed(text, speed, outputPath) {
 
   const response = await zai.audio.tts.create({
     input: text,
-    voice: 'tongtong',
+    voice: "tongtong",
     speed: speed,
-    response_format: 'wav',
-    stream: false
+    response_format: "wav",
+    stream: false,
   });
 
   // Get array buffer from Response object
@@ -232,17 +238,17 @@ async function generateWithSpeed(text, speed, outputPath) {
 }
 
 // Usage - slower narration
-await generateWithSpeed('This is an important announcement', 0.8, './slow.wav');
+await generateWithSpeed("This is an important announcement", 0.8, "./slow.wav");
 
 // Usage - faster narration
-await generateWithSpeed('Quick update', 1.3, './fast.wav');
+await generateWithSpeed("Quick update", 1.3, "./fast.wav");
 ```
 
 ### Adjustable Volume
 
 ```javascript
-import ZAI from 'z-ai-web-dev-sdk';
-import fs from 'fs';
+import ZAI from "z-ai-web-dev-sdk";
+import fs from "fs";
 
 async function generateWithVolume(text, volume, outputPath) {
   const zai = await ZAI.create();
@@ -253,11 +259,11 @@ async function generateWithVolume(text, volume, outputPath) {
 
   const response = await zai.audio.tts.create({
     input: text,
-    voice: 'tongtong',
+    voice: "tongtong",
     speed: 1.0,
     volume: volume, // Optional parameter
-    response_format: 'wav',
-    stream: false
+    response_format: "wav",
+    stream: false,
   });
 
   // Get array buffer from Response object
@@ -269,10 +275,10 @@ async function generateWithVolume(text, volume, outputPath) {
 }
 
 // Usage - louder audio
-await generateWithVolume('This is an announcement', 5.0, './loud.wav');
+await generateWithVolume("This is an announcement", 5.0, "./loud.wav");
 
 // Usage - quieter audio
-await generateWithVolume('Whispered message', 0.5, './quiet.wav');
+await generateWithVolume("Whispered message", 0.5, "./quiet.wav");
 ```
 
 ## Advanced Use Cases
@@ -280,9 +286,9 @@ await generateWithVolume('Whispered message', 0.5, './quiet.wav');
 ### Batch Processing
 
 ```javascript
-import ZAI from 'z-ai-web-dev-sdk';
-import fs from 'fs';
-import path from 'path';
+import ZAI from "z-ai-web-dev-sdk";
+import fs from "fs";
+import path from "path";
 
 async function batchTextToSpeech(textArray, outputDir) {
   const zai = await ZAI.create();
@@ -300,10 +306,10 @@ async function batchTextToSpeech(textArray, outputDir) {
 
       const response = await zai.audio.tts.create({
         input: text,
-        voice: 'tongtong',
+        voice: "tongtong",
         speed: 1.0,
-        response_format: 'wav',
-        stream: false
+        response_format: "wav",
+        stream: false,
       });
 
       // Get array buffer from Response object
@@ -314,13 +320,13 @@ async function batchTextToSpeech(textArray, outputDir) {
       results.push({
         success: true,
         text,
-        path: outputPath
+        path: outputPath,
       });
     } catch (error) {
       results.push({
         success: false,
         text: textArray[i],
-        error: error.message
+        error: error.message,
       });
     }
   }
@@ -329,21 +335,17 @@ async function batchTextToSpeech(textArray, outputDir) {
 }
 
 // Usage
-const texts = [
-  'Welcome to chapter one',
-  'Welcome to chapter two',
-  'Welcome to chapter three'
-];
+const texts = ["Welcome to chapter one", "Welcome to chapter two", "Welcome to chapter three"];
 
-const results = await batchTextToSpeech(texts, './audio-output');
-console.log('Generated:', results.length, 'audio files');
+const results = await batchTextToSpeech(texts, "./audio-output");
+console.log("Generated:", results.length, "audio files");
 ```
 
 ### Dynamic Content Generation
 
 ```javascript
-import ZAI from 'z-ai-web-dev-sdk';
-import fs from 'fs';
+import ZAI from "z-ai-web-dev-sdk";
+import fs from "fs";
 
 class TTSGenerator {
   constructor() {
@@ -355,18 +357,14 @@ class TTSGenerator {
   }
 
   async generateAudio(text, options = {}) {
-    const {
-      voice = 'tongtong',
-      speed = 1.0,
-      format = 'wav'
-    } = options;
+    const { voice = "tongtong", speed = 1.0, format = "wav" } = options;
 
     const response = await this.zai.audio.tts.create({
       input: text,
       voice: voice,
       speed: speed,
       response_format: format,
-      stream: false
+      stream: false,
     });
 
     // Get array buffer from Response object
@@ -388,11 +386,7 @@ class TTSGenerator {
 const generator = new TTSGenerator();
 await generator.initialize();
 
-await generator.saveAudio(
-  'Hello, this is a test',
-  './output.wav',
-  { speed: 1.2 }
-);
+await generator.saveAudio("Hello, this is a test", "./output.wav", { speed: 1.2 });
 ```
 
 ### Next.js API Route Example
@@ -448,21 +442,22 @@ export async function POST(req: NextRequest) {
 ## Best Practices
 
 ### 1. Text Preparation
+
 ```javascript
 function prepareTextForTTS(text) {
   // Remove excessive whitespace
-  text = text.replace(/\s+/g, ' ').trim();
+  text = text.replace(/\s+/g, " ").trim();
 
   // Expand common abbreviations for better pronunciation
   const abbreviations = {
-    'Dr.': 'Doctor',
-    'Mr.': 'Mister',
-    'Mrs.': 'Misses',
-    'etc.': 'et cetera'
+    "Dr.": "Doctor",
+    "Mr.": "Mister",
+    "Mrs.": "Misses",
+    "etc.": "et cetera",
   };
 
   for (const [abbr, full] of Object.entries(abbreviations)) {
-    text = text.replace(new RegExp(abbr, 'g'), full);
+    text = text.replace(new RegExp(abbr, "g"), full);
   }
 
   return text;
@@ -470,29 +465,30 @@ function prepareTextForTTS(text) {
 ```
 
 ### 2. Error Handling
+
 ```javascript
-import ZAI from 'z-ai-web-dev-sdk';
-import fs from 'fs';
+import ZAI from "z-ai-web-dev-sdk";
+import fs from "fs";
 
 async function safeTTS(text, outputPath) {
   try {
     // Validate input
     if (!text || text.trim().length === 0) {
-      throw new Error('Text input cannot be empty');
+      throw new Error("Text input cannot be empty");
     }
 
     if (text.length > 1024) {
-      throw new Error('Text input exceeds maximum length of 1024 characters');
+      throw new Error("Text input exceeds maximum length of 1024 characters");
     }
 
     const zai = await ZAI.create();
 
     const response = await zai.audio.tts.create({
       input: text,
-      voice: 'tongtong',
+      voice: "tongtong",
       speed: 1.0,
-      response_format: 'wav',
-      stream: false
+      response_format: "wav",
+      stream: false,
     });
 
     // Get array buffer from Response object
@@ -504,13 +500,13 @@ async function safeTTS(text, outputPath) {
     return {
       success: true,
       path: outputPath,
-      size: buffer.length
+      size: buffer.length,
     };
   } catch (error) {
-    console.error('TTS Error:', error);
+    console.error("TTS Error:", error);
     return {
       success: false,
-      error: error.message
+      error: error.message,
     };
   }
 }
@@ -551,16 +547,16 @@ const response = await zai.audio.tts.create({ ... });
 ### Express.js API Endpoint
 
 ```javascript
-import express from 'express';
-import ZAI from 'z-ai-web-dev-sdk';
-import fs from 'fs';
-import path from 'path';
+import express from "express";
+import ZAI from "z-ai-web-dev-sdk";
+import fs from "fs";
+import path from "path";
 
 const app = express();
 app.use(express.json());
 
 let zaiInstance;
-const outputDir = './audio-output';
+const outputDir = "./audio-output";
 
 async function initZAI() {
   zaiInstance = await ZAI.create();
@@ -569,12 +565,12 @@ async function initZAI() {
   }
 }
 
-app.post('/api/tts', async (req, res) => {
+app.post("/api/tts", async (req, res) => {
   try {
-    const { text, voice = 'tongtong', speed = 1.0 } = req.body;
+    const { text, voice = "tongtong", speed = 1.0 } = req.body;
 
     if (!text) {
-      return res.status(400).json({ error: 'Text is required' });
+      return res.status(400).json({ error: "Text is required" });
     }
 
     const filename = `tts_${Date.now()}.wav`;
@@ -584,8 +580,8 @@ app.post('/api/tts', async (req, res) => {
       input: text,
       voice: voice,
       speed: speed,
-      response_format: 'wav',
-      stream: false
+      response_format: "wav",
+      stream: false,
     });
 
     // Get array buffer from Response object
@@ -597,18 +593,18 @@ app.post('/api/tts', async (req, res) => {
     res.json({
       success: true,
       audioUrl: `/audio/${filename}`,
-      size: buffer.length
+      size: buffer.length,
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-app.use('/audio', express.static('audio-output'));
+app.use("/audio", express.static("audio-output"));
 
 initZAI().then(() => {
   app.listen(3000, () => {
-    console.log('TTS API running on port 3000');
+    console.log("TTS API running on port 3000");
   });
 });
 ```
@@ -616,33 +612,43 @@ initZAI().then(() => {
 ## Troubleshooting
 
 **Issue**: "Input text exceeds maximum length"
+
 - **Solution**: Text input is limited to 1024 characters. Split longer text into chunks using the `splitTextIntoChunks` function shown in the API Limitations section
 
 **Issue**: "Invalid speed parameter" or unexpected speed behavior
+
 - **Solution**: Speed must be between 0.5 and 2.0. Check your speed value is within this range
 
 **Issue**: "Invalid volume parameter"
+
 - **Solution**: Volume must be greater than 0 and up to 10. Ensure volume value is in range (0, 10]
 
 **Issue**: "Stream format not supported" with WAV/MP3
+
 - **Solution**: Streaming mode only supports PCM format. Either use `response_format: 'pcm'` with streaming, or disable streaming (`stream: false`) for WAV/MP3 output
 
 **Issue**: "SDK must be used in backend"
+
 - **Solution**: Ensure z-ai-web-dev-sdk is only imported in server-side code
 
 **Issue**: "TypeError: response.audio is undefined"
+
 - **Solution**: The SDK returns a standard Response object, use `await response.arrayBuffer()` instead of accessing `response.audio`
 
 **Issue**: Generated audio file is empty or corrupted
+
 - **Solution**: Ensure you're calling `await response.arrayBuffer()` and properly converting to Buffer: `Buffer.from(new Uint8Array(arrayBuffer))`
 
 **Issue**: Audio sounds unnatural
+
 - **Solution**: Prepare text properly (remove special characters, expand abbreviations)
 
 **Issue**: Long processing times
+
 - **Solution**: Break long text into smaller chunks and process in parallel
 
 **Issue**: Next.js caching old API route
+
 - **Solution**: Create a new API route endpoint or restart the dev server
 
 ## Performance Tips
@@ -658,6 +664,7 @@ initZAI().then(() => {
 ### API Constraints
 
 **Input Text Length**: Maximum 1024 characters per request. For longer text:
+
 ```javascript
 // Split long text into chunks
 const longText = "..."; // Your long text here
@@ -666,10 +673,10 @@ const chunks = splitTextIntoChunks(longText, 1000);
 for (const chunk of chunks) {
   const response = await zai.audio.tts.create({
     input: chunk,
-    voice: 'tongtong',
+    voice: "tongtong",
     speed: 1.0,
-    response_format: 'wav',
-    stream: false
+    response_format: "wav",
+    stream: false,
   });
   // Process each chunk...
 }

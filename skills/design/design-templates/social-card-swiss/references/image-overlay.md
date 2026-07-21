@@ -38,11 +38,13 @@ Only when Step 2 fails the contrast check. Three rules:
 /* Example: title in lower-left, image-toned soft tint */
 .hero-bleed::after {
   content: "";
-  position: absolute; inset: 0;
+  position: absolute;
+  inset: 0;
   background: radial-gradient(
-    60% 45% at 25% 80%,         /* centered on title block */
-    rgba(26, 40, 24, 0.28) 0%,  /* forest moss tone, soft peak */
-    rgba(26, 40, 24, 0.0) 100%);
+    60% 45% at 25% 80%,
+    /* centered on title block */ rgba(26, 40, 24, 0.28) 0%,
+    /* forest moss tone, soft peak */ rgba(26, 40, 24, 0) 100%
+  );
   pointer-events: none;
 }
 ```
@@ -114,13 +116,13 @@ These four rules are what separates an editorial poster from a generic image-wit
 
 The face-avoidance rule should also drive `object-position`. If the subject is in the upper third, do not use `object-position: center top` (that pushes the face into the title band).
 
-| Subject location in raw image | Recommended `object-position` for 3:4 crop |
-| ----------------------------- | ------------------------------------------ |
-| Face / focus in upper third   | `center 25%` (lifts face higher, gives bottom room for title) |
-| Face / focus in middle third  | `center center` (default; text goes top + bottom) |
-| Face / focus in lower third   | `center 70%` (drops face down, top room for title) |
-| Wide landscape, no single subject | `center 35%` (slight upward bias to retain horizon line) |
-| Vertical portrait, full body  | `center top` |
+| Subject location in raw image     | Recommended `object-position` for 3:4 crop                    |
+| --------------------------------- | ------------------------------------------------------------- |
+| Face / focus in upper third       | `center 25%` (lifts face higher, gives bottom room for title) |
+| Face / focus in middle third      | `center center` (default; text goes top + bottom)             |
+| Face / focus in lower third       | `center 70%` (drops face down, top room for title)            |
+| Wide landscape, no single subject | `center 35%` (slight upward bias to retain horizon line)      |
+| Vertical portrait, full body      | `center top`                                                  |
 
 ### When the photo cannot accommodate text
 

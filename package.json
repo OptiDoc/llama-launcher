@@ -3,16 +3,25 @@
   "version": "0.2.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 3000",
+    "dev": "next dev -p 3001",
     "tauri:dev": "tauri dev",
     "build": "next build && node scripts/copy-standalone.js",
-    "tauri:build": "cross-env TAURI_BUILD=true next build && tauri build",
+    "tauri:build": "cross-env TAURI_BUILD=true next build && tauri build && pnpm format:gen",
+    "format:gen": "prettier --write \"src-tauri/gen/schemas/*.json\"",
     "start": "NODE_ENV=production node .next/standalone/server.js",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:watch": "vitest",
     "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,css,md}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,css,md}\"",
+    "typecheck": "tsc --noEmit",
     "db:push": "prisma db push",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
-    "db:reset": "prisma migrate reset"
+    "db:reset": "prisma migrate reset",
+    "prepare": "husky"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
@@ -49,6 +58,8 @@
     "@radix-ui/react-toggle-group": "^1.1.10",
     "@radix-ui/react-tooltip": "^1.2.7",
     "@reactuses/core": "^6.0.5",
+    "@tanstack/react-query": "^5.82.0",
+    "@tanstack/react-table": "^8.21.3",
     "@tauri-apps/api": "^2.11.1",
     "@tauri-apps/plugin-dialog": "^2.7.1",
     "@tauri-apps/plugin-fs": "^2.5.1",
@@ -57,8 +68,6 @@
     "@tauri-apps/plugin-process": "^2.3.1",
     "@tauri-apps/plugin-shell": "^2.3.5",
     "@tauri-apps/plugin-updater": "^2.10.1",
-    "@tanstack/react-query": "^5.82.0",
-    "@tanstack/react-table": "^8.21.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
@@ -81,6 +90,8 @@
     "react-syntax-highlighter": "^15.6.1",
     "recharts": "^2.15.4",
     "sharp": "^0.34.3",
+    "socket.io": "^4.8.3",
+    "socket.io-client": "^4.8.3",
     "sonner": "^2.0.6",
     "tailwind-merge": "^3.3.1",
     "tailwindcss-animate": "^1.0.7",
@@ -90,19 +101,35 @@
     "zod": "^4.0.2",
     "zustand": "^5.0.6"
   },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "sharp",
+      "esbuild"
+    ]
+  },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@next/eslint-plugin-next": "^16.2.10",
     "@tailwindcss/postcss": "^4",
     "@tauri-apps/cli": "^2.11.4",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
     "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/uuid": "^10",
+    "@vitest/coverage-v8": "^4.1.10",
     "bun-types": "^1.3.4",
     "cross-env": "^10.1.0",
     "eslint": "^9",
     "eslint-config-next": "^16.1.1",
+    "husky": "^9.1.7",
+    "jsdom": "^29.1.1",
+    "prettier": "^3.5.3",
     "tailwindcss": "^4",
     "tw-animate-css": "^1.3.5",
-    "typescript": "^5"
+    "typescript": "^5",
+    "typescript-eslint": "^8.64.0",
+    "vitest": "^4.1.10"
   }
 }

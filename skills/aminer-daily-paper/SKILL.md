@@ -10,6 +10,7 @@ Personalized academic paper recommendation.
 ## When to activate
 
 Any time the user asks for paper recommendations:
+
 - Explicit command: `/aminer-dp`, `/aminer-dp topics: RAG, multimodal agents`
 - Natural language: `recommend me recent papers on multimodal agents`, `suggest some papers on tool-use`, `I work on RAG, give me a few papers`
 
@@ -17,30 +18,31 @@ Any time the user asks for paper recommendations:
 
 Before calling the script, extract from the user input:
 
-| Field | Description |
-|-------|-------------|
-| `topics` | Research topics, 1–3 closely related terms work best |
-| `author_name` | Scholar name |
-| `author_org` | Scholar institution (improves disambiguation) |
-| `aminer_author_id` | AMiner scholar ID (24-char hex) |
-| `size` | Number of papers, default 5, max 20 |
-| `language_sort` | `zh` or `en`, optional |
+| Field              | Description                                          |
+| ------------------ | ---------------------------------------------------- |
+| `topics`           | Research topics, 1–3 closely related terms work best |
+| `author_name`      | Scholar name                                         |
+| `author_org`       | Scholar institution (improves disambiguation)        |
+| `aminer_author_id` | AMiner scholar ID (24-char hex)                      |
+| `size`             | Number of papers, default 5, max 20                  |
+| `language_sort`    | `zh` or `en`, optional                               |
 
 At least one of `topics` / `author_name` / `aminer_author_id` should be provided.
 
 ## Call strategy
 
-| Scenario | Strategy |
-|----------|----------|
-| Single topic or scholar | 1 call, `size=5` |
-| User specifies a number | 1 call, honor the number (max 20) |
-| Multiple distinct topics | 1 call per topic group, `size=3–5` each, ~15 papers total |
-| Broad request with no topics | 1 call, `size=5` |
+| Scenario                     | Strategy                                                  |
+| ---------------------------- | --------------------------------------------------------- |
+| Single topic or scholar      | 1 call, `size=5`                                          |
+| User specifies a number      | 1 call, honor the number (max 20)                         |
+| Multiple distinct topics     | 1 call per topic group, `size=3–5` each, ~15 papers total |
+| Broad request with no topics | 1 call, `size=5`                                          |
 
 ## Execution
 
 The script reads `.z-ai-config` (JSON) following the `z-ai-web-dev-sdk`
 convention, searching in this order:
+
 1. `./.z-ai-config` (cwd)
 2. `~/.z-ai-config` (home)
 3. `/etc/.z-ai-config` (system)

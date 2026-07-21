@@ -328,21 +328,21 @@ Use layout recipes as grammar, not as templates to copy.
 
 Map content intent to layout family:
 
-| Intent | Good layout family |
-|---|---|
-| Strong cover hook | Issue cover, hero title, image-led cover, hero question |
-| One big thesis | Pull quote, statement page, manifesto card |
-| Many criteria | Checklist, ledger, matrix |
-| Step-by-step | Vertical pipeline, numbered flow, process cards |
-| A/B comparison | Two-column comparison, before/after split, difference table |
-| Product/UI proof | Screenshot frame, browser/device mock, zoom annotation |
-| Product brief / update | Feature brief, release note stack, screenshot + benefit, announcement card |
-| Event / hiring / campaign | Poster hierarchy, date-role-action block, campaign hero |
-| Report summary | Finding card, executive brief, KPI + takeaway, insight stack |
-| Data summary | KPI tower, bar comparison, ranking list, single-chart card |
-| Travel/spatial | Map block, route list, field-note photo |
-| Lifestyle/photos | Image-led cover, photo well, field-note page |
-| Closing | Summary, remember-three, final quote, save card |
+| Intent                    | Good layout family                                                         |
+| ------------------------- | -------------------------------------------------------------------------- |
+| Strong cover hook         | Issue cover, hero title, image-led cover, hero question                    |
+| One big thesis            | Pull quote, statement page, manifesto card                                 |
+| Many criteria             | Checklist, ledger, matrix                                                  |
+| Step-by-step              | Vertical pipeline, numbered flow, process cards                            |
+| A/B comparison            | Two-column comparison, before/after split, difference table                |
+| Product/UI proof          | Screenshot frame, browser/device mock, zoom annotation                     |
+| Product brief / update    | Feature brief, release note stack, screenshot + benefit, announcement card |
+| Event / hiring / campaign | Poster hierarchy, date-role-action block, campaign hero                    |
+| Report summary            | Finding card, executive brief, KPI + takeaway, insight stack               |
+| Data summary              | KPI tower, bar comparison, ranking list, single-chart card                 |
+| Travel/spatial            | Map block, route list, field-note photo                                    |
+| Lifestyle/photos          | Image-led cover, photo well, field-note page                               |
+| Closing                   | Summary, remember-three, final quote, save card                            |
 
 Do not reuse the same layout family across every page. A good carousel has rhythm.
 

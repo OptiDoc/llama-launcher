@@ -31,13 +31,13 @@ The active design system decides how states look. This file decides which states
 
 Every surface that fetches, transforms, filters, searches, or accepts data must handle all five.
 
-| State | Triggered when | Must contain |
-|---|---|---|
-| Loading | Data is in flight | skeleton, spinner, shell, or labelled progress |
-| Empty | no records yet or query returned nothing | headline, explanation, primary next action |
-| Error | fetch failed, server failure, validation rejection | plain cause, recovery action, preserved input |
-| Populated | data present | the main designed state |
-| Edge | extreme volume, long strings, missing fields, partial network | layout does not break |
+| State     | Triggered when                                                | Must contain                                   |
+| --------- | ------------------------------------------------------------- | ---------------------------------------------- |
+| Loading   | Data is in flight                                             | skeleton, spinner, shell, or labelled progress |
+| Empty     | no records yet or query returned nothing                      | headline, explanation, primary next action     |
+| Error     | fetch failed, server failure, validation rejection            | plain cause, recovery action, preserved input  |
+| Populated | data present                                                  | the main designed state                        |
+| Edge      | extreme volume, long strings, missing fields, partial network | layout does not break                          |
 
 Render-and-screenshot test: every list, table, card, form, and panel has these states.
 
@@ -45,14 +45,14 @@ Render-and-screenshot test: every list, table, card, form, and panel has these s
 
 ## Edge matrix
 
-| Surface | Edge scenario |
-|---|---|
-| Dashboard / table | 10,000+ rows, numeric columns, sort + filter active |
-| Mobile card / list | 200-char title, missing avatar, missing secondary CTA |
-| Form | optional fields empty, required fields at max length |
-| Search results | one-character query, special-character query, 1,000+ results |
-| Detail view | missing optional metadata, mixed Chinese / Latin / long words |
-| Tool H5 | invalid input, user retries, result cannot be computed |
+| Surface            | Edge scenario                                                 |
+| ------------------ | ------------------------------------------------------------- |
+| Dashboard / table  | 10,000+ rows, numeric columns, sort + filter active           |
+| Mobile card / list | 200-char title, missing avatar, missing secondary CTA         |
+| Form               | optional fields empty, required fields at max length          |
+| Search results     | one-character query, special-character query, 1,000+ results  |
+| Detail view        | missing optional metadata, mixed Chinese / Latin / long words |
+| Tool H5            | invalid input, user retries, result cannot be computed        |
 
 ---
 
@@ -60,11 +60,11 @@ Render-and-screenshot test: every list, table, card, form, and panel has these s
 
 Forms add:
 
-| State | Triggered when | Behavior |
-|---|---|---|
-| Untouched | field has not had focus | default styling; no validation message |
-| Dirty valid | user typed and field passes validation | helper remains; avoid excessive success coloring |
-| Submitted pending | submit clicked, waiting | button loading state; prevent duplicate submit |
+| State             | Triggered when                         | Behavior                                         |
+| ----------------- | -------------------------------------- | ------------------------------------------------ |
+| Untouched         | field has not had focus                | default styling; no validation message           |
+| Dirty valid       | user typed and field passes validation | helper remains; avoid excessive success coloring |
+| Submitted pending | submit clicked, waiting                | button loading state; prevent duplicate submit   |
 
 Validation timing:
 
@@ -120,14 +120,14 @@ Match severity to scope. A field error does not need a page-level error.
 
 ## Loading thresholds
 
-| Duration | Indicator |
-|---|---|
-| 0–300ms | none |
-| 300ms–2s | subtle spinner or skeleton |
-| 2–10s | skeleton or labelled spinner |
-| 10–30s | progress with cancel option when possible |
-| 30s+ | explicit longer-than-expected message |
-| 60s+ | stop indefinite animation; show error / retry / cancel |
+| Duration | Indicator                                              |
+| -------- | ------------------------------------------------------ |
+| 0–300ms  | none                                                   |
+| 300ms–2s | subtle spinner or skeleton                             |
+| 2–10s    | skeleton or labelled spinner                           |
+| 10–30s   | progress with cancel option when possible              |
+| 30s+     | explicit longer-than-expected message                  |
+| 60s+     | stop indefinite animation; show error / retry / cancel |
 
 Never leave a spinner running indefinitely.
 
@@ -135,13 +135,13 @@ Never leave a spinner running indefinitely.
 
 ## ARIA and focus rules
 
-| Change | ARIA | Focus action |
-|---|---|---|
-| Inline error on submit | `role="alert"` | move focus to first error field |
-| Toast confirmation | `role="status"` | do not move focus |
-| Critical modal | `role="alertdialog"` | move focus to dialog |
-| Loading begins | `role="status"` | do not focus spinner |
-| User-triggered content appears | usually none | move focus only if it helps continuation |
+| Change                         | ARIA                 | Focus action                             |
+| ------------------------------ | -------------------- | ---------------------------------------- |
+| Inline error on submit         | `role="alert"`       | move focus to first error field          |
+| Toast confirmation             | `role="status"`      | do not move focus                        |
+| Critical modal                 | `role="alertdialog"` | move focus to dialog                     |
+| Loading begins                 | `role="status"`      | do not focus spinner                     |
+| User-triggered content appears | usually none         | move focus only if it helps continuation |
 
 ---
 

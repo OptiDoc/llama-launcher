@@ -2,7 +2,7 @@
 
 > 🌏 **English version: [README.en.md](./README.en.md)**
 
-一个 [Claude Code / Claude Agent Skills](https://agentskills.io/) 技能,用于生成**单文件 HTML 横向翻页 PPT**,视觉基调是"**电子杂志 × 电子墨水**"——像 *Monocle* 贴上了代码的样子。
+一个 [Claude Code / Claude Agent Skills](https://agentskills.io/) 技能,用于生成**单文件 HTML 横向翻页 PPT**,视觉基调是"**电子杂志 × 电子墨水**"——像 _Monocle_ 贴上了代码的样子。
 
 > 由 [歸藏](https://x.com/op7418) 在"一人公司:被 AI 折叠的组织"、"一种新的工作方式"等线下分享中沉淀而成,踩过的每一个坑都写进了 `checklist.md`。
 
@@ -83,13 +83,13 @@ magazine-web-ppt/
 
 从 `references/themes.md` 里选一套——**不允许自定义 hex 值**,保护美学比给自由更重要。
 
-| 主题 | 适合场景 |
-|------|---------|
+| 主题       | 适合场景                       |
+| ---------- | ------------------------------ |
 | 🖋 墨水经典 | 通用默认、商业发布、不知道选啥 |
-| 🌊 靛蓝瓷 | 科技 / 研究 / AI / 技术发布会 |
-| 🌿 森林墨 | 自然 / 可持续 / 文化 / 非虚构 |
-| 🍂 牛皮纸 | 怀旧 / 人文 / 文学 / 独立杂志 |
-| 🌙 沙丘 | 艺术 / 设计 / 创意 / 画廊 |
+| 🌊 靛蓝瓷  | 科技 / 研究 / AI / 技术发布会  |
+| 🌿 森林墨  | 自然 / 可持续 / 文化 / 非虚构  |
+| 🍂 牛皮纸  | 怀旧 / 人文 / 文学 / 独立杂志  |
+| 🌙 沙丘    | 艺术 / 设计 / 创意 / 画廊      |
 
 切换主题只需替换 `template.html` 开头 `:root{}` 里的 6 行变量,其他 CSS 全走 `var(--...)`。
 
@@ -103,7 +103,7 @@ magazine-web-ppt/
 
 ## 视觉参考
 
-- [*Monocle*](https://monocle.com) 杂志的版式
+- [_Monocle_](https://monocle.com) 杂志的版式
 - YC Garry Tan "Thin Harness, Fat Skills"
 - 歸藏线下分享 PPT 系列
 

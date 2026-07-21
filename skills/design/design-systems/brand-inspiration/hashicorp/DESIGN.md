@@ -272,6 +272,7 @@ Display type is **hashicorpSans** at weights 600/700 with tight line-heights (1.
 The signature device is the **product-card** family — each HashiCorp product gets its own colored card variant on the home and infrastructure pages, lifting Terraform into a violet ground, Vault into yellow, Waypoint into cyan. These aren't decorative gradients — they're identity surfaces. A reader scrolling the page can tell which product a section is about from the corner of their eye.
 
 **Key Characteristics:**
+
 - Black-canvas marketing system: `{colors.canvas}` is the surface for hero, body, pricing, comparison tables, and footer alike.
 - **Per-product color identity**: Terraform `{colors.product-terraform}`, Vault `{colors.product-vault}`, Waypoint `{colors.product-waypoint}`, Vagrant `{colors.product-vagrant}`, Consul `{colors.product-consul}`, Nomad `{colors.product-nomad}`, Boundary `{colors.product-boundary}` — each with its own button + card variant.
 - Display headlines run hashicorpSans 600/700 with line-height 1.17–1.21 (tight); body runs the same family at 500 with 1.50–1.71 (relaxed) — the proportional gap is the brand's voice.
@@ -285,12 +286,14 @@ The signature device is the **product-card** family — each HashiCorp product g
 > Source pages: hashicorp.com/en (home), /en/infrastructure-cloud, /en/products/terraform, /en/pricing, /en/resources?contentType=PDF.
 
 ### Brand & Accent
+
 - **Black** ({colors.primary}): The system primary surface. Canvas, footer, comparison tables, hero — all black.
 - **White** ({colors.on-primary}): Inverse text on black; canvas of `button-primary`.
 - **Accent Blue** ({colors.accent-blue}): Hyperlinks across the marketing surface.
 - **Visited Purple** ({colors.semantic-visited}): Visited-link state.
 
 ### Surface
+
 - **Canvas** ({colors.canvas}): Default page background.
 - **Surface 1** ({colors.surface-1}): Charcoal one step above canvas — feature cards, pricing cards, resource tiles.
 - **Surface 2** ({colors.surface-2}): Two steps above — featured pricing card, secondary buttons, hovered product chrome.
@@ -300,11 +303,13 @@ The signature device is the **product-card** family — each HashiCorp product g
 - **Inverse Canvas** ({colors.inverse-canvas}): Pure white — used as the surface of `button-primary` only.
 
 ### Text
+
 - **Ink** ({colors.ink}): All headline and emphasized body type — pure white.
 - **Ink Muted** ({colors.ink-muted}): Secondary type at #b2b6bd — meta info, footer columns.
 - **Ink Subtle** ({colors.ink-subtle}): Tertiary type at #656a76 — form helper text, timestamps, footnotes.
 
 ### Per-Product Identity (signature)
+
 HashiCorp's marketing isn't held together by a single accent color — it's held together by a system of product-specific accents, each used to mark which tool a section represents.
 
 - **Terraform Purple** ({colors.product-terraform}): Terraform sections, terraform CTAs, the violet 3D cube on the home hero.
@@ -317,6 +322,7 @@ HashiCorp's marketing isn't held together by a single accent color — it's held
 - **Boundary Coral** ({colors.product-boundary}): Boundary sections.
 
 ### Semantic
+
 - **Success** ({colors.semantic-success}): Positive states (also reused as Nomad green).
 - **Warning** ({colors.semantic-warning}): Warning states (also Vault yellow).
 - **Error** ({colors.semantic-error}): Error states (also Consul red).
@@ -334,20 +340,20 @@ The same family carries display, body, button, and caption — no separate displ
 
 ### Hierarchy
 
-| Token | Size | Weight | Line Height | Letter Spacing | Use |
-|---|---|---|---|---|---|
-| `{typography.display-xl}` | 80px | 700 | 1.17 | -2.5px | Largest hero headline |
-| `{typography.display-lg}` | 56px | 700 | 1.18 | -1.6px | Section opener headlines |
-| `{typography.display-md}` | 40px | 600 | 1.19 | -1.0px | Sub-section headlines |
-| `{typography.headline}` | 28px | 600 | 1.21 | -0.6px | Pricing tier titles, CTA banner heading |
-| `{typography.card-title}` | 22px | 600 | 1.18 | -0.4px | Feature card title |
-| `{typography.subhead}` | 20px | 600 | 1.35 | -0.2px | Long-form intro paragraphs |
-| `{typography.body-lg}` | 18px | 500 | 1.69 | 0 | Hero subhead, lead body |
-| `{typography.body}` | 16px | 500 | 1.50 | 0 | Default body |
-| `{typography.body-sm}` | 14px | 500 | 1.71 | 0 | Card body, footer columns |
-| `{typography.caption}` | 13px | 500 | 1.38 | 0.2px | Meta, comparison cell labels |
-| `{typography.button}` | 14px | 600 | 1.29 | 0 | Pill / square CTA buttons |
-| `{typography.eyebrow}` | 12px | 600 | 1.23 | 0.6px | Uppercase section eyebrows |
+| Token                     | Size | Weight | Line Height | Letter Spacing | Use                                     |
+| ------------------------- | ---- | ------ | ----------- | -------------- | --------------------------------------- |
+| `{typography.display-xl}` | 80px | 700    | 1.17        | -2.5px         | Largest hero headline                   |
+| `{typography.display-lg}` | 56px | 700    | 1.18        | -1.6px         | Section opener headlines                |
+| `{typography.display-md}` | 40px | 600    | 1.19        | -1.0px         | Sub-section headlines                   |
+| `{typography.headline}`   | 28px | 600    | 1.21        | -0.6px         | Pricing tier titles, CTA banner heading |
+| `{typography.card-title}` | 22px | 600    | 1.18        | -0.4px         | Feature card title                      |
+| `{typography.subhead}`    | 20px | 600    | 1.35        | -0.2px         | Long-form intro paragraphs              |
+| `{typography.body-lg}`    | 18px | 500    | 1.69        | 0              | Hero subhead, lead body                 |
+| `{typography.body}`       | 16px | 500    | 1.50        | 0              | Default body                            |
+| `{typography.body-sm}`    | 14px | 500    | 1.71        | 0              | Card body, footer columns               |
+| `{typography.caption}`    | 13px | 500    | 1.38        | 0.2px          | Meta, comparison cell labels            |
+| `{typography.button}`     | 14px | 600    | 1.29        | 0              | Pill / square CTA buttons               |
+| `{typography.eyebrow}`    | 12px | 600    | 1.23        | 0.6px          | Uppercase section eyebrows              |
 
 ### Principles
 
@@ -383,12 +389,12 @@ The dark canvas IS the whitespace. Sections separate by surface lift (canvas →
 
 ## Elevation & Depth
 
-| Level | Treatment | Use |
-|---|---|---|
-| 0 (flat) | No shadow, no border | Canvas-mounted display type, hero, footer |
-| 1 (charcoal lift) | `{colors.surface-1}` background + 1px `rgba(178,182,189,0.1)` border | Default cards, resource tiles, pricing cards |
-| 2 (surface-2 lift) | `{colors.surface-2}` background + 1px `{colors.hairline}` border | Featured pricing card, hovered cards, sub-nav |
-| 3 (product chromatic) | Per-product accent color background — Terraform purple, Vault yellow, Waypoint cyan | Product showcase cards |
+| Level                 | Treatment                                                                           | Use                                           |
+| --------------------- | ----------------------------------------------------------------------------------- | --------------------------------------------- |
+| 0 (flat)              | No shadow, no border                                                                | Canvas-mounted display type, hero, footer     |
+| 1 (charcoal lift)     | `{colors.surface-1}` background + 1px `rgba(178,182,189,0.1)` border                | Default cards, resource tiles, pricing cards  |
+| 2 (surface-2 lift)    | `{colors.surface-2}` background + 1px `{colors.hairline}` border                    | Featured pricing card, hovered cards, sub-nav |
+| 3 (product chromatic) | Per-product accent color background — Terraform purple, Vault yellow, Waypoint cyan | Product showcase cards                        |
 
 The product chromatic level isn't a "modal lift" — it's an identity device. A Terraform card sits at the same z-plane as a feature-card; the difference is meaning, not depth.
 
@@ -402,16 +408,16 @@ The product chromatic level isn't a "modal lift" — it's an identity device. A 
 
 ### Border Radius Scale
 
-| Token | Value | Use |
-|---|---|---|
-| `{rounded.xs}` | 4px | Small chips / badges |
-| `{rounded.sm}` | 6px | Inline tag |
-| `{rounded.md}` | 8px | All CTA buttons, form inputs, list items |
-| `{rounded.lg}` | 12px | Feature cards, product cards, pricing cards |
-| `{rounded.xl}` | 16px | Large illustrative tiles |
-| `{rounded.xxl}` | 24px | CTA banner panels |
-| `{rounded.pill}` | 9999px | Eyebrow-style product pills (small chips) |
-| `{rounded.full}` | 9999px | Avatar circles (rare on marketing) |
+| Token            | Value  | Use                                         |
+| ---------------- | ------ | ------------------------------------------- |
+| `{rounded.xs}`   | 4px    | Small chips / badges                        |
+| `{rounded.sm}`   | 6px    | Inline tag                                  |
+| `{rounded.md}`   | 8px    | All CTA buttons, form inputs, list items    |
+| `{rounded.lg}`   | 12px   | Feature cards, product cards, pricing cards |
+| `{rounded.xl}`   | 16px   | Large illustrative tiles                    |
+| `{rounded.xxl}`  | 24px   | CTA banner panels                           |
+| `{rounded.pill}` | 9999px | Eyebrow-style product pills (small chips)   |
+| `{rounded.full}` | 9999px | Avatar circles (rare on marketing)          |
 
 ### Photography & Illustration Geometry
 
@@ -424,22 +430,28 @@ The product chromatic level isn't a "modal lift" — it's an identity device. A 
 ### Buttons
 
 **`button-primary`** — White rounded-rect CTA. Used as primary CTA on all pages.
+
 - Background `{colors.inverse-canvas}`, text `{colors.inverse-ink}`, type `{typography.button}`, padding 10px 18px, rounded `{rounded.md}`.
 - Pressed state lives in `button-primary-pressed`.
 
 **`button-secondary`** — Charcoal rounded-rect. Secondary CTA, "Read docs" / "Talk to sales".
+
 - Background `{colors.surface-2}`, text `{colors.ink}`, type `{typography.button}`, rounded `{rounded.md}`, padding 10px 18px.
 
 **`button-tertiary`** — Bare ghost button on canvas with text-only treatment.
+
 - Background `{colors.canvas}`, text `{colors.ink}`, type `{typography.button}`, rounded `{rounded.md}`, padding 10px 18px.
 
 **`button-product-terraform`** — Terraform-tinted CTA on Terraform pages.
+
 - Background `{colors.product-terraform}`, text `{colors.ink}`, type `{typography.button}`, rounded `{rounded.md}`, padding 10px 18px.
 
 **`button-product-vault`** — Vault-yellow CTA.
+
 - Background `{colors.product-vault}`, text `{colors.inverse-ink}` (yellow needs dark text), type `{typography.button}`, rounded `{rounded.md}`, padding 10px 18px.
 
 **`button-product-waypoint`** — Waypoint-cyan CTA.
+
 - Background `{colors.product-waypoint}`, text `{colors.inverse-ink}`, type `{typography.button}`, rounded `{rounded.md}`, padding 10px 18px.
 
 (Vagrant blue, Nomad green, Consul red, Boundary coral follow the same pattern with their respective `{colors.product-*}` token.)
@@ -447,61 +459,75 @@ The product chromatic level isn't a "modal lift" — it's an identity device. A 
 ### Cards & Containers
 
 **`product-card`** — Default product showcase card — surface-1 charcoal.
+
 - Background `{colors.surface-1}`, text `{colors.ink}`, type `{typography.body}`, rounded `{rounded.lg}`, padding 24px.
 
 **`product-card-terraform`** — Product card with Terraform purple ground (used as identity surface, not modal elevation).
+
 - Background `{colors.product-terraform}`, text `{colors.ink}`, type `{typography.body}`, rounded `{rounded.lg}`, padding 24px.
 
 **`product-card-vault`** — Vault-yellow ground.
+
 - Background `{colors.product-vault}`, text `{colors.inverse-ink}`, otherwise identical structure.
 
 **`product-card-waypoint`** — Waypoint-cyan ground.
+
 - Background `{colors.product-waypoint}`, text `{colors.inverse-ink}`, otherwise identical structure.
 
 (Other product variants follow the same shape with their respective product token.)
 
 **`feature-card`** — Generic feature highlight on surface-1.
+
 - Background `{colors.surface-1}`, text `{colors.ink}`, type `{typography.body}`, rounded `{rounded.lg}`, padding 24px.
 
 **`pricing-card`** — Pricing tier on `/en/pricing`.
+
 - Background `{colors.surface-1}`, text `{colors.ink}`, type `{typography.body}`, rounded `{rounded.lg}`, padding 32px.
 
 **`pricing-card-featured`** — Recommended tier (visually emphasized via surface lift).
+
 - Background `{colors.surface-2}`, otherwise identical structure.
 
 **`resource-card`** — PDF / whitepaper / guide tile in the resources directory.
+
 - Background `{colors.surface-1}`, text `{colors.ink}`, type `{typography.body-sm}`, rounded `{rounded.lg}`, padding 16px.
 
 ### Inputs & Forms
 
 **`text-input`** + **`text-input-focused`** — Form fields on pricing seat-count and contact forms.
+
 - Background `{colors.surface-1}`, text `{colors.ink}`, type `{typography.body}`, rounded `{rounded.md}`, padding 10px 14px.
 - Focused state retains the same surface; the focus ring is a 1px `{colors.accent-blue}` outline.
 
 ### Pills & Chips
 
 **`product-pill`** — Small product-name chip used above hero headlines and on resource cards to label which product a piece of content belongs to.
+
 - Background `{colors.surface-1}`, text `{colors.ink-muted}`, type `{typography.caption}`, rounded `{rounded.pill}`, padding 4px 10px.
 
 ### Comparison Table
 
 **`comparison-row`** — Single row inside the pricing comparison table.
+
 - Background `{colors.canvas}`, text `{colors.ink-muted}`, type `{typography.body-sm}`. Row separator is `{colors.hairline-soft}`.
 
 ### CTA Banner
 
 **`cta-banner`** — Large rounded panel used at the bottom of long-form pages with a closing CTA.
+
 - Background `{colors.surface-1}`, text `{colors.ink}`, type `{typography.subhead}`, rounded `{rounded.xxl}`, padding 48px.
 
 ### Navigation
 
 **`top-nav`** — Sticky black bar with HashiCorp logomark left, primary nav links centered, and a `button-primary` ("Sign up") + `button-secondary` ("Sign in") pair right.
+
 - Background `{colors.canvas}`, text `{colors.ink}`, type `{typography.body-sm}`, height 64px.
 - Mobile: collapses primary links into a hamburger; the primary CTA remains visible.
 
 ### Footer
 
 **`footer`** — Dense link grid on `{colors.canvas}` with the wordmark at left and 5–6 columns of caption-sized links.
+
 - Background `{colors.canvas}`, text `{colors.ink-muted}`, type `{typography.caption}`, padding 64px 32px.
 
 ## Do's and Don'ts
@@ -530,13 +556,13 @@ The product chromatic level isn't a "modal lift" — it's an identity device. A 
 
 ### Breakpoints
 
-| Name | Width | Key Changes |
-|---|---|---|
-| Desktop-XL | 1440px | Default desktop layout |
-| Desktop | 1280px | Pricing 3-up grid maintained |
-| Tablet | 1024px | Product card grid 3-up → 2-up |
-| Mobile-Lg | 768px | Pricing comparison becomes per-tier accordion; nav becomes hamburger |
-| Mobile | 480px | Single-column everything; display-xl scales 80px → ~36px |
+| Name       | Width  | Key Changes                                                          |
+| ---------- | ------ | -------------------------------------------------------------------- |
+| Desktop-XL | 1440px | Default desktop layout                                               |
+| Desktop    | 1280px | Pricing 3-up grid maintained                                         |
+| Tablet     | 1024px | Product card grid 3-up → 2-up                                        |
+| Mobile-Lg  | 768px  | Pricing comparison becomes per-tier accordion; nav becomes hamburger |
+| Mobile     | 480px  | Single-column everything; display-xl scales 80px → ~36px             |
 
 ### Touch Targets
 

@@ -1,6 +1,6 @@
 import type { NextConfig } from "next";
 
-const isTauri = process.env.TAURI_BUILD === 'true';
+const isTauri = process.env.TAURI_BUILD === "true";
 
 const nextConfig: NextConfig = {
   output: isTauri ? "export" : "standalone",

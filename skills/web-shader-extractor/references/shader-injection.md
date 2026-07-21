@@ -24,6 +24,7 @@ vec4 getIBLVolumeRefraction(n, v, roughness, diffuseColor, specularColor, specul
 ```
 
 **必须检查目标版本的实际签名**：
+
 ```bash
 curl -s "https://cdn.jsdelivr.net/npm/three@0.167.0/src/renderers/shaders/ShaderChunk/transmission_pars_fragment.glsl.js" \
   | tr '\n' ' ' | grep -oE 'vec4 getIBLVolumeRefraction\([^)]+\)'
@@ -47,6 +48,7 @@ void main() {
 ### 3. 条件编译宏保护
 
 某些变量只在特定宏下可用：
+
 - `vWorldPosition` → 需要 `USE_TRANSMISSION` 启用
 - `vTransmissionMapUv` → 需要 `USE_TRANSMISSIONMAP` 启用
 - `roughnessFactor` → 在 `lights_physical_fragment` 之后可用
@@ -62,6 +64,7 @@ void main() {
 ### 4. 变量名冲突
 
 注入的全局函数/变量可能与 Three.js 内部冲突：
+
 - 避免使用 `hash`, `random`, `noise` 等通用名
 - 自定义函数加前缀：`snoise` → OK，`random` → 可能冲突
 - uniform 名称加前缀 `u`：`uDistortion`, `uNoiseTime`
@@ -76,7 +79,8 @@ material.onBeforeCompile = (shader) => {
   shader.uniforms.uNoiseTime = { value: 0 };
 
   // 在 fragment shader 最前面加 uniform 声明 + 工具函数
-  shader.fragmentShader = `
+  shader.fragmentShader =
+    `
     uniform float uDistortion;
     uniform float uNoiseTime;
     ${noiseGLSL}
@@ -84,7 +88,7 @@ material.onBeforeCompile = (shader) => {
 
   // 在 transmission_fragment 之前插入法线扰动
   shader.fragmentShader = shader.fragmentShader.replace(
-    '#include <transmission_fragment>',
+    "#include <transmission_fragment>",
     `
     #ifdef USE_TRANSMISSION
     {
@@ -99,7 +103,7 @@ material.onBeforeCompile = (shader) => {
     }
     #endif
     #include <transmission_fragment>
-    `
+    `,
   );
 };
 ```
@@ -117,10 +121,10 @@ material.onBeforeCompile = (shader) => {
 
 ## 视觉效果来源速查
 
-| 效果 | 来源 | 实现方式 |
-|------|------|----------|
-| 玻璃折射 | MeshPhysicalMaterial `transmission` | Three.js 内置 |
-| 色差 (chromatic aberration) | 不同 IOR 采样 R/G/B | 替换 transmission_fragment |
-| 胶片颗粒感 | 低采样数 + 每像素随机方向 | 替换 transmission_fragment |
-| 有机扭曲 | simplex noise 扰动法线/折射方向 | onBeforeCompile 注入 |
-| 颜色偏移 | `dispersion` 属性 (r167+) | MeshPhysicalMaterial 内置 |
+| 效果                        | 来源                                | 实现方式                   |
+| --------------------------- | ----------------------------------- | -------------------------- |
+| 玻璃折射                    | MeshPhysicalMaterial `transmission` | Three.js 内置              |
+| 色差 (chromatic aberration) | 不同 IOR 采样 R/G/B                 | 替换 transmission_fragment |
+| 胶片颗粒感                  | 低采样数 + 每像素随机方向           | 替换 transmission_fragment |
+| 有机扭曲                    | simplex noise 扰动法线/折射方向     | onBeforeCompile 注入       |
+| 颜色偏移                    | `dispersion` 属性 (r167+)           | MeshPhysicalMaterial 内置  |

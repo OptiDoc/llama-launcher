@@ -12,7 +12,7 @@ def add_comment(paragraph, comment_text, author="GLM", initials="G"):
     """Add a comment to an entire paragraph."""
     # Create comment reference
     comment_id = str(hash(comment_text) % 10000)
-    
+
     # Add to comments.xml (need to create if not exists)
     # ... complex XML manipulation required
     pass
@@ -61,6 +61,7 @@ mkdir work && cd work && unzip ../input.docx
 ### Step 4: Update relationships
 
 In `word/_rels/document.xml.rels`, add:
+
 ```xml
 <Relationship Id="rIdComments" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/comments" Target="comments.xml"/>
 ```
@@ -68,6 +69,7 @@ In `word/_rels/document.xml.rels`, add:
 ### Step 5: Update Content_Types
 
 In `[Content_Types].xml`, ensure:
+
 ```xml
 <Override PartName="/word/comments.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.comments+xml"/>
 ```
@@ -80,9 +82,9 @@ zip -r ../output.docx . -x ".*"
 
 ## When to Use Each Method
 
-| Scenario | Method |
-|----------|--------|
-| Add 1-2 simple comments | OOXML |
-| Batch review (many comments) | OOXML with Python script |
-| Comment on specific words | OOXML (precise range control) |
-| Quick annotation | python-docx if available |
+| Scenario                     | Method                        |
+| ---------------------------- | ----------------------------- |
+| Add 1-2 simple comments      | OOXML                         |
+| Batch review (many comments) | OOXML with Python script      |
+| Comment on specific words    | OOXML (precise range control) |
+| Quick annotation             | python-docx if available      |

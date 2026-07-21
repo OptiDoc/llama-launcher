@@ -23,26 +23,29 @@
 ## 更新记录
 
 ### v2.0.1 (2026-02-06)
+
 - 精简文档，优化发布
 
 ### v2.0.0 (2026-02-06)
+
 - 新增9个国际搜索引擎
 - 强化深度搜索能力
 
 ### v1.0.0 (2026-02-04)
+
 - 初始版本：8个国内搜索引擎
 
 ## 使用示例
 
 ```javascript
 // Google搜索
-web_fetch({"url": "https://www.google.com/search?q=python"})
+web_fetch({ url: "https://www.google.com/search?q=python" });
 
 // 隐私搜索
-web_fetch({"url": "https://duckduckgo.com/html/?q=privacy"})
+web_fetch({ url: "https://duckduckgo.com/html/?q=privacy" });
 
 // 站内搜索
-web_fetch({"url": "https://www.google.com/search?q=site:github.com+python"})
+web_fetch({ url: "https://www.google.com/search?q=site:github.com+python" });
 ```
 
 MIT License

@@ -19,25 +19,25 @@ Bloomberg Terminal, Refinitiv Eikon, FactSet, TradingView Pro. All share: dark-o
 
 ### Surface Palette
 
-| Token | Hex | Usage |
-|-------|-----|-------|
-| Background | `#0D0D0D` | Primary canvas |
-| Surface | `#141414` | Elevated panels, cards |
+| Token         | Hex       | Usage                  |
+| ------------- | --------- | ---------------------- |
+| Background    | `#0D0D0D` | Primary canvas         |
+| Surface       | `#141414` | Elevated panels, cards |
 | Surface Hover | `#1A1A1A` | Hover state for panels |
-| Border | `#2A2A2A` | Panel separation |
+| Border        | `#2A2A2A` | Panel separation       |
 
 ### Data Palette
 
-| Token | Hex | Usage |
-|-------|-----|-------|
-| Primary | `#00D4AA` | Positive values, buy signals, success |
-| Gain | `#00D4AA` | Positive price movement |
-| Loss | `#FF4757` | Negative price movement |
-| Warning | `#FFB800` | Caution alerts, margin warnings |
-| Neutral | `#808086` | Unchanged, secondary data |
-| Text Primary | `#FFFFFF` | High-contrast primary text |
-| Text Secondary | `#AAAAAA` | Labels, metadata |
-| Text Tertiary | `#828282` | Timestamps, grid labels |
+| Token          | Hex       | Usage                                 |
+| -------------- | --------- | ------------------------------------- |
+| Primary        | `#00D4AA` | Positive values, buy signals, success |
+| Gain           | `#00D4AA` | Positive price movement               |
+| Loss           | `#FF4757` | Negative price movement               |
+| Warning        | `#FFB800` | Caution alerts, margin warnings       |
+| Neutral        | `#808086` | Unchanged, secondary data             |
+| Text Primary   | `#FFFFFF` | High-contrast primary text            |
+| Text Secondary | `#AAAAAA` | Labels, metadata                      |
+| Text Tertiary  | `#828282` | Timestamps, grid labels               |
 
 ### Dark Mode
 
@@ -45,31 +45,36 @@ Default and only mode. Trading terminals operate in dim environments for focus.
 
 ```css
 :root {
-  --color-bg: #0D0D0D;
+  --color-bg: #0d0d0d;
   --color-surface: #141414;
-  --color-surface-hover: #1A1A1A;
-  --color-border: #2A2A2A;
-  --color-primary: #00D4AA;
-  --color-gain: #00D4AA;
-  --color-loss: #FF4757;
-  --color-warning: #FFB800;
-  --color-text: #FFFFFF;
-  --color-text-secondary: #AAAAAA;
+  --color-surface-hover: #1a1a1a;
+  --color-border: #2a2a2a;
+  --color-primary: #00d4aa;
+  --color-gain: #00d4aa;
+  --color-loss: #ff4757;
+  --color-warning: #ffb800;
+  --color-text: #ffffff;
+  --color-text-secondary: #aaaaaa;
   --color-text-tertiary: #828282;
-  --space-1: 4px;  --space-2: 8px;  --space-3: 12px; --space-4: 16px;
-  --space-6: 24px; --space-8: 32px; --space-12: 48px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
 }
 ```
 
 ## 3. Typography Rules
 
-| Role | Size | Weight | Line Height | Font |
-|------|------|--------|-------------|------|
-| Display | 28px | 600 | 1.0 | JetBrains Mono |
-| Heading | 16px | 600 | 1.2 | Inter |
-| Body | 14px | 400 | 1.3 | JetBrains Mono |
-| Label | 12px | 500 | 1.0 | Inter, uppercase |
-| Micro | 10px | 400 | 1.0 | JetBrains Mono |
+| Role    | Size | Weight | Line Height | Font             |
+| ------- | ---- | ------ | ----------- | ---------------- |
+| Display | 28px | 600    | 1.0         | JetBrains Mono   |
+| Heading | 16px | 600    | 1.2         | Inter            |
+| Body    | 14px | 400    | 1.3         | JetBrains Mono   |
+| Label   | 12px | 500    | 1.0         | Inter, uppercase |
+| Micro   | 10px | 400    | 1.0         | JetBrains Mono   |
 
 **Font labels for catalog extraction:**
 
@@ -93,9 +98,18 @@ Mono: "JetBrains Mono", ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas
   padding: var(--space-1) 0;
   border-bottom: 1px solid var(--color-border);
 }
-.order-book-size { color: var(--color-text-secondary); text-align: right; }
-.order-book-bid  { color: var(--color-gain); text-align: right; }
-.order-book-ask  { color: var(--color-loss); text-align: right; }
+.order-book-size {
+  color: var(--color-text-secondary);
+  text-align: right;
+}
+.order-book-bid {
+  color: var(--color-gain);
+  text-align: right;
+}
+.order-book-ask {
+  color: var(--color-loss);
+  text-align: right;
+}
 ```
 
 ### Price Card
@@ -117,18 +131,22 @@ Mono: "JetBrains Mono", ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas
   letter-spacing: 0.05em;
 }
 .price-card-value {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: "JetBrains Mono", monospace;
   font-size: 28px;
   font-weight: 600;
   color: var(--color-text);
-  line-height: 1.0;
+  line-height: 1;
 }
 .price-card-change {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: "JetBrains Mono", monospace;
   font-size: 14px;
 }
-.price-card-change.positive { color: var(--color-gain); }
-.price-card-change.negative { color: var(--color-loss); }
+.price-card-change.positive {
+  color: var(--color-gain);
+}
+.price-card-change.negative {
+  color: var(--color-loss);
+}
 ```
 
 ### Ticker Bar
@@ -169,6 +187,7 @@ Terminal layouts target desktop-first (1280px+). On narrower viewports, columns 
 ## 9. Agent Prompt Guide
 
 When generating a trading terminal interface, prompt the model to:
+
 - Use JetBrains Mono for all numeric data; Inter for labels and headings
 - Always show gain/loss values in monospace with color coding (#00D4AA green, #FF4757 red)
 - No rounded corners on any element

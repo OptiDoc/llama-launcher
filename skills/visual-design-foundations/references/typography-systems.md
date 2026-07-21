@@ -19,11 +19,7 @@ const RATIOS = {
   goldenRatio: 1.618, // φ
 };
 
-function generateScale(
-  baseSize: number,
-  ratio: number,
-  steps: number,
-): number[] {
+function generateScale(baseSize: number, ratio: number, steps: number): number[] {
   const scale: number[] = [];
   for (let i = -2; i <= steps; i++) {
     scale.push(Math.round(baseSize * Math.pow(ratio, i) * 100) / 100);
@@ -110,13 +106,7 @@ body {
 ```html
 <head>
   <!-- Preload critical fonts -->
-  <link
-    rel="preload"
-    href="/fonts/Inter-Variable.woff2"
-    as="font"
-    type="font/woff2"
-    crossorigin
-  />
+  <link rel="preload" href="/fonts/Inter-Variable.woff2" as="font" type="font/woff2" crossorigin />
 </head>
 ```
 
@@ -203,11 +193,7 @@ module.exports = {
 
 // Component with responsive classes
 function Heading({ children }) {
-  return (
-    <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight">
-      {children}
-    </h1>
-  );
+  return <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight">{children}</h1>;
 }
 ```
 

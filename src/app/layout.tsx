@@ -21,9 +21,7 @@ export default function RootLayout({
         className="antialiased bg-background text-foreground"
         style={{ fontFamily: "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}
       >
-        <ErrorBoundary>
-          {children}
-        </ErrorBoundary>
+        <ErrorBoundary>{children}</ErrorBoundary>
         <Toaster />
       </body>
     </html>

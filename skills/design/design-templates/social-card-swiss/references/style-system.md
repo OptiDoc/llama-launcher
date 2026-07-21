@@ -13,7 +13,7 @@ This skill extracts Guizang PPT visual principles for static social images. It d
 
 ## Style ↔ content type are decoupled
 
-The two modes below are **visual stances, not content categories**. Any topic can be rendered in either mode — what changes is the page's feel and which structural devices are available (ledger / marginalia / pull quote vs matrix / KPI tower / h-bar). Pick by editorial intent ("feature story" vs "release note" / "system explainer"), not by topic lookup. The lists below are *good fits*, not exhaustive.
+The two modes below are **visual stances, not content categories**. Any topic can be rendered in either mode — what changes is the page's feel and which structural devices are available (ledger / marginalia / pull quote vs matrix / KPI tower / h-bar). Pick by editorial intent ("feature story" vs "release note" / "system explainer"), not by topic lookup. The lists below are _good fits_, not exhaustive.
 
 ## Mode A: Editorial Magazine x E-ink
 
@@ -31,7 +31,7 @@ Visual anchors:
 
 Use one of the 6 magazine palettes in `theme-presets.md`. Do not improvise arbitrary warm paper colors. Five palettes are light (paper-and-ink); one — **Midnight Ink** — is the only sanctioned dark variant, reserved for content where the source imagery is already dark (game art, night photography, cinematic covers). Do not invent a second dark palette.
 
-**Typography stance — "the larger, the lighter."** This rule is non-negotiable for Editorial. Display titles run at **weight 500** with **wide tracking** (`+.03em` to `+.04em`). Small text (kicker, meta, label) is the *only* place where weight 500 is paired with mono uppercase and wide letter-spacing (`+.20em` to `+.22em`). Body uses **serif-zh**, not sans. The anti-pattern — 700 to 900 weight display, sans body, negative tracking — collapses Editorial into a generic "infographic banner" look. If a page feels heavy or shouty, the title is too bold or the body switched to sans. See `local-tests/demo-showcase/editorial.html` for source-of-truth.
+**Typography stance — "the larger, the lighter."** This rule is non-negotiable for Editorial. Display titles run at **weight 500** with **wide tracking** (`+.03em` to `+.04em`). Small text (kicker, meta, label) is the _only_ place where weight 500 is paired with mono uppercase and wide letter-spacing (`+.20em` to `+.22em`). Body uses **serif-zh**, not sans. The anti-pattern — 700 to 900 weight display, sans body, negative tracking — collapses Editorial into a generic "infographic banner" look. If a page feels heavy or shouty, the title is too bold or the body switched to sans. See `local-tests/demo-showcase/editorial.html` for source-of-truth.
 
 Layout patterns:
 
@@ -69,12 +69,12 @@ Rules:
 
 Typography guidance:
 
-| Role | Size Guidance | Weight |
-| --- | --- | --- |
+| Role             | Size Guidance         | Weight  |
+| ---------------- | --------------------- | ------- |
 | Main cover title | 84-128px on 1080x1440 | 200-400 |
-| Page title | 52-82px | 300-500 |
-| Body copy | 28-42px | 400-500 |
-| Captions/meta | 20-28px | 500-650 |
+| Page title       | 52-82px               | 300-500 |
+| Body copy        | 28-42px               | 400-500 |
+| Captions/meta    | 20-28px               | 500-650 |
 
 Chinese titles are visually dense. Shorten first, then reduce size. Do not solve overflow by shrinking body text below readability.
 
@@ -134,7 +134,7 @@ These all rendered without errors and looked plausible in isolation, but failed 
 <h1 style="font-size: 92px; font-weight: 800">如果只能留 5 个,我留这些。</h1>
 
 <!-- RIGHT: typed class, automatic 200-300 weight -->
-<h1 class="h-statement">如果只能<br>留 <em>5 个</em>,<br>我留这些。</h1>
+<h1 class="h-statement">如果只能<br />留 <em>5 个</em>,<br />我留这些。</h1>
 ```
 
 "The larger, the lighter" is a hard rule. A 90px h1 at weight 700+ instantly downgrades the design from Swiss International to generic landing-page editorial. Always reach for `.h-hero` / `.h-statement` / `.h-xl` / `.num-mega`. Do not bypass them with inline `font-size` + `font-weight`.
@@ -160,11 +160,21 @@ When `.foot` or `.issue-strip` is positioned with `position: absolute; bottom: .
 
 ```css
 /* Pattern A — flex column. Foot is the last child, pushed by margin-top: auto. */
-.poster .pad { display: flex; flex-direction: column; height: 100%; }
-.poster .foot { margin-top: auto; }
+.poster .pad {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.poster .foot {
+  margin-top: auto;
+}
 
 /* Pattern B — grid with fixed footer row. */
-.poster .pad { display: grid; grid-template-rows: auto 1fr auto; height: 100%; }
+.poster .pad {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  height: 100%;
+}
 ```
 
 Both seed templates already use Pattern A. Preserve it. If a recipe truly needs an absolutely-positioned foot, reserve `padding-bottom: <foot-height + 24px>` on the content container.

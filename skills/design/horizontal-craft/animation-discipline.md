@@ -15,30 +15,51 @@ landing-page heroes, editorial/cultural features, social covers). For these, **a
 entrance is part of the deliverable, not decoration**. A fully static expressive page is
 under-delivered, not "safe". Do not score "no animation" as pass for an expressive scene.
 
-| Scene | Entrance choreography | Microinteractions | "minimal/none" verdict |
-|---|---|---|---|
+| Scene                                                                          | Entrance choreography                                                         | Microinteractions            | "minimal/none" verdict         |
+| ------------------------------------------------------------------------------ | ----------------------------------------------------------------------------- | ---------------------------- | ------------------------------ |
 | Expressive (brand, campaign, portfolio, landing hero, editorial, social cover) | **Expected** — one choreographed entrance (staggered reveal of hero elements) | hover/press feedback welcome | **not pass** — page feels dead |
-| Restrained (dashboard, tool, form, admin, report, notice, data) | Avoid; motion only on functional micro-feedback | functional only | **pass** — calm is correct |
+| Restrained (dashboard, tool, form, admin, report, notice, data)                | Avoid; motion only on functional micro-feedback                               | functional only              | **pass** — calm is correct     |
 
 So the "don't animate to decorate / fill silence" rule below is about **functional UI**. In an
 expressive scene, one well-built entrance is the opposite of slop — it is the job. The rest of this
-file still governs *how* (duration, easing, reduced-motion); it does not forbid the expressive entrance.
+file still governs _how_ (duration, easing, reduced-motion); it does not forbid the expressive entrance.
 
 ### Paste-ready expressive entrance (CSS-only, staggered, reduced-motion safe)
 
 ```css
 @keyframes riseIn {
-  from { opacity: 0; transform: translateY(24px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
-.rise { opacity: 0; animation: riseIn 0.6s cubic-bezier(0.2, 0, 0, 1) forwards; }
-.rise-1 { animation-delay: 0.05s; }
-.rise-2 { animation-delay: 0.18s; }
-.rise-3 { animation-delay: 0.31s; }
-.rise-4 { animation-delay: 0.44s; }   /* stagger hero → tagline → subject → CTA */
+.rise {
+  opacity: 0;
+  animation: riseIn 0.6s cubic-bezier(0.2, 0, 0, 1) forwards;
+}
+.rise-1 {
+  animation-delay: 0.05s;
+}
+.rise-2 {
+  animation-delay: 0.18s;
+}
+.rise-3 {
+  animation-delay: 0.31s;
+}
+.rise-4 {
+  animation-delay: 0.44s;
+} /* stagger hero → tagline → subject → CTA */
 
 @media (prefers-reduced-motion: reduce) {
-  .rise { animation: none; opacity: 1; transform: none; }
+  .rise {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
 }
 ```
 
@@ -49,7 +70,7 @@ shimmer, etc.) keep it one-shot and reduced-motion safe.
 
 ---
 
-Universal numeric rules follow. They apply to *how* motion runs in both tiers.
+Universal numeric rules follow. They apply to _how_ motion runs in both tiers.
 
 > Grounded in primary sources: Tversky/Morrison/Bétrancourt 2002
 > (IJHCS), Heer & Robertson TVCG 2007, Harrison/Yeo/Hudson CHI 2010,
@@ -70,7 +91,7 @@ page transitions, container morphs, viewpoint changes, progress
 indicators (p. 257).
 
 A follow-on hazard: Palmiter & Elkerton found animation-trained users
-*declined* one week after training, while text-trained users *improved*
+_declined_ one week after training, while text-trained users _improved_
 (Tversky 2002, p. 255). Animation's apparent short-term parity hides
 worse retention.
 
@@ -86,13 +107,13 @@ IBM Carbon `moderate-01`, Shopify Polaris `150`, Tailwind default,
 SLDS `duration-fast` all land here. Use it as the default duration for
 state-confirmation feedback.
 
-| Duration | Use |
-|---|---|
-| 50–100 ms | Instant feedback (button press, toggle commit, hover) |
-| 150 ms | Default for state-confirmation |
-| 200–300 ms | Entering UI (modals, sheets, dropdowns) |
-| 300–500 ms | Cross-screen transitions, container morphs |
-| > 500 ms | Reserved for cross-screen, staged, or platform-native transitions (e.g. M3 `long2`-`extraLong4`, Heer & Robertson 2007's per-stage recommendation). |
+| Duration   | Use                                                                                                                                                 |
+| ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 50–100 ms  | Instant feedback (button press, toggle commit, hover)                                                                                               |
+| 150 ms     | Default for state-confirmation                                                                                                                      |
+| 200–300 ms | Entering UI (modals, sheets, dropdowns)                                                                                                             |
+| 300–500 ms | Cross-screen transitions, container morphs                                                                                                          |
+| > 500 ms   | Reserved for cross-screen, staged, or platform-native transitions (e.g. M3 `long2`-`extraLong4`, Heer & Robertson 2007's per-stage recommendation). |
 
 Non-navigation microinteractions — hover, press, toggle, validation,
 chip selection, row expansion — should stay under 500 ms. Past that the
@@ -178,7 +199,7 @@ constraints.
 Native conventions diverge.
 
 - **iOS** uses spring physics with perceptual `(response, dampingFraction)` parameters. Apple HIG documents principles, not numerical curves; the SwiftUI Animation API JSON is the source for actual numbers. UIView curve cubic-beziers commonly cited online are reverse-engineered, not Apple-published.
-- **Android** uses cubic-bezier curves through M3 motion tokens (50–1000 ms range, 16 named durations). Predictive back is a *gesture-progress primitive*, not a transition primitive — `BackEvent.progress` is sampled per-frame from the touch stream and the destination is rendered behind the current surface while still on it. Cancellation is a first-class lifecycle state.
+- **Android** uses cubic-bezier curves through M3 motion tokens (50–1000 ms range, 16 named durations). Predictive back is a _gesture-progress primitive_, not a transition primitive — `BackEvent.progress` is sampled per-frame from the touch stream and the destination is rendered behind the current surface while still on it. Cancellation is a first-class lifecycle state.
 - **Web** has the View Transitions API (default 0.25 s, no easing specified by the spec — falls through to CSS `ease`). Same-document support 90.94%; cross-document 87.82%. Cross-document is same-origin and user-initiated only.
 
 A "one curve fits all platforms" approach loses on each. If the brief
@@ -187,11 +208,11 @@ consistency, pick one motion vocabulary and apply it everywhere.
 
 ## Common mistakes (lint these)
 
-- "Skeleton screens feel 11% faster" — Harrison/Yeo/Hudson CHI 2010 measured *backwards-decelerating ribbed determinate progress bars* (n=16). The induced-motion mechanism doesn't transfer to skeletons.
+- "Skeleton screens feel 11% faster" — Harrison/Yeo/Hudson CHI 2010 measured _backwards-decelerating ribbed determinate progress bars_ (n=16). The induced-motion mechanism doesn't transfer to skeletons.
 - "Heer & Robertson recommend 300–1000 ms eased transitions" — they tested 1.25 s and 2 s only. Their recommendation is "~1 second per stage".
 - "Doherty Threshold = 400 ms" — the 1982 paper does not contain "400". The lowest threshold actually measured is 300 ms.
 - M2 standard easing `cubic-bezier(0.4, 0, 0.2, 1)` labelled as "Material 3". M3's standard is `cubic-bezier(0.2, 0, 0, 1)`.
-- Animations that *perform* a state change rather than *confirming* one that has already happened. Optimistic UI first; motion second.
+- Animations that _perform_ a state change rather than _confirming_ one that has already happened. Optimistic UI first; motion second.
 - More than 500 ms on any non-cross-screen transition.
 - Animation as the only signal of state change. Reduced-motion users miss it; always pair with a static affordance (color, position, label).
 - Ignoring `prefers-reduced-motion` on transform-based animations — the highest-cost vestibular triggers.

@@ -29,16 +29,17 @@ This template is **not** a TikTok / Reels / 视频号 / 抖音 social mockup, **
 
 Trigger words that mean **this skill is wrong** and you should refuse:
 
-| User says | What they actually want | Correct response |
-|---|---|---|
-| 短视频脚本 / 视频脚本 / script doc | shot-by-shot text with VO / timing | refuse, suggest a doc template or `wireframe-sketch` |
-| 分镜 / storyboard / shot list | frame-by-frame thumbnails + descriptions | refuse, suggest a storyboard layout |
-| 短视频封面 / 视频封面 / video cover | static image / social card | refuse, suggest `social-card-*` skills |
-| 视频号/抖音/小红书视频卡 | feed-style mockup with profile/likes/comments | refuse, suggest a social card |
-| 视频海报 / video poster | static print-style poster | refuse, suggest `social-card-image-led` |
-| 调色 demo / LUT 预览 / 滤镜对比 / cinematographer portfolio / camera-app demo / 拍摄取景器 / viewfinder | ✅ this is the right skill | proceed |
+| User says                                                                                               | What they actually want                       | Correct response                                     |
+| ------------------------------------------------------------------------------------------------------- | --------------------------------------------- | ---------------------------------------------------- |
+| 短视频脚本 / 视频脚本 / script doc                                                                      | shot-by-shot text with VO / timing            | refuse, suggest a doc template or `wireframe-sketch` |
+| 分镜 / storyboard / shot list                                                                           | frame-by-frame thumbnails + descriptions      | refuse, suggest a storyboard layout                  |
+| 短视频封面 / 视频封面 / video cover                                                                     | static image / social card                    | refuse, suggest `social-card-*` skills               |
+| 视频号/抖音/小红书视频卡                                                                                | feed-style mockup with profile/likes/comments | refuse, suggest a social card                        |
+| 视频海报 / video poster                                                                                 | static print-style poster                     | refuse, suggest `social-card-image-led`              |
+| 调色 demo / LUT 预览 / 滤镜对比 / cinematographer portfolio / camera-app demo / 拍摄取景器 / viewfinder | ✅ this is the right skill                    | proceed                                              |
 
 If the user's words straddle "脚本 / 拍摄 HUD" ambiguity, **stop and ask**:
+
 > "你要的是 (a) 拍摄取景器 HUD wrap 一段真视频做调色/镜头展示,还是 (b) 视频脚本/分镜的文档?这个 skill 只做 (a),(b) 我会换别的 skill 来做。"
 
 Don't guess. Wrong skill = full rewrite.
@@ -79,11 +80,15 @@ If you need to verify before using: `curl -sIL -o /dev/null -w "%{http_code} %{c
 **Required `<video>` attributes** (or autoplay won't fire on most browsers):
 
 ```html
-<video src="<hotlink-or-local>"
-       autoplay muted loop playsinline
-       preload="auto"
-       style="width:100%;height:100%;object-fit:cover">
-</video>
+<video
+  src="<hotlink-or-local>"
+  autoplay
+  muted
+  loop
+  playsinline
+  preload="auto"
+  style="width:100%;height:100%;object-fit:cover"
+></video>
 ```
 
 `muted` is mandatory for autoplay on Chrome/Safari/Mobile. `playsinline` is mandatory for iOS not to take the video fullscreen.
@@ -91,6 +96,7 @@ If you need to verify before using: `curl -sIL -o /dev/null -w "%{http_code} %{c
 ### Gate 3 — What's in the filter wheel?
 
 8 filters is the canonical count (reference uses 8). For each, declare:
+
 - Display name (3–6 chars, e.g. `KODAK 2383`, `FUJI 3510`, `LOG`, `REC 709`)
 - CSS filter recipe to apply to the video: `filter: contrast(1.1) saturate(.85) sepia(.15) hue-rotate(-5deg) ...`
 - Optionally: corresponding camera-setting deltas (F-stop / shutter / ISO / EV) that update in the HUD when the filter is active
@@ -127,15 +133,15 @@ Optional but encouraged: REC pulse (red dot blinks at 1Hz when "recording"), foc
 
 ## Must-Lock Visual Rules — no substitutions
 
-| Lock | Value | Why |
-|---|---|---|
-| Background | pure `#000` | Not `#0a0a0a`, not a dark gray. Black canvas is the viewfinder. |
-| Foreground type | `#e0e0e0` / `#fff` | One light tone only. |
-| Single accent | **record-red `#ff3b30`** | Used for REC pill, active filter, reticle, warning states. **Not green, not blue, not teal** — record-red is the entire visual signature of this template. |
-| Type stack | mono only (`SF Mono` / `JetBrains Mono` / `Menlo` / `IBM Plex Mono`) | No sans for HUD numerics. CJK script-overlay is the only sans use, and that overlay is itself rare. |
-| HUD opacity | secondary readouts ≈ 45% | Video stays protagonist. |
-| Border style | 4 corner brackets, never solid border | Solid border = monitor frame, not viewfinder. |
-| Filter wheel | vertical, ~8 dots, right side | Horizontal carousel = social UI, wrong register. |
+| Lock            | Value                                                                | Why                                                                                                                                                        |
+| --------------- | -------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Background      | pure `#000`                                                          | Not `#0a0a0a`, not a dark gray. Black canvas is the viewfinder.                                                                                            |
+| Foreground type | `#e0e0e0` / `#fff`                                                   | One light tone only.                                                                                                                                       |
+| Single accent   | **record-red `#ff3b30`**                                             | Used for REC pill, active filter, reticle, warning states. **Not green, not blue, not teal** — record-red is the entire visual signature of this template. |
+| Type stack      | mono only (`SF Mono` / `JetBrains Mono` / `Menlo` / `IBM Plex Mono`) | No sans for HUD numerics. CJK script-overlay is the only sans use, and that overlay is itself rare.                                                        |
+| HUD opacity     | secondary readouts ≈ 45%                                             | Video stays protagonist.                                                                                                                                   |
+| Border style    | 4 corner brackets, never solid border                                | Solid border = monitor frame, not viewfinder.                                                                                                              |
+| Filter wheel    | vertical, ~8 dots, right side                                        | Horizontal carousel = social UI, wrong register.                                                                                                           |
 
 ---
 
@@ -161,6 +167,7 @@ Optional but encouraged: REC pulse (red dot blinks at 1Hz when "recording"), foc
 Read this `SKILL.md` first, end to end. Then read `video-shortform.html` for the actual implementation patterns: corner-bracket geometry, the timecode HH:MM:SS:FF ticker logic, the 8-filter wheel scroll/keyboard handlers, the reticle pulse keyframes, the battery drain interval, and the filter-switch brightness flash.
 
 Do not copy:
+
 - the fallback video URLs from the reference (use the Hotlink List above)
 - the placeholder filter metadata (use Gate 3's defaults or the user's spec)
 - class names wholesale (rename for the project)
@@ -181,6 +188,7 @@ Lock the experience contract before writing:
 ## Layout Bias
 
 Prefer:
+
 - pure black canvas; mono only; record-red accent
 - 4 corner brackets at 24–32 px from video edges
 - secondary HUD at ~45% opacity so footage dominates

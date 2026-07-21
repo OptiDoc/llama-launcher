@@ -12,6 +12,7 @@ This skill enables writing blog posts and articles that authentically capture th
 ## When to Use This Skill
 
 Trigger this skill when:
+
 - The user requests blog post or article writing in "my style" or "like my other posts"
 - Drafting thought leadership content on AI, productivity, marketing, or technology
 - Creating articles that need the writer's authentic voice and perspective
@@ -29,6 +30,7 @@ Trigger this skill when:
 ### Phase 1: Gather Information
 
 Request from the user:
+
 - Topic or subject matter
 - Any specific angle or thesis to explore
 - Research materials, links, or notes (if available)
@@ -41,6 +43,7 @@ Review all provided materials thoroughly before beginning to write.
 Reference the style guide at `references/style-guide.md` and examples in `references/blog-examples/` for calibration.
 
 When writing:
+
 1. Start with a strong opening statement establishing the thesis
 2. Use personal voice and first-person perspective where natural
 3. Include relevant personal anecdotes or professional experience if applicable
@@ -58,6 +61,7 @@ Present the draft and gather feedback. Iterate until the user confirms satisfact
 When the draft is complete (even if not yet finalized), publish to the TS Notes database.
 
 **Notion Publication Details:**
+
 - Database: "TS Notes" (data source ID: `04a872be-8bed-4f43-a448-3dfeebc0df21`)
 - **Type property**: `Writing`
 - **Project(s) property**: Link to "My Writing" project (page URL: `https://www.notion.so/2a5b4629bb3780189199f3c496980c0c`)
@@ -65,6 +69,7 @@ When the draft is complete (even if not yet finalized), publish to the TS Notes 
 - **Content**: The full blog post content in Notion-flavored Markdown
 
 **Example Notion API call properties:**
+
 ```json
 {
   "Note": "Blog Post Title Here",
@@ -80,9 +85,11 @@ When the draft is complete (even if not yet finalized), publish to the TS Notes 
 When the user confirms the draft is **final**:
 
 1. Save the finalized post to `references/blog-examples/` with filename format:
+
    ```
    YYYY-MM-DD-slug-title.md
    ```
+
    Example: `2025-11-25-why-ai-art-is-useless.md`
 
 2. Check the examples library count:
@@ -93,20 +100,22 @@ The post-outcome is considered **successful** when the final draft is saved to t
 
 ## Success Criteria
 
-| Outcome | Success | Failure |
-|---------|---------|---------|
-| Primary | User receives requested content AND it is added to TS Notes with Type=Writing and Project=My Writing | Content delivered but NOT added to Notion |
-| Post-outcome | Final draft saved to `references/blog-examples/` | Final draft not saved when user confirms it's final |
+| Outcome      | Success                                                                                              | Failure                                             |
+| ------------ | ---------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| Primary      | User receives requested content AND it is added to TS Notes with Type=Writing and Project=My Writing | Content delivered but NOT added to Notion           |
+| Post-outcome | Final draft saved to `references/blog-examples/`                                                     | Final draft not saved when user confirms it's final |
 
 ## the writer's Writing Style Profile
 
 ### Voice & Tone
+
 - **Direct and opinionated**: State positions clearly, even contrarian ones
 - **Conversational**: Write like speaking to a colleague—accessible without being simplistic
 - **First-person when sharing experience**: Use "I" naturally for personal insights
 - **Authentic skepticism**: Willing to criticize trends when warranted
 
 ### Structure Patterns
+
 - **Strong opening thesis**: Open with a clear, often bold statement
 - **Subheadings throughout**: Use `###` format liberally to break up content
 - **Short paragraphs**: Rarely more than 3-4 sentences
@@ -115,11 +124,13 @@ The post-outcome is considered **successful** when the final draft is saved to t
 - **Reflective conclusion**: End with call-to-action or forward-looking hope
 
 ### Length & Format
+
 - Target: 800-1500 words
 - Markdown format with headers and emphasis
 - Minimal bullet points in prose—prefer flowing sentences
 
 ### Vocabulary Markers
+
 - Uses "leverage" for tools/technology
 - Says "that said" for transitions
 - Comfortable with direct statements like "this is useless" or "boy was I wrong"
@@ -127,6 +138,7 @@ The post-outcome is considered **successful** when the final draft is saved to t
 - Avoids corporate jargon while maintaining professionalism
 
 ### Thematic Elements
+
 - AI as tool, not replacement
 - Practical over theoretical
 - Human-centered technology
@@ -135,9 +147,11 @@ The post-outcome is considered **successful** when the final draft is saved to t
 ## Resources
 
 ### references/style-guide.md
+
 Quick reference for the writer's writing patterns, vocabulary preferences, and structural conventions.
 
 ### references/blog-examples/
+
 Contains example blog posts demonstrating the writer's writing style. These serve as reference material when calibrating voice and structure. New finalized posts expand this library over time.
 
 ## Notion API Reference
