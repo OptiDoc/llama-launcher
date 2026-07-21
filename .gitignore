@@ -68,3 +68,16 @@ src-tauri/target/
 
 # ESLint
 .eslintcache
+
+# Generated Tauri schemas
+src-tauri/gen/
+
+# Debug output / temporary files
+errors*.txt
+lint-output*.txt
+
+# AI agent docs (not project docs)
+AGENTS.md
+
+# Bun lock (project uses pnpm)
+bun.lock
