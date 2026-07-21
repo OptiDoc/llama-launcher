@@ -5,17 +5,25 @@ use crate::domain::ProcessStatus;
 use crate::{log_debug, log_warn};
 
 use super::process_manager::ProcessManager;
+use std::sync::Arc;
+use parking_lot::Mutex;
 
 impl ProcessManager {
     pub fn spawn_monitors(&self, process_id: String, _pid: u32) {
         let processes = self.processes.clone();
 
-        if let Some(mut child) = {
+        // Take the child out of the Mutex
+        let child = {
             let mut procs = self.processes.lock();
             procs.get_mut(&process_id).and_then(|p| p.child.take())
-        } {
-            let stdout = child.stdout.take();
-            let stderr = child.stderr.take();
+        };
+
+        if let Some(child) = child {
+            // Extract stdout and stderr before moving child to the wait task
+            let (stdout, stderr) = {
+                let mut child_locked = child.lock();
+                (child_locked.stdout.take(), child_locked.stderr.take())
+            };
             let proc_id = process_id.clone();
             let processes_clone = processes.clone();
 
@@ -63,9 +71,14 @@ impl ProcessManager {
             });
 
             let proc_id = process_id;
+            let processes_clone = processes.clone();
+
             tokio::spawn(async move {
-                let status = child.wait().await;
-                let mut procs = processes.lock();
+                let status = {
+                    let mut child_locked = child.lock();
+                    child_locked.wait().await
+                };
+                let mut procs = processes_clone.lock();
                 if let Some(proc) = procs.get_mut(&proc_id) {
                     proc.status = match status {
                         Ok(s) if s.success() => ProcessStatus::Stopped,
