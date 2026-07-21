@@ -3,7 +3,7 @@
  */
 
 import { SYSTEM_CONSOLE_ID } from "@/lib/types";
-import { nowTs, persistLastActivity } from "@/lib/helpers";
+import { nowTs, persistLastActivity, NOTIF_MESSAGES } from "@/lib/helpers";
 import { emitLog } from "@/lib/helpers";
 import type { StoreApi } from "zustand";
 import type { LlamaStore } from "@/stores/types";
@@ -31,6 +31,7 @@ export function createActivitySlice(
           "info",
           `wake: activity detected — hot-reloading ${s.hibernatedInstanceIds.length} hibernated model(s)`,
         );
+        get().addNotification?.(NOTIF_MESSAGES.configUpdated(`Waking up — reloading ${s.hibernatedInstanceIds.length} model(s)`));
         const hibernatedIds = [...s.hibernatedInstanceIds];
         set({ hibernatedInstanceIds: [] });
         if (typeof window !== "undefined") {
@@ -50,12 +51,14 @@ export function createActivitySlice(
         setTimeout(() => {
           get().setAppStatus?.("active");
           emitLog(SYSTEM_CONSOLE_ID, "success", `all models reloaded, resuming normal operation`);
+          get().addNotification?.(NOTIF_MESSAGES.configUpdated("All models reloaded, resuming normal operation"));
           wakeInProgress = false;
         }, totalDelay + 2000);
         setTimeout(() => {
           const st = get();
           if (st.appStatus === "waking") {
             emitLog(SYSTEM_CONSOLE_ID, "warn", `wake timeout — forcing active state`);
+            get().addNotification?.(NOTIF_MESSAGES.systemError("Wake timed out — forced active state"));
             st.setAppStatus?.("active");
             wakeInProgress = false;
           }

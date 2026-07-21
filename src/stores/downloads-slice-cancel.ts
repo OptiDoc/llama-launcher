@@ -3,7 +3,7 @@
  */
 
 import { tauri } from "@/lib/tauri-api";
-import { emitLog, NOTIF_MESSAGES } from "@/lib/helpers";
+import { emitLog, NOTIF_MESSAGES, uid } from "@/lib/helpers";
 import { SYSTEM_CONSOLE_ID } from "@/lib/types";
 import { log } from "@/lib/logger";
 import type { StoreApi } from "zustand";
@@ -22,7 +22,7 @@ export function createCancelDownloadSlice(
         downloads: s.downloads.map((d) => (d.id === dlId ? { ...d, status: "failed" as const } : d)),
       }));
       get().addNotification?.({
-        kind: "download",
+        kind: "info",
         title: "Download cancelled",
         body: `Download ${dlId.slice(0, 8)} was cancelled.`,
       });
@@ -33,9 +33,11 @@ export function createCancelDownloadSlice(
       const dl = get().downloads.find((d) => d.id === dlId);
       if (!dl) {
         log.warn("[STORE] retryDownload: download not found", { category: "store", context: { dlId } });
+        get().addNotification?.(NOTIF_MESSAGES.systemError("Download not found, cannot retry"));
         return;
       }
       log.info("[STORE] Retrying download", { category: "store", context: { dlId, kind: dl.kind } });
+      get().addNotification?.({ kind: "info", title: "Download retrying", body: `${dl.modelName} ${dl.quant}` });
       if (dl.kind === "model") {
         const model = get().models.find(
           (m) => m.name === dl.modelName && m.quant === dl.quant && m.builder === dl.builder,

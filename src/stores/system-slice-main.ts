@@ -4,7 +4,7 @@
 
 import { tauri, isTauri } from "@/lib/tauri-api";
 import { SYSTEM_CONSOLE_ID } from "@/lib/types";
-import { restoreHibernatedState, emitLog } from "@/lib/helpers";
+import { restoreHibernatedState, emitLog, NOTIF_MESSAGES } from "@/lib/helpers";
 import { log } from "@/lib/logger";
 import type { StoreApi } from "zustand";
 import type { LlamaStore } from "@/stores/types";
@@ -83,6 +83,9 @@ export function createSystemMainSlice(set: StoreApi<LlamaStore>["setState"], get
           SYSTEM_CONSOLE_ID,
           "info",
           `restored ${persisted.hibernatedInstanceIds.length} hibernated model(s) from previous session`,
+        );
+        get().addNotification?.(
+          NOTIF_MESSAGES.configUpdated(`Restored ${persisted.hibernatedInstanceIds.length} hibernated model(s)`),
         );
       }
 
@@ -168,6 +171,11 @@ export function createSystemMainSlice(set: StoreApi<LlamaStore>["setState"], get
         SYSTEM_CONSOLE_ID,
         "success",
         `bootstrap complete — ${get().models?.length} models, ${get().instances?.length} instances, ${get().workspaces?.length} workspaces`,
+      );
+      get().addNotification?.(
+        NOTIF_MESSAGES.configUpdated(
+          `System ready — ${get().models?.length} models, ${get().instances?.length} instances`,
+        ),
       );
     },
   };

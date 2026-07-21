@@ -50,7 +50,7 @@ export function createStartReleaseDownloadSlice(
       }));
 
       const msg = NOTIF_MESSAGES.releaseDownloadStart(rel.tag, rel.variant, sizeMb);
-      get().addNotification?.({ kind: "download", ...msg });
+      get().addNotification?.(msg);
       log.info("[STORE] Release download started", {
         category: "store",
         context: { tag: rel.tag, variant: rel.variant, sizeMb },
@@ -63,6 +63,7 @@ export function createStartReleaseDownloadSlice(
             releases: patchRelease(st, releaseId, { installing: false }),
           }));
           emitLog(SYSTEM_CONSOLE_ID, "error", `install requires Tauri desktop app`);
+          get().addNotification?.(NOTIF_MESSAGES.systemError("Install requires Tauri desktop app"));
           return;
         }
 
@@ -84,13 +85,14 @@ export function createStartReleaseDownloadSlice(
           }));
           emitLog(SYSTEM_CONSOLE_ID, "success", `${rel.tag} (${rel.variant}) installed → ${result}`);
           const msg2 = NOTIF_MESSAGES.releaseInstalled(rel.tag, rel.variant);
-          get().addNotification?.({ kind: "download", ...msg2 });
+          get().addNotification?.(msg2);
         } else {
           set((st) => ({
             downloads: patchDownload(st, dlId, { status: "failed" }),
             releases: patchRelease(st, releaseId, { installing: false }),
           }));
           emitLog(SYSTEM_CONSOLE_ID, "error", `install failed: ${rel.tag} (${rel.variant})`);
+          get().addNotification?.(NOTIF_MESSAGES.systemError(`Install failed: ${rel.tag} (${rel.variant})`));
         }
       })().catch((e) => {
         const errMsg = e instanceof Error ? e.message : String(e);
@@ -99,6 +101,7 @@ export function createStartReleaseDownloadSlice(
           downloads: patchDownload(st, dlId, { status: "failed" }),
           releases: patchRelease(st, releaseId, { installing: false }),
         }));
+        get().addNotification?.(NOTIF_MESSAGES.systemError(`Unexpected error: ${rel.tag} (${rel.variant}) — ${errMsg}`));
       });
 
       return dlId;

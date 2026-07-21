@@ -43,6 +43,7 @@ export function createModelsSlice(
       if (!isTauri()) {
         emitLog(SYSTEM_CONSOLE_ID, "error", `import requires Tauri desktop app`);
         log.warn("[STORE] importLocalModel: not in Tauri mode", { category: "store" });
+        get().addNotification?.(NOTIF_MESSAGES.systemError("Import requires Tauri desktop app"));
         return;
       }
       const paths = options?.paths ?? (await tauri.selectModelFiles());
@@ -67,7 +68,7 @@ export function createModelsSlice(
         await get().refreshModels();
         emitLog(SYSTEM_CONSOLE_ID, "success", `imported ${imported} model${imported !== 1 ? "s" : ""}`);
         const msg = NOTIF_MESSAGES.modelImported(`${imported} model${imported !== 1 ? "s" : ""}`);
-        get().addNotification({ kind: "success", ...msg });
+        get().addNotification(msg);
         log.info("[STORE] Models imported successfully", { category: "store", context: { count: imported } });
       } else {
         log.warn("[STORE] importLocalModel: no models imported", { category: "store" });
@@ -79,7 +80,14 @@ export function createModelsSlice(
         models: s.models.map((m) => (m.id === id ? { ...m, ...patch } : m)),
       })),
 
-    deleteModel: (id) => set((s) => ({ models: s.models.filter((m) => m.id !== id) })),
+    deleteModel: (id) => {
+      const model = get().models.find((m) => m.id === id);
+      set((s) => ({ models: s.models.filter((m) => m.id !== id) }));
+      if (model) {
+        get().addNotification?.({ kind: "info", title: "Model deleted", body: model.name });
+        emitLog(SYSTEM_CONSOLE_ID, "info", `deleted model: ${model.name}`);
+      }
+    },
 
     markModelMissing: (id, missing) =>
       set((s) => ({

@@ -3,7 +3,7 @@
  */
 
 import { tauri, isTauri } from "@/lib/tauri-api";
-import { emitLog, nowTs } from "@/lib/helpers";
+import { emitLog, nowTs, NOTIF_MESSAGES } from "@/lib/helpers";
 import { SYSTEM_CONSOLE_ID } from "@/lib/types";
 import { log } from "@/lib/logger";
 import type { StoreApi } from "zustand";
@@ -31,15 +31,18 @@ export function createInstancesMainSlice(
           await tauri.stopModel(id);
           await get().refreshProcesses();
           emitLog(id, "success", `server stopped cleanly.`);
+          get().addNotification?.(NOTIF_MESSAGES.processStopped(inst.name));
         } catch (e) {
           const errMsg = e instanceof Error ? e.message : String(e);
           emitLog(id, "error", `failed to stop server: ${errMsg}`);
           set((s) => ({ instances: s.instances.map((i) => (i.id === id ? { ...i, status: "error" } : i)) }));
+          get().addNotification?.(NOTIF_MESSAGES.processFailed(inst.name, errMsg));
         }
       }
     },
 
     removeInstance: (id) => {
+      const inst = get().instances.find((i) => i.id === id);
       set((s) => {
         const newLogs = { ...s.logs };
         delete newLogs[id];
@@ -49,6 +52,10 @@ export function createInstancesMainSlice(
           activeConsoleId: s.activeConsoleId === id ? SYSTEM_CONSOLE_ID : s.activeConsoleId,
         };
       });
+      if (inst) {
+        get().addNotification?.({ kind: "info", title: "Instance removed", body: inst.name });
+        emitLog(SYSTEM_CONSOLE_ID, "info", `removed instance: ${inst.name}`);
+      }
     },
 
     markRunning: (id) =>

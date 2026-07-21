@@ -44,17 +44,28 @@ export interface LlamaRelease {
   workspaceId?: string;
 }
 
-export type NotificationKind = "info" | "success" | "warning" | "error" | "release" | "download" | "warn";
+export type NotificationKind = "info" | "success" | "warning" | "error" | "release" | "download" | "system";
 
 export interface AppNotification {
   id: string;
   kind: NotificationKind;
   title: string;
-  message?: string;
-  body?: string;
-  ts?: number;
-  timestamp?: number;
+  body: string;
+  ts: number;
   read: boolean;
   instanceId?: string;
   actionLabel?: string;
+}
+
+export type NotificationSource = "model" | "process" | "system" | "release" | "download" | "workspace" | "config";
+
+export interface NotificationEvent {
+  id: string;
+  level: "info" | "success" | "warning" | "error";
+  source: NotificationSource;
+  title: string;
+  body: string;
+  timestamp: number;
+  instance_id?: string;
+  action_label?: string;
 }

@@ -1,7 +1,7 @@
 import { tauri } from "@/lib/tauri-api";
 import { isTauri } from "@/lib/tauri-api";
 import type { Workspace, WorkspaceSettings, GlobalSettings } from "@/lib/types";
-import { emitLog } from "@/lib/helpers";
+import { emitLog, NOTIF_MESSAGES } from "@/lib/helpers";
 import { SYSTEM_CONSOLE_ID, defaultWorkspaceSettings, defaultGlobalSettings } from "@/lib/types";
 import { nowTs } from "@/lib/helpers";
 import type { StoreApi } from "zustand";
@@ -34,7 +34,10 @@ export function createWorkspacesSlice(
     setActiveWorkspace: (id) => {
       set({ activeWorkspaceId: id });
       const ws = get().workspaces.find((w) => w.id === id);
-      if (ws) emitLog(SYSTEM_CONSOLE_ID, "info", `switched to workspace "${ws.name}"`);
+      if (ws) {
+        emitLog(SYSTEM_CONSOLE_ID, "info", `switched to workspace "${ws.name}"`);
+        get().addNotification?.(NOTIF_MESSAGES.workspaceSwitched(ws.name));
+      }
     },
 
     addWorkspace: (w) => {
@@ -43,13 +46,15 @@ export function createWorkspacesSlice(
         workspaces: [...s.workspaces, { ...w, id }],
         workspaceSettings: { ...s.workspaceSettings, [id]: { ...defaultWorkspaceSettings } },
       }));
+      get().addNotification?.(NOTIF_MESSAGES.configUpdated(`Workspace "${w.name}" created`));
       return id;
     },
 
     updateWorkspace: (id, patch) =>
       set((s) => ({ workspaces: s.workspaces.map((w) => (w.id === id ? { ...w, ...patch } : w)) })),
 
-    removeWorkspace: (id) =>
+    removeWorkspace: (id) => {
+      const ws = get().workspaces.find((w) => w.id === id);
       set((s) => {
         if (s.workspaces.length <= 1) return s;
         const remaining = s.workspaces.filter((w) => w.id !== id);
@@ -60,7 +65,11 @@ export function createWorkspacesSlice(
           models: s.models.filter((m) => m.workspaceId !== id),
           activeWorkspaceId: newActive,
         };
-      }),
+      });
+      if (ws) {
+        get().addNotification?.(NOTIF_MESSAGES.configUpdated(`Workspace "${ws.name}" removed`));
+      }
+    },
 
     refreshWorkspaces: async () => {
       const tauriWorkspaces = await tauri.listWorkspaces();
@@ -78,6 +87,7 @@ export function createWorkspacesSlice(
 
     updateGlobalSettings: (patch) => {
       set((s) => ({ globalSettings: { ...s.globalSettings, ...patch } }));
+      get().addNotification?.(NOTIF_MESSAGES.configUpdated("Global settings updated"));
       if (isTauri() && (patch.modelsDir || patch.llamaCppPath || patch.cudaLibsDir)) {
         const s = get().globalSettings;
         tauri.getConfig().then((cfg) => {
@@ -91,12 +101,14 @@ export function createWorkspacesSlice(
       }
     },
 
-    updateWorkspaceSettings: (workspaceId, patch) =>
+    updateWorkspaceSettings: (workspaceId, patch) => {
       set((s) => ({
         workspaceSettings: {
           ...s.workspaceSettings,
           [workspaceId]: { ...(s.workspaceSettings[workspaceId] ?? defaultWorkspaceSettings), ...patch },
         },
-      })),
+      }));
+      get().addNotification?.(NOTIF_MESSAGES.configUpdated("Workspace settings updated"));
+    },
   };
 }

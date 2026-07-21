@@ -2,7 +2,7 @@
  * Top bar types and configurations.
  */
 
-import { Activity, Zap, Snowflake, Moon, Download, Rocket, Info, AlertTriangle, CheckCheck } from "lucide-react";
+import { Activity, Zap, Snowflake, Moon, Download, Rocket, Info, AlertTriangle, CheckCheck, Cpu } from "lucide-react";
 import type { AppStatus, NotificationKind, Workspace } from "@/lib/llama-store";
 
 export interface TopBarProps {
@@ -51,9 +51,9 @@ export const NOTIF_ICON: Record<NotificationKind, React.ReactNode> = {
   download: <Download className="size-3.5" />,
   info: <Info className="size-3.5" />,
   success: <CheckCheck className="size-3.5" />,
-  warn: <AlertTriangle className="size-3.5" />,
   warning: <AlertTriangle className="size-3.5" />,
   error: <AlertTriangle className="size-3.5" />,
+  system: <Cpu className="size-3.5" />,
 };
 
 export const NOTIF_COLOR: Record<NotificationKind, string> = {
@@ -61,9 +61,9 @@ export const NOTIF_COLOR: Record<NotificationKind, string> = {
   download: "text-emerald-500",
   info: "text-sky-500",
   success: "text-emerald-500",
-  warn: "text-amber-500",
   warning: "text-amber-500",
   error: "text-red-500",
+  system: "text-muted-foreground",
 };
 
 export function workspaceColorDot(color: Workspace["color"]) {

@@ -3,7 +3,7 @@
  */
 
 import { tauri, isTauri } from "@/lib/tauri-api";
-import { emitLog, renameLogKey, uid, nowTs, mapTauriProcess } from "@/lib/helpers";
+import { emitLog, renameLogKey, uid, nowTs, mapTauriProcess, NOTIF_MESSAGES } from "@/lib/helpers";
 import { SYSTEM_CONSOLE_ID } from "@/lib/types";
 import { log } from "@/lib/logger";
 import type { StoreApi } from "zustand";
@@ -153,11 +153,13 @@ export function createStartInstanceSlice(
               activeConsoleId: tauriProc.id,
             }));
             emitLog(tauriProc.id, "success", `server started (pid: ${tauriProc.pid}, port: ${tauriProc.port})`);
+            get().addNotification?.(NOTIF_MESSAGES.processStarted(name));
           } else {
             set((s) => ({
               instances: s.instances.map((i) => (i.id === placeholderId ? { ...i, status: "error" } : i)),
             }));
             emitLog(placeholderId, "error", `Failed to start llama-server. Check the binary path in Settings.`);
+            get().addNotification?.(NOTIF_MESSAGES.processFailed(name, "Failed to start llama-server. Check the binary path in Settings."));
           }
         })().catch((e) => {
           const errMsg = e instanceof Error ? e.message : String(e);
@@ -165,11 +167,13 @@ export function createStartInstanceSlice(
           set((s) => ({
             instances: s.instances.map((i) => (i.id === placeholderId ? { ...i, status: "error" } : i)),
           }));
+          get().addNotification?.(NOTIF_MESSAGES.processFailed(name, errMsg));
         });
         get().registerActivity?.();
         return placeholderId;
       }
       emitLog(SYSTEM_CONSOLE_ID, "warn", `cannot start real llama-server — run in Tauri desktop app.`);
+      get().addNotification?.(NOTIF_MESSAGES.systemError("Cannot start instance in web mode — use the desktop app"));
       return "";
     },
   };

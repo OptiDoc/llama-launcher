@@ -22,6 +22,7 @@ mod workspace_commands;
 mod release_list;
 mod release_detect;
 mod release_gpu;
+mod notification_commands;
 
 pub use model_scan::*;
 pub use model_verify::*;
@@ -36,3 +37,4 @@ pub use settings_commands::*;
 pub use workspace_commands::*;
 pub use release_list::*;
 pub use release_detect::*;
+pub use notification_commands::*;

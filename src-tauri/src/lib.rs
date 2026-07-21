@@ -82,6 +82,8 @@ pub fn run() {
             presentation::download_cuda_libs,
             presentation::scan_external_models,
             presentation::sync_external_models,
+            presentation::get_notifications,
+            presentation::clear_notifications,
             logger::clear_logs,
             logger::clear_logs_by_level,
             logger::export_logs_by_level,
@@ -90,6 +92,8 @@ pub fn run() {
         ])
         .setup(|app| {
             let state = app.state::<AppState>();
+            let notification_service = application::NotificationService::new(app.handle().clone());
+            app.manage(notification_service);
             crate::log_info!("Logger initialized", "startup");
 
             if let Ok(store) = app.store("config.json") {

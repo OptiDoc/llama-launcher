@@ -85,7 +85,7 @@ export function createStartHFDownloadSlice(
       set((s) => ({ downloads: [...s.downloads, dl], models: [...s.models, placeholderModel] }));
 
       const msg = NOTIF_MESSAGES.modelDownloadStart(modelName, quant, sizeGb);
-      get().addNotification?.({ kind: "download", ...msg });
+      get().addNotification?.(msg);
       log.info("[STORE] Model download started", { category: "store", context: { modelName, quant, sizeGb } });
 
       (async () => {
@@ -95,6 +95,7 @@ export function createStartHFDownloadSlice(
             models: patchModel(st, modelId, { downloading: false, missing: true }),
           }));
           emitLog(SYSTEM_CONSOLE_ID, "error", `download requires Tauri desktop app`);
+          get().addNotification?.(NOTIF_MESSAGES.systemError("Download requires Tauri desktop app"));
           return;
         }
 
@@ -114,7 +115,7 @@ export function createStartHFDownloadSlice(
               models: patchModel(st, modelId, { downloading: false, missing: true }),
             }));
             const msg2 = NOTIF_MESSAGES.modelDownloadFailed(modelName, `Repo ${repo} is not accessible: ${statusText}`);
-            get().addNotification?.({ kind: "download", ...msg2 });
+            get().addNotification?.(msg2);
             return;
           }
         } catch {
@@ -190,6 +191,7 @@ export function createStartHFDownloadSlice(
             downloads: patchDownload(st, dlId, { status: "failed" }),
             models: patchModel(st, modelId, { downloading: false, downloadProgress: 0, missing: true }),
           }));
+          get().addNotification?.(NOTIF_MESSAGES.modelDownloadFailed(modelName, `Download returned null: ${resolvedFilename}`));
           return;
         }
 
@@ -200,7 +202,7 @@ export function createStartHFDownloadSlice(
           }));
           emitLog(SYSTEM_CONSOLE_ID, "success", `download complete: ${resolvedFilename} → ${result}`);
           const msg2 = NOTIF_MESSAGES.modelDownloadComplete(modelName, quant);
-          get().addNotification?.({ kind: "download", ...msg2 });
+          get().addNotification?.(msg2);
           await get().refreshModels();
         }
       })().catch((e) => {
@@ -210,6 +212,7 @@ export function createStartHFDownloadSlice(
           downloads: patchDownload(st, dlId, { status: "failed" }),
           models: patchModel(st, modelId, { downloading: false, downloadProgress: 0, missing: true }),
         }));
+        get().addNotification?.(NOTIF_MESSAGES.modelDownloadFailed(modelName, errMsg));
       });
       return dlId;
     },

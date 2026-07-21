@@ -35,6 +35,7 @@ export function createReleasesSlice(
         const tauriReleases = await tauri.listGithubReleases();
         if (!tauriReleases) {
           log.debug("[STORE] refreshReleases: listGithubReleases returned null", { category: "store" });
+          get().addNotification?.(NOTIF_MESSAGES.systemError("Failed to refresh releases"));
           return;
         }
         const mapped: LlamaRelease[] = tauriReleases.map((r) => ({
@@ -65,28 +66,40 @@ export function createReleasesSlice(
       }
     },
 
-    installRelease: (id) =>
+    installRelease: (id) => {
+      const rel = get().releases.find((r) => r.id === id);
       set((s) => ({
         releases: s.releases.map((r) =>
           r.id === id ? { ...r, installed: true, installing: false, installProgress: 100 } : r,
         ),
-      })),
+      }));
+      if (rel) {
+        get().addNotification?.(NOTIF_MESSAGES.releaseInstalled(rel.tag, rel.variant));
+      }
+    },
 
-    uninstallRelease: (id) =>
+    uninstallRelease: (id) => {
+      const rel = get().releases.find((r) => r.id === id);
       set((s) => ({
         releases: s.releases.map((r) => (r.id === id ? { ...r, installed: false } : r)),
-      })),
+      }));
+      if (rel) {
+        get().addNotification?.(NOTIF_MESSAGES.configUpdated(`Release ${rel.tag} uninstalled`));
+      }
+    },
 
     copyCudaLibs: (releaseId) => {
       log.info("[STORE] copyCudaLibs called", { category: "store", context: { releaseId } });
       const rel = get().releases.find((r) => r.id === releaseId);
       if (!rel) {
         log.warn("[STORE] copyCudaLibs: release not found", { category: "store", context: { releaseId } });
+        get().addNotification?.(NOTIF_MESSAGES.systemError("Release not found"));
         return;
       }
       const cudaDir = get().globalSettings.cudaLibsDir;
       emitLog(SYSTEM_CONSOLE_ID, "info", `looking for CUDA libraries in ${cudaDir}`);
       emitLog(SYSTEM_CONSOLE_ID, "success", `${rel.variant.toUpperCase()} backend ready`);
+      get().addNotification?.(NOTIF_MESSAGES.configUpdated(`${rel.variant.toUpperCase()} backend ready`));
     },
   };
 }

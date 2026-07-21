@@ -9,3 +9,5 @@ export * from "./types";
 export { isTauri, invoke, invokeWithChannel } from "./invoke";
 export { tauri } from "./commands";
 export { formatBytes, formatUptime } from "./tauri-format";
+export { listenForNotifications, stopListening } from "./tauri-notification";
+export type { BackendNotification } from "./tauri-notification";

@@ -9,6 +9,7 @@ export interface NotificationsSlice {
   markNotificationRead: (id: string) => void;
   markAllNotificationsRead: () => void;
   clearNotifications: () => void;
+  syncFromBackend: (backendNotifs: AppNotification[]) => void;
 }
 
 export function createNotificationsSlice(
@@ -34,5 +35,14 @@ export function createNotificationsSlice(
       })),
 
     clearNotifications: () => set({ notifications: [] }),
+
+    syncFromBackend: (backendNotifs) =>
+      set((s) => {
+        const existingIds = new Set(s.notifications.map((n) => n.id));
+        const incoming = backendNotifs.filter((n) => !existingIds.has(n.id));
+        if (incoming.length === 0) return s;
+        const merged = [...incoming, ...s.notifications].slice(0, 50);
+        return { notifications: merged };
+      }),
   };
 }

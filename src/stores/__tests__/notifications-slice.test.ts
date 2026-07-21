@@ -57,7 +57,7 @@ describe("notifications-slice", () => {
 
   it("marks all notifications as read", () => {
     store.getState().addNotification({ kind: "info", title: "A", body: "1" });
-    store.getState().addNotification({ kind: "warn", title: "B", body: "2" });
+    store.getState().addNotification({ kind: "warning", title: "B", body: "2" });
 
     store.getState().markAllNotificationsRead();
 

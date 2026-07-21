@@ -1,6 +1,6 @@
 import { create } from "zustand";
-import { isTauri } from "@/lib/tauri-api";
-import { emitLog, nowTs, initialSystemLogs, persistHibernatedState } from "@/lib/helpers";
+import { isTauri, listenForNotifications } from "@/lib/tauri-api";
+import { emitLog, nowTs, initialSystemLogs, persistHibernatedState, NOTIF_MESSAGES } from "@/lib/helpers";
 import { fmtTime } from "@/lib/utils";
 import { SYSTEM_CONSOLE_ID, defaultGlobalSettings, defaultWorkspaceSettings } from "@/lib/types";
 import type { LlamaStore } from "@/stores/types";
@@ -57,11 +57,7 @@ function startWatchdog() {
             : i;
         }),
       }));
-      s.addNotification({
-        kind: "warn",
-        title: "Hibernation started",
-        body: `${running.length} model(s) unloaded from VRAM after ${Math.round(since / 1000)}s idle.`,
-      });
+      s.addNotification(NOTIF_MESSAGES.hibernationStarted(running.length, Math.round(since / 1000)));
       const state = useLlamaStore.getState();
       persistHibernatedState(state.hibernatedInstanceIds, state.instances, state.lastActivityAt);
     } else if (since >= hibernateAfterMs * 0.6 && s.appStatus === "active") {
@@ -92,12 +88,7 @@ function startReleaseChecker() {
     if (releases.length > 0) {
       const latest = releases[0];
       if (s.globalSettings.notifyOnNewRelease && !latest.installed) {
-        s.addNotification({
-          kind: "release",
-          title: "New llama.cpp release available",
-          body: `${latest.tag} — ${latest.notes.slice(0, 100)}…`,
-          actionLabel: "Install",
-        });
+        s.addNotification(NOTIF_MESSAGES.newReleaseAvailable(latest.tag, latest.notes));
       }
     }
   }, 5000);
@@ -121,11 +112,19 @@ export const useLlamaStore = create<LlamaStore>((set, get) => {
 });
 
 if (typeof window !== "undefined") {
-  setTimeout(() => {
+  setTimeout(async () => {
     useLlamaStore.getState().bootstrap();
     startWatchdog();
     startMetricsTicker();
     startReleaseChecker();
+    await listenForNotifications((backendNotif) => {
+      useLlamaStore.getState().addNotification({
+        kind: backendNotif.level === "error" ? "error" : backendNotif.level === "warning" ? "warning" : backendNotif.level === "success" ? "success" : "info",
+        title: backendNotif.title,
+        body: backendNotif.body,
+        ...(backendNotif.action_label ? { actionLabel: backendNotif.action_label } : {}),
+      });
+    });
   }, 300);
 }
 

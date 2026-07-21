@@ -16,7 +16,7 @@ export * from "./types-external";
 export type { LlamaInstance, InstanceStatus, ConsoleLine, LogKind, InstancesSlice } from "./types-process";
 export type { GlobalSettings } from "./types-config";
 export type { AppStatus, MetricSample } from "./types-system";
-export type { HFDownload, LlamaRelease, AppNotification, NotificationKind } from "./types-download";
+export type { HFDownload, LlamaRelease, AppNotification, NotificationKind, NotificationEvent, NotificationSource } from "./types-download";
 export type { LlamaProfile, ProfileScope, ViewMode } from "./types-workspace";
 export { SYSTEM_CONSOLE_ID, defaultWorkspaceSettings } from "./types-workspace";
 export { defaultGlobalSettings } from "./types-config";

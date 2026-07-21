@@ -20,6 +20,7 @@ import type {
   ReleaseVariant,
   GitHubRelease,
   ExternalModelDir,
+  NotificationEvent,
 } from "./types";
 
 export const tauri = {
@@ -73,6 +74,10 @@ export const tauri = {
 
   // Logs
   writeFrontendLog: (entry: LogEntry) => invoke<null>("write_frontend_log", { entry }),
+
+  // Notifications
+  getNotifications: () => invoke<NotificationEvent[]>("get_notifications"),
+  clearNotifications: () => invoke<null>("clear_notifications"),
 
   // File / dialog
   openModelFolder: () => invoke<null>("open_model_folder"),
